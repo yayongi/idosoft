@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="todo">
+	<parameterMap id="TodoVO" type="kr.co.idosoft.demo.vo.TodoVO"  />
+	<resultMap id="TodoVO" type="kr.co.idosoft.demo.vo.TodoVO"/>
+	
+	<!-- 
+		datetime 형식을 가져올 때는 date_format으로 변환 후, alias를 잡아줘야 된다.
+	 -->
+	<select id="selectTodoList" resultMap="TodoVO">
+		SELECT	
+			id
+			, text
+			, complete_yn as completeYn
+			, date_format(create_date, '%Y-%m-%d %H:%i:%s') as createDate
+			, date_format(modify_date, '%Y-%m-%d %H:%i:%s') as modifyDate
+		FROM todo
+	</select>
+	
+	<insert id="insertTodo" parameterMap="TodoVO" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO todo (
+			text
+		) VALUES (
+			#{text}
+		)
+	</insert>
+	
+	<delete id="deleteTodo" parameterMap="TodoVO">
+		DELETE FROM todo WHERE id=#{id}
+	</delete>
+	
+	<update id="updateTodoState" parameterMap="TodoVO">
+		UPDATE todo SET 
+			complete_yn = #{completeYn}
+			, modify_date = CURRENT_TIMESTAMP()
+		WHERE 
+			id = #{id}
+	</update>
+</mapper>

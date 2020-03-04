@@ -1,0 +1,44 @@
+<!DOCTYPE tiles-definitions PUBLIC
+  "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+  "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+ 
+<tiles-definitions>
+ 
+    <!-- 메뉴 표시 -->
+    <definition name="common" template="/WEB-INF/layout/layout.jsp">
+        <put-attribute name="left"   value="/WEB-INF/layout/left.jsp" />
+        <put-attribute name="header" value="/WEB-INF/layout/header.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/layout/footer.jsp" />
+    </definition>
+ 
+    
+    <definition name="*.comm" extends="common">
+        <put-attribute name="body" value="/WEB-INF/views/{1}.jsp" />
+    </definition>
+ 
+     <definition name="*/*.comm" extends="common">
+         <put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+     </definition>
+    
+    <definition name="*/*/*.comm" extends="common">
+        <put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    
+    <!-- 메뉴 미표시 -->
+    <definition name="empty" template="/WEB-INF/layout/layoutEmpty.jsp">
+    </definition>
+    
+    <definition name="*.empt" extends="empty">
+        <put-attribute name="body" value="/WEB-INF/views/{1}.jsp" />
+    </definition>
+ 
+     <definition name="*/*.empt" extends="empty">
+         <put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+     </definition>
+    
+    <definition name="*/*/*.empt" extends="empty">
+        <put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+    </definition>        
+    
+</tiles-definitions>

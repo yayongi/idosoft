@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc
+						http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+						http://mybatis.org/schema/mybatis-spring
+						http://mybatis.org/schema/mybatis-spring-1.2.xsd
+						http://www.springframework.org/schema/util
+						http://www.springframework.org/schema/util/spring-util-3.2.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context-3.2.xsd
+						http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+						http://www.springframework.org/schema/beans
+						https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- message 프로퍼티 등록 -->
+	<util:properties id="config" location="classpath:/properties/dbconn.properties" />
+	
+	<!-- Bean 등록 -->
+	<context:component-scan base-package="kr.co.idosoft">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/properties/dbconn.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	
+	<!-- @Aspect 어노테이션이 존재하는 빈에 대해서 AOP를 적용시킨다. -->
+	<aop:aspectj-autoproxy />
+	<import resource="datasource-context.xml" />
+	
+	<!-- 
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.mariadb.jdbc.Driver" />
+		<property name="url" value="jdbc:mariadb://supergo.co.kr:3307/ido"/>
+		<property name="username" value="idosofttest"/>
+		<property name="password" value="IDOSoft6170!"/>
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:/kr/co/idosoft/**/mapper/*Mapper.xml" />
+	</bean>
+	
+	<bean id="sqlTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory" />
+	</bean>
+	 -->
+	 
+	<!-- <mybatis:scan base-package="kr.co.demo.mapper" /> -->
+</beans>
