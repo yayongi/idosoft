@@ -1,2 +1,2 @@
 # idosoft
-IDOSOFT Homepage
+IDOSOFT 인트라넷
