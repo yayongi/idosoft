@@ -50,7 +50,7 @@ module.exports = {
                     
                     filename: 'index.html',
                     inject: true,
-                    template: appRootPath+'/template/index.html',
+                    template: appRootPath+'/index.html',
                 },
                 /*
                     isEnvProduction
