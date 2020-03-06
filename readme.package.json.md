@@ -23,3 +23,7 @@ webpack-cli: 웹팩 커맨드라인 인터페이스 라이브러리입니다.
 webpack-dev-server: 웹팩 개발서버 라이브러리입니다. (소스변경 시, 실시간으로 브라우저에 반영됨.)
 
 open-color : UI 디자인을 위한 일반적인 색상을 지줭하는 웹팩 라이브러리이다. ( https://yeun.github.io/open-color/documents.html )
+
+@material-ui/core : google에서 제공하는 react 용 UI 라이브러리이다.
+@material-ui/icons : google에서 제공하는 react 용 UI 라이브러리이다.
+recharts : 차트 라이브러리이다. ( https://www.npmjs.com/package/recharts ) 
