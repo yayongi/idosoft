@@ -26,16 +26,17 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 // 1. webpack.config.js 파일에 devServer 옵션 추가
 // 2. package.json 파일의 scripts에 "start": "webpack-dev-server --open" 를 추가한 후, npm start 로 실행
 
+const appRootPath = "todo"; // 앱 Root 경로
 module.exports = {
     mode: 'development',
     context: path.resolve(__dirname, 'react_src'),
     entry: {
-        todo: './index.js'
+        todo: './'+appRootPath+'/index.js'
     },
     devtool: 'inline-source-map',
     devServer: {
         port: 8000,
-        contentBase: './react_disc',
+        contentBase: './react_disc/'+appRootPath,
         proxy: {
             '/intranet': 'http://localhost:9090'
         }
@@ -49,7 +50,7 @@ module.exports = {
                     
                     filename: 'index.html',
                     inject: true,
-                    template: 'template/index.html',
+                    template: appRootPath+'/template/index.html',
                 },
                 /*
                     isEnvProduction
