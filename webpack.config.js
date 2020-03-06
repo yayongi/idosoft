@@ -1,6 +1,6 @@
 var path = require('path');
 
-// output.filname를 포함한 index.htmlhtml을 자동 생성해주는 플러그인 
+// output.filname를 포함한 index.html 자동 생성해주는 플러그인 
 // npm install --save-dev html-webpack-plugin
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -26,7 +26,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 // 1. webpack.config.js 파일에 devServer 옵션 추가
 // 2. package.json 파일의 scripts에 "start": "webpack-dev-server --open" 를 추가한 후, npm start 로 실행
 
-const appRootPath = "todo"; // 앱 Root 경로
+const appRootPath = "intranet"; // 앱 Root 경로 (todo:일정관리, intranet:아이두소프트 인트라)
 module.exports = {
     mode: 'development',
     context: path.resolve(__dirname, 'react_src'),
