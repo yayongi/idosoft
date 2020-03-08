@@ -17,6 +17,5 @@ public interface LoginDao {
 	 */
 
 	public LoginVO selectMemberInfo(LoginVO loginInfo);
-
-	
 }
+

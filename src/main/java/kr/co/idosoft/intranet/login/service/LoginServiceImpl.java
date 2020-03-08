@@ -16,10 +16,9 @@ import kr.co.idosoft.intranet.login.vo.LoginVO;
 public class LoginServiceImpl implements LoginService {
 	@Resource LoginDao loginDao;
 	/**
-	 * 일정 목록 조회
+	 * 로그인
 	 * @return List<LoginVO>
 	 */
-
 	@Override
 	public LoginVO selectMemberInfo(LoginVO loginInfo) {
 		// TODO Auto-generated method stub

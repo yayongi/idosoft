@@ -3,9 +3,7 @@ package kr.co.idosoft.intranet.login.vo;
 import java.io.Serializable;
 
 public class LoginVO implements Serializable  {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	
 	private int no;

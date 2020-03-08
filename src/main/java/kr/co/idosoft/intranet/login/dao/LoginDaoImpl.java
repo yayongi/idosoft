@@ -25,7 +25,6 @@ public class LoginDaoImpl implements LoginDao {
 	 * 로그인 
 	 * @return List<LoginVO>
 	 */
-
 	@Override
 	public LoginVO selectMemberInfo(LoginVO loginInfo) {
 		
