@@ -10,11 +10,13 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.idosoft.demo.vo.TodoVO;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
+import kr.co.idosoft.intranet.login.vo.SessionVO;
 
 /**
- * Login DAO
+ * 
  * @author 유기환
- *
+ * @since 2020.03.09
+ * @content LOGIN DAO interface
  */
 @Repository
 public class LoginDaoImpl implements LoginDao {
@@ -26,7 +28,7 @@ public class LoginDaoImpl implements LoginDao {
 	 * @return List<LoginVO>
 	 */
 	@Override
-	public LoginVO selectMemberInfo(LoginVO loginInfo) {
+	public SessionVO selectMemberInfo(LoginVO loginInfo) {
 		
 		return sqlTemplate.selectOne("selectMemberInfo", loginInfo);
 	}

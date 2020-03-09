@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 import kr.co.idosoft.intranet.login.vo.LoginVO;
+import kr.co.idosoft.intranet.login.vo.SessionVO;
 
 /**
- * LOGIN DAO 
+ * 
  * @author 유기환
- *
+ * @since 2020.03.09
+ * @content LOGIN DAO
  */
 public interface LoginDao {
 	/**
@@ -16,6 +18,6 @@ public interface LoginDao {
 	 * @return LoginVO
 	 */
 
-	public LoginVO selectMemberInfo(LoginVO loginInfo);
+	public SessionVO selectMemberInfo(LoginVO loginInfo);
 }
 
