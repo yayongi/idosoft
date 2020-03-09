@@ -1,26 +1,24 @@
 package kr.co.idosoft.intranet.login.service;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
 import kr.co.idosoft.intranet.login.dao.LoginDao;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
-
-
+import kr.co.idosoft.intranet.login.vo.SessionVO;
 
 @Service
 public class LoginServiceImpl implements LoginService {
 	@Resource LoginDao loginDao;
 	/**
-	 * 로그인
-	 * @return List<LoginVO>
+	 * 
+	 * @author 유기환
+	 * @since 2020.03.09
+	 * @content LOGIN SERVICE interface
 	 */
 	@Override
-	public LoginVO selectMemberInfo(LoginVO loginInfo) {
+	public SessionVO selectMemberInfo(LoginVO loginInfo) {
 		// TODO Auto-generated method stub
 		return loginDao.selectMemberInfo(loginInfo);
 	}

@@ -2,11 +2,17 @@ package kr.co.idosoft.intranet.login.vo;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * @author 유기환
+ * @since 2020.03.09
+ * @content LOGIN
+ */
+
 public class LoginVO implements Serializable  {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -2944358041715112116L;
 	
-	private int no;
 	private String email;
 	private String password;
 	
@@ -14,19 +20,10 @@ public class LoginVO implements Serializable  {
 		super();
 	}
 
-	public LoginVO(int no, String email, String password) {
+	public LoginVO(String email, String password) {
 		super();
-		this.no = no;
 		this.email = email;
 		this.password = password;
-	}
-
-	public int getNo() {
-		return no;
-	}
-
-	public void setNo(int no) {
-		this.no = no;
 	}
 
 	public String getEmail() {
@@ -47,7 +44,7 @@ public class LoginVO implements Serializable  {
 
 	@Override
 	public String toString() {
-		return "LoginVO [no=" + no + ", email=" + email + ", password=" + password + "]";
+		return "LoginVO [email=" + email + ", password=" + password + "]";
 	}
 	
 }

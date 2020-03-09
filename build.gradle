@@ -92,7 +92,9 @@ dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.0'
     compile group: 'org.bgee.log4jdbc-log4j2', name: 'log4jdbc-log4j2-jdbc4.1', version: '1.16'     // SQL 로그를 깔금하게 보기 위해 추가 
 	//<-- e:logback + log4jdbc 적용을 위한 추가된 라이브러리
-        
+
+    // Spring Security Core 암호화 관련 라이브러리
+    compile group: 'org.springframework.security', name: 'spring-security-core', version: '4.0.4.RELEASE' 
     testCompile group: 'junit', name: 'junit', version: "${version.junit}"
 }
  
