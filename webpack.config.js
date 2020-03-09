@@ -107,6 +107,10 @@ module.exports = {
                 // need to install  => npm install sass-loader node-sass webpack --save-dev
                 'sass-loader'
             ]
+        
+        }, {
+            test:/\.(png|jpg)$/,
+            use:  'file-loader'
         }]
     },
 
