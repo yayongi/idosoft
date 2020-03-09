@@ -9,3 +9,4 @@ export {default as Notice} from './Notice';			// 공지사항
 export {History as History} from './Project';			// 프로젝트 -> 프로젝트이력
 export {Manage as Manage} from './Project';			// 프로젝트 -> 프로젝트관리
 export {default as Resource} from './Resource';		// 자원관리
+export {default as NotFound} from './NotFound';	// 페이지 없는 경우
