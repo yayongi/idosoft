@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import Icon from '@material-ui/core/Icon';
-import clsx from 'clsx';
-import { createStyles, lighten, makeStyles, Theme } from '@material-ui/core/styles';
+import { Link as RouterLink } from 'react-router-dom';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -43,56 +42,68 @@ const MemberList = () => {
 	const classes = useStyles();
 	
 	return (
-		<Card>
-			<CardContent>
-				사원관리
-			</CardContent>
-			<TableContainer component={Paper}>
-				<Table className={classes.table} aria-label="simple table">
-					<TableHead>
-						<TableRow>	
-							<TableCell padding="checkbox">
-								<Checkbox onChange={onSelectAllClick}></Checkbox>
-							</TableCell>
-							<TableCell>이름</TableCell>
-							<TableCell align="center">직급</TableCell>
-							<TableCell align="center">주소</TableCell>
-							<TableCell align="center">휴대전화</TableCell>
-							<TableCell align="center">경력</TableCell>
-							<TableCell align="center">입사일</TableCell>
-							<TableCell align="center">자격증<br></br>유무</TableCell>
-							<TableCell align="center">개인이력</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-					{rows.map(row => (
-						<TableRow key={row.name}>
-							<TableCell padding="checkbox">
-								<Checkbox
-									onChange={isItemSelected}
-									key = {row.id}
-								/>
-							</TableCell>
-							<TableCell component="th" scope="row">
-								{row.name}
-							</TableCell>
-							<TableCell >{row.position}</TableCell>
-							<TableCell >{row.address}</TableCell>
-							<TableCell >{row.phone}</TableCell>
-							<TableCell >{row.career}</TableCell>
-							<TableCell >{row.entry}</TableCell>
-							<TableCell align="center">{row.cert}</TableCell>
-							<TableCell >
-								 <Button variant="contained" color="primary" href="#contained-buttons">
-									개인이
-								</Button>
-							</TableCell>
-						</TableRow>
-					))}
-					</TableBody>
-				</Table>
-			</TableContainer>
-		</Card>
+		<div>
+			<Card>
+				<CardContent>
+					사원관리
+				</CardContent>
+				<TableContainer component={Paper}>
+					<Table className={classes.table} aria-label="simple table">
+						<TableHead>
+							<TableRow>	
+								<TableCell padding="checkbox">
+									<Checkbox onChange={onSelectAllClick}></Checkbox>
+								</TableCell>
+								<TableCell>이름</TableCell>
+								<TableCell align="center">직급</TableCell>
+								<TableCell align="center">주소</TableCell>
+								<TableCell align="center">휴대전화</TableCell>
+								<TableCell align="center">경력</TableCell>
+								<TableCell align="center">입사일</TableCell>
+								<TableCell align="center">자격증<br/>유무</TableCell>
+								<TableCell align="center">개인이력</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+						{rows.map(row => (
+							<TableRow key={row.name}>
+								<TableCell padding="checkbox">
+									<Checkbox
+										onChange={isItemSelected}
+										key = {row.id}
+									/>
+								</TableCell>
+								<TableCell component="th" scope="row">
+									{row.name}
+								</TableCell>
+								<TableCell >{row.position}</TableCell>
+								<TableCell >{row.address}</TableCell>
+								<TableCell >{row.phone}</TableCell>
+								<TableCell >{row.career}</TableCell>
+								<TableCell >{row.entry}</TableCell>
+								<TableCell align="center">{row.cert}</TableCell>
+								<TableCell >
+									<Button variant="contained" color="primary" href="#contained-buttons">
+										개인이력
+									</Button>
+								</TableCell>
+							</TableRow>
+						))}
+						</TableBody>
+					</Table>
+				</TableContainer>
+			</Card>
+			<div style={{
+				textAlign:'right',
+				marginTop:10
+			}}>
+				<RouterLink button="true" to="/member/memberreg">
+					<Button variant="contained" color="primary" >
+					사원등록
+					</Button>
+				</RouterLink>
+			</div>
+		</div>
 	);
 }
 

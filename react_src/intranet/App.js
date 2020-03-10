@@ -9,7 +9,8 @@ import {
 	PayList as PayList,
 	Approval as Approval,
 	SignIn as SignIn,
-	MemberList as MemberList,
+	MemberList as MemberList, 
+	MemberReg as MemberReg,
 	Notice as Notice,
 	History as History,
 	Manage as Manage,
@@ -33,8 +34,13 @@ export default function App() {
 					<Route exact path="/signIn">
 						<MinimalLayout><SignIn /></MinimalLayout>
 					</Route>
+					{/* 사원관리 리스트 */}
 					<Route exact path="/member/memberlist">
 						<MainLayout><MemberList /></MainLayout>
+					</Route>
+					{/* 사원관리 등록 */}
+					<Route exact path="/member/memberreg">
+						<MainLayout><MemberReg /></MainLayout>
 					</Route>
 					<Route exact path="/resource">
 						<MainLayout><Resource /></MainLayout>
