@@ -17,12 +17,23 @@ const useStyles = makeStyles({
 	table: {
 		minWidth: 650,
 	},
+	button :{
+		textAlign:'right',
+		marginTop:10
+	}
 });
 
 function createData(id,name, position, address, phone, career,entry, cert ) {
 	return { id,name, position, address, phone, career,entry, cert };
 }
 
+function onSelectAllClick(){
+
+}
+
+function isItemSelected(){
+	
+}
 
 const rows = [
 	createData('1','최문걸','대표', '경기도 안양시 동안구 달안로 75 샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','유'),
@@ -33,12 +44,6 @@ const rows = [
 ];
 
 const MemberList = () => {
-	function onSelectAllClick(){
-	
-	}
-	function isItemSelected(){
-	
-	}
 	const classes = useStyles();
 	
 	return (
@@ -76,13 +81,13 @@ const MemberList = () => {
 								<TableCell component="th" scope="row">
 									{row.name}
 								</TableCell>
-								<TableCell >{row.position}</TableCell>
+								<TableCell align="center">{row.position}</TableCell>
 								<TableCell >{row.address}</TableCell>
-								<TableCell >{row.phone}</TableCell>
-								<TableCell >{row.career}</TableCell>
-								<TableCell >{row.entry}</TableCell>
+								<TableCell align="center">{row.phone}</TableCell>
+								<TableCell align="center">{row.career}</TableCell>
+								<TableCell align="center">{row.entry}</TableCell>
 								<TableCell align="center">{row.cert}</TableCell>
-								<TableCell >
+								<TableCell align="center">
 									<Button variant="contained" color="primary" href="#contained-buttons">
 										개인이력
 									</Button>
@@ -93,10 +98,7 @@ const MemberList = () => {
 					</Table>
 				</TableContainer>
 			</Card>
-			<div style={{
-				textAlign:'right',
-				marginTop:10
-			}}>
+			<div className={classes.button}>
 				<RouterLink button="true" to="/member/memberreg">
 					<Button variant="contained" color="primary" >
 					사원등록
