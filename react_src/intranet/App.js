@@ -9,7 +9,7 @@ import {
 	PayList as PayList,
 	Approval as Approval,
 	SignIn as SignIn,
-	Member as Member,
+	MemberList as MemberList,
 	Notice as Notice,
 	History as History,
 	Manage as Manage,
@@ -33,8 +33,8 @@ export default function App() {
 					<Route exact path="/signIn">
 						<MinimalLayout><SignIn /></MinimalLayout>
 					</Route>
-					<Route exact path="/member">
-						<MainLayout><Member /></MainLayout>
+					<Route exact path="/member/memberlist">
+						<MainLayout><MemberList /></MainLayout>
 					</Route>
 					<Route exact path="/resource">
 						<MainLayout><Resource /></MainLayout>

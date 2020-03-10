@@ -53,7 +53,7 @@ export default function MenuList() {
 					</ListItemIcon>
 					<ListItemText primary="Dashboard"/>
 				</ListItem>
-				<ListItem button component={RouterLink} to="/member">
+				<ListItem button component={RouterLink} to="/member/memberlist">
 					<ListItemIcon>
 						<PeopleIcon />
 					</ListItemIcon>
