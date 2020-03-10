@@ -2,12 +2,14 @@ import React, {Component} from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
+import ResourceTable from './list/ResourceTable';
+
 class Resource extends Component {
 	render() {
 		return (
 			<Card>
 				<CardContent>
-					자원관리
+					<ResourceTable/>
 				</CardContent>
 			</Card>
 		);
