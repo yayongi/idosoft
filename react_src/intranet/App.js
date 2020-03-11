@@ -7,7 +7,8 @@ import {
 	Dashboard as Dashboard,
 	AnnualList as AnnualList,
 	PayList as PayList,
-	Approval as Approval,
+	ApprovalList as ApprovalList,
+	ApprovalDetail as ApprovalDetail,
 	SignIn as SignIn,
 	ResPassword as ResPassword,
 	Member as Member,
@@ -58,8 +59,11 @@ export default function App() {
 					<Route exact path="/expense/payList">
 						<MainLayout><PayList /></MainLayout>
 					</Route>
-					<Route exact path="/expense/approval">
-						<MainLayout><Approval /></MainLayout>
+					<Route exact path="/expense/approvalList">
+						<MainLayout><ApprovalList /></MainLayout>
+					</Route>
+					<Route exact path="/expense/approvalDetail">
+						<MainLayout><ApprovalDetail /></MainLayout>
 					</Route>
 					<Route exact path="/admin/code">
 						<MainLayout><Code /></MainLayout>
