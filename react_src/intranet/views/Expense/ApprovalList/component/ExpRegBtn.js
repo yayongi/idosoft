@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 
@@ -15,7 +16,7 @@ export default function TextButtons() {
 
   return (
     <div className={classes.root}>
-      <Button>경비 등록</Button>
+      <Button component={RouterLink} to="/expense/annualResister">경비 등록</Button>
     </div>
   );
 }

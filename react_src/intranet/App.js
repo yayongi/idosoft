@@ -6,6 +6,7 @@ import {
 	Code as Code,
 	Dashboard as Dashboard,
 	AnnualList as AnnualList,
+	AnnualResister as AnnualResister,
 	PayList as PayList,
 	ApprovalList as ApprovalList,
 	ApprovalDetail as ApprovalDetail,
@@ -55,6 +56,9 @@ export default function App() {
 					</Route>
 					<Route exact path="/expense/annualList">
 						<MainLayout><AnnualList /></MainLayout>
+					</Route>
+					<Route exact path="/expense/annualResister">
+						<MainLayout><AnnualResister /></MainLayout>
 					</Route>
 					<Route exact path="/expense/payList">
 						<MainLayout><PayList /></MainLayout>
