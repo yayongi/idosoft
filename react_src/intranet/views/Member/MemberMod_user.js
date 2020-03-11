@@ -8,20 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
-
-function createData(id,name, position, address, phone, career,entry, cert,email ) {
-	return { id,name, position, address, phone, career,entry, cert,email };
-}
-
-const positions = [
-  { label: '대표',value: 'A01', },
-  { label: '이사',value: 'A02', },
-  { label: '부장',value: 'A03', },
-  { label: '차장',value: 'B01', },
-  { label: '과장',value: 'B02', },
-  { label: '대리',value: 'B03', },
-  { label: '사원',value: 'B04', },
-];
+import Typography from '@material-ui/core/Typography';
 
 const certYn = [
   { label:'유',value:'1' },
@@ -59,9 +46,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const rows = [
-	createData('1234567890','최문걸','대표', '경기도 안양시 동안구 달안로 75 샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','유','678493@naver.com'),
-];
+const row = {
+  id : '1234567890',
+  name : '강성우', 
+  position : '대리', 
+  address1 : '경기도 안양시 동안구 달안로 75',
+  address2 : '샛별한양아파트 304동 611호', 
+  phone : '010-5174-2860', 
+  career : '3년',
+  entry : '2018.05.09',
+  birth:'1989.01.20', 
+  sch_mjr : '성균관대학교 화학공학과',
+  cert : 1,
+  email : '678493@naver.com'
+}
 
 const MemberReg = () => {
 	const classes = useStyles();
@@ -69,7 +67,7 @@ const MemberReg = () => {
 		<div>
 			<Card>
 				<CardContent>
-					사원등록
+					사원상세
 				</CardContent>
         <div className={classes.root}>
           <Grid container spacing={3} style={{
@@ -85,6 +83,17 @@ const MemberReg = () => {
                 }}>
                   <div style={{textAlign:'center'}}>
                     <img className={classes.img} alt="complex" src="intranet/img/profile/test.jpg"/>
+                  </div>
+                  <div style={{textAlign:'center'}}>
+                    <Typography>
+                      {row.name} {row.position} ({row.career})
+                    </Typography>
+                    <Typography>
+                      {row.id}
+                    </Typography>
+                    <Typography>
+                      {row.email}
+                    </Typography>
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
@@ -115,21 +124,7 @@ const MemberReg = () => {
                   {/* <Grid item xs={12} sm={4} style={{backgroundColor:'blue',}}>
                     <img className={classes.img} alt="complex" src="intranet/img/profile/test.jpg"/>
                   </Grid>
-                  <Grid item xs={12} sm={8} style={{backgroundColor:'red',}}>
-                    {rows.map(row => (
-                      <Grid item xs key={row.id}>
-                        <Typography>
-                          {row.name} {row.position} ({row.career})
-                        </Typography>
-                        <Typography>
-                          {row.id}
-                        </Typography>
-                        <Typography>
-                          {row.email}
-                        </Typography>
-                      </Grid>
-                    ))}
-                  </Grid> */}
+                   */}
                 </CardContent>
               </Card>
             </Grid>
@@ -138,52 +133,18 @@ const MemberReg = () => {
                 <CardContent>
                   <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" label="이름" variant="outlined" />
-                      <TextField style={{width:'20%'}}
-                        id="outlined-select-currency"
-                        select
-                        label="직급"
-                        variant="outlined"
-                      >
-                        {positions.map(option => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            value="checkedB"
-                            color="primary"
-                          />
-                        }
-                        label="관리자"
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            value="checkedB"
-                            color="primary"
-                          />
-                        }
-                        label="1차결제자"
-                      />
-                    </div>
-                    <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'34%'}} label="이메일" variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'34%'}} label="휴대전화" variant="outlined" />
-                    </div>
-                    <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'70%'}} label="기본주소" variant="outlined" InputProps={{
+                      <TextField id="outlined-basic" style={{width:'70%'}} label="기본주소" value={row.address1} variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
                       <Button variant="contained" color="primary">
                                               주소찾기
                       </Button>
-                      <TextField id="outlined-basic" style={{width:'70%'}} label="상세주소" variant="outlined" InputProps={{
+                      <TextField id="outlined-basic" style={{width:'70%'}} label="상세주소" value={row.address2} variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
+                    </div>
+                    <div className={classes.textfield} style={{width:'auto'}}>
+                      <TextField id="outlined-basic" style={{width:'34%'}} label="휴대전화" value={row.phone} variant="outlined" />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField style={{width:'20%'}}
@@ -191,6 +152,7 @@ const MemberReg = () => {
                         select
                         label="자격증 유무"
                         variant="outlined"
+                        defaultValue={1}
                       >
                         {certYn.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -198,8 +160,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="입사일" variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="생일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} label="입사일" value={row.entry} variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} label="생일" value={row.birth} variant="outlined" />
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -211,12 +173,13 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="학교/학과" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} label="학교/학과" value={row.sch_mjr} variant="outlined" />
                       <TextField style={{width:'20%'}}
                         id="outlined-select-currency"
                         select
                         label="최종학력"
                         variant="outlined"
+                        defaultValue={'A03'}
                       >
                         {schCareer.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -224,7 +187,7 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="경력시작일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} label="경력시작일" value={row.entry} variant="outlined" />
                       <TextField id="outlined-basic" style={{width:'20%'}} label="결혼기념일" variant="outlined" />
                     </div>
                     <div className={classes.textfield}>
@@ -233,6 +196,9 @@ const MemberReg = () => {
                       </Button>
                       <Button variant="contained" color="primary">
                                                 뒤로가기
+                      </Button>
+                      <Button variant="contained" color="primary">
+                                                비밀번호변경하기
                       </Button>
                     </div>
                   </form>

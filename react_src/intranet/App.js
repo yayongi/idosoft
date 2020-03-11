@@ -11,6 +11,8 @@ import {
 	SignIn as SignIn,
 	MemberList as MemberList, 
 	MemberReg as MemberReg,
+	MemberMod_admin as MemberMod_admin,
+	MemberMod_user as MemberMod_user,
 	Notice as Notice,
 	History as History,
 	Manage as Manage,
@@ -41,6 +43,14 @@ export default function App() {
 					{/* 사원관리 등록 */}
 					<Route exact path="/member/memberreg">
 						<MainLayout><MemberReg /></MainLayout>
+					</Route>
+					{/* 사원관리 상세_관리자 */}
+					<Route exact path="/member/membermod_admin">
+						<MainLayout><MemberMod_admin /></MainLayout>
+					</Route>
+					{/* 사원관리 상세_유저 */}
+					<Route exact path="/member/membermod_user">
+						<MainLayout><MemberMod_user /></MainLayout>
 					</Route>
 					<Route exact path="/resource">
 						<MainLayout><Resource /></MainLayout>

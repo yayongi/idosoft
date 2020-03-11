@@ -69,7 +69,7 @@ const MemberReg = () => {
 		<div>
 			<Card>
 				<CardContent>
-					사원등록
+					사원상세_관리자
 				</CardContent>
         <div className={classes.root}>
           <Grid container spacing={3} style={{
@@ -156,6 +156,7 @@ const MemberReg = () => {
                           <Checkbox
                             value="checkedB"
                             color="primary"
+                            checked
                           />
                         }
                         label="관리자"
@@ -233,6 +234,9 @@ const MemberReg = () => {
                       </Button>
                       <Button variant="contained" color="primary">
                                                 뒤로가기
+                      </Button>
+                      <Button variant="contained" color="primary">
+                                                비밀번호 초기화
                       </Button>
                     </div>
                   </form>
