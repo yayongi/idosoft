@@ -12,7 +12,10 @@ import {
 	ApprovalDetail as ApprovalDetail,
 	SignIn as SignIn,
 	ResPassword as ResPassword,
-	Member as Member,
+	MemberList as MemberList,
+	MemberReg as MemberReg,
+	MemberMod_user as MemberMod_user,
+	MemberMod_admin as MemberMod_admin,
 	Notice as Notice,
 	History as History,
 	Manage as Manage,
@@ -39,8 +42,17 @@ export default function App() {
 					<Route exact path="/resPassword">
 						<MinimalLayout><ResPassword /></MinimalLayout>
 					</Route>
-					<Route exact path="/member">
-						<MainLayout><Member /></MainLayout>
+					<Route exact path="/member/memberlist">
+						<MainLayout><MemberList /></MainLayout>
+					</Route>
+					<Route exact path="/member/memberreg">
+						<MainLayout><MemberReg /></MainLayout>
+					</Route>
+					<Route exact path="/member/membermod_admin">
+						<MainLayout><MemberMod_admin /></MainLayout>
+					</Route>
+					<Route exact path="/member/membermod_user">
+						<MainLayout><MemberMod_user /></MainLayout>
 					</Route>
 					<Route exact path="/resource">
 						<MainLayout><Resource /></MainLayout>
