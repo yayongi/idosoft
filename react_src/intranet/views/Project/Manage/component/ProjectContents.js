@@ -32,28 +32,6 @@ export default function SelectType() {
 
   return (
       <FormControl variant="outlined" className={classes.formControl}>
-        <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-          코드 ID
-        </InputLabel>
-        <Select
-          labelId="demo-simple-select-outlined-label"
-          id="demo-simple-select-outlined"
-          value={type}
-          onChange={handleChange}
-          labelWidth={labelWidth}
-        >
-          <MenuItem value={'자원종류'}>
-            <em>자원종류</em>
-          </MenuItem>
-          <MenuItem value={'모델명'}>모델명</MenuItem>
-          <MenuItem value={'제조사'}>제조사</MenuItem>
-          <MenuItem value={'제조년월'}>제조년월</MenuItem>
-          <MenuItem value={'구입년월'}>구입년월</MenuItem>
-          <MenuItem value={'화면크기'}>화면크기</MenuItem>
-          <MenuItem value={'시리얼번호'}>시리얼번호</MenuItem>
-          <MenuItem value={'시리얼번호'}>Mac주소</MenuItem>
-          <MenuItem value={'보유자'}>보유자</MenuItem>
-        </Select>
       </FormControl>
   );
 }
