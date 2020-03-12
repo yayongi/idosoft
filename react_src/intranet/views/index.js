@@ -6,8 +6,10 @@ export {Approval as Approval} from './Expense';		// 경비관리 -> 경비결재
 export {SignIn as SignIn} from './Login';				// 로그인
 export {ResPassword as ResPassword} from './Login';				// 로그인
 export {default as Member} from './Member';		// 사원관리
-export {default as Notice} from './Notice';			// 공지사항
+export {NoticeList as NoticeList} from './Notice';			// 공지사항 -> 목록
+export {NoticeRegist as NoticeRegist} from './Notice';			// 공지사항 -> 공지사항등록관리
 export {History as History} from './Project';			// 프로젝트 -> 프로젝트이력
 export {Manage as Manage} from './Project';			// 프로젝트 -> 프로젝트관리
-export {default as Resource} from './Resource';		// 자원관리
+export {ResourceList as ResourceList} from './Resource';		// 자원관리 -> 자원리스트
+export {ResourceRegist as ResourceRegist} from './Resource';		// 자원관리 -> 자원등록관리
 export {default as NotFound} from './NotFound';	// 페이지 없는 경우

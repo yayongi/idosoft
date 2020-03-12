@@ -11,11 +11,13 @@ import {
 	SignIn as SignIn,
 	ResPassword as ResPassword,
 	Member as Member,
-	Notice as Notice,
+	NoticeList as NoticeList,
+	NoticeRegist as NoticeRegist,
 	History as History,
 	Manage as Manage,
-	Resource as Resource,
-	NotFound as NotFound
+	ResourceList as ResourceList,
+	ResourceRegist as ResourceRegist,
+ 	NotFound as NotFound
 } from './views';
 
 export default function App() {
@@ -41,10 +43,16 @@ export default function App() {
 						<MainLayout><Member /></MainLayout>
 					</Route>
 					<Route exact path="/resource">
-						<MainLayout><Resource /></MainLayout>
+						<MainLayout><ResourceList /></MainLayout>
+					</Route>
+					<Route exact path="/resource/regist">
+						<MainLayout><ResourceRegist /></MainLayout>
 					</Route>
 					<Route exact path="/notice">
-						<MainLayout><Notice /></MainLayout>
+						<MainLayout><NoticeList /></MainLayout>
+					</Route>
+					<Route exact path="/notice/regist">
+						<MainLayout><NoticeRegist /></MainLayout>
 					</Route>
 					<Route exact path="/project/history">
 						<MainLayout><History /></MainLayout>
