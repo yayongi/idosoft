@@ -17,7 +17,7 @@ import StarIcon from '@material-ui/icons/Star';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
-/*커밋테스 */
+/*커밋테스트 확인용 */
 const useStyles = makeStyles(theme =>({
 	table: {
 		minWidth: 650,
