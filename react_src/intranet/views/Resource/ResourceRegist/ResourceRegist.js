@@ -2,16 +2,18 @@ import React, {Component} from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
-class Notice extends Component {
+import ResourceRegistLayout from './ResourceRegistLayout';
+
+class ResourceRegist extends Component {
 	render() {
 		return (
 			<Card>
 				<CardContent>
-					공지사항관리
+					<ResourceRegistLayout/>
 				</CardContent>
 			</Card>
 		);
 	}
 }
 
-export default Notice;
+export default ResourceRegist;

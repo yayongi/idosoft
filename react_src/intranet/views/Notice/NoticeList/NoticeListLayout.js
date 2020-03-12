@@ -19,30 +19,24 @@ import AddIcon from "@material-ui/icons/Add";
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+
 
 import SelectType from '../component/SelectType';
 import InputSearch from '../component/InputSearch';
 
-function createData(ResNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder) {
-  return { ResNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder };
+
+function createData(NoticeNo, Title, Reg, Writer) {
+  return { NoticeNo, Title, Reg, Writer };
 }
 
 const rows = [
-  createData(1, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-  createData(2, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(3, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(4, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(5, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-  createData(6, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(7, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(8, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(9, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-  createData(10, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(11, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(12, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(13, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-  createData(14, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(15, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
+  createData(1, '공지사항입니다.', '2019-09-03', '김준선'),
+  createData(2, '공지사항입니다.', '2019-09-03', '김준선'),
+  createData(3, '공지사항입니다.', '2019-09-03', '김준선'),
+  createData(4, '공지사항입니다.', '2019-09-03', '김준선'),
+  createData(5, '공지사항입니다.', '2019-09-03', '김준선'),
+  createData(6, '공지사항입니다.', '2019-09-03', '김준선')
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -72,16 +66,10 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: 'ResNo', numeric: true, disablePadding: false, label: '번호' },
-  { id: 'ResType', numeric: false, disablePadding: false, label: '자원종류' },
-  { id: 'ModelName', numeric: false, disablePadding: false, label: '모델명' },
-  { id: 'Production', numeric: false, disablePadding: false, label: '제조사' },
-  { id: 'ProductYm', numeric: false, disablePadding: false, label: '제조년월' },
-  { id: 'PurchaseYm', numeric: false, disablePadding: false, label: '구입년월' },
-  { id: 'DisplaySize', numeric: false, disablePadding: false, label: '화면크기' },
-  { id: 'SerialNo', numeric: false, disablePadding: false, label: '시리얼번호주소' },
-  { id: 'MacAddr', numeric: false, disablePadding: false, label: 'Mac' },
-  { id: 'Holder', numeric: false, disablePadding: false, label: '보유자' },
+  { id: 'NoticeNo', numeric: true, disablePadding: false, label: '번호' },
+  { id: 'Title', numeric: false, disablePadding: false, label: '제목' },
+  { id: 'Reg', numeric: false, disablePadding: false, label: '작성일' },
+  { id: 'Writer', numeric: false, disablePadding: false, label: '작성자' },
 ];
 
 function EnhancedTableHead(props) {
@@ -95,6 +83,7 @@ function EnhancedTableHead(props) {
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
+            color="primary"
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
@@ -104,8 +93,8 @@ function EnhancedTableHead(props) {
         {headCells.map(headCell => (
           <TableCell
             key={headCell.id}
-			// align={headCell.numeric ? 'right' : 'left'}
-			align="center"
+			      // align={headCell.numeric ? 'right' : 'left'}
+			      align="center"
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -156,6 +145,9 @@ const useToolbarStyles = makeStyles(theme => ({
   title: {
     flex: '1 1 100%',
   },
+  textRight: {
+    paddingLeft: theme.spacing(40),
+  }
 }));
 
 const EnhancedTableToolbar = props => {
@@ -175,36 +167,34 @@ const EnhancedTableToolbar = props => {
         </Typography>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle">
-			자원관리
+			공지사항
         </Typography>
       )}
       {numSelected > 0 ? (
-		<div>
-        <Tooltip title="Delete" color="white">
-          <IconButton aria-label="delete" color="secondary">
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-		<Button variant="contained" color="primary">
-        	Excell
-      	</Button>
-		</div>
+      <div>
+          <Tooltip title="Delete" color="white">
+            <IconButton aria-label="delete" color="secondary">
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+      </div>
       ) : (
         <Tooltip title="Add" aria-label="add">
-			<Fab color="primary">
-				<AddIcon />
-			</Fab>
-		</Tooltip>
+          <Fab color="primary">
+            <AddIcon />
+          		</Fab>
+		    </Tooltip>
       )}
     </Toolbar>
-	<Toolbar
-    //   className={clsx(classes.root, {
-    //     [classes.highlight]: numSelected > 0,
-    //   })}
-    >
-		<SelectType/>
-		<InputSearch/>
+    <Toolbar>
     </Toolbar>
+	  <Toolbar>
+      <SelectType/>
+      <InputSearch/>
+      <div className={classes.textRight}>
+        {'전체건수 : 150  |  조회건수 : 20'}
+      </div>
+	  </Toolbar>
 	</div>
   );
 };
@@ -237,7 +227,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function ResourceTable() {
+export default function NoticeListLayout() {
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('ResType');
@@ -261,12 +251,12 @@ export default function ResourceTable() {
     setSelected([]);
   };
 
-  const handleClick = (event, ResNo) => {
-    const selectedIndex = selected.indexOf(ResNo);
+  const handleClick = (event, NoticeNo) => {
+    const selectedIndex = selected.indexOf(NoticeNo);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, ResNo);
+      newSelected = newSelected.concat(selected, NoticeNo);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -294,7 +284,7 @@ export default function ResourceTable() {
     setDense(event.target.checked);
   };
 
-  const isSelected = ResNo => selected.indexOf(ResNo) !== -1;
+  const isSelected = NoticeNo => selected.indexOf(NoticeNo) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
@@ -322,37 +312,32 @@ export default function ResourceTable() {
               {stableSort(rows, getComparator(order, orderBy))
                 // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.ResNo);
+                  const isItemSelected = isSelected(row.NoticeNo);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={event => handleClick(event, row.ResNo)}
+                      onClick={event => handleClick(event, row.NoticeNo)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.ResNo}
+                      key={row.NoticeNo}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
+                          color="primary"
                           checked={isItemSelected}
                           inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </TableCell>
                       <TableCell align="center" component="th" id={labelId} scope="row" padding="none">
-                        {row.ResNo}
+                        {row.NoticeNo}
                       </TableCell>
-                      <TableCell align="center">{row.ResType}</TableCell>
-					  <TableCell align="center">{row.ModelName}</TableCell>
-					  <TableCell align="center">{row.Production}</TableCell>
-					  <TableCell align="center">{row.ProductYm}</TableCell>
-					  <TableCell align="center">{row.PurchaseYm}</TableCell>
-					  <TableCell align="center">{row.DisplaySize}</TableCell>
-					  <TableCell align="center">{row.SerialNo}</TableCell>
-					  <TableCell align="center">{row.MacAddr}</TableCell>
-					  <TableCell align="center">{row.Holder}</TableCell>
+                      <TableCell align="center">{row.Title}</TableCell>
+                      <TableCell align="center">{row.Reg}</TableCell>
+                      <TableCell align="center">{row.Writer}</TableCell>
                     </TableRow>
                   );
                 })}

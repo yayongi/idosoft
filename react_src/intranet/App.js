@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import { Switch, Redirect } from 'react-router-dom';
@@ -12,14 +13,20 @@ import {
 	ApprovalDetail as ApprovalDetail,
 	SignIn as SignIn,
 	ResPassword as ResPassword,
+
 	MemberList as MemberList,
 	MemberReg as MemberReg,
 	MemberMod_user as MemberMod_user,
 	MemberMod_admin as MemberMod_admin,
 	Notice as Notice,
+	Member as Member,
+	NoticeList as NoticeList,
+	NoticeRegist as NoticeRegist,
+  
 	History as History,
 	Manage as Manage,
-	Resource as Resource,
+	ResourceList as ResourceList,
+	ResourceRegist as ResourceRegist,
 	NotFound as NotFound
 } from './views';
 
@@ -55,10 +62,16 @@ export default function App() {
 						<MainLayout><MemberMod_user /></MainLayout>
 					</Route>
 					<Route exact path="/resource">
-						<MainLayout><Resource /></MainLayout>
+						<MainLayout><ResourceList /></MainLayout>
+					</Route>
+					<Route exact path="/resource/regist">
+						<MainLayout><ResourceRegist /></MainLayout>
 					</Route>
 					<Route exact path="/notice">
-						<MainLayout><Notice /></MainLayout>
+						<MainLayout><NoticeList /></MainLayout>
+					</Route>
+					<Route exact path="/notice/regist">
+						<MainLayout><NoticeRegist /></MainLayout>
 					</Route>
 					<Route exact path="/project/history">
 						<MainLayout><History /></MainLayout>

@@ -13,8 +13,10 @@ export {default as MemberReg} from './Member/MemberReg';		// 사원관리
 export {default as MemberMod_admin} from './Member/MemberMod_admin';		// 사원관리
 export {default as MemberMod_user} from './Member/MemberMod_user';		// 사원관리
 
-export {default as Notice} from './Notice';			// 공지사항
+export {NoticeList as NoticeList} from './Notice';			// 공지사항 -> 목록
+export {NoticeRegist as NoticeRegist} from './Notice';			// 공지사항 -> 공지사항등록관리
 export {History as History} from './Project';			// 프로젝트 -> 프로젝트이력
 export {Manage as Manage} from './Project';			// 프로젝트 -> 프로젝트관리
-export {default as Resource} from './Resource';		// 자원관리
+export {ResourceList as ResourceList} from './Resource';		// 자원관리 -> 자원리스트
+export {ResourceRegist as ResourceRegist} from './Resource';		// 자원관리 -> 자원등록관리
 export {default as NotFound} from './NotFound';	// 페이지 없는 경우
