@@ -30,7 +30,6 @@ class Manage extends Component {
 							<SelectType/>
                     		<InputSearch/>
 						</Toolbar>
-						<ProjectContents/>
 					</CardContent>
 				</Card>
 			</Fragment>
