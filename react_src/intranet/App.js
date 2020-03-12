@@ -6,13 +6,13 @@ import {
 	Code as Code,
 	Dashboard as Dashboard,
 	AnnualList as AnnualList,
+	AnnualResister as AnnualResister,
 	PayList as PayList,
-	Approval as Approval,
+	ApprovalList as ApprovalList,
+	ApprovalDetail as ApprovalDetail,
 	SignIn as SignIn,
-	MemberList as MemberList, 
-	MemberReg as MemberReg,
-	MemberMod_admin as MemberMod_admin,
-	MemberMod_user as MemberMod_user,
+	ResPassword as ResPassword,
+	Member as Member,
 	Notice as Notice,
 	History as History,
 	Manage as Manage,
@@ -36,21 +36,11 @@ export default function App() {
 					<Route exact path="/signIn">
 						<MinimalLayout><SignIn /></MinimalLayout>
 					</Route>
-					{/* 사원관리 리스트 */}
-					<Route exact path="/member/memberlist">
-						<MainLayout><MemberList /></MainLayout>
+					<Route exact path="/resPassword">
+						<MinimalLayout><ResPassword /></MinimalLayout>
 					</Route>
-					{/* 사원관리 등록 */}
-					<Route exact path="/member/memberreg">
-						<MainLayout><MemberReg /></MainLayout>
-					</Route>
-					{/* 사원관리 상세_관리자 */}
-					<Route exact path="/member/membermod_admin">
-						<MainLayout><MemberMod_admin /></MainLayout>
-					</Route>
-					{/* 사원관리 상세_유저 */}
-					<Route exact path="/member/membermod_user">
-						<MainLayout><MemberMod_user /></MainLayout>
+					<Route exact path="/member">
+						<MainLayout><Member /></MainLayout>
 					</Route>
 					<Route exact path="/resource">
 						<MainLayout><Resource /></MainLayout>
@@ -67,11 +57,17 @@ export default function App() {
 					<Route exact path="/expense/annualList">
 						<MainLayout><AnnualList /></MainLayout>
 					</Route>
+					<Route exact path="/expense/annualResister">
+						<MainLayout><AnnualResister /></MainLayout>
+					</Route>
 					<Route exact path="/expense/payList">
 						<MainLayout><PayList /></MainLayout>
 					</Route>
-					<Route exact path="/expense/approval">
-						<MainLayout><Approval /></MainLayout>
+					<Route exact path="/expense/approvalList">
+						<MainLayout><ApprovalList /></MainLayout>
+					</Route>
+					<Route exact path="/expense/approvalDetail">
+						<MainLayout><ApprovalDetail /></MainLayout>
 					</Route>
 					<Route exact path="/admin/code">
 						<MainLayout><Code /></MainLayout>

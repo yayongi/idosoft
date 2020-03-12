@@ -1,19 +1,20 @@
 import React, {Component} from 'react';
+
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
-import ResourceTable from './list/ResourceTable';
+import AnnualRegView from './component/AnnualRegView';
 
-class Resource extends Component {
+class AnnualResister extends Component {
 	render() {
 		return (
 			<Card>
 				<CardContent>
-					<ResourceTable/>
+					<AnnualRegView/>
 				</CardContent>
 			</Card>
 		);
-	}
+	} 
 }
 
-export default Resource;
+export default AnnualResister;

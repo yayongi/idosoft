@@ -1,17 +1,18 @@
 import React, {Component} from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import ApprovalView from './component/ApprovalView';
 
-class Approval extends Component {
+class ApprovalDetail extends Component {
 	render() {
 		return (
 			<Card>
 				<CardContent>
-					경비결재관리 
+					<ApprovalView/>
 				</CardContent>
 			</Card>
 		);
-	}
+	} 
 }
 
-export default Approval;
+export default ApprovalDetail;

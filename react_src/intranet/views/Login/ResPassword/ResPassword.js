@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -19,16 +17,16 @@ import Alert from '@material-ui/lab/Alert';
 // Server
 import axios from 'axios';
 
-class SignIn extends Component {
+class ResPassword extends Component {
 	
 	constructor(props){
 		super(props);
 
-		// email : 이메일
+		// prevPassword : 이메일
 		// password : 비밀번호
 		// errors : 에러 배열
 		this.state = {
-			email: '',
+			prevPassword: '',
 			password: '',
 			errors: []
 		}
@@ -54,10 +52,10 @@ class SignIn extends Component {
 		});
 	}
 
-	// email 입력창에 onchange 이벤트 발생 시, 호출
-	emailHandleChange = (e) => {
-		this.setState({email: e.target.value});
-		this.clearValidationErr("email");
+	// prevPassword 입력창에 onchange 이벤트 발생 시, 호출
+	prevPasswordHandleChange = (e) => {
+		this.setState({prevPassword: e.target.value});
+		this.clearValidationErr("prevPassword");
 	}
 
 	// password 입력창에 onchange 이벤트 발생 시, 호출
@@ -67,43 +65,36 @@ class SignIn extends Component {
 	}
 
 	// 로그인 버튼 클릭 시, 호출
-	loginHandleClick = (e) => {
-		const { email, password } = this.state;
+	resetPasswordHandleClick = (e) => {
+		const { prevPassword, password } = this.state;
 
-		if(email == ""){
-			this.showValidationErr("email", "이메일을 입력해주세요!");
+		if(prevPassword == ""){
+			this.showValidationErr("prevPassword", "새로운 비밀번호을  입력해주세요!");
 		} 
 		
 		if(password == "") {
-			this.showValidationErr("password", "비밀번호를 입력해주세요!");
+			this.showValidationErr("password", "새로운 비밀번호 확인을 입력해주세요!");
 		} 
 		
-		if(email != "" && password != "") {
+		if(prevPassword != "" && password != "") {
 			
-			console.log(`email : ${email} , password : ${password}`);
+			console.log(`prevPassword : ${prevPassword} , password : ${password}`);
 			
-			axios({
+			/* axios({
 				url: '/intranet/login',
 				method: 'post',
 				data: {
-					email : email,
+					prevPassword : prevPassword,
 					password : password
 				}
 			}).then(response => {
 				console.log('로그인 여부' + JSON.stringify(response));	
-
-				//location.href="/";
-
 			}).catch(e => {
 				console.log(e);
-			});
+			}); */
 
 		}
 	} 
-
-	test1 = () => {
-		location.href="/#/resPassword";
-	}
 
 	useStyles = makeStyles(theme => ({
 				paper: {
@@ -121,6 +112,7 @@ class SignIn extends Component {
 					marginTop: theme.spacing(1),
 				},
 				submit: {
+
 					margin: theme.spacing(3, 0, 2),
 				},
 			}));	
@@ -129,11 +121,11 @@ class SignIn extends Component {
 	
 		const classes = this.useStyles.bind(this);
 
-		let emailErr = null, passwordErr = null;
+		let prevPasswordErr = null, passwordErr = null;
 
 		for(let err of this.state.errors){
-			if(err.elm == "email"){
-				emailErr = err.msg;
+			if(err.elm == "prevPassword"){
+				prevPasswordErr = err.msg;
 			} if(err.elm == "password"){
 				passwordErr = err.msg;
 			}
@@ -141,13 +133,11 @@ class SignIn extends Component {
 
 		return (
 			<React.Fragment>
+				<Typography variant="h3" component="h2" align="center">
+					비밀번호 재설정
+				</Typography>
 				<Container component="main" maxWidth="xs">
 					<CssBaseline />
-					{/* <img style={{ width: 100, height: 100 }} alt='log' src='https://lifesaver.codes/amazonbook1.jpg' /> */}
-					<Typography variant="h3" component="h2" align="center">
-						로그인
-					</Typography>
-					
 					<div className={classes.paper}>
 						<form className={classes.form} noValidate>
 							<TextField
@@ -155,41 +145,29 @@ class SignIn extends Component {
 								margin="normal"
 								required
 								fullWidth
-								id="email"
-								label="Email Address"
-								name="email"
-								autoComplete="email"
+								id="prevPassword"
+								label="새로운 비밀번호"
+								type="password"
+								name="prevPassword"
+								autoComplete="current-password"
 								autoFocus
-								onChange={this.emailHandleChange.bind(this)}
+								onChange={this.prevPasswordHandleChange.bind(this)}
 							/>
-							{emailErr ? <Alert severity="error">{emailErr}</Alert> : ""}
+							{prevPasswordErr ? <Alert severity="error">{prevPasswordErr}</Alert> : ""}
 							<TextField
 								variant="outlined"
 								margin="normal"
 								required
 								fullWidth
 								name="password"
-								label="Password"
+								label="새로운 비밀번호 확인"
 								type="password"
 								id="password"
 								autoComplete="current-password"
 								onChange={this.pwHandleChange.bind(this)}
 							/>
 							{passwordErr ? <Alert severity="error">{passwordErr}</Alert> : ""}
-							<FormControlLabel
-								control={<Checkbox value="remember" color="primary" />}
-								label="Remember me"
-							/>
-							<Button
-								type="button"
-								fullWidth
-								variant="contained"
-								color="primary"
-								className={classes.submit}
-								onClick={this.loginHandleClick.bind(this)}
-							>
-								로그인 
-							</Button>
+
 							<div style={{height : 40}}/>
 							<Button
 								type="button"
@@ -197,10 +175,9 @@ class SignIn extends Component {
 								variant="contained"
 								color="primary"
 								className={classes.submit}
-								onClick={this.test1.bind(this)}
-								//component={RouterLink} to="/resPassword"
+								onClick={this.resetPasswordHandleClick.bind(this)}
 							>
-								비밀번호 재설정 (예비)
+								비밀번호 재설정
 							</Button>
 						</form>
 					</div>
@@ -210,4 +187,4 @@ class SignIn extends Component {
 	}
 }
 
-export default SignIn;
+export default ResPassword;
