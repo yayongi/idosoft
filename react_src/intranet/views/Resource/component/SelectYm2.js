@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function SelectType() {
+export default function SelectYm2() {
   const classes = useStyles();
   const [type, setType] = React.useState('');
 
@@ -34,7 +34,7 @@ export default function SelectType() {
     <div>
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-          검색타입 선택
+          월 선택
         </InputLabel>
         <Select
           labelId="demo-simple-select-outlined-label"
@@ -43,17 +43,17 @@ export default function SelectType() {
           onChange={handleChange}
           labelWidth={labelWidth}
         >
-          <MenuItem value={'자원종류'}>
-            <em>자원종류</em>
+          <MenuItem value={new Date().getMonth()+1}>
+            <em>{new Date().getMonth()+1}</em>
           </MenuItem>
-          <MenuItem value={'모델명'}>모델명</MenuItem>
-          <MenuItem value={'제조사'}>제조사</MenuItem>
-          <MenuItem value={'제조년월'}>제조년월</MenuItem>
-          <MenuItem value={'구입년월'}>구입년월</MenuItem>
-          <MenuItem value={'화면크기'}>화면크기</MenuItem>
-          <MenuItem value={'시리얼번호'}>시리얼번호</MenuItem>
-          <MenuItem value={'시리얼번호'}>Mac주소</MenuItem>
-          <MenuItem value={'보유자'}>보유자</MenuItem>
+          <MenuItem value={'01'}>01</MenuItem>
+          <MenuItem value={'02'}>02</MenuItem>
+          <MenuItem value={'04'}>03</MenuItem>
+          <MenuItem value={'05'}>04</MenuItem>
+          <MenuItem value={'06'}>05</MenuItem>
+          <MenuItem value={'07'}>06</MenuItem>
+          <MenuItem value={'08'}>07</MenuItem>
+          <MenuItem value={'09'}>08</MenuItem>
         </Select>
       </FormControl>
     </div>

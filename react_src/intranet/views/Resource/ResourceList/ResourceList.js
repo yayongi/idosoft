@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
-import ResourceTable from './list/ResourceTable';
+import ResourceTable from './ResourceTable';
 
-class Resource extends Component {
+class ResourceList extends Component {
 	render() {
 		return (
 			<Card>
@@ -16,4 +16,4 @@ class Resource extends Component {
 	}
 }
 
-export default Resource;
+export default ResourceList;

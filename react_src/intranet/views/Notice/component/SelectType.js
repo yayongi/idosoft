@@ -43,17 +43,11 @@ export default function SelectType() {
           onChange={handleChange}
           labelWidth={labelWidth}
         >
-          <MenuItem value={'자원종류'}>
-            <em>자원종류</em>
+          <MenuItem value={'제목'}>
+            <em>제목</em>
           </MenuItem>
-          <MenuItem value={'모델명'}>모델명</MenuItem>
-          <MenuItem value={'제조사'}>제조사</MenuItem>
-          <MenuItem value={'제조년월'}>제조년월</MenuItem>
-          <MenuItem value={'구입년월'}>구입년월</MenuItem>
-          <MenuItem value={'화면크기'}>화면크기</MenuItem>
-          <MenuItem value={'시리얼번호'}>시리얼번호</MenuItem>
-          <MenuItem value={'시리얼번호'}>Mac주소</MenuItem>
-          <MenuItem value={'보유자'}>보유자</MenuItem>
+          <MenuItem value={'내용'}>내용</MenuItem>
+          <MenuItem value={'작성자'}>작성자</MenuItem>
         </Select>
       </FormControl>
     </div>
