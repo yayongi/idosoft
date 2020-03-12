@@ -7,8 +7,8 @@ import Select from '@material-ui/core/Select';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
-    margin: theme.spacing(1),
-    minWidth: 300,
+    // margin: theme.spacing(1),
+    minWidth: 250,
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function SelectType() {
+export default function SelectHolder() {
   const classes = useStyles();
   const [type, setType] = React.useState('');
 
@@ -34,7 +34,7 @@ export default function SelectType() {
     <div>
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-          검색타입 선택
+          보유자 선택
         </InputLabel>
         <Select
           labelId="demo-simple-select-outlined-label"
@@ -43,17 +43,12 @@ export default function SelectType() {
           onChange={handleChange}
           labelWidth={labelWidth}
         >
-          <MenuItem value={'자원종류'}>
-            <em>자원종류</em>
+          <MenuItem value={'김준선'}>
+            <em>김준선</em>
           </MenuItem>
-          <MenuItem value={'모델명'}>모델명</MenuItem>
-          <MenuItem value={'제조사'}>제조사</MenuItem>
-          <MenuItem value={'제조년월'}>제조년월</MenuItem>
-          <MenuItem value={'구입년월'}>구입년월</MenuItem>
-          <MenuItem value={'화면크기'}>화면크기</MenuItem>
-          <MenuItem value={'시리얼번호'}>시리얼번호</MenuItem>
-          <MenuItem value={'시리얼번호'}>Mac주소</MenuItem>
-          <MenuItem value={'보유자'}>보유자</MenuItem>
+          <MenuItem value={'유기환'}>유기환</MenuItem>
+          <MenuItem value={'강성우'}>강성우</MenuItem>
+          <MenuItem value={'송원회'}>송원회</MenuItem>
         </Select>
       </FormControl>
     </div>
