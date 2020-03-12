@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import { Switch, Redirect } from 'react-router-dom';
@@ -6,18 +7,18 @@ import {
 	Code as Code,
 	Dashboard as Dashboard,
 	AnnualList as AnnualList,
+	AnnualResister as AnnualResister,
 	PayList as PayList,
-	Approval as Approval,
+	ApprovalList as ApprovalList,
+	ApprovalDetail as ApprovalDetail,
 	SignIn as SignIn,
 	ResPassword as ResPassword,
 	Member as Member,
-	NoticeList as NoticeList,
-	NoticeRegist as NoticeRegist,
+	Notice as Notice,
 	History as History,
 	Manage as Manage,
-	ResourceList as ResourceList,
-	ResourceRegist as ResourceRegist,
- 	NotFound as NotFound
+	Resource as Resource,
+	NotFound as NotFound
 } from './views';
 
 export default function App() {
@@ -43,16 +44,10 @@ export default function App() {
 						<MainLayout><Member /></MainLayout>
 					</Route>
 					<Route exact path="/resource">
-						<MainLayout><ResourceList /></MainLayout>
-					</Route>
-					<Route exact path="/resource/regist">
-						<MainLayout><ResourceRegist /></MainLayout>
+						<MainLayout><Resource /></MainLayout>
 					</Route>
 					<Route exact path="/notice">
-						<MainLayout><NoticeList /></MainLayout>
-					</Route>
-					<Route exact path="/notice/regist">
-						<MainLayout><NoticeRegist /></MainLayout>
+						<MainLayout><Notice /></MainLayout>
 					</Route>
 					<Route exact path="/project/history">
 						<MainLayout><History /></MainLayout>
@@ -63,11 +58,17 @@ export default function App() {
 					<Route exact path="/expense/annualList">
 						<MainLayout><AnnualList /></MainLayout>
 					</Route>
+					<Route exact path="/expense/annualResister">
+						<MainLayout><AnnualResister /></MainLayout>
+					</Route>
 					<Route exact path="/expense/payList">
 						<MainLayout><PayList /></MainLayout>
 					</Route>
-					<Route exact path="/expense/approval">
-						<MainLayout><Approval /></MainLayout>
+					<Route exact path="/expense/approvalList">
+						<MainLayout><ApprovalList /></MainLayout>
+					</Route>
+					<Route exact path="/expense/approvalDetail">
+						<MainLayout><ApprovalDetail /></MainLayout>
 					</Route>
 					<Route exact path="/admin/code">
 						<MainLayout><Code /></MainLayout>

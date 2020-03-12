@@ -53,7 +53,7 @@ export default function MenuList() {
 					</ListItemIcon>
 					<ListItemText primary="Dashboard"/>
 				</ListItem>
-				<ListItem button component={RouterLink} to="/member">
+				<ListItem button component={RouterLink} to="/member/memberlist">
 					<ListItemIcon>
 						<PeopleIcon />
 					</ListItemIcon>
@@ -116,7 +116,7 @@ export default function MenuList() {
 							</ListItemIcon>
 							<ListItemText primary="교통/통신비관리" />
 						</ListItem>
-						<ListItem button className={classes.nested} component={RouterLink} to="/expense/approval">
+						<ListItem button className={classes.nested} component={RouterLink} to="/expense/approvalList">
 							<ListItemIcon>
 								<SubdirectoryArrowRightIcon />
 							</ListItemIcon>
