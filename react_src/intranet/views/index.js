@@ -6,8 +6,10 @@ export {PayList as PayList} from './Expense';			// 경비관리 -> 교통/통신
 export {ApprovalList as ApprovalList} from './Expense';		// 경비관리 -> 경비결재관리
 export {ApprovalDetail as ApprovalDetail} from './Expense';		// 경비관리 -> 경비결재관리 -> 경비결재상세
 export {SignIn as SignIn} from './Login';				// 로그인
+
 export {ResPassword as ResPassword} from './Login';				// 로그인
 export {default as Member} from './Member';		// 사원관리
+
 export {default as Notice} from './Notice';			// 공지사항
 export {History as History} from './Project';			// 프로젝트 -> 프로젝트이력
 export {Manage as Manage} from './Project';			// 프로젝트 -> 프로젝트관리
