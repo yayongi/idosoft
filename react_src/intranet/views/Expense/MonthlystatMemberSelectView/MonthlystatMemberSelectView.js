@@ -19,7 +19,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import {useStyles} from './styles';
 import {dataAdmin2020, dataAdmin2019, dataAdmin2018, dataAdmin2017, nodata} from './data';
 
-export default function PayList() {
+export default function MonthlystatMemberSelectView() {
 	const classes = useStyles();	// styles.js에 상수로 선언되어 있음. 
 	const [state, setState] = React.useState({	// state 생성 (hooks 구조임)
 		year: '', 

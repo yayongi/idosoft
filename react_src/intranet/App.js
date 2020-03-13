@@ -11,6 +11,7 @@ import {
 	PayList as PayList,
 	ApprovalList as ApprovalList,
 	ApprovalDetail as ApprovalDetail,
+	MonthlystatMemberSelectView as MonthlystatMemberSelectView,
 	SignIn as SignIn,
 	ResPassword as ResPassword,
 	Member as Member,
@@ -69,6 +70,9 @@ export default function App() {
 					<Route exact path="/expense/annualResister">
 						<MainLayout><AnnualResister /></MainLayout>
 					</Route>
+					<Route exact path="/expense/monthyStatMSelectView">
+						<MainLayout><MonthlystatMemberSelectView /></MainLayout>
+					</Route>	
 					<Route exact path="/expense/payList">
 						<MainLayout><PayList /></MainLayout>
 					</Route>

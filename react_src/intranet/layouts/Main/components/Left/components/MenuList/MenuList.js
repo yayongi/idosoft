@@ -110,17 +110,23 @@ export default function MenuList() {
 							</ListItemIcon>
 							<ListItemText primary="경비관리목록" />
 						</ListItem>
-						<ListItem button className={classes.nested} component={RouterLink} to="/expense/payList">
-							<ListItemIcon>
-								<SubdirectoryArrowRightIcon />
-							</ListItemIcon>
-							<ListItemText primary="교통/통신비관리" />
-						</ListItem>
 						<ListItem button className={classes.nested} component={RouterLink} to="/expense/approvalList">
 							<ListItemIcon>
 								<SubdirectoryArrowRightIcon />
 							</ListItemIcon>
-							<ListItemText primary="경비결재관리" />
+							<ListItemText primary="경비결재관리목록" />
+						</ListItem>
+						<ListItem button className={classes.nested} component={RouterLink} to="/expense/payList">
+							<ListItemIcon>
+								<SubdirectoryArrowRightIcon />
+							</ListItemIcon>
+							<ListItemText primary="교통/통신비관리목록" />
+						</ListItem>
+						<ListItem button className={classes.nested} component={RouterLink} to="/expense/monthyStatMSelectView">
+							<ListItemIcon>
+								<SubdirectoryArrowRightIcon />
+							</ListItemIcon>
+							<ListItemText primary="경비월별통계" />
 						</ListItem>
 					</List>
 				</Collapse>

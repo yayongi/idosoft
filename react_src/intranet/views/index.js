@@ -5,6 +5,8 @@ export {AnnualResister as AnnualResister} from './Expense';	// 경비관리 -> �
 export {PayList as PayList} from './Expense';			// 경비관리 -> 교통/통신비관리
 export {ApprovalList as ApprovalList} from './Expense';		// 경비관리 -> 경비결재관리
 export {ApprovalDetail as ApprovalDetail} from './Expense';		// 경비관리 -> 경비결재관리 -> 경비결재상세
+export {MonthlystatMemberSelectView as MonthlystatMemberSelectView} from './Expense';		// 경비관리 -> 경비결재관리 -> 경비결재상세
+
 export {SignIn as SignIn} from './Login';				// 로그인
 
 export {ResPassword as ResPassword} from './Login';				// 로그인
