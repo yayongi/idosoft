@@ -16,9 +16,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function SelectType() {
+export default function SelectType(props) {
   const classes = useStyles();
   const [type, setType] = React.useState('');
+  const settingValue = props.selectSetting;
 
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
@@ -29,12 +30,17 @@ export default function SelectType() {
   const handleChange = event => {
     setType(event.target.value);
   };
+  
+  // const mapLander = settingValue.list.slice(1).map((row) => {
+  //                         <MenuItem value={row.key}>{row.value}</MenuItem>
+  //                   });
 
   return (
+    
     <div>
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-          검색타입 선택
+          {settingValue.label}
         </InputLabel>
         <Select
           labelId="demo-simple-select-outlined-label"
@@ -42,18 +48,18 @@ export default function SelectType() {
           value={type}
           onChange={handleChange}
           labelWidth={labelWidth}
-        >
-          <MenuItem value={'자원종류'}>
-            <em>자원종류</em>
-          </MenuItem>
-          <MenuItem value={'모델명'}>모델명</MenuItem>
-          <MenuItem value={'제조사'}>제조사</MenuItem>
-          <MenuItem value={'제조년월'}>제조년월</MenuItem>
-          <MenuItem value={'구입년월'}>구입년월</MenuItem>
-          <MenuItem value={'화면크기'}>화면크기</MenuItem>
-          <MenuItem value={'시리얼번호'}>시리얼번호</MenuItem>
-          <MenuItem value={'시리얼번호'}>Mac주소</MenuItem>
-          <MenuItem value={'보유자'}>보유자</MenuItem>
+        > 
+            <MenuItem value={settingValue.list[0].key}>
+                <em>{settingValue.list[0].value}</em>
+            </MenuItem>
+          {
+           settingValue.list.map((row) => {
+              {console.log(row.key+row.value)}
+              (<MenuItem value={row.key}>{row.value}</MenuItem>)
+
+            })
+          }
+          {/* {mapLander} */}
         </Select>
       </FormControl>
     </div>
