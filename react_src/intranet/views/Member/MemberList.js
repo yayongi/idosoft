@@ -14,10 +14,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import StarIcon from '@material-ui/icons/Star';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import {tableList} from './data';
 
-/*커밋테스트 확인용 */
 const useStyles = makeStyles(theme =>({
 	table: {
 		minWidth: 650,
@@ -33,22 +32,8 @@ const useStyles = makeStyles(theme =>({
 	},
 }));
 
-function createData(id,name, position, address1,address2, phone, career,entry,birth,sch_mjr, cert,email,manager_yn ) {
-	return { id,name, position, address1,address2, phone, career,entry,birth,sch_mjr, cert,email,manager_yn  };
-}
 var selected = [];
 
-// 사원삭제
-function removeData(){
-	let temp = [];
-	for(let i=0;i<selected.length;i++){
-		console.log("selected all: " + selected)
-		console.log("selected : "+ String(selected[i]));
-		temp = rows.filter(row => row.id !== String(selected[i]));
-	}
-	console.log("rows : " + temp.length);
-	return temp
-}
 // 모든체크박스 선택
 const onSelectAllClick = () =>{
 
@@ -62,18 +47,6 @@ const isItemSelected = (event,id) =>{
 	}
 }
 
-const rows = [
-	createData('2020010101','최문걸','대표','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',1),
-	createData('2020010102','조현철','이사','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010103','박종운','이사','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010104','허중섭','부장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010105','신우인','부장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010106','이인성','부장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010107','오경섭','차장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010108','전수현','차장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010109','고성진','차장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-];
-
 const category = [
 	{label:"이름",value:"0"},
 	{label:"직급",value:"1"},
@@ -82,11 +55,27 @@ const category = [
 const MemberList = () => {
 	const classes = useStyles();
 	
-	const [test, setTest] = React.useState(rows);
+	const [state, setState] = React.useState({
+		memberList : tableList,
+	});
 
-	const handleChange = () =>{
-		setTest(removeData);
+	//사원삭제
+	const removeData = () => {
+		let temp = memberList;
+		for(let i=0;i<selected.length;i++){
+			temp = temp.filter(temp => temp.id !== String(selected[i]));
+		}
+
+		setState({
+			...state,
+			memberList : temp
+		});
 	}
+	
+	const {memberList} = state;
+	//const {data} = this.props;
+
+	// console.log("date : " + data);
 
 
 	return (
@@ -98,7 +87,7 @@ const MemberList = () => {
 				<div className={classes.root}>
 					<Grid container spacing={3}>
 						<Grid item xs style={{textAlign:'left'}}>
-							<Button variant="contained" color="primary" onClick={handleChange}>
+							<Button variant="contained" color="primary" onClick={removeData}>
 								직원정보 삭제
 							</Button>
 						</Grid>
@@ -146,7 +135,7 @@ const MemberList = () => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-						{test.map(row => (
+						{memberList.map(row => (
 							<TableRow key={row.id}>
 								<TableCell padding="checkbox">
 									<Checkbox
@@ -154,7 +143,7 @@ const MemberList = () => {
 										key = {row.id}
 									/>
 								</TableCell>
-								<TableCell component="th" scope="row">
+								<TableCell align="center">
 									{row.manager_yn === 1 && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
 									{row.name}
 								</TableCell>
@@ -166,7 +155,7 @@ const MemberList = () => {
 								<TableCell align="center">{row.career}</TableCell>
 								<TableCell align="center">{row.entry}</TableCell>
 								<TableCell align="center">
-									{row.cert == 1? '유':'무'}
+									{row.cert_yn == 1? '유':'무'}
 								</TableCell>
 								<TableCell align="center">
 									<Button variant="contained" color="primary" href="#contained-buttons">
