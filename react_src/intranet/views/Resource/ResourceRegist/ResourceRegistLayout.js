@@ -18,6 +18,8 @@ import SelectModel from '../component/SelectModel';
 import SelectProduction from '../component/SelectProduction';
 import YearMonthPicker from '../component/YearMonthPicker';
 
+import SelectType from '../component/SelectType';
+
 
 
 
@@ -91,6 +93,7 @@ const useStyles = makeStyles(theme => ({
 
 //툴바
 const EnhancedTableToolbar = props => {
+	console.log(JSON.stringify(props));
   const classes = useToolbarStyles();
 
   return (
@@ -106,7 +109,7 @@ function RegistGrid() {
   const classes = useStyles();
   const inputLabel = React.useRef(null);
 
-  const setting= {label: "자원종류", list:[ {key:1, value:"test"}, {key:2, value:"test2"} ] };
+  const setting= {label: "자원종류", list:[ {key:1, value:"test"}, {key:2, value:"test2"}, {key:3, value:"test3"} ] };
 
 
   return (
@@ -122,7 +125,8 @@ function RegistGrid() {
 					<Typography className={classes.title} variant="h6" id="tableTitle">자원종류</Typography>
 				</Grid>
 				<Grid item xs={12} sm={6}>
-					<SelectModel/>
+					{/* <SelectModel/> */}
+					<SelectType selectSetting={setting}/>
 				</Grid>
 				<Grid item xs={12} sm={6}>
 					<Typography className={classes.title} variant="h6" id="tableTitle">모델명</Typography>
@@ -199,7 +203,7 @@ export default function ResourceRegistLayout() {
 	return (
 		<div className={classes.root}>
 			<Paper className={classes.paper}>
-				<EnhancedTableToolbar/>
+				<EnhancedTableToolbar test={1}/>
 				<RegistGrid/>
 			</Paper>
     	</div>
