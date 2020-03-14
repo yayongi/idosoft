@@ -235,7 +235,7 @@ export default function MonthlystatMemberSelectView() {
 					</Grid>
 				</CardContent>
 			</Card>
-			<Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+			<Dialog fullScreen open={open} onClose={                                                                 } TransitionComponent={Transition}>
 				<AppBar className={classes.appBar}>
 				<Toolbar>
 					<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
