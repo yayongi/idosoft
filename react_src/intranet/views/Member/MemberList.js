@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation  } from 'react-router-dom';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -61,22 +61,24 @@ const MemberList = () => {
 
 	//사원삭제
 	const removeData = () => {
-		let temp = memberList;
+		let temp = state.memberList;
 		for(let i=0;i<selected.length;i++){
 			temp = temp.filter(temp => temp.id !== String(selected[i]));
 		}
+
+		selected = [];
 
 		setState({
 			...state,
 			memberList : temp
 		});
 	}
-	
-	const {memberList} = state;
-	//const {data} = this.props;
 
-	// console.log("date : " + data);
-
+	// 등록화면에서 넘어 올때 데이터 받아서 추가하기.
+	let data = useLocation();
+	if(data != undefined || data != null){
+		console.log(data.temp_state);
+	}
 
 	return (
 		<div>
@@ -135,7 +137,7 @@ const MemberList = () => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-						{memberList.map(row => (
+						{state.memberList.map(row => (
 							<TableRow key={row.id}>
 								<TableCell padding="checkbox">
 									<Checkbox
@@ -158,7 +160,7 @@ const MemberList = () => {
 									{row.cert_yn == 1? '유':'무'}
 								</TableCell>
 								<TableCell align="center">
-									<Button variant="contained" color="primary" href="#contained-buttons">
+									<Button variant="contained" color="primary">
 										개인이력
 									</Button>
 								</TableCell>
