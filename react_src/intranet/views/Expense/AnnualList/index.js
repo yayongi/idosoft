@@ -1,6 +1,3 @@
-//import PageTemplate from './AnnualList';
-//export default AnnualList;
-
-export {default} from './AnnualList';
+export {default} from './List';
 
 
