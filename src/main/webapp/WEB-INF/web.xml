@@ -42,7 +42,10 @@
 		<servlet-class>kr.co.idosoft.common.servlet.IdoDispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/spring-config/servlet-context.xml</param-value>
+			<param-value>
+				/WEB-INF/spring-config/servlet-context.xml
+				/WEB-INF/spring-config/context-common.xml
+			</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

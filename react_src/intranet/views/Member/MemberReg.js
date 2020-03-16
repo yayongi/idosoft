@@ -8,7 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
-import { display } from '@material-ui/system';
+import axios from 'axios';
 
 function createData(id,name, position, address, phone, career,entry, cert,email ) {
 	return { id,name, position, address, phone, career,entry, cert,email };
@@ -67,27 +67,36 @@ const rows = [
 const MemberReg = () => {
   const classes = useStyles();
   
-  const uploadFile = () => {
-    console.log("시작");
-   /*  var file = document.getElementById('myFile');
-    var filedata = new FormData(); // FormData 인스턴스 생성
+  const [state, setState] = React.useState({
+		selectedFile : null,
+	});
 
-    if (!file.value) return; // 파일이 없는 경우 빠져나오기
+  const uploadFile = (event) => {
 
-    filedata.append('uploadfile', file.files[0]);
+    console.log("files : " + event.target)
 
-    var _xml = new XMLHttpRequest();
-    _xml.open('POST', '/api/test_upload/', true);
-    _xml.onload = function(event) {
-      if (_xml.status == 200) {
-        alert('Uploaded');
-      }
-      else {
-        alert('Error');
-      }
-    };
+    setState({
+      selectedFile : event.target.files[0],
+    })
 
-    _xml.send(filedata); */
+    const formData = new FormData();
+    formData.append('file', event.target.files[0]);
+    formData.append('path', "C:\\Users\\67849\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\");
+
+    axios({
+				url: '/intranet/fileUpload',
+				method: 'post',
+				data : formData,
+        headers: {
+          'enctype': 'multipart/form-data'
+    },
+			}).then(response => {
+        console.log(JSON.stringify(response));	
+        // 기존파일 삭제 로직 필
+
+			}).catch(e => {
+				console.log(e);
+			});
   } 
 
 	return (
@@ -117,9 +126,7 @@ const MemberReg = () => {
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
-                      <form>
-                          <input type="file" id="myFile" style={{display:"none"}}/>
-                      </form>
+                        <input type="file" id="myFile" style={{display:"none"}} onChange={() => uploadFile(event)}/>
                       <Button variant="contained" color="primary" onClick={() => document.getElementById("myFile").click()}>
                                 프로필 업로드
                       </Button>
