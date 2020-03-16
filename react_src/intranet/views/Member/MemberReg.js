@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
@@ -120,6 +120,17 @@ const MemberReg = () => {
 			});
   } 
 
+  const findPostCode = () =>{
+    daum.postcode.load(function(){
+        new daum.Postcode({
+            oncomplete: function(data) {
+              document.getElementById("address1").value = data.address;
+              console.log("result : " + JSON.stringify(data.address));
+            }
+        }).open();
+    });
+  }
+
 	return (
 		<div>
 			<Card>
@@ -183,7 +194,9 @@ const MemberReg = () => {
                 <CardContent>
                   <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" id="name" label="이름" size="small" variant="outlined" />
+                      <TextField id="outlined-basic" id="name" label="이름" size="small" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}/>
                       <TextField style={{width:'20%'}}
                         id="position"
                         select
@@ -219,17 +232,24 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'34%'}} id="phone" size="small" label="휴대전화" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}/>
+                      <TextField id="outlined-basic" style={{width:'34%'}} id="phone" size="small" label="휴대전화" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'70%'}} id="address1" size="small" label="기본주소" variant="outlined" InputProps={{
+                      <TextField id="outlined-basic" style={{width:'70%'}} id="address1" size="small" label="기본주소" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}          
+                      InputProps={{
                         readOnly: true,
                       }}/>
-                      <TextField id="outlined-basic" style={{width:'70%'}} id="address2" size="small" label="상세주소" variant="outlined" InputProps={{
-                        readOnly: true,
+                      <TextField id="outlined-basic" style={{width:'70%'}} id="address2" size="small" label="상세주소" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
                       }}/>
-                      <Button variant="contained" color="primary">
+                      <Button variant="contained" color="primary" onClick={findPostCode}>
                                               주소찾기
                       </Button>
                     </div>
@@ -247,8 +267,12 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} id="entry" size="small" label="입사일" variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'20%'}} id="birth" size="small" label="생일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} id="entry" size="small" label="입사일" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}/>
+                      <TextField id="outlined-basic" style={{width:'20%'}} id="birth" size="small" label="생일" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}/>
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -261,7 +285,9 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" size="small" id="sch_mjr" style={{width:'20%'}} label="학교/학과" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" id="sch_mjr" style={{width:'20%'}} label="학교/학과" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}/>
                       <TextField style={{width:'20%'}}
                         id="sch_car"
                         select
@@ -275,8 +301,12 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" id="car_date" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" />
-                      <TextField id="outlined-basic" id="mar_date" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" />
+                      <TextField id="outlined-basic" id="car_date" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}/>
+                      <TextField id="outlined-basic" id="mar_date" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}/>
                     </div>
                     <div className={classes.textfield}>
                       <Button variant="contained" color="primary">
