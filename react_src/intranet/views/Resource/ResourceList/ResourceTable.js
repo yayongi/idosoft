@@ -24,27 +24,58 @@ import Button from '@material-ui/core/Button';
 import SelectType from '../component/SelectType';
 import InputSearch from '../component/InputSearch';
 
+import {ResTestData} from '../Data';
+
+// EnhancedTableToolbar.propTypes = {
+//   numSelected: PropTypes.number.isRequired,
+// };
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    width: '100%',
+  },
+  paper: {
+    width: '100%',
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    minWidth: 750,
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
+}));
+
 function createData(ResNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder) {
   return { ResNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder };
 }
 
-const rows = [
-  createData(1, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-  createData(2, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(3, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(4, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(5, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-  createData(6, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(7, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(8, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(9, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-  createData(10, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(11, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(12, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(13, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-  createData(14, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-  createData(15, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-];
+// const rows = [
+//   createData(1, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
+//   createData(2, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(3, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(4, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(5, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
+//   createData(6, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(7, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(8, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(9, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
+//   createData(10, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(11, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(12, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(13, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
+//   createData(14, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
+//   createData(15, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
+// ];
+let rows = ResTestData.testData;
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -73,16 +104,16 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: 'ResNo', numeric: true, disablePadding: false, label: '번호' },
-  { id: 'ResType', numeric: false, disablePadding: false, label: '자원종류' },
-  { id: 'ModelName', numeric: false, disablePadding: false, label: '모델명' },
-  { id: 'Production', numeric: false, disablePadding: false, label: '제조사' },
-  { id: 'ProductYm', numeric: false, disablePadding: false, label: '제조년월' },
-  { id: 'PurchaseYm', numeric: false, disablePadding: false, label: '구입년월' },
-  { id: 'DisplaySize', numeric: false, disablePadding: false, label: '화면크기' },
-  { id: 'SerialNo', numeric: false, disablePadding: false, label: '시리얼번호주소' },
-  { id: 'MacAddr', numeric: false, disablePadding: false, label: 'Mac' },
-  { id: 'Holder', numeric: false, disablePadding: false, label: '보유자' },
+  { id: 'resNo', numeric: true, disablePadding: false, label: '번호' },
+  { id: 'resCode', numeric: false, disablePadding: false, label: '자원종류' },
+  { id: 'modelNm', numeric: false, disablePadding: false, label: '모델명' },
+  { id: 'markCode', numeric: false, disablePadding: false, label: '제조사' },
+  { id: 'productMtn', numeric: false, disablePadding: false, label: '제조년월' },
+  { id: 'purchaseMtn', numeric: false, disablePadding: false, label: '구입년월' },
+  { id: 'displaySizeCode', numeric: false, disablePadding: false, label: '화면크기' },
+  { id: 'serialNo', numeric: false, disablePadding: false, label: '시리얼번호주소' },
+  { id: 'macAddr', numeric: false, disablePadding: false, label: 'Mac' },
+  { id: 'holder', numeric: false, disablePadding: false, label: '보유자' },
 ];
 
 function EnhancedTableHead(props) {
@@ -163,6 +194,7 @@ const useToolbarStyles = makeStyles(theme => ({
 const EnhancedTableToolbar = props => {
   const classes = useToolbarStyles();
   const { numSelected } = props;
+  const setting= {label: "검색타입", list:[ {key:1, value:"test"}, {key:2, value:"test2"}, {key:3, value:"test3"} ] };
 
   return (
 	<div>
@@ -202,49 +234,24 @@ const EnhancedTableToolbar = props => {
     <Toolbar>
     </Toolbar>
 	  <Toolbar>
-		  <SelectType/>
+		  <SelectType props={setting}/>
 		  <InputSearch/>
     </Toolbar>
 	</div>
   );
 };
 
-EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
-};
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: '100%',
-  },
-  paper: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 750,
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
-  },
-}));
 
 export default function ResourceTable() {
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('ResType');
+  const [orderBy, setOrderBy] = React.useState('resType');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  // const [testData, setTestData] = React.useState(JSON.parse(ResTestData.testData));
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -328,11 +335,11 @@ export default function ResourceTable() {
                   return (
                     <TableRow
                       hover
-                      onClick={event => handleClick(event, row.ResNo)}
+                      onClick={event => handleClick(event, row.resNo)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.ResNo}
+                      key={row.resNo}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -343,17 +350,17 @@ export default function ResourceTable() {
                         />
                       </TableCell>
                       <TableCell align="center" component="th" id={labelId} scope="row" padding="none">
-                        {row.ResNo}
+                        {row.resNo}
                       </TableCell>
-                      <TableCell align="center">{row.ResType}</TableCell>
-                      <TableCell align="center">{row.ModelName}</TableCell>
-                      <TableCell align="center">{row.Production}</TableCell>
-                      <TableCell align="center">{row.ProductYm}</TableCell>
-                      <TableCell align="center">{row.PurchaseYm}</TableCell>
-                      <TableCell align="center">{row.DisplaySize}</TableCell>
-                      <TableCell align="center">{row.SerialNo}</TableCell>
-                      <TableCell align="center">{row.MacAddr}</TableCell>
-                      <TableCell align="center">{row.Holder}</TableCell>
+                      <TableCell align="center">{row.resCode}</TableCell>
+                      <TableCell align="center">{row.modelNm}</TableCell>
+                      <TableCell align="center">{row.markCode}</TableCell>
+                      <TableCell align="center">{row.productMtn}</TableCell>
+                      <TableCell align="center">{row.purchaseMtn}</TableCell>
+                      <TableCell align="center">{row.displaySizeCode}</TableCell>
+                      <TableCell align="center">{row.serialNo}</TableCell>
+                      <TableCell align="center">{row.macAddr}</TableCell>
+                      <TableCell align="center">{row.holder}</TableCell>
                     </TableRow>
                   );
                 })}

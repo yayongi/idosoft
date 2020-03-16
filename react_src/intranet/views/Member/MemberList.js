@@ -32,19 +32,33 @@ const useStyles = makeStyles(theme =>({
 	},
 }));
 
-function createData(id,name, position, address1,address2, phone, career,entry,birth,sch_mjr, cert,manager_yn ) {
-	return { id,name, position, address1,address2, phone, career,entry,birth,sch_mjr, cert,manager_yn  };
+function createData(id,name, position, address1,address2, phone, career,entry,birth,sch_mjr, cert,email,manager_yn ) {
+	return { id,name, position, address1,address2, phone, career,entry,birth,sch_mjr, cert,email,manager_yn  };
 }
+var selected = [];
 
-function onSelectAllClick(){
+// 사원삭제
+function removeData(){
+	let temp = [];
+	for(let i=0;i<selected.length;i++){
+		console.log("selected all: " + selected)
+		console.log("selected : "+ String(selected[i]));
+		temp = rows.filter(row => row.id !== String(selected[i]));
+	}
+	console.log("rows : " + temp.length);
+	return temp
+}
+// 모든체크박스 선택
+const onSelectAllClick = () =>{
 
 }
-
-function isItemSelected(){
-	
-}
-function goDetail(row){
-	console.log("row : " + row);
+// 체크박스 선택
+const isItemSelected = (event,id) =>{
+	if(event.target.checked){
+		selected.push(id);
+	}else{
+		selected.splice(selected.indexOf(id),1)
+	}
 }
 
 const rows = [
@@ -67,6 +81,13 @@ const category = [
 const MemberList = () => {
 	const classes = useStyles();
 	
+	const [test, setTest] = React.useState(rows);
+
+	const handleChange = () =>{
+		setTest(removeData);
+	}
+
+
 	return (
 		<div>
 			<Card>
@@ -76,7 +97,7 @@ const MemberList = () => {
 				<div className={classes.root}>
 					<Grid container spacing={3}>
 						<Grid item xs style={{textAlign:'left'}}>
-							<Button variant="contained" color="primary">
+							<Button variant="contained" color="primary" onClick={handleChange}>
 								직원정보 삭제
 							</Button>
 						</Grid>
@@ -109,7 +130,9 @@ const MemberList = () => {
 						<TableHead>
 							<TableRow>	
 								<TableCell padding="checkbox">
-									<Checkbox onChange={onSelectAllClick}></Checkbox>
+									<Checkbox 
+										onChange={onSelectAllClick}
+									></Checkbox>
 								</TableCell>
 								<TableCell align="center">이름</TableCell>
 								<TableCell align="center">직급</TableCell>
@@ -122,25 +145,26 @@ const MemberList = () => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-						{rows.map(row => (
+						{test.map(row => (
 							<TableRow key={row.id}>
 								<TableCell padding="checkbox">
 									<Checkbox
-										onChange={isItemSelected}
+										onChange={() => isItemSelected(event,row.id)}
 										key = {row.id}
 									/>
 								</TableCell>
-								<TableCell component="th" scope="row" onClick={() => goDetail(row)} >
-									{/* {row.manager_yn === 1 ? (<StarIcon style={{verticalAlign:'bottom'}}/>) : ()} */}
-									
+								<TableCell component="th" scope="row">
+									{row.manager_yn === 1 && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
 									{row.name}
 								</TableCell>
-								<TableCell align="center" onClick={() => goDetail(row)}>{row.position}</TableCell>
-								<TableCell onClick={() => goDetail(row)}>{row.address1} {row.address2}</TableCell>
-								<TableCell align="center" onClick={() => goDetail(row)}>{row.phone}</TableCell>
-								<TableCell align="center" onClick={() => goDetail(row)}>{row.career}</TableCell>
-								<TableCell align="center" onClick={() => goDetail(row)}>{row.entry}</TableCell>
-								<TableCell align="center" onClick={() => goDetail(row)}>
+								<TableCell align="center">{row.position}</TableCell>
+								<TableCell>
+									{row.address1} {row.address2}
+									</TableCell>
+								<TableCell align="center">{row.phone}</TableCell>
+								<TableCell align="center">{row.career}</TableCell>
+								<TableCell align="center">{row.entry}</TableCell>
+								<TableCell align="center">
 									{row.cert == 1? '유':'무'}
 								</TableCell>
 								<TableCell align="center">

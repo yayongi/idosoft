@@ -28,10 +28,10 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const appRootPath = "intranet"; // 앱 Root 경로 (todo:일정관리, intranet:아이두소프트 인트라)
 module.exports = {
-    mode: 'development',
+    mode: 'development',    // development, production (운영 배포 시에는 production으로 구성 필요)
     context: path.resolve(__dirname, 'react_src'),
     entry: {
-        todo: './'+appRootPath+'/index.js'
+        intranet: './'+appRootPath+'/index.js'
     },
     devtool: 'inline-source-map',
     devServer: {
@@ -76,7 +76,7 @@ module.exports = {
     cache: true,
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'react_disc'),
+        path: path.resolve(__dirname, 'src/main/webapp/resources/js'),
     },
     module: {
         rules: [{
@@ -110,7 +110,15 @@ module.exports = {
         
         }, {
             test:/\.(png|jpg)$/,
-            use:  'file-loader'
+            use:  {
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[ext]',
+                    useRelativePath: true,
+                    outputPath: "../img",
+                    publicPath: "resources/img/"
+                }
+            }
         }]
     },
 

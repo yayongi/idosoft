@@ -7,10 +7,15 @@ export {AnnualResister as AnnualResister} from './Expense';	// 경비관리 -> �
 export {PayList as PayList} from './Expense';			// 경비관리 -> 교통/통신비관리
 export {ApprovalList as ApprovalList} from './Expense';		// 경비관리 -> 경비결재관리
 export {ApprovalDetail as ApprovalDetail} from './Expense';		// 경비관리 -> 경비결재관리 -> 경비결재상세
+export {MonthlystatMemberSelectView as MonthlystatMemberSelectView} from './Expense';		// 경비관리 -> 경비결재관리 -> 경비결재상세
+
 export {SignIn as SignIn} from './Login';				// 로그인
 
 export {ResPassword as ResPassword} from './Login';				// 로그인
-export {default as Member} from './Member';		// 사원관리
+export {default as MemberList} from './Member/MemberList';		// 사원관리
+export {default as MemberReg} from './Member/MemberReg';		// 사원관리
+export {default as MemberMod_admin} from './Member/MemberMod_admin';		// 사원관리
+export {default as MemberMod_user} from './Member/MemberMod_user';		// 사원관리
 
 export {NoticeList as NoticeList} from './Notice';			// 공지사항 -> 목록
 export {NoticeRegist as NoticeRegist} from './Notice';			// 공지사항 -> 공지사항등록관리

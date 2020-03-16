@@ -121,10 +121,6 @@ const MemberReg = () => {
                       </Button>
                     </div>
                   </div>
-                  {/* <Grid item xs={12} sm={4} style={{backgroundColor:'blue',}}>
-                    <img className={classes.img} alt="complex" src="intranet/img/profile/test.jpg"/>
-                  </Grid>
-                   */}
                 </CardContent>
               </Card>
             </Grid>
@@ -133,18 +129,18 @@ const MemberReg = () => {
                 <CardContent>
                   <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'70%'}} label="기본주소" value={row.address1} variant="outlined" InputProps={{
+                      <TextField id="outlined-basic" style={{width:'70%'}} size="small"  label="기본주소" value={row.address1} variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
                       <Button variant="contained" color="primary">
                                               주소찾기
                       </Button>
-                      <TextField id="outlined-basic" style={{width:'70%'}} label="상세주소" value={row.address2} variant="outlined" InputProps={{
+                      <TextField id="outlined-basic" style={{width:'70%'}} size="small" label="상세주소" value={row.address2} variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'34%'}} label="휴대전화" value={row.phone} variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'34%'}} size="small" label="휴대전화" value={row.phone} variant="outlined" />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField style={{width:'20%'}}
@@ -153,6 +149,7 @@ const MemberReg = () => {
                         label="자격증 유무"
                         variant="outlined"
                         defaultValue={1}
+                        size="small" 
                       >
                         {certYn.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -160,8 +157,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="입사일" value={row.entry} variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="생일" value={row.birth} variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" label="입사일" value={row.entry} variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" label="생일" value={row.birth} variant="outlined" />
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -173,13 +170,14 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="학교/학과" value={row.sch_mjr} variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" label="학교/학과" value={row.sch_mjr} variant="outlined" />
                       <TextField style={{width:'20%'}}
                         id="outlined-select-currency"
                         select
                         label="최종학력"
                         variant="outlined"
                         defaultValue={'A03'}
+                        size="small" 
                       >
                         {schCareer.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -187,8 +185,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="경력시작일" value={row.entry} variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="결혼기념일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" label="경력시작일" value={row.entry} variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" label="결혼기념일" variant="outlined" />
                     </div>
                     <div className={classes.textfield}>
                       <Button variant="contained" color="primary">

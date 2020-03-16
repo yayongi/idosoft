@@ -6,16 +6,11 @@
  */
 
 import React, { Fragment } from 'react';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Fab from '@material-ui/core/Fab';
 import SaveIcon from '@material-ui/icons/Save';
 import FormControl from '@material-ui/core/FormControl';
@@ -23,7 +18,6 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import {useStyles} from './styles';
 import {dataAdmin2020, dataAdmin2019, dataAdmin2018, dataAdmin2017, nodata} from './data';
-
 
 export default function PayList() {
 	const classes = useStyles();	// styles.js에 상수로 선언되어 있음. 
@@ -33,7 +27,7 @@ export default function PayList() {
 	});
 	const { members } = state;
 	const headerCells = [
-		"", "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "합계", "총합계"
+		"성명","구분 ", "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "합계", "총합계"
 	];
 
 	// Select로 구성할 년도 목록
@@ -112,65 +106,57 @@ export default function PayList() {
 				엑셀다운로드
 			</Fab>
 
-			{members.map((member, idx) => (
-				<Card key={idx} className={ classes.cardArea }>
-					<CardContent>
-						<Typography variant="h6" color="textPrimary" style={{fontWeight: 'bold'}}>
-							{member.name}
-						</Typography>
-					</CardContent>
-					<TableContainer key={idx} component={Paper} >
-						<Table key={idx}>
-
-							<TableHead className={ classes.tableHead }>								
-								<TableRow>
-									{headerCells.map((cell, idx) => (
-										<TableCell key={idx} align={'center'} className={classes.tableHeadCell}>
-											{cell}
-										</TableCell>
-									))}
-								</TableRow>
-							</TableHead>
-
-							<TableBody>
-									<TableRow >
-										<TableCell  align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>교통비</TableCell>
-										{/* 1월~12월 교통비*/}
-										{member.tptCosts.map((tptCost, idx) => (	
-											<TableCell key={idx} align={'right'} className={classes.tableBodyCell}>
-												{typeof tptCost === 'number' ? tptCost.toLocaleString() : tptCost}
-											</TableCell>
-										))}
-
-										{/* 교통비 합계*/}
-										<TableCell align={'right'} className={classes.tableBodyCell}>
-											{typeof member.tptCostsSum === 'number' ? member.tptCostsSum.toLocaleString() : member.tptCostsSum}
-										</TableCell>
-
-										{/* 교통비/통신비 총합계*/}
-										<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
-											{typeof member.totalSum === 'number' ? member.totalSum.toLocaleString() : member.totalSum}
-										</TableCell>
-									</TableRow>
-									<TableRow >
-										<TableCell align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>통신비</TableCell>
-										{/* 1월~12월 통신비*/}
-										{new Array(12).fill(0).map((foo, idx) => (
-											<TableCell key={idx} align={'right'} className={classes.tableBodyCell}>
-												{typeof member.cmncCost === 'number' ? member.cmncCost.toLocaleString() : member.cmncCost}
-											</TableCell>
-										))}
-
-										{/* 통신비 합계*/}
-										<TableCell align={'right'} className={classes.tableBodyCell}>
-											{typeof member.cmncCostSum === 'number' ? member.cmncCostSum.toLocaleString() : member.cmncCostSum}
-										</TableCell>
-									</TableRow>								
-							</TableBody>
-						</Table>				
-					</TableContainer>
-				</Card>
-			))}
+			<Table>
+				<TableHead className={ classes.tableHead }>								
+					<TableRow>
+						{headerCells.map((cell, idx) => (
+							<TableCell key={idx} align={'center'} className={classes.tableHeadCell}>
+								{cell}
+							</TableCell>
+						))}
+					</TableRow>
+				</TableHead>
+				<TableBody>
+				{members.map((member, idx) => (
+					<Fragment key={`row${idx}`}>
+						<TableRow>
+							{/* 성명 */}
+							<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
+								{member.name}
+							</TableCell>
+							<TableCell  align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>교통비</TableCell>
+							{/* 1월~12월 교통비*/}
+							{member.tptCosts.map((tptCost, idx) => (	
+								<TableCell key={idx} align={'right'} className={classes.tableBodyCell}>
+									{typeof tptCost === 'number' ? tptCost.toLocaleString() : tptCost}
+								</TableCell>
+							))}
+							{/* 교통비 합계*/}
+							<TableCell align={'right'} className={classes.tableBodyCell}>
+								{typeof member.tptCostsSum === 'number' ? member.tptCostsSum.toLocaleString() : member.tptCostsSum}
+							</TableCell>
+							{/* 교통비/통신비 총합계*/}
+							<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
+								{typeof member.totalSum === 'number' ? member.totalSum.toLocaleString() : member.totalSum}
+							</TableCell>
+						</TableRow>
+						<TableRow>
+							<TableCell align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>통신비</TableCell>
+							{/* 1월~12월 통신비*/}
+							{new Array(12).fill(0).map((foo, idx) => (
+								<TableCell key={idx} align={'right'} className={classes.tableBodyCell}>
+									{typeof member.cmncCost === 'number' ? member.cmncCost.toLocaleString() : member.cmncCost}
+								</TableCell>
+							))}
+							{/* 통신비 합계*/}
+							<TableCell align={'right'} className={classes.tableBodyCell}>
+								{typeof member.cmncCostSum === 'number' ? member.cmncCostSum.toLocaleString() : member.cmncCostSum}
+							</TableCell>
+						</TableRow>	
+					</Fragment>							
+				))}
+				</TableBody>
+			</Table>				
 		</Fragment>
 	);
 }

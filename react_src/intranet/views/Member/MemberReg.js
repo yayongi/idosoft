@@ -46,8 +46,8 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.text.secondary,
   },
   image: {
-    width: 300,
-    height: 300,
+    width: '50%',
+    height: '50%'
   },
   margin: {
     margin: theme.spacing(1),
@@ -84,15 +84,19 @@ const MemberReg = () => {
                   height:'100%'
                 }}>
                   <div style={{textAlign:'center'}}>
-                    <img className={classes.img} alt="complex" src="intranet/img/profile/test.jpg"/>
+                    <img 
+                      className={classes.image} 
+                      alt="complex" 
+                      src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AABNXGc.img?h=1080&w=1920&m=6&q=60&o=f&l=f&x=345&y=399"
+                    />
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
                       <Button variant="contained" color="primary">
-                                                프로필 업로드
+                                프로필 업로드
                       </Button>
                       <Button variant="contained" color="primary">
-                                                프로필 다운로드
+                                프로필 다운로드
                       </Button>
                     </div>
                     <div className={classes.textfield}>
@@ -112,24 +116,6 @@ const MemberReg = () => {
                       </Button>
                     </div>
                   </div>
-                  {/* <Grid item xs={12} sm={4} style={{backgroundColor:'blue',}}>
-                    <img className={classes.img} alt="complex" src="intranet/img/profile/test.jpg"/>
-                  </Grid>
-                  <Grid item xs={12} sm={8} style={{backgroundColor:'red',}}>
-                    {rows.map(row => (
-                      <Grid item xs key={row.id}>
-                        <Typography>
-                          {row.name} {row.position} ({row.career})
-                        </Typography>
-                        <Typography>
-                          {row.id}
-                        </Typography>
-                        <Typography>
-                          {row.email}
-                        </Typography>
-                      </Grid>
-                    ))}
-                  </Grid> */}
                 </CardContent>
               </Card>
             </Grid>
@@ -138,12 +124,13 @@ const MemberReg = () => {
                 <CardContent>
                   <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" label="이름" variant="outlined" />
+                      <TextField id="outlined-basic" label="이름" size="small" variant="outlined" />
                       <TextField style={{width:'20%'}}
                         id="outlined-select-currency"
                         select
                         label="직급"
                         variant="outlined"
+                        size="small" 
                       >
                         {positions.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -171,17 +158,17 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'34%'}} label="이메일" variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'34%'}} label="휴대전화" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'34%'}} size="small" label="이메일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'34%'}} size="small" label="휴대전화" variant="outlined" />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'70%'}} label="기본주소" variant="outlined" InputProps={{
+                      <TextField id="outlined-basic" style={{width:'70%'}} size="small" label="기본주소" variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
                       <Button variant="contained" color="primary">
                                               주소찾기
                       </Button>
-                      <TextField id="outlined-basic" style={{width:'70%'}} label="상세주소" variant="outlined" InputProps={{
+                      <TextField id="outlined-basic" style={{width:'70%'}} size="small" label="상세주소" variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
                     </div>
@@ -191,6 +178,7 @@ const MemberReg = () => {
                         select
                         label="자격증 유무"
                         variant="outlined"
+                        size="small" 
                       >
                         {certYn.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -198,8 +186,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="입사일" variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="생일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" label="입사일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" label="생일" variant="outlined" />
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -211,12 +199,13 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="학교/학과" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="학교/학과" variant="outlined" />
                       <TextField style={{width:'20%'}}
                         id="outlined-select-currency"
                         select
                         label="최종학력"
                         variant="outlined"
+                        size="small" 
                       >
                         {schCareer.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -224,8 +213,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="경력시작일" variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'20%'}} label="결혼기념일" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" />
                     </div>
                     <div className={classes.textfield}>
                       <Button variant="contained" color="primary">
