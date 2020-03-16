@@ -26,6 +26,7 @@ export default function SelectType() {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
+
   const handleChange = event => {
     setType(event.target.value);
   };

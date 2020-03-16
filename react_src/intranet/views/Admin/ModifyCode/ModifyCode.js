@@ -32,6 +32,8 @@ const mainStyles = makeStyles(theme => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
+  btnDiv:{
+  },
   btn: {
     marginLeft:'3px',
     marginRight:'0px',
@@ -79,7 +81,7 @@ export default function FullWidthGrid() {
                                               최상위 코드 추가
                   </Button>
                   <Button className={classes.btn} variant="contained" color="primary">
-                                              최상위 코드 추가
+                                              검색
                   </Button>
                 </CardContent>
               </Card>
@@ -92,7 +94,7 @@ export default function FullWidthGrid() {
               <Button className={classes.btn}
                 variant="contained"
                 color="primary"
-                component={RouterLink} to="/admin/code/addCode">
+                component={RouterLink} to="/expense/approvalDetail">
                                             코드추가
               </Button>
           	  <TreeView/>
@@ -105,7 +107,6 @@ export default function FullWidthGrid() {
                 color="primary"
                 onClick={excelDownload}>
                                             엑셀다운로드
-
               </Button>
           	  <TableView/>
             </Paper>
