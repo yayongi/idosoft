@@ -42,9 +42,14 @@ const mainStyles = makeStyles(theme => ({
 
 export default function FullWidthGrid() {
   const classes = mainStyles();
+  const [searchInputValue, setState] = React.useState();
+
   
-  const searchClick = (e) => {
-		alert("searchclick");
+  const searchClick = () => {
+    if(!searchInputValue){
+      alert("검색어를 입력해주세요");
+    }
+		console.log(searchInputValue);
   }
   const addOneDepth = (e) => {
 		alert(e);
@@ -56,8 +61,9 @@ export default function FullWidthGrid() {
     alert("excelDownload");
   }
 
-  const handleChildClick = (text) => {
+  const handleChildChange = (text) => {
     console.log(text);
+    setState(text);
   }
 
   return (
@@ -69,16 +75,19 @@ export default function FullWidthGrid() {
                   <Toolbar>
                     <SelectType/>
                     <InputSearch
-                    onChildChange={handleChildClick}/>
+                    onInputBlur={handleChildChange}/>
                   </Toolbar>
                   <br/>
                   <Button className={classes.btn} 
                     variant="contained" 
                     color="primary"
                     onClick={searchClick}>
-                                              최상위 코드 추가
+                                               검색 
                   </Button>
-                  <Button className={classes.btn} variant="contained" color="primary">
+                  <Button className={classes.btn}
+                    variant="contained"
+                    color="primary"
+                    component={RouterLink} to="/admin/code/addCode">
                                               최상위 코드 추가
                   </Button>
                 </CardContent>
@@ -88,7 +97,7 @@ export default function FullWidthGrid() {
               
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Paper className={classes.treePaper}>
+            <Paper className={classes.treePaper} wrap="nowrap">
               <Button className={classes.btn}
                 variant="contained"
                 color="primary"

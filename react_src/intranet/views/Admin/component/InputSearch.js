@@ -22,20 +22,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function CustomizedInputBase() {
+const InputSearch = ({props, onInputBlur}) => {
+
   const classes = useStyles();
   const [inputValue, setState] = React.useState();
 
   const searchClick = () => {
+    if(!inputValue){
+      alert("검색어를 입력해주세요");
+    }
     console.log(inputValue);
   }
 
   const handleInputChange = (event) => {
     setState(event.target.value);
-    onChildChange(event.target.value);
+    onInputBlur(event.target.value);
   }
-
-
   return (
     <Paper component="form" className={classes.root}>
       <InputBase
@@ -52,3 +54,5 @@ export default function CustomizedInputBase() {
     </Paper>
   );
 }
+
+export default InputSearch;
