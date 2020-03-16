@@ -147,7 +147,7 @@ function RegistGrid() {
 	const handleButtonClick = (event) => {
 		event.preventdefault;
 		console.log(resData);
-		ResTestData.testData = ResTestData.testData.concat(resData);
+		// ResTestData.testData = ResTestData.testData.concat(resData);
 	}
 
 	return (
@@ -226,15 +226,13 @@ function RegistGrid() {
 					</div>
 				</Container>
 				</CardContent>
-			</Card>
-			<Card className={classes.cardRoot}>
 				<CardContent className={classes.cardRoot}>
 					<RouterLink button="true" to="/resource">
-						<Button variant="contained" className={classes.buttonRoot}>
+						<Button variant="contained" className={classes.buttonRoot} >
 							뒤로가기
 						</Button>
 					</RouterLink>
-					{/* <RouterLink button="true" path="/resource/:regist" component={resData}> */}
+					{/* <RouterLink button="true" path={`/resource/?resdata=${resData}`} > */}
 					<RouterLink button="true" to="/resource">
 						<Button variant="contained" color="primary" className={classes.buttonRoot} onClick={handleButtonClick}>
 							등록하기

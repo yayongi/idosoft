@@ -12,7 +12,6 @@ import CardContent from '@material-ui/core/CardContent';
 import ResourceListTable from './ResourceListTable';
 
 const ResourceList = ({match}) => {
-	debugger;
 	// const resData = `${match.params.regist}`;
 
 	return (
