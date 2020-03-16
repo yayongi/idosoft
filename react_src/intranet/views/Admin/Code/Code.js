@@ -27,16 +27,15 @@ const mainStyles = makeStyles(theme => ({
     color: theme.palette.text.secondary,
   },
   tablePaper: {
-	padding: theme.spacing(2),
+	  padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
-  },
-  btnDiv:{
   },
   btn: {
     marginLeft:'3px',
     marginRight:'0px',
     marginBottom:'10px',
+    float: 'right'
   },
 }));
 
@@ -55,10 +54,10 @@ export default function FullWidthGrid() {
                   </Toolbar>
                   <br/>
                   <Button className={classes.btn} variant="contained" color="primary">
-                                              최상위 코드 추가
+                                              검색
                   </Button>
                   <Button className={classes.btn} variant="contained" color="primary">
-                                              검색
+                                              최상위 코드 추가
                   </Button>
                 </CardContent>
               </Card>
@@ -69,7 +68,7 @@ export default function FullWidthGrid() {
           <Grid item xs={12} sm={6}>
             <Paper className={classes.treePaper}>
               <Button className={classes.btn} variant="contained" color="primary">
-                                            코드추가
+                  코드추가
               </Button>
           	  <TreeView/>
             </Paper>
@@ -77,7 +76,7 @@ export default function FullWidthGrid() {
           <Grid item xs={12} sm={6}>
             <Paper className={classes.tablePaper}>
               <Button className={classes.btn} variant="contained" color="primary">
-                                            엑셀다운로드
+                 엑셀다운로드
               </Button>
           	  <TableView/>
             </Paper>
