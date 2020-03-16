@@ -5,6 +5,8 @@ import { Switch, Redirect } from 'react-router-dom';
 import { Main as MainLayout, Minimal as MinimalLayout  } from './layouts';
 import {
 	Code as Code,
+	AddCode as AddCode,
+	ModifyCode as ModifyCode,
 	Dashboard as Dashboard,
 	AnnualList as AnnualList,
 	AnnualResister as AnnualResister,
@@ -80,6 +82,12 @@ export default function App() {
 					</Route>
 					<Route exact path="/admin/code">
 						<MainLayout><Code /></MainLayout>
+					</Route>
+					<Route exact path="/admin/code/addCode">
+						<MainLayout><AddCode /></MainLayout>
+					</Route>
+					<Route exact path="/admin/code/modifyCode">
+						<MainLayout><ModifyCode /></MainLayout>
 					</Route>
 					<Route exact path="/notFound">
 						<MinimalLayout><NotFound /></MinimalLayout>
