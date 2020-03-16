@@ -8,6 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
+import { display } from '@material-ui/system';
 
 function createData(id,name, position, address, phone, career,entry, cert,email ) {
 	return { id,name, position, address, phone, career,entry, cert,email };
@@ -64,7 +65,31 @@ const rows = [
 ];
 
 const MemberReg = () => {
-	const classes = useStyles();
+  const classes = useStyles();
+  
+  const uploadFile = () => {
+    console.log("시작");
+   /*  var file = document.getElementById('myFile');
+    var filedata = new FormData(); // FormData 인스턴스 생성
+
+    if (!file.value) return; // 파일이 없는 경우 빠져나오기
+
+    filedata.append('uploadfile', file.files[0]);
+
+    var _xml = new XMLHttpRequest();
+    _xml.open('POST', '/api/test_upload/', true);
+    _xml.onload = function(event) {
+      if (_xml.status == 200) {
+        alert('Uploaded');
+      }
+      else {
+        alert('Error');
+      }
+    };
+
+    _xml.send(filedata); */
+  } 
+
 	return (
 		<div>
 			<Card>
@@ -92,7 +117,10 @@ const MemberReg = () => {
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
-                      <Button variant="contained" color="primary">
+                      <form>
+                          <input type="file" id="myFile" style={{display:"none"}}/>
+                      </form>
+                      <Button variant="contained" color="primary" onClick={() => document.getElementById("myFile").click()}>
                                 프로필 업로드
                       </Button>
                       <Button variant="contained" color="primary">
@@ -124,9 +152,9 @@ const MemberReg = () => {
                 <CardContent>
                   <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" label="이름" size="small" variant="outlined" />
+                      <TextField id="outlined-basic" id="name" label="이름" size="small" variant="outlined" />
                       <TextField style={{width:'20%'}}
-                        id="outlined-select-currency"
+                        id="position"
                         select
                         label="직급"
                         variant="outlined"
@@ -143,6 +171,7 @@ const MemberReg = () => {
                           <Checkbox
                             value="checkedB"
                             color="primary"
+                            id="manager_yn"
                           />
                         }
                         label="관리자"
@@ -152,29 +181,30 @@ const MemberReg = () => {
                           <Checkbox
                             value="checkedB"
                             color="primary"
+                            id="approval_yn"
                           />
                         }
                         label="1차결제자"
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'34%'}} size="small" label="이메일" variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'34%'}} size="small" label="휴대전화" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'34%'}} id="phone" size="small" label="휴대전화" variant="outlined" />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'70%'}} size="small" label="기본주소" variant="outlined" InputProps={{
+                      <TextField id="outlined-basic" style={{width:'70%'}} id="address1" size="small" label="기본주소" variant="outlined" InputProps={{
+                        readOnly: true,
+                      }}/>
+                      <TextField id="outlined-basic" style={{width:'70%'}} id="address2" size="small" label="상세주소" variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
                       <Button variant="contained" color="primary">
                                               주소찾기
                       </Button>
-                      <TextField id="outlined-basic" style={{width:'70%'}} size="small" label="상세주소" variant="outlined" InputProps={{
-                        readOnly: true,
-                      }}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField style={{width:'20%'}}
-                        id="outlined-select-currency"
+                        id="cert_yn"
                         select
                         label="자격증 유무"
                         variant="outlined"
@@ -186,22 +216,23 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" label="입사일" variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" label="생일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} id="entry" size="small" label="입사일" variant="outlined" />
+                      <TextField id="outlined-basic" style={{width:'20%'}} id="birth" size="small" label="생일" variant="outlined" />
                       <FormControlLabel
                         control={
                           <Checkbox
                             value="checkedB"
                             color="primary"
+                            id="moon_cal"
                           />
                         }
                         label="음력"
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="학교/학과" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" id="sch_mjr" style={{width:'20%'}} label="학교/학과" variant="outlined" />
                       <TextField style={{width:'20%'}}
-                        id="outlined-select-currency"
+                        id="sch_car"
                         select
                         label="최종학력"
                         variant="outlined"
@@ -213,8 +244,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" />
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" />
+                      <TextField id="outlined-basic" id="car_date" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" />
+                      <TextField id="outlined-basic" id="mar_date" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" />
                     </div>
                     <div className={classes.textfield}>
                       <Button variant="contained" color="primary">
