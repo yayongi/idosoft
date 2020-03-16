@@ -80,7 +80,7 @@ const MemberReg = () => {
 
     const formData = new FormData();
     formData.append('file', event.target.files[0]);
-    formData.append('path', "C:\\Users\\67849\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\");
+    formData.append('path', "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\");
     formData.append('prefilename',"test.txt")
 
     axios({
@@ -101,19 +101,20 @@ const MemberReg = () => {
   const downloadFile = (event) => {
     const formData = new FormData();
     formData.append('filename', event.target.children[0].value);
-    formData.append('path', "C:\\Users\\67849\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\");
+    formData.append('path', "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\");
 
     axios({
 				url: '/intranet/fileDownload',
-				method: 'post',
+        method: 'post',
         data : formData,
         responseType: 'blob',
-        headers: {
-          'enctype': 'multipart/form-data'
-    },
 			}).then(response => {
-        console.log(JSON.stringify(response));	
-
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', response.headers.filename);
+        document.body.appendChild(link);
+        link.click();
 			}).catch(e => {
 				console.log(e);
 			});
@@ -146,13 +147,13 @@ const MemberReg = () => {
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
-                        <input type="file" id="myFile" style={{display:"none"}} onChange={() => uploadFile(event)}/>
+                      <input type="file" id="myFile" style={{display:"none"}} onChange={() => uploadFile(event)}/>
                       <Button variant="contained" color="primary" onClick={() => document.getElementById("myFile").click()}>
-                                프로필 업로드
+                                                프로필 업로드
                       </Button>
                       <Button variant="contained" color="primary" onClick={() => downloadFile(event)}>
-                          <input type="hidden" value="test.jpg"/> 
-                                프로필 다운로드
+                        <input type="hidden" value="test.jpg"/> 
+                                                프로필 다운로드
                       </Button>
                     </div>
                     <div className={classes.textfield}>

@@ -1,29 +1,26 @@
 package kr.co.idosoft.intranet.util;
 
-import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
 import java.net.URLEncoder;
 
-import javax.imageio.ImageIO;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.google.common.io.ByteStreams;
 
 @Controller
 public class fileController {
@@ -81,15 +78,50 @@ public class fileController {
 	@RequestMapping(value = "/fileDownload", method = RequestMethod.POST)
 	@ResponseBody
 	public void downloadFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String fileName = request.getParameter("filename");
+		String fileName = request.getParameter("filename"); 
 		String filePath = request.getParameter("path");
-
+		String fileFullPath = filePath + fileName;
+		
 		try{
+			logger.debug("파일 경로 : " + fileFullPath);
 			
+			File file = new File(fileFullPath);
+			if(file.exists()) {
+				response.setContentType("application/octet-stream");
+				response.setHeader("Content-Transfer-Encoding", "binary"); 
+				//인터넷 익스플로러 구분
+				if(request.getHeader("user-agent").indexOf("MSIE") == -1) {
+					fileName = new String(fileName.getBytes("UTF-8"),"8859_1");
+				}else {
+					fileName = new String(fileName.getBytes("EUC-KR"),"8859_1");
+				}
+				
+				response.setHeader("content-disposition", "attachment;fileName=\""+fileName+"\";");
+				response.setHeader("filename", URLEncoder.encode(fileName, "UTF-8"));
+				
+				FileInputStream fileinputstream = new FileInputStream(file);
+				ServletOutputStream servletoutputstream = response.getOutputStream();
+				BufferedOutputStream bufferedoutputstream=new BufferedOutputStream(servletoutputstream);
+				
+				byte readByte[] = new byte[1024];
+				int data = 0;
+				while((data = fileinputstream.read(readByte,0,readByte.length)) != -1) {
+					bufferedoutputstream.write(readByte,0,data);
+				}
+				
+				servletoutputstream.flush();
+				servletoutputstream.close();
+				fileinputstream.close();
+				bufferedoutputstream.flush();
+				bufferedoutputstream.close();
+				logger.debug("파일 다운로드가 완료 되었습니다.");
+			}else {
+				logger.debug("파일이 존재하지 않습니다.");
+			}
 		}
 		catch (Exception e){
-			logger.debug("파일다운로드 실패");
-			logger.debug("message : " + e.getMessage());
+			logger.debug("파일다운로드에 실패하였습니다.");
+			e.printStackTrace();
 		}
 	}
 }
