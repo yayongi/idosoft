@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component,} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -7,61 +7,58 @@ import Select from '@material-ui/core/Select';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
-    margin: theme.spacing(1),
-    minWidth: 300,
+    //margin: theme.spacing(1),
+    minWidth: 250,
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
 }));
 
+const SelectType = ({props, onChildClick}) => {
 
-export default function SelectType(props) {
   const classes = useStyles();
   const [type, setType] = React.useState('');
-  const settingValue = props.selectSetting;
 
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
+
   React.useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
   const handleChange = event => {
-    setType(event.target.value);
+	  setType(event.target.value);
+    onChildClick(event.target.value);
   };
-  
-  // const mapLander = settingValue.list.slice(1).map((row) => {
-  //                         <MenuItem value={row.key}>{row.value}</MenuItem>
-  //                   });
+
 
   return (
-    
-    <div>
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-          {settingValue.label}
+          {props.label}
         </InputLabel>
         <Select
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
           value={type}
+          // onChange={handleChange, handleClick}
           onChange={handleChange}
           labelWidth={labelWidth}
         > 
-            <MenuItem value={settingValue.list[0].key}>
-                <em>{settingValue.list[0].value}</em>
-            </MenuItem>
-          {
-           settingValue.list.map((row) => {
-              {console.log(row.key+row.value)}
-              (<MenuItem value={row.key}>{row.value}</MenuItem>)
-
+          {/* {
+            props.list.map((row, idx) => {
+              return (<MenuItem value={`${props.dataKey}_${row.key}`} key={idx}>{row.value}</MenuItem>)
             })
+          } */}
+          {
+            props.list.map((row, idx) => (
+              <MenuItem value={`${props.dataKey}_${row.key}`} key={idx}>{row.value}</MenuItem>
+            ))
           }
-          {/* {mapLander} */}
         </Select>
       </FormControl>
-    </div>
   );
 }
+
+export default SelectType;
