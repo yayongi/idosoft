@@ -68,20 +68,20 @@ const MemberReg = () => {
   const classes = useStyles();
   
   const [state, setState] = React.useState({
-		selectedFile : null,
+    selectedFile : null,
+    preFile: null
 	});
 
   const uploadFile = (event) => {
-
-    console.log("files : " + event.target)
-
     setState({
       selectedFile : event.target.files[0],
+      preFile: "test.txt"
     })
 
     const formData = new FormData();
     formData.append('file', event.target.files[0]);
     formData.append('path', "C:\\Users\\67849\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\");
+    formData.append('prefilename',"test.txt")
 
     axios({
 				url: '/intranet/fileUpload',
@@ -92,7 +92,27 @@ const MemberReg = () => {
     },
 			}).then(response => {
         console.log(JSON.stringify(response));	
-        // 기존파일 삭제 로직 필
+
+			}).catch(e => {
+				console.log(e);
+			});
+  } 
+
+  const downloadFile = (event) => {
+    const formData = new FormData();
+    formData.append('filename', event.target.children[0].value);
+    formData.append('path', "C:\\Users\\67849\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\");
+
+    axios({
+				url: '/intranet/fileDownload',
+				method: 'post',
+        data : formData,
+        responseType: 'blob',
+        headers: {
+          'enctype': 'multipart/form-data'
+    },
+			}).then(response => {
+        console.log(JSON.stringify(response));	
 
 			}).catch(e => {
 				console.log(e);
@@ -130,7 +150,8 @@ const MemberReg = () => {
                       <Button variant="contained" color="primary" onClick={() => document.getElementById("myFile").click()}>
                                 프로필 업로드
                       </Button>
-                      <Button variant="contained" color="primary">
+                      <Button variant="contained" color="primary" onClick={() => downloadFile(event)}>
+                          <input type="hidden" value="test.jpg"/> 
                                 프로필 다운로드
                       </Button>
                     </div>
@@ -139,6 +160,7 @@ const MemberReg = () => {
                                                 자격증 업로드
                       </Button>
                       <Button variant="contained" color="primary">
+                        <input type="hidden" value="test.txt"/> 
                                                 자격증 다운로드
                       </Button>
                     </div>
@@ -147,6 +169,7 @@ const MemberReg = () => {
                                                 증명서 업로드
                       </Button>
                       <Button variant="contained" color="primary">
+                        <input type="hidden" value="test.txt"/> 
                                                 증명서 다운로드
                       </Button>
                     </div>
