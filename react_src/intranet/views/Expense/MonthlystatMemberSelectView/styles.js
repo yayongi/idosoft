@@ -53,4 +53,16 @@ export const useStyles = makeStyles (theme => ({
 	table: {
 		minWidth: 700,
 	},
+	margin_1 : {
+		margin: theme.spacing(3),
+	},
+	center: {
+	textAlign: 'center',
+	},
+	left: {
+	textAlign: 'left',
+	},
+	right: {
+	textAlign: 'right',
+	},
 }));
