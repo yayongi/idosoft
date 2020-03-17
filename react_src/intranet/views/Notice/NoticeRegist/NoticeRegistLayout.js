@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import GridLayout from './GridLayout';
-//import Ckeditor from '../component/Ckeditor';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import { minHeight } from '@material-ui/system';
 

@@ -26,7 +26,6 @@ export default function SelectType() {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
-
   const handleChange = event => {
     setType(event.target.value);
   };
@@ -35,7 +34,7 @@ export default function SelectType() {
     <div>
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-          코드 ID
+          코드 ID2
         </InputLabel>
         <Select
           labelId="demo-simple-select-outlined-label"

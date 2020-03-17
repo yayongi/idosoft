@@ -1,4 +1,6 @@
 export {default as Code} from './Admin/Code';		// 관리자 -> 코드관리
+export {default as AddCode} from './Admin/AddCode';	// 관리자 -> 코드관리 -> 코드추가
+export {default as ModifyCode} from './Admin/ModifyCode';	// 관리자 -> 코드관리 -> 코드추가
 export {default as Dashboard} from './Dashboard';	// 메인
 export {AnnualList as AnnualList} from './Expense';	// 경비관리 -> 경비관리목록
 export {AnnualResister as AnnualResister} from './Expense';	// 경비관리 -> 경비관리목록
@@ -10,7 +12,10 @@ export {MonthlystatMemberSelectView as MonthlystatMemberSelectView} from './Expe
 export {SignIn as SignIn} from './Login';				// 로그인
 
 export {ResPassword as ResPassword} from './Login';				// 로그인
-export {default as Member} from './Member';		// 사원관리
+export {default as MemberList} from './Member/MemberList';		// 사원관리
+export {default as MemberReg} from './Member/MemberReg';		// 사원관리
+export {default as MemberMod_admin} from './Member/MemberMod_admin';		// 사원관리
+export {default as MemberMod_user} from './Member/MemberMod_user';		// 사원관리
 
 export {NoticeList as NoticeList} from './Notice';			// 공지사항 -> 목록
 export {NoticeRegist as NoticeRegist} from './Notice';			// 공지사항 -> 공지사항등록관리

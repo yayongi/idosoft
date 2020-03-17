@@ -31,6 +31,12 @@ import {data_2020_01, data_2019_12, data_2019_11
 	, data_2019_10, data_2019_09, data_2019_08
 	, data_2019_07, nondata} from './data';
 
+	
+const Transition = React.forwardRef(function Transition(props, ref) {
+	return <Slide direction="up" ref={ref} {...props} />;
+});
+
+
 export default function MonthlystatMemberSelectView() {
 	const classes = useStyles();				// styles.js에 상수로 선언되어 있음. 
 
@@ -74,9 +80,6 @@ export default function MonthlystatMemberSelectView() {
 		setOpen(false);
 	};
 
-	const Transition = React.forwardRef(function Transition(props, ref) {
-		return <Slide direction="up" ref={ref} {...props} />;
-	});
 
 	// Select로 구성할 년도 목록
 	const getYearList = (period) => {

@@ -32,6 +32,8 @@ const mainStyles = makeStyles(theme => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
+  btnDiv:{
+  },
   btn: {
     marginLeft:'3px',
     marginRight:'0px',
@@ -42,14 +44,9 @@ const mainStyles = makeStyles(theme => ({
 
 export default function FullWidthGrid() {
   const classes = mainStyles();
-  const [searchInputValue, setState] = React.useState();
-
   
-  const searchClick = () => {
-    if(!searchInputValue){
-      alert("검색어를 입력해주세요");
-    }
-		console.log(searchInputValue);
+  const searchClick = (e) => {
+		alert("searchclick");
   }
   const addOneDepth = (e) => {
 		alert(e);
@@ -61,9 +58,8 @@ export default function FullWidthGrid() {
     alert("excelDownload");
   }
 
-  const handleChildChange = (text) => {
+  const handleChildClick = (text) => {
     console.log(text);
-    setState(text);
   }
 
   return (
@@ -75,20 +71,17 @@ export default function FullWidthGrid() {
                   <Toolbar>
                     <SelectType/>
                     <InputSearch
-                    onInputBlur={handleChildChange}/>
+                    onChildChange={handleChildClick}/>
                   </Toolbar>
                   <br/>
                   <Button className={classes.btn} 
                     variant="contained" 
                     color="primary"
                     onClick={searchClick}>
-                                               검색 
-                  </Button>
-                  <Button className={classes.btn}
-                    variant="contained"
-                    color="primary"
-                    component={RouterLink} to="/admin/code/addCode">
                                               최상위 코드 추가
+                  </Button>
+                  <Button className={classes.btn} variant="contained" color="primary">
+                                              검색
                   </Button>
                 </CardContent>
               </Card>
@@ -97,11 +90,11 @@ export default function FullWidthGrid() {
               
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Paper className={classes.treePaper} wrap="nowrap">
+            <Paper className={classes.treePaper}>
               <Button className={classes.btn}
                 variant="contained"
                 color="primary"
-                component={RouterLink} to="/admin/code/addCode">
+                component={RouterLink} to="/expense/approvalDetail">
                                             코드추가
               </Button>
           	  <TreeView/>
@@ -114,7 +107,6 @@ export default function FullWidthGrid() {
                 color="primary"
                 onClick={excelDownload}>
                                             엑셀다운로드
-
               </Button>
           	  <TableView/>
             </Paper>
