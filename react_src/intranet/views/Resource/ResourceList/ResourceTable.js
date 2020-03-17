@@ -20,6 +20,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
 
+import axios from 'axios';
 
 import SelectType from '../component/SelectType';
 import InputSearch from '../component/InputSearch';
@@ -246,6 +247,24 @@ export default function ResourceTable() {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  const excelDownload =() =>{
+    axios({
+				url: '/intranet/downloadExcelFile',
+				method: 'post',
+				data: {
+					title : '사원',
+					jsonArrData : rows
+				}
+			}).then(response => {
+				//console.log('로그인 여부' + JSON.stringify(response));	
+
+				//location.href="/";
+
+			}).catch(e => {
+				console.log(e);
+			});
+  }
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -301,6 +320,7 @@ export default function ResourceTable() {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
+        <Button onClick={excelDownload}>excelDownload</Button>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
