@@ -26,7 +26,6 @@ export default function  List(props) {
 		return (rows.filter((row) => {
 			let result = true;
 			let tmpPayDate = row.payDate.replace(/-/g, '').slice(0,6);
-			
 			if(state.name != "" && !row.register.includes(state.name)) {
 				result = false;
 			} else if(state.expenseType != "-1" && row.expenseType != state.expenseType) {

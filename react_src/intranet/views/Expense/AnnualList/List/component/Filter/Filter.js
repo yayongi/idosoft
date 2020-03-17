@@ -16,6 +16,16 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import DateFnsUtils from '@date-io/date-fns';
+import ko from "date-fns/locale/ko";
+
+import Moment from "moment";
+
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+
 
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
@@ -118,8 +128,8 @@ export default function  Filter(props) {
 		setState({
 			name: document.getElementsByName("name")[0].value,
 			expenseType: document.getElementsByName("expenseType")[0].value,
-			payStDt: document.getElementsByName("payStDt")[0].value,
-			payEdDt: document.getElementsByName("payEdDt")[0].value,
+			payStDt: document.getElementsByName("payStDt")[0].value.replace(/[^0-9]/g, ""),
+			payEdDt: document.getElementsByName("payEdDt")[0].value.replace(/[^0-9]/g, ""),
 			status: document.getElementsByName("status")[0].value,
 			memo: document.getElementsByName("memo")[0].value,
 
@@ -138,6 +148,20 @@ export default function  Filter(props) {
 			[event.target.name]: event.target.value
 		});
 	};
+	// 시작년월 
+	const handleChangePayStDt = date => {
+		setDialogState({
+			...dialogState,
+			payStDt: Moment(date).format('YYYYMM')
+		});
+	}
+	// 종료년월
+	const handleChangePayEdDt = date => {
+		setDialogState({
+			...dialogState,
+			payEdDt: Moment(date).format('YYYYMM')
+		});
+	}
 
 		// 총 결제금액
 	let totalSum = 0; 
@@ -145,6 +169,7 @@ export default function  Filter(props) {
 		console.log("call Filter.js -> totalSum");
 		totalSum += Number(row.pay);
 	});
+
 
 	return (
 		<Fragment>
@@ -222,40 +247,49 @@ export default function  Filter(props) {
 							/>
 						</Grid>
 
-						<Grid item xs={6} style={{paddingRight: 10}}>
-							<TextField
-								id="payStDt"
-								name="payStDt"
-								select
-								margin="dense"
-								label="시작년월"
-								value={dialogState.payStDt}
-								onChange={handleChange}
-								fullWidth>
-								{payDts.map(option => (
-									<MenuItem key={option.value} value={option.value}>
-										{option.label}
-									</MenuItem>
-								))}
-							</TextField>
+						<Grid item xs={6}>
+							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+								<Grid container justify="space-around">
+									<KeyboardDatePicker
+										locale='ko' 
+										margin="normal"
+										id="payStDt"
+										name="payStDt"
+										label="시작년월"
+										views={["year", "month"]}
+										format="yyyy/MM" 
+										maxDate={new Date()}
+										value={new Date(dialogState.payStDt.slice(0, 4), Number(dialogState.payStDt.slice(4, 6))-1)}
+										onChange={handleChangePayStDt}
+										KeyboardButtonProps={{
+											'aria-label': 'change date',
+										}}
+										fullWidth
+									/>
+									</Grid>
+								</MuiPickersUtilsProvider>
 						</Grid>
-						
-						<Grid item xs={6} style={{paddingRight: 10}}>
-							<TextField
-								id="payEdDt"
-								name="payEdDt"
-								select
-								margin="dense"
-								label="종료년월"
-								value={dialogState.payEdDt}
-								onChange={handleChange}
-								fullWidth>
-								{payDts.map(option => (
-									<MenuItem key={option.value} value={option.value}>
-										{option.label}
-									</MenuItem>
-								))}
-							</TextField>
+						<Grid item xs={6}>
+							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+								<Grid container justify="space-around">
+									<KeyboardDatePicker
+										locale='ko' 
+										margin="normal"
+										id="payEdDt"
+										name="payEdDt"
+										label="종료년월"
+										views={["year", "month"]}
+										format="yyyy/MM" 
+										maxDate={new Date()}
+										value={new Date(dialogState.payEdDt.slice(0, 4), Number(dialogState.payEdDt.slice(4, 6))-1)}
+										onChange={handleChangePayEdDt}
+										KeyboardButtonProps={{
+											'aria-label': 'change date',
+										}}
+										fullWidth
+									/>
+									</Grid>
+								</MuiPickersUtilsProvider>
 						</Grid>
 
 						<Grid item xs={12} style={{paddingRight: 10}}>
@@ -289,6 +323,8 @@ export default function  Filter(props) {
 								fullWidth
 							/>
 						</Grid>
+
+						
 					</Grid>
 				</DialogContent>
 				<DialogActions>
