@@ -1,8 +1,8 @@
 import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { Link as RouterLink, useLocation  } from 'react-router-dom';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { Link as RouterLink, } from 'react-router-dom';
+import { makeStyles, theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -16,6 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import StarIcon from '@material-ui/icons/Star';
 import Grid from '@material-ui/core/Grid';
 import {tableList} from './data';
+import {dateFormatter, phoneFormatter, positionFormatter,schoolFormatter} from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
 	table: {
@@ -56,11 +57,44 @@ const MemberList = () => {
 	const classes = useStyles();
 	
 	const [state, setState] = React.useState({
-		memberList : tableList,
+		memberList : tableList,	// 사원관리 리스트
+		manager_yn : true		// 관리자 여부
 	});
+
+	//만약 등록화면에서 넘어 오면 리스트 추가
+	if((localStorage.getItem('savedData') != null) || (localStorage.getItem('savedData') != undefined)){
+		const savedData = JSON.parse(localStorage.getItem('savedData'));	//등록, 수정 화면에서 받아온 데이터
+		let temp_data = null;	//임시
+		let flag = true;
+
+		// 기존의 리스트에 해당 직원이 있는지 없는지 확인한다.
+		state.memberList.map((member,index) => {
+			if(member.id == savedData.id){
+				state.memberList[index] = savedData;
+				flag = false;
+				temp_data = state.memberList;
+			}
+		})
+
+		//기존의 리스트에 직원 아이디가 없는 경우 추가되는 직원으로 판단한다.
+		if(flag){
+			//새로 등록된 사원인 경우
+			temp_data = state.memberList.concat(savedData)
+		}
+
+		//변경된 직원리스트 state에 업데이트
+		setState({
+			...state,
+			memberList : temp_data
+		});
+
+		//local스토리지에 보관중인 기존 데이터 삭제.
+		localStorage.removeItem('savedData');
+	}
 
 	//사원삭제
 	const removeData = () => {
+		//체크박스로 선택된 직원 아이디로 선택적으로 필터링
 		let temp = state.memberList;
 		for(let i=0;i<selected.length;i++){
 			temp = temp.filter(temp => temp.id !== String(selected[i]));
@@ -74,10 +108,12 @@ const MemberList = () => {
 		});
 	}
 
-	// 등록화면에서 넘어 올때 데이터 받아서 추가하기.
-	let data = useLocation();
-	if(data != undefined || data != null){
-		console.log(data.temp_state);
+	//임시 로컬스토리지에 저장하기
+	const setLocalstorage = (data) => {
+		//기존 스토리지에 있는 데이터 삭제.
+		localStorage.removeItem('savedData');
+		//수정 페이지로 이동할 때 필요한 데이터 함께 이동 
+		localStorage.setItem('savedData', JSON.stringify(data));
 	}
 
 	return (
@@ -149,17 +185,22 @@ const MemberList = () => {
 									{row.manager_yn === 1 && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
 									{row.name}
 								</TableCell>
-								<TableCell align="center">{row.position}</TableCell>
+								<TableCell align="center">{positionFormatter(row.position)}</TableCell>
 								<TableCell>
 									{row.address1} {row.address2}
 									</TableCell>
-								<TableCell align="center">{row.phone}</TableCell>
-								<TableCell align="center">{row.career}</TableCell>
-								<TableCell align="center">{row.entry}</TableCell>
+								<TableCell align="center">{phoneFormatter(row.phone)}</TableCell>
+								<TableCell align="center">{row.career} </TableCell>
+								<TableCell align="center">{dateFormatter(row.entry)}</TableCell>
 								<TableCell align="center">
 									{row.cert_yn == 1? '유':'무'}
 								</TableCell>
 								<TableCell align="center">
+									<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod_admin":"/member/membermod_user"}>
+										<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
+											수정
+										</Button>
+									</RouterLink>
 									<Button variant="contained" color="primary">
 										개인이력
 									</Button>
