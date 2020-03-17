@@ -20,7 +20,7 @@
 	<!-- <resources mapping="/assets/**" location="/assets/" /> -->
 
 	<beans:bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" id="jsonView">
-	    <beans:property name="contentType" value="application/json;charset=UTF-8"/>
+	    <beans:property name="contentType" value="application/json;`charset=UTF-8"/>
 	</beans:bean>
 	
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
@@ -32,7 +32,9 @@
 	
 	<context:component-scan base-package="kr.co.idosoft" />
 	
-
+	<!-- Excel -->
+	<beans:bean id="excelDownloadView" class="kr.co.idosoft.common.util.ExcelDownloadView"/>
+	
 	<!-- Tiles -->
     <beans:bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
