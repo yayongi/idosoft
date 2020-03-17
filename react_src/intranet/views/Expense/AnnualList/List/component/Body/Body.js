@@ -9,17 +9,19 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
-import { columnsUp, columnsDown } from '../../data';
+import { columnsUp, columnsDown } from './data';
+import { AnnualStorage } from 'views/Expense/AnnualList/data'
 
 const useStyles = makeStyles({
   root: {
     width: '100%',
+    textDecoration: 'none',
   },
 });
 
 function Body(props) {
     const classes = useStyles();
-    const { rows } = props;
+    const { rows, routeProps } = props;
     const [ page, setPage ] = React.useState(0);
     const [ rowsPerPage, setRowsPerPage ] = React.useState(10);
 
@@ -31,6 +33,13 @@ function Body(props) {
     const handleChangeRowsPerPage = event => {
       setRowsPerPage(+event.target.value);
       setPage(0);
+    };
+
+    // 상세페이지로 이동
+    const handleClickView = (event, row) => {
+      console.log("call Body.js -> handleClickView");      
+      AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(row));  // 세션 스토리지에 선택한 Row Data 저장
+      routeProps.history.push(`${routeProps.match.url}/${row.seq}`);
     };
 
     let columns = columnsUp;
@@ -51,7 +60,7 @@ function Body(props) {
             page={page}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+          />
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
@@ -70,15 +79,20 @@ function Body(props) {
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.seq}>
-                    {columns.map(column => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={row.seq + column.id} align={column.align} className={column.className}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
-                        </TableCell>
-                      );
-                    })}
+                  <TableRow hover 
+                      role="checkbox" 
+                      tabIndex={-1} 
+                      key={row.seq} 
+                      onClick={() => handleClickView(event, row)} // react router의 상세
+                  >
+                      {columns.map(column => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell key={row.seq + column.id} align={column.align} className={column.className}>
+                            {column.format && typeof value === 'number' ? column.format(value) : value}
+                          </TableCell>
+                        );
+                      })}
                   </TableRow>
                 );
               })}

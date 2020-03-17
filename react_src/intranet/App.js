@@ -82,9 +82,11 @@ export default function App() {
 					<Route exact path="/project/manage">
 						<MainLayout><Manage /></MainLayout>
 					</Route>
-					<Route exact path="/expense/annualList">
-						<MainLayout><AnnualList /></MainLayout>
-					</Route>
+
+					{/* 중첩 Router 적용*/}
+					<Route path="/expense/annualList" component={AnnualList} />>
+					{/* 중첩 Router 적용*/}
+					
 					<Route exact path="/expense/annualResister">
 						<MainLayout><AnnualResister /></MainLayout>
 					</Route>

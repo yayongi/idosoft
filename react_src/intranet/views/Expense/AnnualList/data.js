@@ -1,24 +1,16 @@
-export const columnsUp = [
-	{ id: 'num', label: '번호', minWidth: 100, align: 'center'},
-	{ id: 'expenseTypeText', label: '경비유형', minWidth: 100, align: 'center' },
-	{ id: 'memo', label: '내용', minWidth: 100, align: 'center' },
-	{ id: 'statusText', label: '진행상태', minWidth: 100, align: 'center' },
-	{ id: 'register', label: '등록자', minWidth: 100, align: 'center' },
-	{ id: 'payDate', label: '결제일', minWidth: 100, align: 'center' },
-
-];
-
-export const columnsDown = [
-	{ id: 'expenseTypeText', label: '경비유형', minWidth: 100, align: 'center' },
-	{ id: 'statusText', label: '진행상태', minWidth: 100, align: 'center' },
-	{ id: 'payDate', label: '결제일', minWidth: 100, align: 'center' },
-];
-
 function createData(seq, expenseType, expenseTypeText, memo, status, statusText, register, payDate, pay) {
   return { seq, expenseType, expenseTypeText, memo, status, statusText, register, payDate, pay};
 }
+/**
+ *  yyyyMMdd 포맷으로 반환
+ */
+function getFormatDate(value){ 
+	var i = 0, date = value.toString();
+	var pattern = "####-##-##";
+	return  pattern.replace(/#/g, _ => date[i++]);
+}
 
-export const rows = [
+const rows = [
 	createData('19', '0', '야간경비', '택시비', '0', '진행', '오경섭', getFormatDate('20200304'), '10000'),
 	createData('18', '2', '식비', '야식','0', '진행', '김준선', getFormatDate('20200304'), '10000'),
 	createData('17', '1', '물품구매', '명패','0', '진행', '김준선', getFormatDate('20200304'), '10000'),
@@ -40,11 +32,6 @@ export const rows = [
 	createData('1', '2', '식비', '저녁회식', '0', '진행', '김준선', getFormatDate('20190304'), '10000'),
 ];
 
-/**
- *  yyyyMMdd 포맷으로 반환
- */
-function getFormatDate(value){ 
-	var i = 0, date = value.toString();
-	var pattern = "####-##-##";
-	return  pattern.replace(/#/g, _ => date[i++]);
-}
+sessionStorage.setItem("ANNUAL_LIST", JSON.stringify(rows));
+
+export const AnnualStorage = sessionStorage; 

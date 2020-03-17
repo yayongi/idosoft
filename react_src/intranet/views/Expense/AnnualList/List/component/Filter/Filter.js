@@ -79,7 +79,7 @@ export default function  Filter(props) {
 	
 	const classes = useToolbarStyles();
 	const {
-		totalSum,
+		filterRows,
 		state, setState,
 	} = props;
 	const [open, setOpen] = React.useState(false);
@@ -138,6 +138,13 @@ export default function  Filter(props) {
 			[event.target.name]: event.target.value
 		});
 	};
+
+		// 총 결제금액
+	let totalSum = 0; 
+	filterRows.map((row) => {
+		console.log("call Filter.js -> totalSum");
+		totalSum += Number(row.pay);
+	});
 
 	return (
 		<Fragment>

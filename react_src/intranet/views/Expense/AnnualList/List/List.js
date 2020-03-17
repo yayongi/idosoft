@@ -1,11 +1,10 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import Filter from './component/Filter'
 import Body from './component/Body'
 import Paper from '@material-ui/core/Paper';
-import { Divider } from '@material-ui/core';
-import { rows } from './data';
+import { AnnualStorage } from '../data';
 
-export default function  List() {
+export default function  List(props) {
 	const [state, setState] = React.useState({
 		name: "",
 		expenseType: "-1",
@@ -14,15 +13,16 @@ export default function  List() {
 		status: "-1",
 		memo: "",
 	});
+	const [rows, setRows] = React.useState([]);
 
-	// 총 결제금액
-	let totalSum = 0; 
-	rows.map((row) => {
-		totalSum += Number(row.pay);
-	});
+	useEffect(() => {
+		console.log("call List.js -> useEffect");
+		setRows(JSON.parse(AnnualStorage.getItem("ANNUAL_LIST")));
+	}, [state]);
 
 	// 검색 필터링된 데이터
-	const filterRows = () => {
+	const getFilterRows = () => {
+		console.log("call List.js -> filterRows");
 		return (rows.filter((row) => {
 			let result = true;
 			let tmpPayDate = row.payDate.replace(/-/g, '').slice(0,6);
@@ -46,18 +46,20 @@ export default function  List() {
 			return row;
 		});
 	}
+	const filterRows = getFilterRows();
+
 
 	return (
 		<Fragment>
-			<Paper elevation={0} style={{marginBottom:"10px"}}>
+			{console.log("call List.js -> return")}
+			<Fragment>
 				<Filter 
-					totalSum={totalSum}
-					state={state} setState={setState}					
+					filterRows={filterRows}
+					state={state} setState={setState}
 				/>
-			</Paper>
-			<Divider />
+			</Fragment>
 			<Paper>
-				<Body rows={filterRows()} />
+				<Body rows={filterRows} routeProps={props.routeProps} />
 			</Paper>
 		</Fragment>
 	);

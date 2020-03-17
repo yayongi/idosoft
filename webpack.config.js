@@ -78,6 +78,12 @@ module.exports = {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'src/main/webapp/resources/js'),
     },
+    resolve: {
+        modules: [
+        path.join(__dirname, "react_src/intranet"),
+        "node_modules"
+        ]
+    },
     module: {
         rules: [{
             test: /\.jsx?$/,
