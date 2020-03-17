@@ -79,18 +79,6 @@ export function positionFormatter(param){
 	return result;
 }
 
-//최종학력  포맷
-//작성자 : 강성우
-export function schoolFormatter(param){
-	let result;
-	schCareer.map(position => {
-    	if(schCareer.value == param){
-			result = schCareer.label;
-		}
-	})
-	return result;
-}
-
 export function Alert(props){
 
 	console.log("props : " + JSON.stringify(props));
