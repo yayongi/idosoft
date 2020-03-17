@@ -30,7 +30,7 @@
 		<beans:property name="order" value="1" />
 	</beans:bean>
 	
-	<context:component-scan base-package="kr.co.idosoft" />
+	<context:component-scan base-package="kr.co.idosoft.intranet" />
 	
 	<!-- Excel -->
 	<beans:bean id="excelDownloadView" class="kr.co.idosoft.common.util.ExcelDownloadView"/>
