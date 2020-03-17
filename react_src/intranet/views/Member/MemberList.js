@@ -16,7 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import StarIcon from '@material-ui/icons/Star';
 import Grid from '@material-ui/core/Grid';
 import {tableList} from './data';
-import {dateFormatter, phoneFormatter, positionFormatter,schoolFormatter} from '../../js/util';
+import {dateFormatter, phoneFormatter, positionFormatter,schoolFormatter,Alert} from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
 	table: {
@@ -217,6 +217,9 @@ const MemberList = () => {
 						사원정보 등록
 					</Button>
 				</RouterLink>
+				<Button variant="contained" color="primary" onClick={() => Alert({title:'', content:'', onOff:false})}>
+					ALERT
+				</Button>
 			</div>
 		</div>
 	);

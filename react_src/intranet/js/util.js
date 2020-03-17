@@ -1,3 +1,11 @@
+import React from 'react';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 export const positions = [
   { label: '대표',value: 'A01', },
   { label: '이사',value: 'A02', },
@@ -81,6 +89,45 @@ export function schoolFormatter(param){
 		}
 	})
 	return result;
+}
+
+export function Alert(props){
+
+	console.log("props : " + JSON.stringify(props));
+	debugger;
+	const [state, setState] = React.useState({
+    	onOff : props.onOff,
+	});
+
+	const handleClose = () => {
+		setState({
+			...state,
+			onOff : true
+		})
+	};
+
+	return (
+		<div>
+		<Dialog
+			onClose={handleClose}
+			aria-labelledby="alert-dialog-title"
+			aria-describedby="alert-dialog-description"
+			open={state.onOff===undefined?false:state.onOff}
+		>
+			<DialogTitle id="alert-dialog-title" style={{minWidth:'400px'}}>{props.title}</DialogTitle>
+			<DialogContent>
+				<DialogContentText id="alert-dialog-description">
+					{props.content}
+				</DialogContentText>
+			</DialogContent>
+			<DialogActions>
+				<Button onClick={()=>handleClose()} color="primary" autoFocus>
+					확인
+				</Button>
+			</DialogActions>
+		</Dialog>
+		</div>
+	);
 }
 
 
