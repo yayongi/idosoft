@@ -1,5 +1,4 @@
 
-
 import React, { Fragment } from 'react';
 import moment from 'moment';
 
@@ -26,6 +25,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
+//Server
+import axios from 'axios';
+
 import {useStyles} from './styles';
 import {data_2020_01, data_2019_12, data_2019_11
 	, data_2019_10, data_2019_09, data_2019_08
@@ -35,7 +37,6 @@ import {data_2020_01, data_2019_12, data_2019_11
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
-
 
 export default function MonthlystatMemberSelectView() {
 	const classes = useStyles();				// styles.js에 상수로 선언되어 있음. 
@@ -91,7 +92,27 @@ export default function MonthlystatMemberSelectView() {
 	};
 
 	const excelDownload = (e) => {
-		alert('엑셀다운로드 실행');
+		console.log('엑셀다운로드 실행');
+		console.log(`excel export member : ${typeof(JSON.stringify(data_2020_01.members))}`)
+		
+		axios({
+			url: '/intranet/downloadExcelFile',
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			data: {
+				title : 'TEST',
+				jsonArrData : JSON.stringify(data_2020_01.members)
+			}
+		}).then(response => {
+			console.log('Excel Export Success' + JSON.stringify(response));	
+		
+			//location.href="/";
+
+		}).catch(e => {
+			console.log(e);
+		});
 	};
 	/*
 	 * 년도 변경 시, 호출
