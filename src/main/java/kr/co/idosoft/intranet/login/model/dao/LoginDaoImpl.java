@@ -1,4 +1,4 @@
-package kr.co.idosoft.intranet.login.dao;
+package kr.co.idosoft.intranet.login.model.dao;
 
 import java.util.HashMap;
 import java.util.List;

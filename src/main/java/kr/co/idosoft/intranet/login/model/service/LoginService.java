@@ -1,4 +1,4 @@
-package kr.co.idosoft.intranet.login.service;
+package kr.co.idosoft.intranet.login.model.service;
 
 import kr.co.idosoft.intranet.login.vo.LoginVO;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
