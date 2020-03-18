@@ -30,6 +30,9 @@ import kr.co.idosoft.intranet.login.vo.SessionVO;
 @Controller
 public class LoginController {
 	private static final Logger LOG = LoggerFactory.getLogger(LoginController.class);
+	
+	private static final String INITPASSWORD = "idosoft1234"; // 초기비밀번호
+	
 	@Resource LoginService loginService;
 	
 	/**
@@ -49,14 +52,16 @@ public class LoginController {
 		HttpSession session = request.getSession();
 		
 		Map<String, Object> data = new HashMap<String, Object>();
-
+		
+		data.put("loginSign", "false");		// 로그인 가능 여부
+		data.put("resPassSign", "false"); 	// 비밀번호 재설정 여부
+		
 		LOG.debug("##########################################################");
 
 		SessionVO sessionVo = loginService.selectMemberInfo(loginVo);
 		
 		if(sessionVo == null) { // 해당 정보가 없을 경우,
 			LOG.debug("# 해당 정보가 존재하지 않습니다.");
-			data.put("loginSign", "false");
 			return data;
 		}
 		
@@ -71,16 +76,25 @@ public class LoginController {
 		LOG.debug("# 비교 : " + shaPasswordEncoder.matches(loginVo.getPassword(), prevPassword));
 		// 비밀번호 암호화 테스트 용 END /////////////////////////////////////////////////////////
 		if(shaPasswordEncoder.matches(loginVo.getPassword(), prevPassword)) { // 비밀번호 일치 여부
+			
+			// 비밀번호 초기 비밀번호 여부 체크
+			if(shaPasswordEncoder.matches(INITPASSWORD, prevPassword)) {
+				LOG.debug("# 초기비밀번호 입니다. 비밀번호 재설정화면으로 이동합니다. ");
+				data.put("resPassSign", "true"); 
+			}
 			// 비밀번호 delete
 			sessionVo.setPWD("");
 			// 세션 저장
 			session.setAttribute("SESSION_DATA", sessionVo);
-			data.put("loginSign", "true");
-
 			LOG.debug("# session : " + session.getAttribute("SESSION_DATA").toString());
 			LOG.debug("# sessionVO : " + sessionVo);
+
+			// 로그인 
+			data.put("loginSign", "true");
+			LOG.debug("# LOGIN FINISH ");
+
 		} else {
-			data.put("loginSign", "false");
+			
 		}
 		
 		// 비밀번호 일치 여부 확인  END ////////////////////////////////////////////////////
