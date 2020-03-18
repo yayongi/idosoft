@@ -1,8 +1,8 @@
 import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { Link as RouterLink } from 'react-router-dom';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { Link as RouterLink, } from 'react-router-dom';
+import { makeStyles, theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -14,8 +14,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import StarIcon from '@material-ui/icons/Star';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import {tableList} from './data';
+import {dateFormatter, phoneFormatter, positionFormatter,schoolFormatter,Alert} from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
 	table: {
@@ -32,22 +33,8 @@ const useStyles = makeStyles(theme =>({
 	},
 }));
 
-function createData(id,name, position, address1,address2, phone, career,entry,birth,sch_mjr, cert,email,manager_yn ) {
-	return { id,name, position, address1,address2, phone, career,entry,birth,sch_mjr, cert,email,manager_yn  };
-}
 var selected = [];
 
-// 사원삭제
-function removeData(){
-	let temp = [];
-	for(let i=0;i<selected.length;i++){
-		console.log("selected all: " + selected)
-		console.log("selected : "+ String(selected[i]));
-		temp = rows.filter(row => row.id !== String(selected[i]));
-	}
-	console.log("rows : " + temp.length);
-	return temp
-}
 // 모든체크박스 선택
 const onSelectAllClick = () =>{
 
@@ -61,18 +48,6 @@ const isItemSelected = (event,id) =>{
 	}
 }
 
-const rows = [
-	createData('2020010101','최문걸','대표','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',1),
-	createData('2020010102','조현철','이사','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010103','박종운','이사','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010104','허중섭','부장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010105','신우인','부장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010106','이인성','부장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010107','오경섭','차장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010108','전수현','차장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-	createData('2020010109','고성진','차장','경기도 안양시 동안구 달안로 75','샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','1989.01.20','성균관대학교 화학공학과',1,'678493@naver.com',0),
-];
-
 const category = [
 	{label:"이름",value:"0"},
 	{label:"직급",value:"1"},
@@ -81,12 +56,65 @@ const category = [
 const MemberList = () => {
 	const classes = useStyles();
 	
-	const [test, setTest] = React.useState(rows);
+	const [state, setState] = React.useState({
+		memberList : tableList,	// 사원관리 리스트
+		manager_yn : true		// 관리자 여부
+	});
 
-	const handleChange = () =>{
-		setTest(removeData);
+	//만약 등록화면에서 넘어 오면 리스트 추가
+	if((localStorage.getItem('savedData') != null) || (localStorage.getItem('savedData') != undefined)){
+		const savedData = JSON.parse(localStorage.getItem('savedData'));	//등록, 수정 화면에서 받아온 데이터
+		let temp_data = null;	//임시
+		let flag = true;
+
+		// 기존의 리스트에 해당 직원이 있는지 없는지 확인한다.
+		state.memberList.map((member,index) => {
+			if(member.id == savedData.id){
+				state.memberList[index] = savedData;
+				flag = false;
+				temp_data = state.memberList;
+			}
+		})
+
+		//기존의 리스트에 직원 아이디가 없는 경우 추가되는 직원으로 판단한다.
+		if(flag){
+			//새로 등록된 사원인 경우
+			temp_data = state.memberList.concat(savedData)
+		}
+
+		//변경된 직원리스트 state에 업데이트
+		setState({
+			...state,
+			memberList : temp_data
+		});
+
+		//local스토리지에 보관중인 기존 데이터 삭제.
+		localStorage.removeItem('savedData');
 	}
 
+	//사원삭제
+	const removeData = () => {
+		//체크박스로 선택된 직원 아이디로 선택적으로 필터링
+		let temp = state.memberList;
+		for(let i=0;i<selected.length;i++){
+			temp = temp.filter(temp => temp.id !== String(selected[i]));
+		}
+
+		selected = [];
+
+		setState({
+			...state,
+			memberList : temp
+		});
+	}
+
+	//임시 로컬스토리지에 저장하기
+	const setLocalstorage = (data) => {
+		//기존 스토리지에 있는 데이터 삭제.
+		localStorage.removeItem('savedData');
+		//수정 페이지로 이동할 때 필요한 데이터 함께 이동 
+		localStorage.setItem('savedData', JSON.stringify(data));
+	}
 
 	return (
 		<div>
@@ -97,7 +125,7 @@ const MemberList = () => {
 				<div className={classes.root}>
 					<Grid container spacing={3}>
 						<Grid item xs style={{textAlign:'left'}}>
-							<Button variant="contained" color="primary" onClick={handleChange}>
+							<Button variant="contained" color="primary" onClick={removeData}>
 								직원정보 삭제
 							</Button>
 						</Grid>
@@ -145,7 +173,7 @@ const MemberList = () => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-						{test.map(row => (
+						{state.memberList.map(row => (
 							<TableRow key={row.id}>
 								<TableCell padding="checkbox">
 									<Checkbox
@@ -153,22 +181,27 @@ const MemberList = () => {
 										key = {row.id}
 									/>
 								</TableCell>
-								<TableCell component="th" scope="row">
+								<TableCell align="center">
 									{row.manager_yn === 1 && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
 									{row.name}
 								</TableCell>
-								<TableCell align="center">{row.position}</TableCell>
+								<TableCell align="center">{positionFormatter(row.position)}</TableCell>
 								<TableCell>
 									{row.address1} {row.address2}
 									</TableCell>
-								<TableCell align="center">{row.phone}</TableCell>
-								<TableCell align="center">{row.career}</TableCell>
-								<TableCell align="center">{row.entry}</TableCell>
+								<TableCell align="center">{phoneFormatter(row.phone)}</TableCell>
+								<TableCell align="center">{row.career} </TableCell>
+								<TableCell align="center">{dateFormatter(row.entry)}</TableCell>
 								<TableCell align="center">
-									{row.cert == 1? '유':'무'}
+									{row.cert_yn == 1? '유':'무'}
 								</TableCell>
 								<TableCell align="center">
-									<Button variant="contained" color="primary" href="#contained-buttons">
+									<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod_admin":"/member/membermod_user"}>
+										<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
+											수정
+										</Button>
+									</RouterLink>
+									<Button variant="contained" color="primary">
 										개인이력
 									</Button>
 								</TableCell>
@@ -184,6 +217,9 @@ const MemberList = () => {
 						사원정보 등록
 					</Button>
 				</RouterLink>
+				<Button variant="contained" color="primary" onClick={() => Alert({title:'', content:'', onOff:false})}>
+					ALERT
+				</Button>
 			</div>
 		</div>
 	);

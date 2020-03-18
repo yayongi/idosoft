@@ -2,38 +2,14 @@ import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
+import { Link as RouterLink, } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
-
-function createData(id,name, position, address, phone, career,entry, cert,email ) {
-	return { id,name, position, address, phone, career,entry, cert,email };
-}
-
-const positions = [
-  { label: '대표',value: 'A01', },
-  { label: '이사',value: 'A02', },
-  { label: '부장',value: 'A03', },
-  { label: '차장',value: 'B01', },
-  { label: '과장',value: 'B02', },
-  { label: '대리',value: 'B03', },
-  { label: '사원',value: 'B04', },
-];
-
-const certYn = [
-  { label:'유',value:'1' },
-  { label:'무',value:'0' }
-];
-
-const schCareer = [
-  { label:'고졸',value:'A01'},
-  { label:'초대졸',value:'A02'},
-  { label:'대졸',value:'A03'},
-  { label:'대학원졸',value:'A04'},
-];
+import {findAdress,dateFormatter, phoneFormatter, positionFormatter,schCareer,unFormatter,positions,certYn} from '../../js/util';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -59,12 +35,41 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const rows = [
-	createData('1234567890','최문걸','대표', '경기도 안양시 동안구 달안로 75 샛별한양아파트 304동 611호', '010-5174-2860', '3년', '2018.05.09','유','678493@naver.com'),
-];
-
 const MemberReg = () => {
-	const classes = useStyles();
+  const classes = useStyles();
+  
+  const [state, setState] = React.useState({
+		memberData : JSON.parse(localStorage.getItem('savedData')),
+	});
+
+  //임시파일 불러오기
+  const row = state.memberData;
+  
+  //임시데이터 저장하기
+  const setLocalstorage = () => {
+    const getData = {
+      id : row.id,
+      name : document.getElementById("name").value,
+      position : document.getElementById("position").nextSibling.value,
+      address1 : document.getElementById("address1").value,
+      address2 : document.getElementById("address2").value,
+      phone : unFormatter(document.getElementById("phone").value),
+      career : String(Number(new Date().getFullYear()) - Number(document.getElementById("car_date").value.substring( 0, 4 ))),
+      entry : unFormatter(document.getElementById("entry").value),
+      birth : unFormatter(document.getElementById("birth").value),
+      sch_mjr : document.getElementById("sch_mjr").value,
+      cert_yn : document.getElementById("cert_yn").nextSibling.value,
+      email : document.getElementById("email").value,
+      sch_car : document.getElementById("sch_car").nextSibling.value,
+      mar_date : unFormatter(document.getElementById("mar_date").value),
+      moon_cal : document.getElementById("moon_cal").checked,
+      car_date : unFormatter(document.getElementById("car_date").value)
+    }
+
+    localStorage.removeItem('savedData');
+    localStorage.setItem('savedData', JSON.stringify(getData));
+  }
+
 	return (
 		<div>
 			<Card>
@@ -118,14 +123,14 @@ const MemberReg = () => {
             <Grid item xs={12} sm={8}>
               <Card>
                 <CardContent>
-                  <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" size="small" label="이름" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" id="name" defaultValue={row.name} label="이름" variant="outlined" />
                       <TextField style={{width:'20%'}}
-                        id="outlined-select-currency"
+                        id="position"
                         select
                         label="직급"
                         variant="outlined"
+                        defaultValue={row.position}
                         size="small" 
                       >
                         {positions.map(option => (
@@ -139,7 +144,8 @@ const MemberReg = () => {
                           <Checkbox
                             value="checkedB"
                             color="primary"
-                            checked
+                            defaultValue={row.manager_yn}
+                            id="manager_yn"
                           />
                         }
                         label="관리자"
@@ -149,32 +155,33 @@ const MemberReg = () => {
                           <Checkbox
                             value="checkedB"
                             color="primary"
+                            defaultValue={row.approval_yn}
+                            id="approval_yn"
                           />
                         }
                         label="1차결제자"
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" size="small" style={{width:'34%'}} label="이메일" variant="outlined" />
-                      <TextField id="outlined-basic" size="small" style={{width:'34%'}} label="휴대전화" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'34%'}} id="email" defaultValue={row.email} label="이메일" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'34%'}} id="phone" defaultValue={phoneFormatter(row.phone)} label="휴대전화" variant="outlined" />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" size="small" style={{width:'70%'}} label="기본주소" variant="outlined" InputProps={{
+                      <TextField id="outlined-basic" size="small" style={{width:'70%'}} id="address1" defaultValue={row.address1} label="기본주소" variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
-                      <Button variant="contained" color="primary">
+                      <Button variant="contained" color="primary" onClick={() => findAdress("address1")}>
                                               주소찾기
                       </Button>
-                      <TextField id="outlined-basic" size="small" style={{width:'70%'}} label="상세주소" variant="outlined" InputProps={{
-                        readOnly: true,
-                      }}/>
+                      <TextField id="outlined-basic" size="small" style={{width:'70%'}} id="address2" defaultValue={row.address2} label="상세주소" variant="outlined"/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField style={{width:'20%'}}
-                        id="outlined-select-currency"
-                        select
+                        id="cert_yn"
                         label="자격증 유무"
                         variant="outlined"
+                        select
+                        defaultValue={row.cert_yn}
                         size="small" 
                       >
                         {certYn.map(option => (
@@ -183,25 +190,28 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="입사일" variant="outlined" />
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="생일" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} id="entry" defaultValue={dateFormatter(row.entry)} label="입사일" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} id="birth" defaultValue={dateFormatter(row.birth)} label="생일" variant="outlined" />
                       <FormControlLabel
                         control={
                           <Checkbox
                             value="checkedB"
                             color="primary"
+                            id="moon_cal"
+                            defaultValue={row.moon_cal}
                           />
                         }
                         label="음력"
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="학교/학과" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} id="sch_mjr" defaultValue={row.sch_mjr} label="학교/학과" variant="outlined" />
                       <TextField style={{width:'20%'}}
-                        id="outlined-select-currency"
-                        select
+                        id="sch_car"
                         label="최종학력"
+                        select
                         variant="outlined"
+                        defaultValue={row.sch_car}
                         size="small" 
                       >
                         {schCareer.map(option => (
@@ -210,13 +220,15 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" />
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} id="car_date" defaultValue={row.car_date} label="경력시작일" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} id="mar_date" defaultValue={row.mar_date} label="결혼기념일" variant="outlined" />
                     </div>
                     <div className={classes.textfield}>
-                      <Button variant="contained" color="primary">
-                                                저장하기
-                      </Button>
+                      <RouterLink button="true" to="/member/memberlist">
+                        <Button variant="contained" color="primary" onClick={setLocalstorage}>
+                                                  저장하기
+                        </Button>
+                      </RouterLink>
                       <Button variant="contained" color="primary">
                                                 뒤로가기
                       </Button>
@@ -224,7 +236,6 @@ const MemberReg = () => {
                                                 비밀번호 초기화
                       </Button>
                     </div>
-                  </form>
                 </CardContent>
               </Card>
             </Grid>
