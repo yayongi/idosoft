@@ -9,6 +9,8 @@ import Grid from '@material-ui/core/Grid';
 import { Link as RouterLink, } from 'react-router-dom';
 import { ResponsiveContainer } from 'recharts';
 import AddIcon from '@material-ui/icons/Add';
+import ContentModal from "./ContentModal";
+
 import Title from '../Title';
 import { data } from './data';
 
@@ -20,8 +22,21 @@ const useStyles = makeStyles(theme => ({
 
 export default function Notice() {
 	const classes = useStyles();
+
+	const [openModal, setOpenModal] = React.useState({title:'', content:'', openModal:false});
+	const [selected, setSelected] = React.useState([]);
+
+	const openContentModal = (Title, Content) => {
+		return setOpenModal({title:Title, content:Content, openModal:true});
+	  }
+	  
+	const handleCloseModal = (trigger) => {
+		return setOpenModal({title:'', content:'', openModal:trigger});
+	}
+
 	return (
 		<React.Fragment>
+			<ContentModal props={openModal} closeModal={handleCloseModal}/>
 			<Title>
 				<ResponsiveContainer>
 					<Grid container spacing={2}>
@@ -47,7 +62,7 @@ export default function Notice() {
 				<TableBody>
 					{data.map(datum => (
 						<TableRow key={datum.id}>
-							<TableCell>{datum.title}</TableCell>
+							<TableCell onClick={event => openContentModal(datum.title, datum.content)}>{datum.title}</TableCell>
 							<TableCell>{datum.date}</TableCell>
 							<TableCell>{datum.writer}</TableCell>
 						</TableRow>
