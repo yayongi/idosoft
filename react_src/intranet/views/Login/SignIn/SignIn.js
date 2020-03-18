@@ -16,6 +16,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 // Server
 import axios from 'axios';
 
@@ -30,11 +36,24 @@ class SignIn extends Component {
 		this.state = {
 			email: '',
 			password: '',
-			errors: []
+			errors: [],
+			open: false,
 		}
 
 	}
 	
+	errorArartOpen(){
+		this.state.open = true;
+		console.log('open : ' + this.state.open);
+		this.forceUpdate();
+	}
+
+	errorArartClose(){
+		this.state.open = false;
+		console.log('open : ' + this.state.open);
+		this.forceUpdate();
+	}
+
 	// 입력값 미입력시, 에러처리
 	showValidationErr(elm, msg){
 		this.setState((prevState) => ( {errors: [...prevState.errors, {elm, msg}] } ));
@@ -90,10 +109,17 @@ class SignIn extends Component {
 					password : password
 				}
 			}).then(response => {
-				console.log('로그인 여부' + JSON.stringify(response));	
+				console.log('로그인 여부' + JSON.stringify(response.data.loginSign));	
+				
+				const loginSign = response.data.loginSign;
 
-				//location.href="/";
-
+				if(loginSign == 'true'){
+					location.href="/";
+				} else {
+					const errorArartOpen = this.errorArartOpen.bind(this);
+					errorArartOpen();
+					//alert('존재하지 않는 아이디 이거나 비밀번호가 틀립니다.');
+				}
 			}).catch(e => {
 				console.log(e);
 			});
@@ -126,10 +152,12 @@ class SignIn extends Component {
 			}));	
 
 	render(){
-	
+		
 		const classes = this.useStyles.bind(this);
 
 		let emailErr = null, passwordErr = null;
+		
+		let open = this.state.open;
 
 		for(let err of this.state.errors){
 			if(err.elm == "email"){
@@ -205,6 +233,25 @@ class SignIn extends Component {
 						</form>
 					</div>
 				</Container>
+				<div>
+					<Dialog
+						open={open}
+						onClose={this.errorArartClose.bind(this)}
+						aria-labelledby="alert-dialog-title"
+						aria-describedby="alert-dialog-description"
+					>
+						<DialogContent>
+						<DialogContentText id="alert-dialog-description">
+							존재하지 않는 아이디 이거나 비밀번호가 틀립니다.
+						</DialogContentText>
+						</DialogContent>
+						<DialogActions>
+						<Button onClick={this.errorArartClose.bind(this)} color="primary" autoFocus>
+							닫기
+						</Button>
+						</DialogActions>
+					</Dialog>
+				</div>
 			</React.Fragment>
 		);
 	}

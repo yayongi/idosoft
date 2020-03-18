@@ -10,8 +10,8 @@
 	 -->
 	<select id="selectMemberInfo" resultMap="SessionVO" parameterMap="LoginVO">
 		SELECT	
-			NAME name, EMAIL email, PASSWORD password, PHONE phone 
-		FROM member WHERE email = #{email}
+			*
+		FROM TB_MEMBER WHERE EMAIL = #{email}
 	</select>
 	
 </mapper>

@@ -1,10 +1,10 @@
-package kr.co.idosoft.intranet.login.service;
+package kr.co.idosoft.intranet.login.model.service;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import kr.co.idosoft.intranet.login.dao.LoginDao;
+import kr.co.idosoft.intranet.login.model.dao.LoginDao;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 
@@ -19,7 +19,6 @@ public class LoginServiceImpl implements LoginService {
 	 */
 	@Override
 	public SessionVO selectMemberInfo(LoginVO loginInfo) {
-		// TODO Auto-generated method stub
 		return loginDao.selectMemberInfo(loginInfo);
 	}
 
