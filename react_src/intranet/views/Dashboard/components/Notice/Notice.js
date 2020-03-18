@@ -21,17 +21,32 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Notice() {
-	const classes = useStyles();
-
-	const [openModal, setOpenModal] = React.useState({title:'', content:'', openModal:false});
-	const [selected, setSelected] = React.useState([]);
+	const [openModal, setOpenModal] = React.useState({
+		title:'', 
+		content:'', 
+		openModal:false,
+		buttonName : '',
+		url:''
+	});
 
 	const openContentModal = (Title, Content) => {
-		return setOpenModal({title:Title, content:Content, openModal:true});
+		return setOpenModal({
+			title:Title, 
+			content:Content, 
+			openModal:true,
+			buttonName : '상세로 이동하기',
+			url:''
+		});
 	  }
 	  
 	const handleCloseModal = (trigger) => {
-		return setOpenModal({title:'', content:'', openModal:trigger});
+		return setOpenModal({
+			title:'', 
+			content:'', 
+			openModal:trigger,
+			buttonName : '',
+			url:''
+		});
 	}
 
 	return (
@@ -61,8 +76,8 @@ export default function Notice() {
 				</TableHead>
 				<TableBody>
 					{data.map(datum => (
-						<TableRow key={datum.id}>
-							<TableCell onClick={event => openContentModal(datum.title, datum.content)}>{datum.title}</TableCell>
+						<TableRow key={datum.id} onClick={event => openContentModal(datum.title, datum.content)} style={{cursor : "pointer"}}>
+							<TableCell>{datum.title}</TableCell>
 							<TableCell>{datum.date}</TableCell>
 							<TableCell>{datum.writer}</TableCell>
 						</TableRow>

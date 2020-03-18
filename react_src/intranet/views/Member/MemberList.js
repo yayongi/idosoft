@@ -16,7 +16,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import StarIcon from '@material-ui/icons/Star';
 import Grid from '@material-ui/core/Grid';
 import {tableList} from './data';
-import {dateFormatter, phoneFormatter, positionFormatter,schoolFormatter,Alert} from '../../js/util';
+import ContentModal from "./ContentModal";
+import {dateFormatter, phoneFormatter, positionFormatter} from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
 	table: {
@@ -59,6 +60,18 @@ const MemberList = () => {
 	const [state, setState] = React.useState({
 		memberList : tableList,	// 사원관리 리스트
 		manager_yn : true		// 관리자 여부
+	});
+
+	const [openModal, setOpenModal] = React.useState({
+		name:'',
+		postion:'',
+		address1:'',
+		address2:'',
+		email:'', 
+		openModal:false,
+		manager_yn : null,
+		buttonName : '',
+		datum : null
 	});
 
 	//만약 등록화면에서 넘어 오면 리스트 추가
@@ -116,8 +129,37 @@ const MemberList = () => {
 		localStorage.setItem('savedData', JSON.stringify(data));
 	}
 
+	const openContentModal = (datum) => {
+		return setOpenModal({
+			name:datum.name,
+			postion:datum.position,
+			address1:datum.address1,
+			address2:datum.address2,
+			email:datum.email,
+			openModal:true,
+			manager_yn : state.manager_yn,
+			buttonName : '상세로 이동하기',
+			datum:datum
+		});
+	  }
+	  
+	const handleCloseModal = (trigger) => {
+		return setOpenModal({
+			name:'',
+			postion:'',
+			address1:'',
+			address2:'',
+			email:'', 
+			openModal:trigger,
+			manager_yn : null,
+			buttonName : '',
+			datum:null
+		});
+	}
+
 	return (
 		<div>
+			<ContentModal props={openModal} closeModal={handleCloseModal}/>
 			<Card>
 				<CardContent>
 					사원관리
@@ -181,18 +223,18 @@ const MemberList = () => {
 										key = {row.id}
 									/>
 								</TableCell>
-								<TableCell align="center">
+								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
 									{row.manager_yn === 1 && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
 									{row.name}
 								</TableCell>
-								<TableCell align="center">{positionFormatter(row.position)}</TableCell>
-								<TableCell>
+								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{positionFormatter(row.position)}</TableCell>
+								<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
 									{row.address1} {row.address2}
 									</TableCell>
-								<TableCell align="center">{phoneFormatter(row.phone)}</TableCell>
-								<TableCell align="center">{row.career} </TableCell>
-								<TableCell align="center">{dateFormatter(row.entry)}</TableCell>
-								<TableCell align="center">
+								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{phoneFormatter(row.phone)}</TableCell>
+								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{row.career} </TableCell>
+								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{dateFormatter(row.entry)}</TableCell>
+								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
 									{row.cert_yn == 1? '유':'무'}
 								</TableCell>
 								<TableCell align="center">
@@ -217,9 +259,6 @@ const MemberList = () => {
 						사원정보 등록
 					</Button>
 				</RouterLink>
-				<Button variant="contained" color="primary" onClick={() => Alert({title:'', content:'', onOff:false})}>
-					ALERT
-				</Button>
 			</div>
 		</div>
 	);

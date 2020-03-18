@@ -10,7 +10,7 @@ export default function MemberChart(){
 
 	return (
 		<React.Fragment>
-			<Title>투입인원현</Title>
+			<Title>투입인원현황</Title>
 			<ResponsiveContainer>
 				<BarChart  data={data_result}>
 					<XAxis dataKey="projectsite" stroke="#8884d8" />
