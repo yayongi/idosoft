@@ -16,7 +16,7 @@ export default function  List(props) {
 	const [rows, setRows] = React.useState([]);
 
 	useEffect(() => {
-		console.log("call List.js -> useEffect");
+		console.log("call useEffect");
 		setRows(JSON.parse(AnnualStorage.getItem("ANNUAL_LIST")));
 	}, [state]);
 
@@ -55,6 +55,7 @@ export default function  List(props) {
 				<Filter 
 					filterRows={filterRows}
 					state={state} setState={setState}
+					routeProps={props.routeProps}
 				/>
 			</Fragment>
 			<Paper>

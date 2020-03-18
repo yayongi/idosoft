@@ -27,6 +27,8 @@ import {
 } from '@material-ui/pickers';
 
 
+import { AnnualStorage, expenseTypes, statuses } from 'views/Expense/AnnualList/data'
+
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
 		// justifyContent: 'flex-end',
@@ -46,23 +48,6 @@ const useToolbarStyles = makeStyles(theme => ({
 		marginRight: '10px',
 	}
 }));
-
-// 경비 유형 Select 값
-const expenseTypes = [
-	{ value: '-1', label: '전체'  },
-	{ value: '0', label: '야간경비' },
-	{ value: '1', label: '물품구매' },
-	{ value: '2', label: '저녁식비' },
-];
-
-// 진행상태값
-const statuses = [
-	{ value: '-1', label: '전체' },
-	{ value: '0', label: '진행' },
-	{ value: '1', label: '1차결재완료' },
-	{ value: '2', label: '완료' },
-	{ value: '3', label: '반려' },
-];
 
 // Select로 구성할 년월 목록
 const getListYyyyMm = (period) => {
@@ -91,6 +76,7 @@ export default function  Filter(props) {
 	const {
 		filterRows,
 		state, setState,
+		routeProps
 	} = props;
 	const [open, setOpen] = React.useState(false);
 	const handleClickOpen = () => {
@@ -103,9 +89,11 @@ export default function  Filter(props) {
 	const excelExport = () => {
 		alert("엑셀 내보내기");
 	}
-
-	const goRegist = () => {
-		alert("경비신청 화면으로 이동");
+	// 경비 신청 화면
+	const handleClickNew = () => {
+		console.log("call handleClickNew");
+		AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify([{}]));  // 세션 스토리지에 선택한 Row Data 저장
+		routeProps.history.push(`${routeProps.match.url}/new`);
 	}
 
 	// Dialog 값 상위 컴포넌트의 state값으로 초기화
@@ -185,7 +173,7 @@ export default function  Filter(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={excelExport} className={classes.button}>
 							엑셀 내보내기
 						</Button>
-						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} onClick={goRegist}>
+						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} onClick={handleClickNew}>
 							경비신청
 						</Button>
 					</Hidden>
@@ -196,7 +184,7 @@ export default function  Filter(props) {
 						<IconButton color="primary" onClick={excelExport} className={classes.button}>
 							<SaveIcon />
 						</IconButton>
-						<IconButton color="primary" onClick={goRegist}>
+						<IconButton color="primary" onClick={handleClickNew}>
 							<AddIcon />
 						</IconButton>
 					</Hidden>
