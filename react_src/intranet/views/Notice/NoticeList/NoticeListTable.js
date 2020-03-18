@@ -1,43 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import { lighten, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import Tooltip from '@material-ui/core/Tooltip';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
+import CardContent from '@material-ui/core/CardContent';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
+import ContentModal from '../component/ContentModal';
+import NoticeListTool from './NoticeListTool';
 
-import SelectType from '../component/SelectType';
-import InputSearch from '../component/InputSearch';
-
-
-function createData(NoticeNo, Title, Reg, Writer) {
-  return { NoticeNo, Title, Reg, Writer };
+function createData(NoticeNo, Title, Reg, Writer, Content, openModal) {
+  return { NoticeNo, Title, Reg, Writer, Content, openModal };
 }
 
-const rows = [
-  createData(1, '공지사항입니다.', '2019-09-03', '김준선'),
-  createData(2, '공지사항입니다.', '2019-09-03', '김준선'),
-  createData(3, '공지사항입니다.', '2019-09-03', '김준선'),
-  createData(4, '공지사항입니다.', '2019-09-03', '김준선'),
-  createData(5, '공지사항입니다.', '2019-09-03', '김준선'),
-  createData(6, '공지사항입니다.', '2019-09-03', '김준선')
+const rows = [//content 추
+  createData(1, '1공지사항입니다.', '2019-09-03', '김준선', '1공지내용입니다.', false),
+  createData(2, '2공지사항입니다.', '2019-09-03', '김준선', '2공지내용입니다.', false),
+  createData(3, '3공지사항입니다.', '2019-09-03', '김준선', '3공지내용입니다.', false),
+  createData(4, '4공지사항입니다.', '2019-09-03', '김준선', '4공지내용입니다.', false),
+  createData(5, '5공지사항입니다.', '2019-09-03', '김준선', '5공지내용입니다.', false),
+  createData(6, '6공지사항입니다.', '2019-09-03', '김준선', '6공지내용입니다.', false)
 ];
+
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -83,18 +76,17 @@ function EnhancedTableHead(props) {
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
-            color="primary"
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all desserts' }}
+			      inputProps={{ 'aria-label': 'select all desserts' }}
+			      color="primary"
           />
         </TableCell>
         {headCells.map(headCell => (
           <TableCell
             key={headCell.id}
-			      // align={headCell.numeric ? 'right' : 'left'}
-			      align="center"
+            align={headCell.numeric ? 'center' : 'center'}
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -127,82 +119,6 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-const useToolbarStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
-  },
-  highlight:
-    theme.palette.type === 'light'
-      ? {
-          color: theme.palette.primary.main,
-          backgroundColor: lighten(theme.palette.primary.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.primary.dark,
-        },
-  title: {
-    flex: '1 1 100%',
-  },
-  textRight: {
-    paddingLeft: theme.spacing(40),
-  }
-}));
-
-const EnhancedTableToolbar = props => {
-  const classes = useToolbarStyles();
-  const { numSelected } = props;
-
-  return (
-	<div>
-    <Toolbar
-      className={clsx(classes.root, {
-        [classes.highlight]: numSelected > 0,
-      })}
-    >
-      {numSelected > 0 ? (
-        <Typography className={classes.title} color="inherit" variant="subtitle1">
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography className={classes.title} variant="h6" id="tableTitle">
-			공지사항
-        </Typography>
-      )}
-      {numSelected > 0 ? (
-      <div>
-          <Tooltip title="Delete" color="white">
-            <IconButton aria-label="delete" color="secondary">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-      </div>
-      ) : (
-        <Tooltip title="Add" aria-label="add">
-          <Fab color="primary">
-            <AddIcon />
-          		</Fab>
-		    </Tooltip>
-      )}
-    </Toolbar>
-    <Toolbar>
-    </Toolbar>
-	  <Toolbar>
-      <SelectType/>
-      <InputSearch/>
-      <div className={classes.textRight}>
-        {'전체건수 : 150  |  조회건수 : 20'}
-      </div>
-	  </Toolbar>
-	</div>
-  );
-};
-
-EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
-};
-
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
@@ -227,14 +143,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function NoticeListLayout() {
+export default function NoticeListTable() {
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('ResType');
+  const [orderBy, setOrderBy] = React.useState('NoticeNo');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const [openModal, setOpenModal] = React.useState({title:'', content:'', openModal:false});
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -244,19 +162,19 @@ export default function NoticeListLayout() {
 
   const handleSelectAllClick = event => {
     if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.ResNo);
+      const newSelecteds = rows.map(n => n.NoticeNo);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, NoticeNo) => {
-    const selectedIndex = selected.indexOf(NoticeNo);
+  const handleClick = (event, name) => {
+    const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, NoticeNo);
+      newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -280,9 +198,23 @@ export default function NoticeListLayout() {
     setPage(0);
   };
 
-  const handleChangeDense = event => {
-    setDense(event.target.checked);
-  };
+  const openContentModal = (Title, Content) => {
+    // debugger;
+    // console.log({title:Title, content:Content, openModal:true});
+    let temp = selected.length;
+    if(temp != selected.length){
+      temp = selected.length;
+      return setOpenModal({title:Title, content:Content, openModal:false});
+    }else{
+      return setOpenModal({title:Title, content:Content, openModal:true});
+    }
+
+  }
+
+  const handleCloseModal = (trigger) => {
+    return setOpenModal({title:'', content:'', openModal:trigger});
+  }
+
 
   const isSelected = NoticeNo => selected.indexOf(NoticeNo) !== -1;
 
@@ -290,13 +222,15 @@ export default function NoticeListLayout() {
 
   return (
     <div className={classes.root}>
-      <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+      <ContentModal props={openModal} closeModal={handleCloseModal}/>
+	    <NoticeListTool props={selected} />
+      <CardContent className={classes.paper}>
+        {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
         <TableContainer>
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='medium'
             aria-label="enhanced table"
           >
             <EnhancedTableHead
@@ -318,40 +252,43 @@ export default function NoticeListLayout() {
                   return (
                     <TableRow
                       hover
-                      onClick={event => handleClick(event, row.NoticeNo)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.NoticeNo}
                       selected={isItemSelected}
+                      // onClick={event => openContentModal(row.Title, row.Content)}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
-                          color="primary"
                           checked={isItemSelected}
                           inputProps={{ 'aria-labelledby': labelId }}
+                          onClick={event => handleClick(event, row.NoticeNo)}
+                          color="primary"
                         />
                       </TableCell>
-                      <TableCell align="center" component="th" id={labelId} scope="row" padding="none">
+                      <TableCell align="center" component="th" id={labelId} scope="row" padding="none" onClick={event => openContentModal(row.Title, row.Content)}>
                         {row.NoticeNo}
                       </TableCell>
-                      <TableCell align="center">{row.Title}</TableCell>
-                      <TableCell align="center">{row.Reg}</TableCell>
-                      <TableCell align="center">{row.Writer}</TableCell>
+                      <TableCell align="center" onClick={event => openContentModal(row.Title, row.Content)}>{row.Title}</TableCell>
+                      <TableCell align="center" onClick={event => openContentModal(row.Title, row.Content)}>{row.Reg}</TableCell>
+                      <TableCell align="center" onClick={event => openContentModal(row.Title, row.Content)}>{row.Writer}</TableCell>
                     </TableRow>
                   );
                 })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>
-        
-      </Paper>
-      
+        {/* <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        /> */}
+      </CardContent>
     </div>
   );
 }
