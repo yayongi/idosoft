@@ -25,8 +25,6 @@ export default function Notice() {
 		title:'', 
 		content:'', 
 		openModal:false,
-		buttonName : '',
-		url:''
 	});
 
 	const openContentModal = (Title, Content) => {
@@ -34,8 +32,6 @@ export default function Notice() {
 			title:Title, 
 			content:Content, 
 			openModal:true,
-			buttonName : '상세로 이동하기',
-			url:''
 		});
 	  }
 	  
@@ -44,8 +40,6 @@ export default function Notice() {
 			title:'', 
 			content:'', 
 			openModal:trigger,
-			buttonName : '',
-			url:''
 		});
 	}
 

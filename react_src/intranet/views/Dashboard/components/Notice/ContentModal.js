@@ -1,6 +1,5 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
@@ -69,15 +68,6 @@ const ContentModal = ({props, closeModal}) => {
         <DialogContent dividers>
 			    {props.content}
         </DialogContent>
-        <DialogActions>
-          {props.buttonName !== "" && (
-            <RouterLink button="true" to={props.url}>
-              <Button autoFocus color="primary">
-                {props.buttonName}
-              </Button>
-            </RouterLink>
-          )}
-        </DialogActions>
       </Dialog>
     </div>
   );
