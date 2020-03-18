@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.co.idosoft.common.util.JsonUtils;
 import kr.co.idosoft.common.util.SHAPasswordEncoder;
 import kr.co.idosoft.intranet.login.model.service.LoginService;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
@@ -121,6 +125,43 @@ public class LoginController {
 		
 		// 세션 비우기
 		session.invalidate();
+
+		return data;
+	}
+	
+	/**
+	 * 세션 정보 JSON OBJECT 문자열로 반환
+	 * @param model
+	 * @param vo
+	 * @return data
+	 */
+	@RequestMapping(value="/getSession", method=RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getSession(Model model, HttpServletRequest request) {
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("/getSession");
+		}
+		
+		HttpSession session = request.getSession();
+		Map<String, Object> data = new HashMap<String, Object>();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		String jsonSessionInfoObject = null;
+		
+		try {
+			jsonSessionInfoObject = mapper.writeValueAsString(session.getAttribute("SESSION_DATA"));
+		} catch (JsonProcessingException e) {
+			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
+		}
+		
+		LOG.debug("#######################################################################");
+		LOG.debug("# SESSION OBJECT : " + session.getAttribute("SESSION_DATA"));
+		LOG.debug("# SESSION JSON OBJECT : " + jsonSessionInfoObject);
+		LOG.debug("#######################################################################");
+
+		// 세션 데이터 저장
+		data.put("SESSION_DATA", jsonSessionInfoObject);
 
 		return data;
 	}
