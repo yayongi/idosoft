@@ -1,18 +1,16 @@
 import React, {Component} from 'react';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 
 // Server
 import axios from 'axios';
@@ -25,14 +23,34 @@ class ResPassword extends Component {
 		// prevPassword : 이메일
 		// password : 비밀번호
 		// errors : 에러 배열
+		// open : 팝업 열기 flag
+		// errMsg : 팝업 내용
 		this.state = {
 			prevPassword: '',
 			password: '',
-			errors: []
+			errors: [],
+			open: false,
+			errMsg: '',
 		}
-
 	}
 	
+	// errorArart 열기
+	errorArartOpen(errMsg){
+		this.setState({
+			open : true,
+			errMsg : errMsg,
+		});
+		console.log('open : ' + this.state.open);
+		this.forceUpdate();
+	}
+
+	// errorArart 닫기 
+	errorArartClose(){
+		this.setState({open : false,});
+		console.log('open : ' + this.state.open);
+		this.forceUpdate();
+	}
+
 	// 입력값 미입력시, 에러처리
 	showValidationErr(elm, msg){
 		this.setState((prevState) => ( {errors: [...prevState.errors, {elm, msg}] } ));
@@ -54,45 +72,72 @@ class ResPassword extends Component {
 
 	// prevPassword 입력창에 onchange 이벤트 발생 시, 호출
 	prevPasswordHandleChange = (e) => {
-		this.setState({prevPassword: e.target.value});
+		this.setState({prevPassword: e.target.value,});
 		this.clearValidationErr("prevPassword");
+
+		
 	}
 
 	// password 입력창에 onchange 이벤트 발생 시, 호출
 	pwHandleChange = (e) => {
-		this.setState({password: e.target.value});
+		this.setState({password: e.target.value,});
 		this.clearValidationErr("password");
 	}
 
 	// 로그인 버튼 클릭 시, 호출
 	resetPasswordHandleClick = (e) => {
-		const { prevPassword, password } = this.state;
+		const { prevPassword, password} = this.state;
+		
+		let prevPassCheck = true;
+		let passwordCheck = true;
+		
+		// 비밀번호 정규표현식
+		const regExpPw = /(?=.*\d{1,50})(?=.*[~`!@#$%\^&*()-+=]{1,50})(?=.*[a-zA-Z]{2,50}).{8,50}$/;
 
-		if(prevPassword == ""){
-			this.showValidationErr("prevPassword", "새로운 비밀번호을  입력해주세요!");
-		} 
+		if(!regExpPw.test(prevPassword)){
+
+			prevPassCheck = false;
+
+			this.showValidationErr("prevPassword", "숫자, 특문 각 1회 이상, 영문은 2개 이상 사용하여 8자리 이상 입력해주세요.");
+		}
+
+		if(!regExpPw.test(password)){
+
+			passwordCheck = false;
+
+			this.showValidationErr("password", "숫자, 특문 각 1회 이상, 영문은 2개 이상 사용하여 8자리 이상 입력해주세요.");
+		}
 		
-		if(password == "") {
-			this.showValidationErr("password", "새로운 비밀번호 확인을 입력해주세요!");
-		} 
-		
-		if(prevPassword != "" && password != "") {
-			
-			console.log(`prevPassword : ${prevPassword} , password : ${password}`);
-			
-			/* axios({
-				url: '/intranet/login',
-				method: 'post',
-				data: {
-					prevPassword : prevPassword,
-					password : password
+		if(prevPassCheck && passwordCheck){
+			if(prevPassword != "" && password != "") {
+				
+				console.log(`prevPassword : ${prevPassword} , password : ${password}`);
+				
+				if(prevPassword == password){
+					/* axios({
+						url: '/intranet/login',
+						method: 'post',
+						data: {
+							prevPassword : prevPassword,
+							password : password
+						}
+					}).then(response => {
+						console.log('로그인 여부' + JSON.stringify(response));	
+					}).catch(e => {
+						console.log(e);
+					}); */
+
+					console.log("비밀번호 일치");
+					
+					location.href="/";
+				} else {
+					const errorArartOpen = this.errorArartOpen.bind(this);
+					
+					errorArartOpen("비밀번호가 일치하지 않습니다.");
+	
+					console.log("비밀번호 불일치");
 				}
-			}).then(response => {
-				console.log('로그인 여부' + JSON.stringify(response));	
-			}).catch(e => {
-				console.log(e);
-			}); */
-
+			}
 		}
 	} 
 
@@ -122,7 +167,10 @@ class ResPassword extends Component {
 		const classes = this.useStyles.bind(this);
 
 		let prevPasswordErr = null, passwordErr = null;
-
+		
+		let open = this.state.open;
+		let errMsg = this.state.errMsg;
+		
 		for(let err of this.state.errors){
 			if(err.elm == "prevPassword"){
 				prevPasswordErr = err.msg;
@@ -182,6 +230,25 @@ class ResPassword extends Component {
 						</form>
 					</div>
 				</Container>
+				<div>
+					<Dialog
+						open={open}
+						onClose={this.errorArartClose.bind(this)}
+						aria-labelledby="alert-dialog-title"
+						aria-describedby="alert-dialog-description"
+					>
+						<DialogContent>
+						<DialogContentText id="alert-dialog-description">
+							{errMsg}
+						</DialogContentText>
+						</DialogContent>
+						<DialogActions>
+						<Button onClick={this.errorArartClose.bind(this)} color="primary" autoFocus>
+							닫기
+						</Button>
+						</DialogActions>
+					</Dialog>
+				</div>
 			</React.Fragment>
 		);
 	}

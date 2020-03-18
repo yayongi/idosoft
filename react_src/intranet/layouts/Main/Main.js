@@ -65,12 +65,14 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function Main(props) {
+export default function Main(props) {	
 	const classes = useStyles();	
 	const [open, setOpen] = React.useState(false);
+	// 왼쪽 메뉴바 열기
 	const handleDrawerOpen = () => {
 		setOpen(true);
 	};
+	// 왼쪽 메뉴바 닫기
 	const handleDrawerClose = () => {
 		setOpen(false);
 	};
@@ -83,7 +85,8 @@ export default function Main(props) {
 			<main className={classes.content}>
 				<div className={classes.appBarSpacer} />
 				<Container maxWidth="xl" className={classes.container}>
-					{cloneElement(props.children)}
+					{/* 상위컴포넌트에서 child element를 포함하고 있을 경우에 children으로 넘어온다.*/}
+					{cloneElement(props.children)}		
 				</Container>
 			</main>
 		</div>

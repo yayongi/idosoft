@@ -1,20 +1,19 @@
 import React, {Component} from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 
 // Server
 import axios from 'axios';
@@ -27,14 +26,30 @@ class SignIn extends Component {
 		// email : 이메일
 		// password : 비밀번호
 		// errors : 에러 배열
+		// open : alert창 flag
 		this.state = {
 			email: '',
 			password: '',
-			errors: []
+			errors: [],
+			open: false,
 		}
 
 	}
 	
+	// errorArart 열기
+	errorArartOpen(){
+		this.setState({open:true,});
+		console.log('open : ' + this.state.open);
+		this.forceUpdate();
+	}
+
+	// errorArart 닫기 
+	errorArartClose(){
+		this.setState({open:false,});
+		console.log('open : ' + this.state.open);
+		this.forceUpdate();
+	}
+
 	// 입력값 미입력시, 에러처리
 	showValidationErr(elm, msg){
 		this.setState((prevState) => ( {errors: [...prevState.errors, {elm, msg}] } ));
@@ -90,20 +105,27 @@ class SignIn extends Component {
 					password : password
 				}
 			}).then(response => {
-				console.log('로그인 여부' + JSON.stringify(response));	
+				console.log('로그인 여부' + JSON.stringify(response.data));	
+				
+				const loginSign = response.data.loginSign;
+				const resPassSign = response.data.resPassSign;
 
-				//location.href="/";
-
+				if(loginSign == 'true'){
+					if(resPassSign == 'true'){
+						location.href="/#/resPassword";
+					} else {
+						location.href="/";
+					}
+				} else {
+					const errorArartOpen = this.errorArartOpen.bind(this);
+					errorArartOpen();
+				}
 			}).catch(e => {
 				console.log(e);
 			});
 
 		}
 	} 
-
-	test1 = () => {
-		location.href="/#/resPassword";
-	}
 
 	useStyles = makeStyles(theme => ({
 				paper: {
@@ -126,10 +148,12 @@ class SignIn extends Component {
 			}));	
 
 	render(){
-	
+		
 		const classes = this.useStyles.bind(this);
 
 		let emailErr = null, passwordErr = null;
+		
+		let open = this.state.open;
 
 		for(let err of this.state.errors){
 			if(err.elm == "email"){
@@ -191,20 +215,28 @@ class SignIn extends Component {
 								로그인 
 							</Button>
 							<div style={{height : 40}}/>
-							<Button
-								type="button"
-								fullWidth
-								variant="contained"
-								color="primary"
-								className={classes.submit}
-								onClick={this.test1.bind(this)}
-								//component={RouterLink} to="/resPassword"
-							>
-								비밀번호 재설정 (예비)
-							</Button>
 						</form>
 					</div>
 				</Container>
+				<div>
+					<Dialog
+						open={open}
+						onClose={this.errorArartClose.bind(this)}
+						aria-labelledby="alert-dialog-title"
+						aria-describedby="alert-dialog-description"
+					>
+						<DialogContent>
+						<DialogContentText id="alert-dialog-description">
+							존재하지 않는 아이디 이거나 비밀번호가 틀립니다.
+						</DialogContentText>
+						</DialogContent>
+						<DialogActions>
+						<Button onClick={this.errorArartClose.bind(this)} color="primary" autoFocus>
+							닫기
+						</Button>
+						</DialogActions>
+					</Dialog>
+				</div>
 			</React.Fragment>
 		);
 	}

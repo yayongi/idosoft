@@ -12,28 +12,7 @@
   import ExpRegBtn from './ExpRegBtn';
   import SortInputSelectBox from './SortInputSelectBox';
 
-  const useStyles = makeStyles(theme => ({
-    root: {
-      flexGrow: 1,
-    },
-    paper: {
-      padding: theme.spacing(2),
-      textAlign: 'center',
-      color: theme.palette.text.secondary,
-    },
-    paperContents: {
-      padding: theme.spacing(1),
-    },
-    center: {
-      textAlign: 'center',
-    },
-    left: {
-      textAlign: 'left',
-    },
-    right: {
-      textAlign: 'right',
-    },
-  }));
+  
 
   export default function FullWidthGrid() {
     const classes = useStyles();

@@ -86,8 +86,14 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.7'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.7'
+    
+     compile group: 'net.minidev', name: 'json-smart', version: '1.0.9'
     //<-- e:JSON 데이터 응답을 받기 위해 추가
 
+    // excel 관련 POI
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.0'
+    compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.2'
+    
     //<-- s:logback + log4jdbc 적용을 위한 추가된 라이브러리
     compile "org.slf4j:slf4j-api:${version.slf4j}"
     //runtime "org.slf4j:slf4j-api:${version.slf4j}"

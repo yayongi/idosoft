@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.co.idosoft.common.util.SHAPasswordEncoder;
-import kr.co.idosoft.intranet.login.service.LoginService;
+import kr.co.idosoft.intranet.login.model.service.LoginService;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 
@@ -30,6 +30,9 @@ import kr.co.idosoft.intranet.login.vo.SessionVO;
 @Controller
 public class LoginController {
 	private static final Logger LOG = LoggerFactory.getLogger(LoginController.class);
+	
+	private static final String INITPASSWORD = "idosoft1234"; // 초기비밀번호
+	
 	@Resource LoginService loginService;
 	
 	/**
@@ -41,6 +44,7 @@ public class LoginController {
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> login(Model model, @RequestBody LoginVO loginVo, HttpServletRequest request) {
+		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/login");
 		}
@@ -48,39 +52,52 @@ public class LoginController {
 		HttpSession session = request.getSession();
 		
 		Map<String, Object> data = new HashMap<String, Object>();
-
+		
+		data.put("loginSign", "false");		// 로그인 가능 여부
+		data.put("resPassSign", "false"); 	// 비밀번호 재설정 여부
+		
 		LOG.debug("##########################################################");
 
 		SessionVO sessionVo = loginService.selectMemberInfo(loginVo);
 		
 		if(sessionVo == null) { // 해당 정보가 없을 경우,
-			data.put("loginSign", "false");
+			LOG.debug("# 해당 정보가 존재하지 않습니다.");
 			return data;
 		}
 		
-		String prevPassword = sessionVo.getPassword(); // 현재 비밀번호
+		String prevPassword = sessionVo.getPWD(); // 현재 비밀번호
 		
 		SHAPasswordEncoder shaPasswordEncoder = new SHAPasswordEncoder(512); // SHA512
 		shaPasswordEncoder.setEncodeHashAsBase64(true);
 		
 		// 비밀번호 암호화 테스트 용 START ///////////////////////////////////////////////////////
-		LOG.debug("SHA512 : " + shaPasswordEncoder.encode(loginVo.getPassword()));
-		LOG.debug("현재비밀번호 : " + loginVo.getPassword());
-		LOG.debug("비교 : " + shaPasswordEncoder.matches(loginVo.getPassword(), prevPassword));
+		LOG.debug("# SHA512 : " + shaPasswordEncoder.encode(loginVo.getPassword()));
+		LOG.debug("# 현재비밀번호 : " + loginVo.getPassword());
+		LOG.debug("# 비교 : " + shaPasswordEncoder.matches(loginVo.getPassword(), prevPassword));
 		// 비밀번호 암호화 테스트 용 END /////////////////////////////////////////////////////////
 		if(shaPasswordEncoder.matches(loginVo.getPassword(), prevPassword)) { // 비밀번호 일치 여부
+			
+			// 비밀번호 초기 비밀번호 여부 체크
+			if(shaPasswordEncoder.matches(INITPASSWORD, prevPassword)) {
+				LOG.debug("# 초기비밀번호 입니다. 비밀번호 재설정화면으로 이동합니다. ");
+				data.put("resPassSign", "true"); 
+			}
 			// 비밀번호 delete
-			sessionVo.setPassword("");
+			sessionVo.setPWD("");
 			// 세션 저장
 			session.setAttribute("SESSION_DATA", sessionVo);
+			LOG.debug("# session : " + session.getAttribute("SESSION_DATA").toString());
+			LOG.debug("# sessionVO : " + sessionVo);
+
+			// 로그인 
 			data.put("loginSign", "true");
+			LOG.debug("# LOGIN FINISH ");
+
 		} else {
-			data.put("loginSign", "false");
+			
 		}
 		
 		// 비밀번호 일치 여부 확인  END ////////////////////////////////////////////////////
-		LOG.debug("session : " + session.getAttribute("SESSION_DATA").toString() + "#############################");
-		LOG.debug("sessionVO : " + sessionVo + "#############################");
 		LOG.debug("##########################################################");
 
 		return data;

@@ -5,6 +5,13 @@ import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import DateFnsUtils from '@date-io/date-fns';
+import ko from "date-fns/locale/ko";
+
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -71,11 +78,27 @@ export default function CenteredGrid() {
         <Grid item xs={12} sm={2}>
                           결제일
         </Grid>
-        <Grid item xs={12} sm={10}> 
-          <Input defaultValue="2020-03-12" inputProps={{ 'aria-label': 'description' }} /> 
+        <Grid item xs={12} sm={10}>
+          
+          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+            <Grid container justify="space-around">
+              <KeyboardDatePicker
+                margin="normal"
+                lolocale='ko'
+                id="date-picker-dialog"
+                label="Date picker dialog"
+                format="MM/dd/yyyy"
+                value={selectedDate}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
+            </Grid>
+          </MuiPickersUtilsProvider>
         </Grid>
         <Grid item xs={12} sm={2}>
-                            금액
+                  금액
         </Grid>
         <Grid item xs={12} sm={10}>
           <Input defaultValue="" inputProps={{ 'aria-label': 'description' }} /> 원
@@ -93,7 +116,7 @@ export default function CenteredGrid() {
           />
         </Grid>
         <Grid item xs={12} sm={2}>
-                            첨부파일
+                        첨부파일
         </Grid>
         <Grid item xs={12} sm={6}>
             <input type="file"></input>           

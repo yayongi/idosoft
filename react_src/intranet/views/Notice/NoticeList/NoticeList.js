@@ -1,21 +1,15 @@
-import React, {Component} from 'react';
+import React, {Component, useDebugValue} from 'react';
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 
+import NoticeListTable from './NoticeListTable';
 
-import NoticeListLayout from './NoticeListLayout'
+const NoticeList = () => {
 
-
-class NoticeList extends Component {
-	render() {
-		return (
-			<Card>
-				<CardContent>
-					<NoticeListLayout/>
-				</CardContent>
-			</Card>
-		);
-	}
+	return (
+		<Card>
+			<NoticeListTable/>
+		</Card>
+	);
 }
 
 export default NoticeList;

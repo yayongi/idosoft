@@ -22,20 +22,37 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function CustomizedInputBase() {
-  
-  const classes = useStyles();
+const InputSearch = ({props, onInputBlur}) => {
 
+  const classes = useStyles();
+  const [inputValue, setState] = React.useState();
+
+  const searchClick = () => {
+    if(!inputValue){
+      alert("검색어를 입력해주세요");
+    }
+    console.log(inputValue);
+  }
+
+  const handleInputChange = (event) => {
+    setState(event.target.value);
+    onInputBlur(event.target.value);
+  }
   return (
     <Paper component="form" className={classes.root}>
       <InputBase
         className={classes.input}
         placeholder="검색어를 입력하세요."
         inputProps={{ 'aria-label': '검색어를 입력하세요.' }}
+        onChange={handleInputChange}
       />
-      <IconButton type="submit" className={classes.iconButton} aria-label="search">
+      <IconButton type="submit" className={classes.iconButton} 
+        aria-label="search"
+        onClick={searchClick}>
         <SearchIcon />
       </IconButton>
     </Paper>
   );
 }
+
+export default InputSearch;
