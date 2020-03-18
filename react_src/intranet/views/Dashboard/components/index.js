@@ -1,6 +1,6 @@
-export {default as Chart} from './Chart';
-export {default as Deposits} from './Deposits';
-export {default as Orders} from './Orders';
+export {default as MemberChart} from './MemberChart';
+export {default as Anniversary} from './Anniversary';
+export {default as Notice} from './Notice';
 export {default as Title} from './Title';
 
 

@@ -8,9 +8,8 @@ import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 
 import {
-	Chart, Deposits, Orders
+	MemberChart, Anniversary, Notice
 } from './components'
-
 
 const useStyles = makeStyles(theme => ({
 	paper: {
@@ -45,21 +44,21 @@ export default function Dashboard() {
 		<Fragment>
 			<Grid container spacing={3}>
 				{/* Chart */}
-				<Grid item xs={12} md={8} lg={9}>
-					<Paper className={fixedHeightPaper}>
-						<Chart />
-					</Paper>
-				</Grid>
-				{/* Recent Deposits */}
-				<Grid item xs={12} md={4} lg={3}>
-					<Paper className={fixedHeightPaper}>
-						<Deposits />
-					</Paper>
-				</Grid>
-				{/* Recent Orders */}
 				<Grid item xs={12}>
-					<Paper className={classes.paper}>
-						<Orders />
+					<Paper className={fixedHeightPaper}>
+						<MemberChart />
+					</Paper>
+				</Grid>
+				{/* Notice*/}
+				<Grid item xs={12} md={6} lg={6}>
+					<Paper className={fixedHeightPaper}>
+						<Notice/>
+					</Paper>
+				</Grid>
+				{/* Date */}
+				<Grid item xs={12} md={6} lg={6}>
+					<Paper className={fixedHeightPaper}>
+						<Anniversary />
 					</Paper>
 				</Grid>
 			</Grid>

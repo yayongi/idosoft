@@ -62,8 +62,10 @@ const MemberReg = () => {
       sch_mjr : document.getElementById("sch_mjr").value,
       cert_yn : document.getElementById("cert_yn").nextSibling.value,
       email : row.email,
+      manager_yn : row.manager_yn,
       sch_car : document.getElementById("sch_car").nextSibling.value,
-      mar_date : unFormatter(document.getElementById("mar_date").value),
+      mar_date : document.getElementById("mar_date").value,
+      approval_yn : row.approval_yn,
       moon_cal : document.getElementById("moon_cal").checked,
       car_date : unFormatter(document.getElementById("car_date").value)
     }
@@ -173,6 +175,7 @@ const MemberReg = () => {
                             value="checkedB"
                             color="primary"
                             id="moon_cal"
+                            defaultChecked={row.moon_cal}
                           />
                         }
                         label="음력"
@@ -203,9 +206,11 @@ const MemberReg = () => {
                                                   저장하기
                         </Button>
                       </RouterLink>
-                      <Button variant="contained" color="primary">
-                                                뒤로가기
-                      </Button>
+                      <RouterLink button="true" to="/member/memberlist" >
+                        <Button variant="contained" color="primary">
+                                                  뒤로가기
+                        </Button>
+                      </RouterLink>
                       <Button variant="contained" color="primary">
                                                 비밀번호변경하기
                       </Button>
