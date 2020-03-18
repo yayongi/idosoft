@@ -60,8 +60,10 @@ const MemberReg = () => {
       sch_mjr : document.getElementById("sch_mjr").value,
       cert_yn : document.getElementById("cert_yn").nextSibling.value,
       email : document.getElementById("email").value,
+      manager_yn : document.getElementById("manager_yn").checked,
       sch_car : document.getElementById("sch_car").nextSibling.value,
-      mar_date : unFormatter(document.getElementById("mar_date").value),
+      mar_date : document.getElementById("mar_date").value,
+      approval_yn : document.getElementById("approval_yn").checked,
       moon_cal : document.getElementById("moon_cal").checked,
       car_date : unFormatter(document.getElementById("car_date").value)
     }
@@ -144,7 +146,7 @@ const MemberReg = () => {
                           <Checkbox
                             value="checkedB"
                             color="primary"
-                            defaultValue={row.manager_yn}
+                            defaultChecked={row.manager_yn}
                             id="manager_yn"
                           />
                         }
@@ -155,7 +157,7 @@ const MemberReg = () => {
                           <Checkbox
                             value="checkedB"
                             color="primary"
-                            defaultValue={row.approval_yn}
+                            defaultChecked={row.approval_yn}
                             id="approval_yn"
                           />
                         }
@@ -198,7 +200,7 @@ const MemberReg = () => {
                             value="checkedB"
                             color="primary"
                             id="moon_cal"
-                            defaultValue={row.moon_cal}
+                            defaultChecked={row.moon_cal}
                           />
                         }
                         label="음력"
@@ -220,8 +222,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} id="car_date" defaultValue={row.car_date} label="경력시작일" variant="outlined" />
-                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} id="mar_date" defaultValue={row.mar_date} label="결혼기념일" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} id="car_date" defaultValue={dateFormatter(row.car_date)} label="경력시작일" variant="outlined" />
+                      <TextField id="outlined-basic" size="small" style={{width:'20%'}} id="mar_date" defaultValue={dateFormatter(row.mar_date)} label="결혼기념일" variant="outlined" />
                     </div>
                     <div className={classes.textfield}>
                       <RouterLink button="true" to="/member/memberlist">
@@ -229,9 +231,11 @@ const MemberReg = () => {
                                                   저장하기
                         </Button>
                       </RouterLink>
-                      <Button variant="contained" color="primary">
-                                                뒤로가기
-                      </Button>
+                      <RouterLink button="true" to="/member/memberlist">
+                        <Button variant="contained" color="primary">
+                                                  뒤로가기
+                        </Button>
+                      </RouterLink>
                       <Button variant="contained" color="primary">
                                                 비밀번호 초기화
                       </Button>
