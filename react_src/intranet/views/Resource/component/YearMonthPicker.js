@@ -13,7 +13,8 @@ import {
 
 export default function YearMonthPicker(props) {
   // The first commit of Material-UI
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  // const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [selectedDate, setSelectedDate] = React.useState(props.date===undefined?null:props.date);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);

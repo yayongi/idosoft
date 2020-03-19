@@ -57,11 +57,8 @@ const ResourceListTool = ({props}) => {
 		alert('엑셀다운로드 실행');
 	}
 
-	const handleDeleteRes = e => {
-		// ResTestData.testData
-		// for(var i=0; i<ResTestData.testData.length; i++){
-		// 	if(ResTestData.testData[i].resNo == ...props)
-		// }
+	const handleDeleteRes = () => {
+		//
 	}
 
 

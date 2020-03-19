@@ -8,9 +8,9 @@ class ResourceRegist extends Component {
 	render() {
 		return (
 			<Card>
-				<CardContent>
+				{/* <CardContent> */}
 					<ResourceRegistLayout/>
-				</CardContent>
+				{/* </CardContent> */}
 			</Card>
 		);
 	}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { Link as RouterLink } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -46,9 +47,11 @@ export default function GridLayout() {
 				<Grid item xs={12}>
 					<Typography className={classes.title} variant="h6" id="tableTitle">공지사항</Typography>
 					<div className={classes.buttonRoot}>
-						<Button className={classes.btn} variant="contained">
-							뒤로가기
-						</Button>
+						<RouterLink button="true" to="/notice">
+							<Button className={classes.btn} variant="contained">
+								뒤로가기
+							</Button>
+						</RouterLink>
 						<Button className={classes.btn} variant="contained" color="primary">
 							저장
 						</Button>
