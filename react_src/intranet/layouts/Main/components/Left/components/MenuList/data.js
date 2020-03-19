@@ -32,7 +32,7 @@ export const menus = [
 	},
 	{
 		title: '프로젝트',
-		href: '/project/history',
+		href: '/project',
 		icon: <BarChartIcon />, 
 		submenu: [
 			{
@@ -49,7 +49,7 @@ export const menus = [
 	},
 	{
 		title: '경비관리',
-		href: '/expense/annualList',
+		href: '/expense',
 		icon: <CreditCard />, 
 		submenu: [
 			{
@@ -73,5 +73,11 @@ export const menus = [
 				icon: <SubdirectoryArrowRightIcon fontSize="small"/>, 
 			},
 		]
+	},
+	{
+		title: '코드관리',
+		href: '/admin/code',
+		icon: <AccountTreeIcon />,
+		admin: true, 
 	},
 ]
