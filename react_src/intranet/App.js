@@ -9,8 +9,10 @@ import {
 	ModifyCode as ModifyCode,
 	Dashboard as Dashboard,
 	AnnualList as AnnualList,
-	PayList as PayList,
+	AnnualView as AnnualView,
 	ApprovalList as ApprovalList,
+	ApprovalView as ApprovalView,
+	PayList as PayList,
 	MonthlystatMemberSelectView as MonthlystatMemberSelectView,
 	SignIn as SignIn,
 	ResPassword as ResPassword,
@@ -30,6 +32,8 @@ import {
 	ResourceRegist as ResourceRegist,
 	NotFound as NotFound
 } from './views';
+
+
 
 export default function App() {
 	return (
@@ -81,10 +85,35 @@ export default function App() {
 						<MainLayout><Manage /></MainLayout>
 					</Route>
 
+					{/* 중첩 Router 적용 - state Left 메뉴의 state가 유실되는 문제가 있어서 폐기 - 20200319: 오경섭*/}
+					{/* <Route path="/expense/annualList" component={AnnualList} />> */}
+					{/* <Route path="/expense/approvalList" component={ApprovalList} />> */}
 					{/* 중첩 Router 적용*/}
-					<Route path="/expense/annualList" component={AnnualList} />>
-					<Route path="/expense/approvalList" component={ApprovalList} />>
-					{/* 중첩 Router 적용*/}
+					{/* 경비결재관리 목록 화면 */}
+					<Route exact path='/expense/annualList' render={(props) =>
+						<MainLayout>
+							<AnnualList routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 경비결재관리 상세화면 */}
+					<Route path='/expense/annualList/view/:id' render={(props) =>
+						<MainLayout>
+							<AnnualView routeProps={props} />
+						</MainLayout>
+					} />
+
+					{/* 경비결재관리 목록 화면 */}
+					<Route exact path='/expense/approvalList' render={(props) =>
+						<MainLayout>
+							<ApprovalList routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 경비결재관리 상세화면 */}
+					<Route path='/expense/approvalList/view/:id' render={(props) =>
+						<MainLayout>
+							<ApprovalView routeProps={props} />
+						</MainLayout>
+					} />
 					
 					<Route exact path="/expense/monthyStatMSelectView">
 						<MainLayout><MonthlystatMemberSelectView /></MainLayout>
