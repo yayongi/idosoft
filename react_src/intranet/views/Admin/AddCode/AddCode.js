@@ -8,7 +8,7 @@ import CodeInfo from '../component/CodeInfo';
 const useStyles = makeStyles({
 });
 
-export default function StickyHeadTable() {
+export default function AddCode() {
   const classes = useStyles();
 
 

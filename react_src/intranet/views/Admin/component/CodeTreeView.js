@@ -157,7 +157,7 @@ const useStyles = makeStyles({
 
 export default function CodeTreeView(props) {
   const classes = useStyles();
-  const [codeInfoToTree, setCodeInfoToTree] = useState(CodeInfoToTree(props.props));
+  const [codeInfoToTree, setCodeInfoToTree] = useState(CodeInfoToTree(props.codeInfo));
 
 
   return (

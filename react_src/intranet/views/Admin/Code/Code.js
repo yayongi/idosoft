@@ -10,12 +10,19 @@ import { makeStyles } from '@material-ui/core/styles';
 /*
     개발 소스 db 연결 시 변경 및 수정 필요
 */
-function getCodeInfoData(){
+function getCodeOriginInfoData(){
   const sortedCodeInfo = getCodeInfoDB();
   return sortedCodeInfo.sort((a, b) => {
     return parseInt(a.code_level) - parseInt(b.code_level);
   });
 }
+
+function getRootList(codeOriginInfo){
+  return codeOriginInfo.filter(info => (
+      info["code_level"] === "1"
+    ));
+}
+
 
 /*
     개발 소스 db 연결 시 변경 및 수정 필요
@@ -28,64 +35,75 @@ const mainStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    height:500,
+    overflowY: 'scroll'
   },
 }));
 
-export default function CodeView() {
+export default function CodeView(props) {
   console.log("CodeView");
+  console.log(props);
   const classes = mainStyles();
-  const [codeInfo, setCodeInfo] = useState(getCodeInfoData());
-  const [codeInfoCopy, setcodeInfoCopy] = useState(codeInfo);
-  const [searchType, setSearchType] = useState('');
+  const [codeOriginInfo, setcodeOriginInfo] = useState(getCodeOriginInfoData());
+  const rootCodeList = getRootList(codeOriginInfo);
+  const [codeInfo, setCodeInfo] = useState(codeOriginInfo);
+  const [condition, setCondition] = useState({
+    searchType: "",
+    searchKeyword: "",
+  })
 
   useEffect(() => {
     console.log("useEffect");
   }, []);
 
-  function codeUpdate(updateCodeInfo){
-    console.log("codeUpdate");
-    setCodeInfo(updateCodeInfo);
-  }
+  const updateCondition = (conditions) => {
+    console.log("updateCondition");
+    console.log(conditions);
+    setCondition(conditions);
 
-  const searchCode = (searchKeyWord) => {
-     
-    if(!searchKeyWord && searchType != "upper_code"){
-      alert("검색어를 입력해주세요");
-      return;
+    var searchedInfo = [];
+    switch(conditions.searchType){
+      case "0":
+        searchedInfo = codeOriginInfo;
+        break;
+      case "1":
+        searchedInfo = codeOriginInfo.filter((info) => info.code_id === conditions.searchKeyword);
+        break;
+      case "2":
+        searchedInfo = codeOriginInfo.filter((info) => info.code_name === conditions.searchKeyword);
+        break;
+      case "3":
+        searchedInfo = codeOriginInfo.filter((info) => info.code_level === conditions.searchKeyword);
+        break;
+      case "4":
+        searchedInfo = codeOriginInfo.filter((info) => info.upper_code === conditions.searchKeyword);
+        break;
+      case "5":
+        searchedInfo = codeOriginInfo.filter((info) => info.upper_code === "");
+        break;
+      default:
+        searchedInfo = codeOriginInfo;
+        break;
+      
     }
-
-    if(!searchType){
-      alert("검색 조건을 선택해주세요");
-      return;
-    }
-
-    searchKeyWord = searchKeyWord ? searchKeyWord : "";
-    setcodeInfoCopy(codeInfo.filter(info => (
-      info[searchType] === searchKeyWord
-    )));
-  }
-
-  const selectSearchType = (selectType) => {
-    setSearchType(selectType);
-  }
+    setCodeInfo(searchedInfo);
+  };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Paper className={classes.paper}>
-          <CodeSearchDiv searchCode={searchCode} selectSearchType={selectSearchType}/>
-        </Paper>
+    <>
+      <CodeSearchDiv condition={condition} updateCondition={updateCondition}/>
+      <Grid container spacing={2}>
+        <Grid item xs={6} sm={6}>
+          <Paper className={classes.paper}>
+            <CodeTreeView codeInfo={codeInfo}/>
+          </Paper>
+        </Grid>
+        <Grid item xs={6} sm={6}>
+          <Paper className={classes.paper}>
+            <CodeInfoTable codeInfo={codeInfo} rootCodeList={rootCodeList}/>
+          </Paper>
+        </Grid>
       </Grid>
-      <Grid item xs={6} sm={6}>
-        <Paper className={classes.paper}>
-          <CodeTreeView props={codeInfoCopy}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6} sm={6}>
-        <Paper className={classes.paper}>
-          <CodeInfoTable props={codeInfoCopy}/>
-        </Paper>
-      </Grid>
-    </Grid>
+    </>
   );
 }
