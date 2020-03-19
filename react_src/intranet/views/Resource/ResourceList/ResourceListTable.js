@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useDebugValue, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -14,33 +14,16 @@ import Checkbox from '@material-ui/core/Checkbox';
 import CardContent from '@material-ui/core/CardContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CreateIcon from '@material-ui/icons/Create';
+import { Link as RouterLink } from 'react-router-dom';
 
-import ResourceListTool from './ResourceListTool';
-
-import {ResTestData} from '../Data';
+// import ResourceListTool from './ResourceListTool';
 
 function createData(ResNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder) {
   return { ResNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder };
 }
-
-// const rows = [
-//   createData(1, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-//   createData(2, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(3, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(4, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(5, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-//   createData(6, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(7, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(8, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(9, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-//   createData(10, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(11, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(12, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(13, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-//   createData(14, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '유기환'),
-//   createData(15, '모니터', 'sdfsdf120g-asf', 'LG', '2001-03', '2005-06', '24인치', 'SDFS4412FDS', 'ADFSDF11124DSF', '김준선'),
-// ];
-let rows = ResTestData.testData;
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -59,13 +42,15 @@ function getComparator(order, orderBy) {
 }
 
 function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map(el => el[0]);
+  if(array.length > 0){
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    return stabilizedThis.map(el => el[0]);
+  }
 }
 
 const headCells = [
@@ -95,8 +80,8 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-			inputProps={{ 'aria-label': 'select all desserts' }}
-			color="primary"
+            inputProps={{ 'aria-label': 'select all desserts' }}
+            color="primary"
           />
         </TableCell>
         {headCells.map(headCell => (
@@ -105,6 +90,7 @@ function EnhancedTableHead(props) {
             align={headCell.numeric ? 'center' : 'center'}
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
+            // style={{minWidth:'120px'}}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -120,6 +106,7 @@ function EnhancedTableHead(props) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell></TableCell>
       </TableRow>
     </TableHead>
   );
@@ -157,15 +144,24 @@ const useStyles = makeStyles(theme => ({
     top: 20,
     width: 1,
   },
+  margin: {
+    margin: theme.spacing(1),
+  },
 }));
 
-export default function EnhancedTable() {
+export default function ResourceListTable({resData, selectedResNo}) {
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('resNo');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  // const [rows, setRows] = React.useState(JSON.parse(localStorage.getItem('resData')));
+  const [rows, setRows] = React.useState(resData);
+
+  useEffect(()=>{
+    setRows(resData);
+  });
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -198,8 +194,8 @@ export default function EnhancedTable() {
         selected.slice(selectedIndex + 1),
       );
     }
-
     setSelected(newSelected);
+    selectedResNo(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -211,15 +207,31 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
+  //개별 삭제 handler
+  const handleDeleteClick = (resNo) => {
+    const index = rows.findIndex(res => res.resNo === resNo);
+    const newRows = [...rows];
+
+    if(index !== undefined){
+      newRows.splice(index, 1);
+      localStorage.setItem('resData', JSON.stringify(newRows));
+    }
+    setRows(newRows);
+  }
+
+  const handleEditClick = (resNo) => {
+    localStorage.setItem('resEditIndex', resNo);
+  }
 
   const isSelected = resNo => selected.indexOf(resNo) !== -1;
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
-	<ResourceListTool props={selected} />
+	  {/* <ResourceListTool props={selected} /> */}
       <CardContent className={classes.paper}>
+        {/* <CardContent > */}
         {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
         <TableContainer>
           <Table
@@ -238,8 +250,8 @@ export default function EnhancedTable() {
               rowCount={rows.length}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
-                // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              {rows.length > 0 && stableSort(rows, getComparator(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.resNo);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -256,9 +268,9 @@ export default function EnhancedTable() {
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={isItemSelected}
-						  inputProps={{ 'aria-labelledby': labelId }}
-						  onClick={event => handleClick(event, row.resNo)}
-						  color="primary"
+                          inputProps={{ 'aria-labelledby': labelId }}
+                          color="primary"
+                          onClick={event => handleClick(event, row.resNo)}
                         />
                       </TableCell>
                       <TableCell align="center" component="th" id={labelId} scope="row" padding="none">
@@ -273,21 +285,32 @@ export default function EnhancedTable() {
                       <TableCell align="center">{row.serialNo}</TableCell>
                       <TableCell align="center">{row.macAddr}</TableCell>
                       <TableCell align="center">{row.holder}</TableCell>
+                      {/* 관리자의 경우 */}
+                      <TableCell align="center">
+                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.resNo)}>
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                        <RouterLink button="true" to="/resource/regist">
+                          <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.resNo)}>
+                            <CreateIcon fontSize="small" />
+                          </IconButton>
+                        </RouterLink>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
             </TableBody>
           </Table>
         </TableContainer>
-        {/* <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-        /> */}
+        />
       </CardContent>
     </div>
   );

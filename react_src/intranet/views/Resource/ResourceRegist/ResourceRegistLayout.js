@@ -4,27 +4,20 @@ import PropTypes from 'prop-types';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
 import YearMonthPicker from '../component/YearMonthPicker';
 import SelectType from '../component/SelectType';
 
-import {ResTestData} from '../Data';
+import {resDataCheck} from '../uitl/ResUtil';
+import CommonDialog from '../../../js/CommonDialog';
 
-import {
-  NavLink,
-  Route,
-  Redirect,
-  Switch
-} from 'react-router-dom';
-
+// const localResData = JSON.parse(localStorage.getItem('resData'));
 
 const useToolbarStyles = makeStyles(theme => ({
   root: {
@@ -84,8 +77,13 @@ const useStyles = makeStyles(theme => ({
 	flex: '1 1 100%',
 	textAlign: 'left'
   },
+  buttonMargin: {
+	textAlign: 'right',
+	marginRight: '10px',
+  },
   buttonRoot: {
-    textAlign: 'right'
+	width: '100%',
+	marginRight: theme.spacing(2),
   },
   cardRoot: {
 	  width: '100%',
@@ -134,25 +132,86 @@ function RegistGrid() {
 		return {resNo, resCode, modelNm, markCode, productMtn, purchaseMtn, displaySizeCode, serialNo, macAddr, holder};
 	}
 
-	const [resData, setResData] = React.useState(generator());
+	const [resData, setResData] = React.useState(generator(localStorage.getItem('resEditIndex') !==null?Number(localStorage.getItem('resEditIndex')):null));
+	const [dialog, setDialog] = React.useState({});
+	const [resultDialog, setResultDialog] = React.useState(false);
 
+	// Child Component Click Handler
 	const handleChildClick = (text) => {
 		setResData({...resData, [text.split('_')[0]] : text.split('_')[1] });
 	}
 
+	// Input Change Handler
 	const handleInputChange = (event) => {
 		setResData({...resData, [event.target.name] : event.target.value});
 	}
 
+	// Dialog Open Handler
+	const handleOpenDialog = (title, content, isConfirm) => {
+		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
+	}
+
+	// Dialog Close Handler
+	const handleCloseDialog = (result) => {
+		//등록 및 수정 처
+		if(dialog.isConfirm*result){
+			resDataRegist();
+		}
+
+		setDialog({title:'', content:'', onOff:false, isConfirm:false});
+    	return setResultDialog(result);
+	}
+	
+	const resDataRegist = () => {
+		const localResData = JSON.parse(localStorage.getItem('resData'));
+		if(resData.resNo === null){
+			//등록
+			resData.resNo = Number(localResData[localResData.length-1].resNo)+1;
+			localResData.push(resData);
+			localStorage.setItem('resData', JSON.stringify(localResData) );
+		}else{
+			//수정
+			const index = localResData.findIndex(res => res.resNo === Number(resData.resNo));
+			const newlocalResData = [...localResData];
+			if(index !== undefined){
+				newlocalResData.splice(index, 1, resData);
+				localStorage.setItem('resData', JSON.stringify(newlocalResData));
+			}
+			
+			localStorage.removeItem('resEditIndex');
+		}
+
+		return location.href="/#/resource";
+	}
+	
+	// const handleRouterClick = (event) => {
+	// 	event.preventdefault;
+	// 	return trigger;
+	// }
+
+	// 등록, 수정버튼 Click Handler
 	const handleButtonClick = (event) => {
+		//검증 ok
+		// if( resDataCheck(resData) ){
+			handleOpenDialog('자원관리', localStorage.getItem('resEditIndex')===null?'등록하시겠습니까?':'수정하시겠습니까?', true);
+		//검증 x
+		// }else{
+			// handleOpenDialog('자원관리', '정확히 입력해주세요.');
+		// }
+	}
+
+	// 뒤로가기 Button Click Handler
+	//뒤로가기시 localStorage.removeItem('resEditIndex');
+	//localStorage 사용시에만 있으면 되는 함수
+	const handleHistoryBack = (event) => {
 		event.preventdefault;
-		console.log(resData);
-		// ResTestData.testData = ResTestData.testData.concat(resData);
+		localStorage.removeItem('resEditIndex');
 	}
 
 	return (
 		<React.Fragment>
-			<Card className={classes.cardRoot}>
+			{/* <Card className={classes.cardRoot}> */}
+				<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 				<CardContent>
 				<CssBaseline />
 				<Container maxWidth="sm">
@@ -160,13 +219,13 @@ function RegistGrid() {
 					<Grid container spacing={3}>
 						<Grid item xs={12}></Grid>
 						<Grid item xs={12} sm={6}>
-							<Typography className={classes.title} variant="h6" id="tableTitle">자원종류</Typography>
+							<Typography className={classes.title} variant="h6" id="tableTitle">자원종류*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<SelectType props={resTypeData} onChildClick={handleChildClick}/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<Typography className={classes.title} variant="h6" id="tableTitle">모델명</Typography>
+							<Typography className={classes.title} variant="h6" id="tableTitle">모델명*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<TextField type="search" className={classes.inputRoot} 
@@ -175,7 +234,7 @@ function RegistGrid() {
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<Typography className={classes.title} variant="h6" id="tableTitle">제조사</Typography>
+							<Typography className={classes.title} variant="h6" id="tableTitle">제조사*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<SelectType props={resProductData} onChildClick={handleChildClick}/>
@@ -193,13 +252,13 @@ function RegistGrid() {
 							<YearMonthPicker label="구입년월을 선택하세요." dataKey="purchaseMtn" onChildClick={handleChildClick}/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<Typography className={classes.title} variant="h6" id="tableTitle">화면사이즈</Typography>
+							<Typography className={classes.title} variant="h6" id="tableTitle">화면사이즈*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<SelectType props={resDisplaySizeData} onChildClick={handleChildClick}/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<Typography className={classes.title} variant="h6" id="tableTitle">시리얼번호</Typography>
+							<Typography className={classes.title} variant="h6" id="tableTitle">시리얼번호*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<TextField type="search" className={classes.inputRoot} 
@@ -217,7 +276,7 @@ function RegistGrid() {
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<Typography className={classes.title} variant="h6" id="tableTitle">보유자</Typography>
+							<Typography className={classes.title} variant="h6" id="tableTitle">보유자*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<SelectType props={resHolder} onChildClick={handleChildClick}/>
@@ -227,34 +286,35 @@ function RegistGrid() {
 				</Container>
 				</CardContent>
 				<CardContent className={classes.cardRoot}>
-					<RouterLink button="true" to="/resource">
-						<Button variant="contained" className={classes.buttonRoot} >
-							뒤로가기
-						</Button>
-					</RouterLink>
-					{/* <RouterLink button="true" path={`/resource/?resdata=${resData}`} > */}
-					<RouterLink button="true" to="/resource">
-						<Button variant="contained" color="primary" className={classes.buttonRoot} onClick={handleButtonClick}>
-							등록하기
-						</Button>
-					</RouterLink>
+					<div className={classes.buttonRoot}>
+						<RouterLink button="true" to="/resource">
+							<Button variant="contained" className={classes.buttonMargin} onClick={handleHistoryBack}>
+								뒤로가기
+							</Button>
+						</RouterLink>
+						{/* <RouterLink button="true" to="/resource" 
+							onClick={trigger?handleRouterClick:preventdefault}
+						> */}
+							<Button variant="contained" color="primary" className={classes.buttonMargin} onClick={handleButtonClick}>
+								{localStorage.getItem('resEditIndex') === null
+									?"자원등록":"자원수정"
+								}
+							</Button>
+						{/* </RouterLink> */}
+					</div>
 				</CardContent>
-			</Card>
+			{/* </Card> */}
 		</React.Fragment>
-
   );
 }
 
 export default function ResourceRegistLayout() {
 	const classes = useStyles();
-	const [page, setPage] = React.useState(0);
 	
 	return (
 		<div className={classes.root}>
-			<Paper className={classes.paper}>
-				<EnhancedTableToolbar />
-				<RegistGrid/>
-			</Paper>
+			<EnhancedTableToolbar />
+			<RegistGrid/>
     	</div>
   );
 }

@@ -104,6 +104,8 @@ function EnhancedTableHead(props) {
             </TableSortLabel>
           </TableCell>
         ))}
+
+        
       </TableRow>
     </TableHead>
   );
@@ -201,13 +203,15 @@ export default function NoticeListTable() {
   const openContentModal = (Title, Content) => {
     // debugger;
     // console.log({title:Title, content:Content, openModal:true});
-    let temp = selected.length;
-    if(temp != selected.length){
-      temp = selected.length;
-      return setOpenModal({title:Title, content:Content, openModal:false});
-    }else{
+
+
+    // let temp = selected.length;
+    // if(temp != selected.length){
+    //   temp = selected.length;
+    //   return setOpenModal({title:Title, content:Content, openModal:false});
+    // }else{
       return setOpenModal({title:Title, content:Content, openModal:true});
-    }
+    // }
 
   }
 

@@ -76,7 +76,7 @@ const NoticeListTool = ({props}) => {
 						<FilterListIcon />
 					</IconButton> */}
 					<div className={classes.buttonRoot}>
-					<RouterLink button="true" to="/resource/regist">
+					<RouterLink button="true" to="/notice/regist">
 						<Button variant="contained" color="primary" className={classes.button}>
 							등록
 						</Button>
