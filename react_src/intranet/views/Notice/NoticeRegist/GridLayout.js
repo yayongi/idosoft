@@ -18,10 +18,11 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
-  btnRoot: {
-    '& > *': {
-      margin: theme.spacing(2),
-    },
+  buttonRoot: {
+	position: 'absolute',
+	top: theme.spacing(13),
+	right: theme.spacing(5),
+	margin: theme.spacing(1)
   },
   btn: {
 	//   height: "50px"
@@ -44,11 +45,19 @@ export default function GridLayout() {
 			<Grid container spacing={3}>
 				<Grid item xs={12}>
 					<Typography className={classes.title} variant="h6" id="tableTitle">공지사항</Typography>
+					<div className={classes.buttonRoot}>
+						<Button className={classes.btn} variant="contained">
+							뒤로가기
+						</Button>
+						<Button className={classes.btn} variant="contained" color="primary">
+							저장
+						</Button>
+					</div>
 				</Grid>
 				<Grid item xs={12} sm={6}>
 					<InputFull/>
 				</Grid>
-				<Grid item xs={6} sm={2}>
+				<Grid item xs={6} sm={3}>
 					<FormControlLabel
 						control={
 						<Checkbox
@@ -60,23 +69,14 @@ export default function GridLayout() {
 						label="중요공지 여부"
 					/>
 				</Grid>
-				<Grid item xs={6} sm={2}>
+				<Grid item xs={6} sm={3}>
 					{
 						checked===false
 						?(<div></div>)
 						:(<DatePicker props={checked}/>)
 					}
 				</Grid>
-				<Grid item xs={6} sm={2}>
-					<div className={classes.btnRoot}>
-						<Button className={classes.btn} variant="contained">
-							뒤로가기
-						</Button>
-						<Button className={classes.btn} variant="contained" color="primary">
-							&nbsp;&nbsp;저장&nbsp;&nbsp;
-						</Button>
-					</div>
-				</Grid>
+
 			</Grid>
 		</div>
   );

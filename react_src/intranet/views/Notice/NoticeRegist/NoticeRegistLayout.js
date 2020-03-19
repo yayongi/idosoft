@@ -35,13 +35,14 @@ export default function NoticeRegistLayout() {
   const classes = useStyles();
 
   return (
-    <Card className={classes.root} variant="outlined">
+    // <Card className={classes.root} variant="outlined">
+    <React.Fragment>
       <CardContent>
         <GridLayout/>
       </CardContent>
       <CardActions>
         <TextareaAutosize className={classes.textArea} aria-label="content" rowsMin={3} placeholder="내용을 입력하세요." />
       </CardActions>
-    </Card>
+    </React.Fragment>
   );
 }

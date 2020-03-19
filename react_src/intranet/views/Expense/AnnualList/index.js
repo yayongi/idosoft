@@ -15,9 +15,15 @@ export default function AnnualList ({match}) {
 				</MainLayout>
 			} />
 			{/* 경비관리 상세화면 */}
-			<Route path={`${match.path}/:id`} render={(props) =>
+			<Route path={`${match.path}/view/:id`} render={(props) =>
 				<MainLayout>
-					<View routeProps={props} />
+					<View routeProps={props} screenType="view" />
+				</MainLayout>
+			} />
+			{/* 경비관리 등록화면 */}
+			<Route path={`${match.path}/new`} render={(props) =>
+				<MainLayout>
+					<View routeProps={props} screenType="new" />
 				</MainLayout>
 			} />
 		</>

@@ -9,10 +9,8 @@ import {
 	ModifyCode as ModifyCode,
 	Dashboard as Dashboard,
 	AnnualList as AnnualList,
-	AnnualResister as AnnualResister,
 	PayList as PayList,
 	ApprovalList as ApprovalList,
-	ApprovalDetail as ApprovalDetail,
 	MonthlystatMemberSelectView as MonthlystatMemberSelectView,
 	SignIn as SignIn,
 	ResPassword as ResPassword,
@@ -85,23 +83,16 @@ export default function App() {
 
 					{/* 중첩 Router 적용*/}
 					<Route path="/expense/annualList" component={AnnualList} />>
+					<Route path="/expense/approvalList" component={ApprovalList} />>
 					{/* 중첩 Router 적용*/}
 					
-					<Route exact path="/expense/annualResister">
-						<MainLayout><AnnualResister /></MainLayout>
-					</Route>
 					<Route exact path="/expense/monthyStatMSelectView">
 						<MainLayout><MonthlystatMemberSelectView /></MainLayout>
 					</Route>	
 					<Route exact path="/expense/payList">
 						<MainLayout><PayList /></MainLayout>
 					</Route>
-					<Route exact path="/expense/approvalList">
-						<MainLayout><ApprovalList /></MainLayout>
-					</Route>
-					<Route exact path="/expense/approvalDetail">
-						<MainLayout><ApprovalDetail /></MainLayout>
-					</Route>
+					
 					<Route exact path="/admin/code">
 						<MainLayout><Code /></MainLayout>
 					</Route>

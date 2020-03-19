@@ -9,9 +9,9 @@ class Notice extends Component {
 	render() {
 		return (
 			<Card>
-				<CardContent>
+				{/* <CardContent> */}
 					<NoticeRegistLayout/>
-				</CardContent>
+				{/* </CardContent> */}
 			</Card>
 		);
 	}

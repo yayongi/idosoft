@@ -10,7 +10,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import { columnsUp, columnsDown } from './data';
-import { AnnualStorage } from 'views/Expense/AnnualList/data'
+import { AnnualStorage } from 'views/Expense/data';
 
 const useStyles = makeStyles({
   root: {
@@ -37,11 +37,12 @@ function Body(props) {
 
     // 상세페이지로 이동
     const handleClickView = (event, row) => {
-      console.log("call Body.js -> handleClickView");      
+      console.log("call handleClickView");      
       AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(row));  // 세션 스토리지에 선택한 Row Data 저장
-      routeProps.history.push(`${routeProps.match.url}/${row.seq}`);
+      routeProps.history.push(`${routeProps.match.url}/view/${row.seq}`);
     };
 
+    // Width에 따라 반응형으로 열이 없어
     let columns = columnsUp;
     if(isWidthUp('md', props.width)) {
       columns =columnsUp;

@@ -307,9 +307,11 @@ const MemberReg = () => {
                                                   저장하기
                         </Button>
                       </RouterLink>
-                      <Button variant="contained" color="primary">
-                                                뒤로가기
-                      </Button>
+                      <RouterLink button="true" to="/member/memberlist" >
+                        <Button variant="contained" color="primary">
+                                                  뒤로가기
+                        </Button>
+                      </RouterLink>
                     </div>
                   </form>
                 </CardContent>
