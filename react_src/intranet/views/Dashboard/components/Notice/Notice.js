@@ -21,6 +21,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Notice() {
+
 	const [openModal, setOpenModal] = React.useState({
 		title:'', 
 		content:'', 
@@ -41,6 +42,7 @@ export default function Notice() {
 			content:'', 
 			openModal:trigger,
 		});
+
 	}
 
 	return (

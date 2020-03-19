@@ -27,7 +27,7 @@ import {
 } from '@material-ui/pickers';
 
 
-import { AnnualStorage, expenseTypes, statuses } from 'views/Expense/data';
+import { expenseTypes, statuses } from 'views/Expense/data'
 
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
@@ -57,7 +57,6 @@ export default function  Filter(props) {
 	const {
 		filterRows,
 		state, setState,
-		routeProps
 	} = props;
 	const [open, setOpen] = React.useState(false);
 	const handleClickOpen = () => {
@@ -69,12 +68,6 @@ export default function  Filter(props) {
 
 	const excelExport = () => {
 		alert("엑셀 내보내기");
-	}
-	// 경비 신청 화면
-	const handleClickNew = () => {
-		console.log("call handleClickNew");
-		AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify([{}]));  // 세션 스토리지에 선택한 Row Data 저장
-		routeProps.history.push(`${routeProps.match.url}/new`);
 	}
 
 	// Dialog 값 상위 컴포넌트의 state값으로 초기화
@@ -154,9 +147,6 @@ export default function  Filter(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={excelExport} className={classes.button}>
 							엑셀 내보내기
 						</Button>
-						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} onClick={handleClickNew}>
-							경비신청
-						</Button>
 					</Hidden>
 					<Hidden mdUp>
 						<IconButton color="primary" onClick={handleClickOpen} className={classes.button}>
@@ -164,9 +154,6 @@ export default function  Filter(props) {
 						</IconButton>
 						<IconButton color="primary" onClick={excelExport} className={classes.button}>
 							<SaveIcon />
-						</IconButton>
-						<IconButton color="primary" onClick={handleClickNew}>
-							<AddIcon />
 						</IconButton>
 					</Hidden>
 				</div>

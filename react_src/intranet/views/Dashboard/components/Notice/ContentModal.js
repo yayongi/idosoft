@@ -68,6 +68,7 @@ const ContentModal = ({props, closeModal}) => {
         <DialogContent dividers>
 			    {props.content}
         </DialogContent>
+
       </Dialog>
     </div>
   );

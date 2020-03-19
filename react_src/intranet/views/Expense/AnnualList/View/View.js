@@ -23,13 +23,14 @@ import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
+
 import {
   MuiPickersUtilsProvider,
   DatePicker,
 } from '@material-ui/pickers';
 
-import { AnnualStorage, expenseTypes } from 'views/Expense/AnnualList/data';
-import moment from 'moment';
+import { AnnualStorage, expenseTypes, getStepInfo } from 'views/Expense/data';
+import PreviewFileUpload from 'common/PreviewFileUpload/PreviewFileUpload';
 
 
 const useStyles = makeStyles(theme => ({
@@ -66,33 +67,6 @@ const useStyles = makeStyles(theme => ({
 	
 }));
 
-
-function getStepInfo(row) {
-	let stepInfo = {
-		activeStep : 0,
-		steps : [
-			{label: '진행', isError: false},
-			{label: '1차결재완료', isError: false},
-			{label: '완료', isError: false},
-		]
-	}
-	
-	if(row.status == '0') {
-		stepInfo.activeStep = 1;
-		stepInfo.steps[0].label = '진행';
-		stepInfo.steps[0].isError = false;
-	} else if(row.status == '1') {
-		stepInfo.activeStep = 2;
-	} else if(row.status == '2') {
-		stepInfo.activeStep = 3;
-	} else if(row.status == '3') {
-		stepInfo.activeStep = 0;
-		stepInfo.steps[0].label = '반려';
-		stepInfo.steps[0].isError = true;
-	}
-	return stepInfo
-}
-
 const emptyData = {
 	seq: "",
 	name: "",
@@ -113,6 +87,8 @@ const emptyData = {
 */
 export default function  View(props) {
 	console.log("call View Area");
+	const [files, setFiles] = React.useState([]);
+
 	const {routeProps, screenType } = props;
 	const {history, location, match} = routeProps;
 
@@ -251,7 +227,6 @@ export default function  View(props) {
 	}
 	return (
 		<>
-		{console.log("render : " + activeStep)}
 			<div className={classes.root}>
 				<Stepper activeStep={activeStep}>
 					{stepInfo.steps.map(row => (
@@ -384,7 +359,9 @@ export default function  View(props) {
 						</TableRow>
 						<TableRow>
 							<TableCell align="left" component="th" scope="row">첨부파일</TableCell>
-							<TableCell align="left"></TableCell>
+							<TableCell align="left">
+								<PreviewFileUpload files={files} setFiles={setFiles}/>
+							</TableCell>
 						</TableRow>
 					</TableBody>
 				</Table>

@@ -10,7 +10,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import { columnsUp, columnsDown } from './data';
-import { AnnualStorage } from 'views/Expense/data';
+import { AnnualStorage } from 'views/Expense/data'
 
 const useStyles = makeStyles({
   root: {

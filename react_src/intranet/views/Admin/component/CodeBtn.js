@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,10 +47,6 @@ export default function CodeInfo() {
   const addBtnClick = () => {
     alert("addBtnClick");
   }
-  const cancleBtnClick = () => {
-    alert("cancleBtnClick");
-  }
-
 
   return (
       <div className={classes.root}>
@@ -66,7 +63,7 @@ export default function CodeInfo() {
               <Button  className={classes.btn} 
                 variant="contained" 
                 color="primary"
-                onClick={cancleBtnClick}>취소</Button>
+                component={RouterLink} to="/admin/code">취소</Button>
             </Grid>
           </Grid>
       </div>

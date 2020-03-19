@@ -200,10 +200,7 @@ class SignIn extends Component {
 								onChange={this.pwHandleChange.bind(this)}
 							/>
 							{passwordErr ? <Alert severity="error">{passwordErr}</Alert> : ""}
-							<FormControlLabel
-								control={<Checkbox value="remember" color="primary" />}
-								label="Remember me"
-							/>
+							<div style={{height : 40}}/>
 							<Button
 								type="button"
 								fullWidth
