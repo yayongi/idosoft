@@ -16,12 +16,12 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import SaveIcon from '@material-ui/icons/Save';
 import RemoveIcon from '@material-ui/icons/Remove';
 import IconButton from '@material-ui/core/IconButton';
-import { Divider, Button, Grid, Hidden } from '@material-ui/core';
+import { Button, Hidden } from '@material-ui/core';
 import axios from 'axios';
 
-import {tableList} from './data';
-import ContentModal from "./ContentModal";
-import FilterModal from "./FilterModal";
+import {tableList} from './data/data';
+import ContentModal from "./component/ContentModal";
+import FilterModal from "./component/FilterModal";
 import {dateFormatter, phoneFormatter, positionFormatter} from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
@@ -76,7 +76,7 @@ const MemberList = () => {
 	
 	const [state, setState] = React.useState({
 		memberList : tableList,	// 사원관리 리스트
-		manager_yn : true		// 관리자 여부
+		manager_yn : true,		// 관리자 여부
 	});
 
 	const [openModal, setOpenModal] = React.useState({
@@ -91,8 +91,15 @@ const MemberList = () => {
 		datum : null
 	});
 
+	const[searchState, setSearchState] = React.useState({
+		category : "",
+		searchword : ""
+	})
+
 	const [openFilter, setOpenFilter] = React.useState({
-		openModal:false
+		openModal:false,
+		searchState:searchState,
+		setSearchState:setSearchState
 	});
 
 	//만약 등록화면에서 넘어 오면 리스트 추가
@@ -194,7 +201,6 @@ const MemberList = () => {
 
 	//엑셀 내보내기
 	const excelExport = () => {
-		console.log("test : " + JSON.stringify(state.memberList));
 		axios({
 			url: '/intranet/downloadExcelFile',
 			method: 'post',

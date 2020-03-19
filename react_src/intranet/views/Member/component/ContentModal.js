@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { Link as RouterLink, } from 'react-router-dom';
-import { positionFormatter } from '../../js/util';
+import { positionFormatter } from '../../../js/util';
 
 const styles = theme => ({
   root: {
