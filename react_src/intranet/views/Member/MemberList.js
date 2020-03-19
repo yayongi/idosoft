@@ -17,6 +17,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import RemoveIcon from '@material-ui/icons/Remove';
 import IconButton from '@material-ui/core/IconButton';
 import { Divider, Button, Grid, Hidden } from '@material-ui/core';
+import axios from 'axios';
 
 import {tableList} from './data';
 import ContentModal from "./ContentModal";
@@ -193,7 +194,28 @@ const MemberList = () => {
 
 	//엑셀 내보내기
 	const excelExport = () => {
-		alert("엑셀 내보내기");
+		console.log("test : " + JSON.stringify(state.memberList));
+		axios({
+			url: '/intranet/downloadExcelFile',
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			data: {
+				title : 'TEST',
+				jsonArrData : JSON.stringify(state.memberList)
+			}
+		}).then(response => {
+			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', response.headers.filename);
+			document.body.appendChild(link);
+			link.click();
+			console.log('Excel Export Success' + JSON.stringify(response));	
+		}).catch(e => {
+			console.log(e);
+		});
 	}
 
 	return (
@@ -278,9 +300,11 @@ const MemberList = () => {
 											수정
 										</Button>
 									</RouterLink>
-									<Button variant="contained" color="primary">
-										개인이력
-									</Button>
+									<RouterLink button="true" to="/project/history">
+										<Button variant="contained" color="primary">
+											개인이력
+										</Button>
+									</RouterLink>
 								</TableCell>
 							</TableRow>
 						))}
