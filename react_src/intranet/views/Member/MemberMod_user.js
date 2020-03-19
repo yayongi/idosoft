@@ -10,7 +10,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import {findAdress,dateFormatter, phoneFormatter, positionFormatter,schCareer,unFormatter,certYn} from '../../js/util';
+import CommonDialog from '../../js/CommonDialog';
+import {findAdress,dateFormatter, phoneFormatter, positionFormatter,schCareer,unFormatter,certYn,emailValidation} from '../../js/util';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,11 +45,90 @@ const MemberReg = () => {
 		memberData : JSON.parse(localStorage.getItem('savedData')),
 	});
 
+  const [validation, setValidation] = React.useState({
+    name:{
+      error:false,
+      helperText:""
+    },
+    position:{
+      error:false,
+      helperText:""
+    },
+    email:{
+      error:false,
+      helperText:""
+    },
+    address1:{
+      error:false,
+      helperText:""
+    }
+    ,address2:{
+      error:false,
+      helperText:""
+    },
+    entry:{
+      error:false,
+      helperText:""
+    },
+    sch_car:{
+      error:false,
+      helperText:""
+    }
+  })
+
   //임시파일 불러오기
   const row = state.memberData;
 
   //임시 로컬스토리지에 저장하기
   const setLocalstorage = () => {
+
+    //기본주소 Validation
+    if(document.getElementById("address1").value === "" || document.getElementById("address1").value === null){
+      setValidation({
+        ...validation,
+        address1:{
+          error:true,
+          helperText:"기본주소를 입력해주세요."
+        },
+      })
+      return;
+    }
+    //상세주소 Validation
+    if(document.getElementById("address2").value === "" || document.getElementById("address2").value === null){
+      setValidation({
+        ...validation,
+        address2:{
+          error:true,
+          helperText:"상세주소를 입력해주세요."
+        },
+      })
+      return;
+    }
+
+    //입사일 Validation
+    if(document.getElementById("entry").value === "" || document.getElementById("entry").value === null){
+      setValidation({
+        ...validation,
+        entry:{
+          error:true,
+          helperText:"입사일을 선택해주세요."
+        },
+      })
+      return;
+    }
+
+      //최종학력 Validation
+      if(document.getElementById("sch_car").nextSibling.value == "" || document.getElementById("sch_car").nextSibling.value == null){
+        setValidation({
+          ...validation,
+          sch_car:{
+            error:true,
+            helperText:"최종학력을 선택해 주세요."
+          }
+        })
+        return;
+      }
+
     const getData = {
       id : row.id,
       name : row.name,
@@ -72,10 +152,82 @@ const MemberReg = () => {
 
     localStorage.removeItem('savedData');
     localStorage.setItem('savedData', JSON.stringify(getData));
+
+    handleOpenDialog(...confirmData);
   }
 
+  const isValidEmail = () => {
+    if(!emailValidation(document.getElementById("email").value)){
+      setValidation({
+        ...validation,
+        email:{
+          error:true,
+          helperText:"이메일을 입력을 확인해주세요."
+        },
+      })
+    }
+  }
+
+  const defaultValidation = () =>{
+    setValidation({
+      name:{
+        error:false,
+        helperText:""
+      },
+      position:{
+        error:false,
+        helperText:""
+      },
+      email:{
+        error:false,
+        helperText:""
+      },
+      address1:{
+        error:false,
+        helperText:""
+      }
+      ,address2:{
+        error:false,
+        helperText:""
+      },
+      entry:{
+        error:false,
+        helperText:""
+      },
+      sch_car:{
+        error:false,
+        helperText:""
+      }
+    })
+  }
+
+   // confirm, alert 창 함수
+  // 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
+	const [dialog, setDialog] = React.useState({});
+
+	// Dialog창의 title과 content, confirm여부  담는 배열
+	// 배열 없이도 파라미터 입력해서 사용가능
+	const confirmData = ['confirm', '저장하시겠습니까?', true];
+
+	//Dialog open handler
+	const handleOpenDialog = (title, content, isConfirm) => {
+		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
+	}
+
+	//Dialog close handler
+	//확인:true 취소:false 리턴
+	const handleCloseDialog = (result) => {
+    setDialog({title:'', content:'', onOff:false, isConfirm:false});
+    if(result){
+      return location.href="/#/member/memberlist/";
+    }else{
+      return;
+    }
+  }
+  
 	return (
 		<div>
+      <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<Card>
 				<CardContent>
 					사원상세
@@ -140,17 +292,17 @@ const MemberReg = () => {
                 <CardContent>
                   <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'70%'}} id="address1" size="small" label="기본주소" defaultValue={row.address1} variant="outlined" InputProps={{
+                      <TextField style={{width:'70%'}} id="address1" size="small" label="기본주소" defaultValue={row.address1} onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
                       <Button variant="contained" color="primary" onClick={() => findAdress("address1")}>
                                               주소찾기
                       </Button>
-                      <TextField id="outlined-basic" style={{width:'70%'}} id="address2" size="small" label="상세주소" defaultValue={row.address2} variant="outlined" InputProps={{
+                      <TextField style={{width:'70%'}} id="address2" size="small" label="상세주소" defaultValue={row.address2} variant="outlined" onClick={defaultValidation} error={validation.address2.error} helperText={validation.address2.helperText}InputProps={{
                       }}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'34%'}} id="phone" size="small" label="휴대전화" defaultValue={phoneFormatter(row.phone)} variant="outlined" />
+                      <TextField  style={{width:'34%'}} id="phone" size="small" label="휴대전화" defaultValue={phoneFormatter(row.phone)} variant="outlined" />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField style={{width:'20%'}}
@@ -167,8 +319,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" id="entry" label="입사일" defaultValue={dateFormatter(row.entry)} variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" id="birth" label="생일" defaultValue={dateFormatter(row.birth)} variant="outlined" />
+                      <TextField  style={{width:'20%'}} size="small" id="entry" label="입사일" onClick={defaultValidation} error={validation.entry.error} helperText={validation.entry.helperText} defaultValue={dateFormatter(row.entry)} variant="outlined" />
+                      <TextField  style={{width:'20%'}} size="small" id="birth" label="생일" defaultValue={dateFormatter(row.birth)} variant="outlined" />
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -182,7 +334,7 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" id="sch_mjr" label="학교/학과" defaultValue={row.sch_mjr} variant="outlined" />
+                      <TextField  style={{width:'20%'}} size="small" id="sch_mjr" label="학교/학과" defaultValue={row.sch_mjr} variant="outlined" />
                       <TextField style={{width:'20%'}}
                         id="sch_car"
                         select
@@ -190,6 +342,9 @@ const MemberReg = () => {
                         variant="outlined"
                         defaultValue={row.sch_car}
                         size="small" 
+                        error={validation.sch_car.error}
+                        helperText={validation.sch_car.helperText}
+                        onClick={defaultValidation} 
                       >
                         {schCareer.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -197,23 +352,23 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" id="car_date" label="경력시작일" defaultValue={dateFormatter(row.entry)} variant="outlined" />
-                      <TextField id="outlined-basic" style={{width:'20%'}} size="small" id="mar_date" label="결혼기념일" defaultValue={dateFormatter(row.mar_date)} variant="outlined" />
+                      <TextField style={{width:'20%'}} size="small" id="car_date" label="경력시작일" defaultValue={dateFormatter(row.entry)} variant="outlined" />
+                      <TextField style={{width:'20%'}} size="small" id="mar_date" label="결혼기념일" defaultValue={dateFormatter(row.mar_date)} variant="outlined" />
                     </div>
                     <div className={classes.textfield}>
-                      <RouterLink button="true" to="/member/memberlist" >
                         <Button variant="contained" color="primary" onClick={setLocalstorage}>
                                                   저장하기
                         </Button>
-                      </RouterLink>
                       <RouterLink button="true" to="/member/memberlist" >
                         <Button variant="contained" color="primary">
                                                   뒤로가기
                         </Button>
                       </RouterLink>
-                      <Button variant="contained" color="primary">
-                                                비밀번호변경하기
-                      </Button>
+                      <RouterLink button="true" to="/resPassword/" >
+                        <Button variant="contained" color="primary">
+                                                  비밀번호변경하기
+                        </Button>
+                      </RouterLink>
                     </div>
                   </form>
                 </CardContent>
