@@ -63,16 +63,26 @@ export default function App() {
 							<MemberList routeProps={props} />
 						</MainLayout>
 					} />
-					
-					<Route exact path="/member/memberreg">
-						<MainLayout><MemberReg /></MainLayout>
-					</Route>
-					<Route exact path="/member/membermod_admin">
-						<MainLayout><MemberMod_admin /></MainLayout>
-					</Route>
-					<Route exact path="/member/membermod_user">
-						<MainLayout><MemberMod_user /></MainLayout>
-					</Route>
+					{/* 사원관리 등록 */}
+					<Route exact path='/member/memberreg' render={(props) =>
+						<MainLayout routeProps={props}>
+							<MemberReg routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 사원관리 수정 - 관리자 */}
+					<Route exact path='/member/membermod_admin' render={(props) =>
+						<MainLayout routeProps={props}>
+							<MemberMod_admin routeProps={props} />
+						</MainLayout>
+					} />
+
+					{/* 사원관리 수정 - 사용자 */}
+					<Route exact path='/member/membermod_user' render={(props) =>
+						<MainLayout routeProps={props}>
+							<MemberMod_user routeProps={props} />
+						</MainLayout>
+					} />
+
 					{/* 자원관리 목록*/}
 					<Route exact path='/resource' render={(props) =>
 						<MainLayout routeProps={props}>
@@ -163,13 +173,19 @@ export default function App() {
 							<Code routeProps={props} />
 						</MainLayout>
 					} />
-					<Route exact path="/admin/code/addCode">
-						<MainLayout><AddCode /></MainLayout>
-					</Route>
-					<Route exact path="/admin/code/modifyCode">
-						<MainLayout><ModifyCode /></MainLayout>
-					</Route>
-					<Route exact path="/notFound">
+					{/* 코드 추가*/}
+					<Route path='/admin/code/addCode' render={(props) =>
+						<MainLayout routeProps={props}>
+							<AddCode routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 코드 수정 */}
+					<Route path='/admin/code/modifyCode' render={(props) =>
+						<MainLayout routeProps={props}>
+							<ModifyCode routeProps={props} />
+						</MainLayout>
+					} />
+					<Route  path="/notFound">
 						<MinimalLayout><NotFound /></MinimalLayout>
 					</Route>
 					<Redirect to="/notFound" />
