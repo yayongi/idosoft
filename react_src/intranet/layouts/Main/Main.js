@@ -84,7 +84,7 @@ export default function Main(props) {
 			<Left classes={classes} open={open} handleDrawerClose={handleDrawerClose} />
 			<main className={classes.content}>
 				<div className={classes.appBarSpacer} />
-				<Container maxWidth="xl" className={classes.container}>
+				<Container maxWidth="lg" className={classes.container}>
 					{/* 상위컴포넌트에서 child element를 포함하고 있을 경우에 children으로 넘어온다.*/}
 					{cloneElement(props.children)}		
 				</Container>

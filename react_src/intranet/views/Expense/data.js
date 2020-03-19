@@ -53,3 +53,31 @@ export const statuses = [
 	{ value: '2', label: '완료' },
 	{ value: '3', label: '반려' },
 ];
+
+
+
+export function getStepInfo(row) {
+	let stepInfo = {
+		activeStep : 0,
+		steps : [
+			{label: '진행', isError: false},
+			{label: '1차결재완료', isError: false},
+			{label: '완료', isError: false},
+		]
+	}
+	
+	if(row.status == '0') {
+		stepInfo.activeStep = 1;
+		stepInfo.steps[0].label = '진행';
+		stepInfo.steps[0].isError = false;
+	} else if(row.status == '1') {
+		stepInfo.activeStep = 2;
+	} else if(row.status == '2') {
+		stepInfo.activeStep = 3;
+	} else if(row.status == '3') {
+		stepInfo.activeStep = 0;
+		stepInfo.steps[0].label = '반려';
+		stepInfo.steps[0].isError = true;
+	}
+	return stepInfo
+}
