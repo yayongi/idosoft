@@ -16,8 +16,8 @@ export const schCareer = [
 ];
 
 export const certYn = [
-  { label:'유',value:'1' },
-  { label:'무',value:'0' }
+  { label:'유',value:1 },
+  { label:'무',value:0 }
 ];
 
 //주소 찾기
@@ -68,8 +68,14 @@ export function positionFormatter(param){
 			result = position.label;
 		}
 	})
-	return result;
+  return result;
 }
+  //이메일 Validation
+  //작성자 : 강성우
+  export function emailValidation(param){
+    let emailValidation=/([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+    return emailValidation.test(param);
+  }
 
 
 

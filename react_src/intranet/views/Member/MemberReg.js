@@ -9,8 +9,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
+import CommonDialog from '../../js/CommonDialog';
 import { Link as RouterLink, } from 'react-router-dom';
-import { findAdress,positions,certYn,schCareer } from '../../js/util'
+import { findAdress,positions,certYn,schCareer,emailValidation } from '../../js/util'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,13 +37,46 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const MemberReg = () => {
+const MemberReg = (props) => {
   const classes = useStyles();
+
+  const { routeProps } = props;
   
   const [state, setState] = React.useState({
     selectedFile : null,
-    preFile: null
-	});
+    preFile: null,
+  });
+  
+  const [validation, setValidation] = React.useState({
+    name:{
+      error:false,
+      helperText:""
+    },
+    position:{
+      error:false,
+      helperText:""
+    },
+    email:{
+      error:false,
+      helperText:""
+    },
+    address1:{
+      error:false,
+      helperText:""
+    }
+    ,address2:{
+      error:false,
+      helperText:""
+    },
+    entry:{
+      error:false,
+      helperText:""
+    },
+    sch_car:{
+      error:false,
+      helperText:""
+    }
+  })
 
 
   // 파일 업로드
@@ -50,7 +84,7 @@ const MemberReg = () => {
     setState({
       ...state,
       selectedFile : event.target.files[0],
-      preFile: "test.txt"
+      preFile: "test.txt",
     })
 
     const formData = new FormData();
@@ -100,6 +134,89 @@ const MemberReg = () => {
 
   //임시 로컬스토리지에 저장하기
   const setLocalstorage = () => {
+    //이름 Validation
+    if(document.getElementById("name").value == "" || document.getElementById("name").value == null){
+      setValidation({
+        ...validation,
+        name:{
+          error:true,
+          helperText:"이름을 입력해 주세요."
+        },
+      })
+      return;
+    }
+
+    //직급 Validation
+    if(document.getElementById("position").nextSibling.value == "" || document.getElementById("position").nextSibling.value == null){
+       setValidation({
+        ...validation,
+         position:{
+          error:true,
+          helperText:"직급을 선택해 주세요."
+        },
+      })
+      return;
+    }
+
+    //이메일 Validation
+    if(document.getElementById("email").value == "" || document.getElementById("email").value == null || !emailValidation(document.getElementById("email").value)){
+      setValidation({
+        ...validation,
+        email:{
+          error:true,
+          helperText:"이메일을 입력을 확인해주세요."
+        },
+      })
+      return;
+    }
+
+    //기본주소 Validation
+    if(document.getElementById("address1").value === "" || document.getElementById("address1").value === null){
+      setValidation({
+        ...validation,
+        address1:{
+          error:true,
+          helperText:"기본주소를 입력해주세요."
+        },
+      })
+      return;
+    }
+    //상세주소 Validation
+    if(document.getElementById("address2").value === "" || document.getElementById("address2").value === null){
+      setValidation({
+        ...validation,
+        address2:{
+          error:true,
+          helperText:"상세주소를 입력해주세요."
+        },
+      })
+      return;
+    }
+
+    //입사일 Validation
+    if(document.getElementById("entry").value === "" || document.getElementById("entry").value === null){
+      setValidation({
+        ...validation,
+        entry:{
+          error:true,
+          helperText:"입사일을 선택해주세요."
+        },
+      })
+      return;
+    }
+
+      //최종학력 Validation
+      if(document.getElementById("sch_car").nextSibling.value == "" || document.getElementById("sch_car").nextSibling.value == null){
+        setValidation({
+          ...validation,
+          sch_car:{
+            error:true,
+            helperText:"최종학력을 선택해 주세요."
+          }
+        })
+        return;
+      }
+
     const getData = {
       id : document.getElementById("entry").value+"11",
       name : document.getElementById("name").value,
@@ -122,10 +239,81 @@ const MemberReg = () => {
     }
 
     localStorage.setItem('savedData', JSON.stringify(getData));
+
+    handleOpenDialog(...confirmData);
   }
+  const isValidEmail = () => {
+    if(!emailValidation(document.getElementById("email").value)){
+      setValidation({
+        ...validation,
+        email:{
+          error:true,
+          helperText:"이메일을 입력을 확인해주세요."
+        },
+      })
+    }
+  }
+
+  const defaultValidation = () =>{
+    setValidation({
+      name:{
+        error:false,
+        helperText:""
+      },
+      position:{
+        error:false,
+        helperText:""
+      },
+      email:{
+        error:false,
+        helperText:""
+      },
+      address1:{
+        error:false,
+        helperText:""
+      }
+      ,address2:{
+        error:false,
+        helperText:""
+      },
+      entry:{
+        error:false,
+        helperText:""
+      },
+      sch_car:{
+        error:false,
+        helperText:""
+      }
+    })
+  }
+
+  // confirm, alert 창 함수
+  // 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
+	const [dialog, setDialog] = React.useState({});
+
+	// Dialog창의 title과 content, confirm여부  담는 배열
+	// 배열 없이도 파라미터 입력해서 사용가능
+	const confirmData = ['confirm', '저장하시겠습니까?', true];
+
+	//Dialog open handler
+	const handleOpenDialog = (title, content, isConfirm) => {
+		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
+	}
+
+	//Dialog close handler
+	//확인:true 취소:false 리턴
+	const handleCloseDialog = (result) => {
+    setDialog({title:'', content:'', onOff:false, isConfirm:false});
+    if(result){
+      return location.href="/#/member/memberlist/";
+    }else{
+      return;
+    }
+	}
 
 	return (
 		<div>
+      <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<Card>
 				<CardContent>
 					사원등록
@@ -187,7 +375,7 @@ const MemberReg = () => {
                 <CardContent>
                   <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" id="name" label="이름" size="small" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField id="name" label="이름" size="small" variant="outlined" placeholder=""  onClick={defaultValidation} error={validation.name.error} helperText={validation.name.helperText} InputLabelProps={{
                         shrink: true,
                       }}/>
                       <TextField style={{width:'20%'}}
@@ -196,6 +384,9 @@ const MemberReg = () => {
                         label="직급"
                         variant="outlined"
                         size="small" 
+                        error={validation.position.error}
+                        helperText={validation.position.helperText}
+                        onClick={defaultValidation} 
                       >
                         {positions.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -225,21 +416,21 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <TextField id="outlined-basic" style={{width:'34%'}} id="phone" size="small" label="휴대전화" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField style={{width:'34%'}} id="phone" size="small" label="휴대전화" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" style={{width:'70%'}} id="address1" size="small" label="기본주소" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField  style={{width:'70%'}} id="address1" size="small" label="기본주소" variant="outlined" onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}          
                       InputProps={{
                         readOnly: true,
                       }}/>
-                      <TextField id="outlined-basic" style={{width:'70%'}} id="address2" size="small" label="상세주소" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField style={{width:'70%'}} id="address2" size="small" label="상세주소" variant="outlined" onClick={defaultValidation} error={validation.address2.error} helperText={validation.address2.helperText} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                       <Button variant="contained" color="primary" onClick={() => findAdress("address1")}>
@@ -253,6 +444,7 @@ const MemberReg = () => {
                         label="자격증 유무"
                         variant="outlined"
                         size="small" 
+                        defaultValue={1}
                       >
                         {certYn.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -260,10 +452,10 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" style={{width:'20%'}} id="entry" size="small" label="입사일" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField style={{width:'20%'}} id="entry" size="small" label="입사일" variant="outlined" onClick={defaultValidation} error={validation.entry.error} helperText={validation.entry.helperText} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <TextField id="outlined-basic" style={{width:'20%'}} id="birth" size="small" label="생일" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField style={{width:'20%'}} id="birth" size="small" label="생일" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                       <FormControlLabel
@@ -278,7 +470,7 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="outlined-basic" size="small" id="sch_mjr" style={{width:'20%'}} label="학교/학과" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField size="small" id="sch_mjr" style={{width:'20%'}} label="학교/학과" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                       <TextField style={{width:'20%'}}
@@ -287,6 +479,9 @@ const MemberReg = () => {
                         label="최종학력"
                         variant="outlined"
                         size="small" 
+                        error={validation.sch_car.error}
+                        helperText={validation.sch_car.helperText}
+                        onClick={defaultValidation} 
                       >
                         {schCareer.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -294,22 +489,20 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField id="outlined-basic" id="car_date" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField  id="car_date" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <TextField id="outlined-basic" id="mar_date" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField id="mar_date" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                     </div>
                     <div className={classes.textfield}>
-                      <RouterLink button="true" to="/member/memberlist" >
-                        <Button variant="contained" color="primary" onClick={setLocalstorage}>
-                                                  저장하기
-                        </Button>
-                      </RouterLink>
+                      <Button variant="contained" color="primary" onClick={setLocalstorage}>
+                              저장하기
+                      </Button>
                       <RouterLink button="true" to="/member/memberlist" >
                         <Button variant="contained" color="primary">
-                                                  뒤로가기
+                                뒤로가기
                         </Button>
                       </RouterLink>
                     </div>

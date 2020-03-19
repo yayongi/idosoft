@@ -9,14 +9,18 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
 import StarIcon from '@material-ui/icons/Star';
-import Grid from '@material-ui/core/Grid';
+import Toolbar from '@material-ui/core/Toolbar';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import SaveIcon from '@material-ui/icons/Save';
+import RemoveIcon from '@material-ui/icons/Remove';
+import IconButton from '@material-ui/core/IconButton';
+import { Divider, Button, Grid, Hidden } from '@material-ui/core';
+
 import {tableList} from './data';
 import ContentModal from "./ContentModal";
+import FilterModal from "./FilterModal";
 import {dateFormatter, phoneFormatter, positionFormatter} from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
@@ -32,6 +36,23 @@ const useStyles = makeStyles(theme =>({
 		marginLeft:10,
 		marginRight:10,
 	},
+	root_tool: {
+		// justifyContent: 'flex-end',
+		 '& > *': {
+			margin: theme.spacing(1),
+		},
+		flexGrow: 1,
+	},
+	title: {
+		flex: '1',
+	},
+	container: {
+		display: 'flex',
+		flexWrap: 'wrap',
+	},
+	button_tool: {
+		marginRight: '10px',
+	}
 }));
 
 var selected = [];
@@ -48,11 +69,6 @@ const isItemSelected = (event,id) =>{
 		selected.splice(selected.indexOf(id),1)
 	}
 }
-
-const category = [
-	{label:"이름",value:"0"},
-	{label:"직급",value:"1"},
-]
 
 const MemberList = () => {
 	const classes = useStyles();
@@ -72,6 +88,10 @@ const MemberList = () => {
 		manager_yn : null,
 		buttonName : '',
 		datum : null
+	});
+
+	const [openFilter, setOpenFilter] = React.useState({
+		openModal:false
 	});
 
 	//만약 등록화면에서 넘어 오면 리스트 추가
@@ -157,44 +177,59 @@ const MemberList = () => {
 		});
 	}
 
+	//검색창 열기
+	const handleClickOpen = () => {
+		return setOpenFilter({
+			openModal:true
+		});
+	};
+
+	//검색창 닫기
+	const handleClickClose = () => {
+		return setOpenFilter({
+			openModal:false
+		});
+	};
+
+	//엑셀 내보내기
+	const excelExport = () => {
+		alert("엑셀 내보내기");
+	}
+
 	return (
 		<div>
 			<ContentModal props={openModal} closeModal={handleCloseModal}/>
+			<FilterModal props={openFilter} closeModal={handleClickClose}/>
 			<Card>
 				<CardContent>
 					사원관리
 				</CardContent>
-				<div className={classes.root}>
-					<Grid container spacing={3}>
-						<Grid item xs style={{textAlign:'left'}}>
-							<Button variant="contained" color="primary" onClick={removeData}>
-								직원정보 삭제
-							</Button>
-						</Grid>
-						<Grid item xs style={{textAlign:'center'}}>
-							<TextField id="outlined-basic" placeholder="검색어를 입력해 주세요" variant="outlined" />
-							<TextField style={{width:'20%'}}
-								id="outlined-select-currency"
-								select
-								variant="outlined"
-							>
-								{category.map(option => (
-								<MenuItem key={option.value} value={option.value}>
-									{option.label}
-								</MenuItem>
-								))}
-							</TextField>
-							<Button variant="contained" color="primary">
+				<Toolbar className={classes.root_tool}>
+					<div className={classes.container} style={{textAlign:"right"}}>
+						<Hidden smDown>
+							<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button_tool}>
 								검색
 							</Button>
-						</Grid>
-						<Grid item xs  style={{textAlign:'right'}}>
-							<Button variant="contained" color="primary">
-								직원정보 출력
+							<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={excelExport} className={classes.button_tool}>
+								엑셀 내보내기
 							</Button>
-						</Grid>
-					</Grid>
-				</div>
+							<Button variant="contained" color="primary" size="small" startIcon={<RemoveIcon />} onClick={removeData}>
+								직원정보삭제
+							</Button>
+						</Hidden>
+						<Hidden mdUp>
+							<IconButton color="primary" onClick={handleClickOpen} className={classes.button_tool}>
+								<FilterListIcon />
+							</IconButton>
+							<IconButton color="primary" onClick={excelExport} className={classes.button_tool}>
+								<SaveIcon />
+							</IconButton>
+							<IconButton color="primary" onClick={removeData}>
+								<RemoveIcon />
+							</IconButton>
+						</Hidden>
+					</div>
+				</Toolbar>
 				<TableContainer>
 					<Table className={classes.table} aria-label="simple table">
 						<TableHead>
