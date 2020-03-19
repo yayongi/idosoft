@@ -14,13 +14,13 @@ export default function StickyHeadTable() {
 
   return (
     <Fragment>
-				<Card>
-					<CardContent>
-						코드정보
-            <br/>
-            <CodeInfo/>
-					</CardContent>
-				</Card>
-			</Fragment>
+		<Card>
+			<CardContent>
+				코드정보
+				<br/>
+				<CodeInfo/>
+			</CardContent>
+		</Card>
+	</Fragment>
   );
 }
