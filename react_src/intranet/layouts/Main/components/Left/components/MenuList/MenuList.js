@@ -14,9 +14,11 @@ import BarChartIcon from '@material-ui/icons/BarChart';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
-import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
+import CreditCard from '@material-ui/icons/CreditCard';
+import DesktopMac from '@material-ui/icons/DesktopMac';
+// import menus from './data' 
+// import ExpandLess from '@material-ui/icons/ExpandLess';
+// import ExpandMore from '@material-ui/icons/ExpandMore';
 
 
 const useStyles = makeStyles(theme => ({
@@ -32,7 +34,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function MenuList() {
 	const classes = useStyles();
-	const [openStep4, setOpenStep4] = React.useState(false);	// React Hooks 참조 필
+/* 	// 하위 메뉴 열고 닫는 이벤트 주석처리 - 20200319.오경섭
+	const [openStep4, setOpenStep4] = React.useState(false);	
 	const [openStep5, setOpenStep5] = React.useState(false);
 
 	const handleToggle = (step) => {
@@ -42,7 +45,11 @@ export default function MenuList() {
 			setOpenStep5(!openStep5);
 		}
 		
-	};
+	}; */
+
+	const handleClick = (event) => {
+		event.target.style.color="blue";
+	}
 
 	return (
 		<Fragment>
@@ -61,7 +68,7 @@ export default function MenuList() {
 				</ListItem>
 				<ListItem button component={RouterLink} to="/resource">
 					<ListItemIcon>
-						<PeopleIcon />
+						<DesktopMac />
 					</ListItemIcon>
 					<ListItemText primary="자원관리" />
 				</ListItem>
@@ -76,57 +83,59 @@ export default function MenuList() {
 						<BarChartIcon />
 					</ListItemIcon>
 					<ListItemText primary="프로젝트" />
-					{openStep4 ? <ExpandLess /> : <ExpandMore />}
+					{/* 부모메뉴 우측 아이콘 표시 주석처리 - 20200319.오경섭*/}
+					{/* {openStep4 ? <ExpandLess /> : <ExpandMore />} */}
 				</ListItem>
-				<Collapse in={openStep4} timeout="auto" unmountOnExit>
+				<Collapse in={true} timeout="auto" unmountOnExit>  
 					<List component="div" disablePadding>
 						<ListItem button className={classes.nested} component={RouterLink} to="/project/history">
 							<ListItemIcon>
-								<SubdirectoryArrowRightIcon />
+								<SubdirectoryArrowRightIcon fontSize="small"/>
 							</ListItemIcon>
-							<ListItemText primary="이력관리" />
+							<ListItemText secondary="이력관리" />
 						</ListItem>
 						<ListItem button className={classes.nested} component={RouterLink} to="/project/manage">
 							<ListItemIcon>
-								<SubdirectoryArrowRightIcon />
+								<SubdirectoryArrowRightIcon fontSize="small"/>
 							</ListItemIcon>
-							<ListItemText primary="프로젝트관리" />
+							<ListItemText secondary="프로젝트관리" />
 						</ListItem>
 					</List>
 				</Collapse>
 
 				<ListItem button onClick={() => handleToggle(5)}>
 					<ListItemIcon>
-						<AccountBalanceWalletIcon />
+						<CreditCard />
 					</ListItemIcon>
 					<ListItemText primary="경비관리" />
-					{openStep5 ? <ExpandLess /> : <ExpandMore />}
+					{/* 부모메뉴 우측 아이콘 표시 주석처리 - 20200319.오경섭*/}
+					{/* {openStep4 ? <ExpandLess /> : <ExpandMore />} */}
 				</ListItem>
-				<Collapse in={openStep5} timeout="auto" unmountOnExit>
+				<Collapse in={true} timeout="auto" unmountOnExit>
 					<List component="div" disablePadding>
 						<ListItem button className={classes.nested} component={RouterLink} to="/expense/annualList">
 							<ListItemIcon>
-								<SubdirectoryArrowRightIcon />
+								<SubdirectoryArrowRightIcon fontSize="small"/>
 							</ListItemIcon>
-							<ListItemText primary="경비관리목록" />
+							<ListItemText secondary="경비관리목록" />
 						</ListItem>
 						<ListItem button className={classes.nested} component={RouterLink} to="/expense/approvalList">
 							<ListItemIcon>
-								<SubdirectoryArrowRightIcon />
+								<SubdirectoryArrowRightIcon fontSize="small"/>
 							</ListItemIcon>
-							<ListItemText primary="경비결재관리목록" />
+							<ListItemText secondary="경비결재관리목록" />
 						</ListItem>
 						<ListItem button className={classes.nested} component={RouterLink} to="/expense/payList">
 							<ListItemIcon>
-								<SubdirectoryArrowRightIcon />
+								<SubdirectoryArrowRightIcon fontSize="small"/>
 							</ListItemIcon>
-							<ListItemText primary="교통/통신비관리목록" />
+							<ListItemText secondary="교통/통신비관리목록" />
 						</ListItem>
 						<ListItem button className={classes.nested} component={RouterLink} to="/expense/monthyStatMSelectView">
 							<ListItemIcon>
-								<SubdirectoryArrowRightIcon />
+								<SubdirectoryArrowRightIcon  fontSize="small"/>
 							</ListItemIcon>
-							<ListItemText primary="경비월별통계" />
+							<ListItemText secondary="경비월별통계" />
 						</ListItem>
 					</List>
 				</Collapse>
@@ -138,7 +147,7 @@ export default function MenuList() {
 						<ListItemIcon>
 							<AccountTreeIcon />
 						</ListItemIcon>
-						<ListItemText primary="코드관리" />
+						<ListItemText primary="코드관리"/>
 					</ListItem>
 			</List>
 			<Divider />
