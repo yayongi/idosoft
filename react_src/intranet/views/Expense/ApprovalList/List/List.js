@@ -12,6 +12,7 @@ export default function  List(props) {
 		payEdDt: "202003",
 		status: "-1",
 		memo: "",
+		selected: []
 	});
 	const [rows, setRows] = React.useState([]);
 
@@ -59,7 +60,10 @@ export default function  List(props) {
 				/>
 			</Fragment>
 			<Paper>
-				<Body rows={filterRows} routeProps={props.routeProps} />
+				<Body rows={filterRows} 
+					routeProps={props.routeProps}
+					state={state} setState={setState}
+				/>
 			</Paper>
 		</Fragment>
 	);
