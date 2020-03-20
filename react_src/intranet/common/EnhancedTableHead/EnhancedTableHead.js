@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 */
 export function  EnhancedTableHead(props) {
 	const classes = useStyles();
-	const { order, orderBy, onRequestSort, headCells } = props;
+	const { order, orderBy, onRequestSort, headCells, isCheckBox } = props;
 	const createSortHandler = property => event => {
 		onRequestSort(event, property);
 	};
@@ -60,6 +60,7 @@ export function  EnhancedTableHead(props) {
   return (
 		<TableHead>
 			<TableRow>
+				{isCheckBox === true && <TableCell/>} 	
 				{headCells.map(headCell => (
 					<TableCell
 						key={headCell.id}

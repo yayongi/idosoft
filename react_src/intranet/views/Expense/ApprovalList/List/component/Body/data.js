@@ -13,3 +13,9 @@ export const columnsDown = [
 	{ id: 'statusText', label: '진행상태', minWidth: 100, align: 'center', paddingLeft : 50},
 	{ id: 'payDate', label: '결제일', minWidth: 100, align: 'center', paddingLeft : 50},
 ];
+
+export const checkColumnsDown = [
+	{ id: 'expenseTypeText', label: '경비유형', minWidth: 70, align: 'center', paddingLeft : 30},
+	{ id: 'statusText', label: '진행상태', minWidth: 70, align: 'center', paddingLeft : 30},
+	{ id: 'payDate', label: '결제일', minWidth: 70, align: 'center', paddingLeft : 30},
+];

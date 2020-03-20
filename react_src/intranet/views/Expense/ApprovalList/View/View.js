@@ -190,6 +190,7 @@ export default function  View(props) {
 				</Stepper>
 			</div>
 			<Divider/>
+
 			<TableContainer component={Paper} style={{marginBottom:'10px'}}>
 				<Table aria-label="simple table">
 					<TableHead>
@@ -439,29 +440,26 @@ export default function  View(props) {
 			</div>
 
 			<div>
-			{/* <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-				Open alert dialog
-			</Button> */}
-			<Dialog
-				open={appOpen}
-				onClose={() => handleClose('app')}
-				aria-labelledby="alert-dialog-title"
-				aria-describedby="alert-dialog-description"
-			>
-				<DialogContent>
-				<DialogContentText id="alert-dialog-description">
-					결재하시겠습니까?
-				</DialogContentText>
-				</DialogContent>
-				<DialogActions>
-				<Button onClick={() => handleClose('app')} color="primary">
-					취소
-				</Button>
-				<Button onClick={handleClickApprove} color="primary" autoFocus>
-					확인
-				</Button>
-				</DialogActions>
-			</Dialog>
+				<Dialog
+					open={appOpen}
+					onClose={() => handleClose('app')}
+					aria-labelledby="alert-dialog-title"
+					aria-describedby="alert-dialog-description"
+				>
+					<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						결재하시겠습니까?
+					</DialogContentText>
+					</DialogContent>
+					<DialogActions>
+					<Button onClick={() => handleClose('app')} color="primary">
+						취소
+					</Button>
+					<Button onClick={handleClickApprove} color="primary" autoFocus>
+						확인
+					</Button>
+					</DialogActions>
+				</Dialog>
 			</div>
 		</>
 	);
