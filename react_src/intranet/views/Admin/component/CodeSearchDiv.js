@@ -119,17 +119,21 @@ export default function CodeSearchDiv(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button}>
 							검색
 						</Button>
-						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} component={RouterLink} to="/admin/code/addCode">
-							코드추가
-						</Button>
+						<RouterLink button="true" to="/admin/modifyCode/new">
+							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} >
+								코드추가
+							</Button>
+						</RouterLink>	
 					</Hidden>
 					<Hidden mdUp>
 						<IconButton color="primary" onClick={handleClickOpen} className={classes.button}>
 							<FilterListIcon />
 						</IconButton>
-						<IconButton color="primary" component={RouterLink} to="/admin/code/addCode">
-							<AddIcon />
-						</IconButton>
+						<RouterLink button="true" to="/admin/modifyCode/new">
+							<IconButton color="primary">
+								<AddIcon />
+							</IconButton>
+						</RouterLink>
 					</Hidden>
 				</div>
 			</Toolbar>

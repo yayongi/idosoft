@@ -11,10 +11,16 @@ import { makeStyles } from '@material-ui/core/styles';
     개발 소스 db 연결 시 변경 및 수정 필요
 */
 function getCodeOriginInfoData(){
-  const sortedCodeInfo = getCodeInfoDB();
-  return sortedCodeInfo.sort((a, b) => {
-    return parseInt(a.code_level) - parseInt(b.code_level);
-  });
+  if(!localStorage.getItem("resCodeData")){
+    const sortedCodeInfo = getCodeInfoDB();
+    sortedCodeInfo.sort((a, b) => {
+      return parseInt(a.code_level) - parseInt(b.code_level);
+    });
+
+    localStorage.setItem('resCodeData', JSON.stringify(sortedCodeInfo));
+    return sortedCodeInfo;
+  }
+  return JSON.parse(localStorage.getItem("resCodeData"));
 }
 
 function getRootList(codeOriginInfo){
@@ -52,9 +58,6 @@ export default function CodeView(props) {
     searchKeyword: "",
   })
 
-  useEffect(() => {
-    console.log("useEffect");
-  }, []);
 
   const updateCondition = (conditions) => {
     console.log("updateCondition");

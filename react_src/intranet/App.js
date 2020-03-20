@@ -174,15 +174,15 @@ export default function App() {
 						</MainLayout>
 					} />
 					{/* 코드 추가*/}
-					<Route path='/admin/code/addCode' render={(props) =>
+					<Route path='/admin/modifyCode/new' render={(props) =>
 						<MainLayout routeProps={props}>
-							<AddCode routeProps={props} />
+							<ModifyCode routeProps={props} screenType="new"/>
 						</MainLayout>
 					} />
-					{/* 코드 수정 */}
-					<Route path='/admin/code/modifyCode' render={(props) =>
+					{/* 코드 수정*/}
+					<Route path='/admin/modifyCode/view/:id' render={(props) =>
 						<MainLayout routeProps={props}>
-							<ModifyCode routeProps={props} />
+							<ModifyCode routeProps={props}/>
 						</MainLayout>
 					} />
 					<Route  path="/notFound">

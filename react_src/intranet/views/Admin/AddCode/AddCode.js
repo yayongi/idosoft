@@ -8,9 +8,8 @@ import CodeInfo from '../component/CodeInfo';
 const useStyles = makeStyles({
 });
 
-export default function AddCode() {
+export default function AddCode(props) {
   const classes = useStyles();
-
 
   return (
     <Fragment>
