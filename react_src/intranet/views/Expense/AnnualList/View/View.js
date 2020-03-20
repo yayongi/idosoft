@@ -30,7 +30,7 @@ import {
 } from '@material-ui/pickers';
 
 import { AnnualStorage, expenseTypes, getStepInfo } from 'views/Expense/data';
-import PreviewFileUpload from 'common/PreviewFileUpload/PreviewFileUpload';
+import PreviewFileUpload from 'common/PreviewFileUpload';
 
 
 const useStyles = makeStyles(theme => ({
