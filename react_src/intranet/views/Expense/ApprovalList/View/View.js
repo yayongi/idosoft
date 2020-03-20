@@ -145,8 +145,8 @@ export default function  View(props) {
 							<TableCell align="left" component="th" scope="row">연락처</TableCell>
 							<TableCell align="left">
 								<TextField
-									id="memo"
-									name="memo"
+									id="tel"
+									name="tel"
 									margin="dense"
 									defaultValue="연락처"
 									variant="outlined"
@@ -160,8 +160,8 @@ export default function  View(props) {
 							<TableCell align="left" component="th" scope="row">이메일</TableCell>
 							<TableCell align="left">
 								<TextField
-									id="memo"
-									name="memo"
+									id="email"
+									name="email"
 									margin="dense"
 									defaultValue="이메일"
 									variant="outlined"
