@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme =>({
 	},
 	button :{
 		textAlign:'right',
-		marginTop:10
+		marginTop:10,
 	},
 	root: {
 		flexGrow: 1,
@@ -53,6 +53,9 @@ const useStyles = makeStyles(theme =>({
 	},
 	button_tool: {
 		marginRight: '10px',
+	},
+	router_link: {
+		textDecoration: 'none',
 	}
 }));
 
@@ -295,12 +298,12 @@ const MemberList = () => {
 									{row.cert_yn == 1? '유':'무'}
 								</TableCell>
 								<TableCell align="center">
-									<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod_admin":"/member/membermod_user"}>
+									<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod_admin":"/member/membermod_user"} className={`${classes.router_link} ${classes.button_tool}`} >
 										<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
 											수정
 										</Button>
 									</RouterLink>
-									<RouterLink button="true" to="/project/history">
+									<RouterLink button="true" to="/project/history" className={classes.router_link}>
 										<Button variant="contained" color="primary">
 											개인이력
 										</Button>
@@ -313,7 +316,7 @@ const MemberList = () => {
 				</TableContainer>
 			</Card>
 			<div className={classes.button}>
-				<RouterLink button="true" to="/member/memberreg">
+				<RouterLink button="true" to="/member/memberreg" className={classes.router_link}>
 					<Button variant="contained" color="primary" >
 						사원정보 등록
 					</Button>
