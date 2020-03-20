@@ -103,7 +103,7 @@ export default function CodeView(props) {
         </Grid>
         <Grid item xs={6} sm={6}>
           <Paper className={classes.paper}>
-            <CodeInfoTable codeInfo={codeInfo} rootCodeList={rootCodeList}/>
+            <CodeInfoTable codeInfo={codeInfo} rootCodeList={rootCodeList} routeProps={props.routeProps}/>
           </Paper>
         </Grid>
       </Grid>

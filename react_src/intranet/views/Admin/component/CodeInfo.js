@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,6 +12,35 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { Link as RouterLink } from 'react-router-dom';
+
+function initData (location){
+	console.log("initData");
+	//console.log(location.pathname);
+	//console.log(location.search);
+
+	var urlSplitList 	= location.pathname.split("/");
+	var currentLastPath = urlSplitList[urlSplitList.length-1];
+	
+	var data = {};
+	data["screenType"] = currentLastPath == "new" ? "new" : "modify";
+	
+	var query = location.search;
+	if(query){
+		query.replace("?", "").split("&").map((param => {
+			var kValue = param.split("=")[0];
+			var vValue = decodeURIComponent(param.split("=")[1]);
+			return data[kValue] = vValue;
+		}));
+	}
+	return data;
+}
+
+function jsonToQuery(obj) {
+  return ('?' +
+    Object.keys(obj).map(function (key) {
+      return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
+    }).join('&'));
+}
 
 
 const useStyles = makeStyles(theme => ({
@@ -57,16 +86,52 @@ export default function CodeInfo(props) {
 	console.log("call CodeInfo Area");
 
 	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
-	const [dataState, setDataState] = React.useState('');	// state : 수정을 위한 데이터 관리
 	const { match, location, history } = props.routeProps.routeProps;
-
+	const [dataState, setDataState] = React.useState(initData(location));	// state : 수정을 위한 데이터 관리
 	const classes = useStyles();
-	
+	//console.log(dataState);
+
+	//하위코드 등록 시 화면이 그려진 후 dataState(등록할 코드의 상위 코드 정보)를 한번 더 변경시켜준다.
+	useEffect(() => {
+		var compareData = initData(location);
+		if(compareData.length != dataState.length){
+			setDataState(compareData);
+		}else{
+			var keyList = Object.keys(compareData);
+			var isSetData = false;
+			for(var i=0; i < keyList.length; i++){
+				if(compareData[keyList[i]] !== dataState[keyList[i]] ){
+					isSetData = true;
+					break;
+				}
+			}
+
+			if(isSetData){
+
+				if(compareData["screenType"] == "new"){
+					document.getElementsByName("code_id")[0].value 		= "";
+					document.getElementsByName("code_name")[0].value 	= "";
+					document.getElementsByName("upper_code")[0].value	= compareData["code_id"];
+					document.getElementsByName("upper_name")[0].value	= compareData["code_name"];
+					document.getElementsByName("code_dc")[0].value 		= "";
+				}else if(compareData["screenType"] == "modify"){
+					document.getElementsByName("code_id")[0].value 		= compareData["code_id"] ? compareData["code_id"] : "";
+					document.getElementsByName("code_name")[0].value 	= compareData["code_name"] ? compareData["code_name"] : "";
+					document.getElementsByName("upper_code")[0].value	= compareData["upper_code"] ? compareData["upper_code"] : "";
+					document.getElementsByName("upper_name")[0].value	= compareData["upper_name"] ? compareData["upper_name"] : "";
+					document.getElementsByName("code_dc")[0].value 		= compareData["code_dc"] ? compareData["code_dc"] : "";
+				}
+
+				setDataState(compareData);
+			}
+		}
+	});
+
 	const handleClickAddCode = () => {
-		console.log("handleClickAddCode");
+		//console.log("handleClickAddCode");
 		var code_id 	= document.getElementsByName("code_id")[0].value;
 		var code_name 	= document.getElementsByName("code_name")[0].value;
-		var code_level 	= "1";
+		var code_level 	= "1";					 
 		var upper_code 	= document.getElementsByName("upper_code")[0].value;
 		var upper_name 	= document.getElementsByName("upper_name")[0].value;
 		var code_dc 	= document.getElementsByName("code_dc")[0].value;
@@ -90,14 +155,29 @@ export default function CodeInfo(props) {
 
 		var codeInfoList = JSON.parse(localStorage.getItem("resCodeData"));
 		var isContain = codeInfoList.filter(info => {
-			return info.code_id === code_id
+			return info.code_id === code_id	
 		}).length > 0 ? true : false;
+
+		if(upper_code != ""){
+			var isLevel = codeInfoList.filter(info => {
+				return info.code_id === upper_code
+			});
+
+			if(isLevel.length == "0"){
+				alert("등록 중 오류가 발생했습니다.");
+				return;
+			}
+
+			code_level = parseInt(isLevel[0]["code_level"])+1;
+		}
 
 		if(isContain){
 			alert("이미 등록되어 있는 코드ID입니다.");
 			document.getElementsByName("code_id")[0].focus();
 			return;
 		}
+
+		
 		
 		codeInfoList.push(
 			{
@@ -117,8 +197,79 @@ export default function CodeInfo(props) {
 		});
 		localStorage.setItem("resCodeData", JSON.stringify(codeInfoList));
 		//history.push("/admin/code");
+
+		alert("등록 되었습니다.");
 		history.goBack();
 	};
+
+	const handleClickModifyCode = () => {
+		console.log("handleClickModifyCode");
+		var resCodeData = JSON.parse(localStorage.getItem("resCodeData"));
+		var idx = -1;
+		resCodeData.filter((codeData, index) => {
+			if(codeData.id == dataState.id && codeData.code_id === dataState.code_id){
+				idx = index;
+				return codeData;
+			}
+		});
+
+		resCodeData[idx]["code_name"] 	= document.getElementsByName("code_name")[0].value;
+		resCodeData[idx]["code_dc"] 	= document.getElementsByName("code_dc")[0].value;
+		localStorage.setItem("resCodeData", JSON.stringify(resCodeData));
+		
+		alert("수정되었습니다.");
+		history.goBack();
+	}
+
+	const handleClickRemoveCode = () => {
+		//console.log("handleClickRemoveCode");
+		var resCodeData = JSON.parse(localStorage.getItem("resCodeData"));
+
+		const isRemoveOk = (resCodeData.filter((codeData) => (
+			codeData.upper_code == dataState.code_id
+		))).length > 0 ? false : true;
+
+		if(isRemoveOk){
+			var idx = -1;
+			resCodeData.filter((codeData, index) => {
+				if(codeData.id == dataState.id && codeData.code_id === dataState.code_id){
+					idx = index;
+					return codeData;
+				}
+			});
+
+			//console.log("idx : " + idx);
+			if(idx > -1){
+				resCodeData.splice(idx, 1);
+				localStorage.setItem("resCodeData", JSON.stringify(resCodeData));
+				alert("삭제되었습니다.");
+			}else{
+				alert("삭제 중 오류가 발생했습니다.");
+			}
+			history.goBack();
+		}else{
+			alert("하위코드가 있어서 삭제가 불가능합니다.");
+			return;
+		}
+	}
+
+	const handleClickLowerCode = () => {
+		var resCodeData = JSON.parse(localStorage.getItem("resCodeData"));
+		var queryJSON = resCodeData.filter((codeData, index) => {
+				if(codeData.id == dataState.id && codeData.code_id === dataState.code_id){
+					return codeData;
+				}
+			});
+
+
+		var url = "/admin/modifyCode/new";
+		var queryString = jsonToQuery(queryJSON[0]);
+
+		console.log("url : " + url);
+		console.log("queryString : " + queryString);
+
+		history.push(url + queryString);
+	}
 
 	return (
 		<>
@@ -130,7 +281,7 @@ export default function CodeInfo(props) {
 						<TableRow>
 							<TableCell align="left" colSpan="2">
 								<Typography className={classes.title} color="inherit" variant="h6">					
-									코드 생성
+									{dataState.screenType == "new" ? "코드 생성" : "코드 수정"}
 								</Typography>
 							</TableCell>
 						</TableRow>
@@ -144,6 +295,7 @@ export default function CodeInfo(props) {
 									name="upper_code"
 									margin="dense"
 									variant="outlined"
+									defaultValue={dataState.upper_code}
 									InputProps={{
 									 	 readOnly: true,
 									}}
@@ -163,11 +315,12 @@ export default function CodeInfo(props) {
 									name="upper_name"
 									margin="dense"
 									variant="outlined"
+									defaultValue={dataState.upper_name}
 									InputProps={{
 									 	readOnly: true,
 									}}
 									style={{
-									 	background: 'gray'
+										background: 'gray'
 									}}
 									fullWidth
 								/>
@@ -181,6 +334,13 @@ export default function CodeInfo(props) {
 									name="code_id"
 									margin="dense"
 									variant="outlined"
+									defaultValue={dataState.code_id}
+									InputProps={{
+									 	readOnly: dataState.screenType === "new" ? false: true,
+									}}
+									style={{
+										background: dataState.screenType === "new" ? "" : "gray"
+									}}
 									fullWidth
 								/>
 							</TableCell>
@@ -193,6 +353,7 @@ export default function CodeInfo(props) {
 									name="code_name"
 									margin="dense"
 									variant="outlined"
+									defaultValue={dataState.code_name}
 									fullWidth
 								/>
 							</TableCell>
@@ -205,6 +366,7 @@ export default function CodeInfo(props) {
 									name="code_dc"
 									rows="5"
 									variant="outlined"
+									defaultValue={dataState.code_dc}
 									multiline
 									fullWidth
 								/>
@@ -222,9 +384,38 @@ export default function CodeInfo(props) {
 							취소
 						</Button>
 					</RouterLink>
-					<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickAddCode}>
-						추가
-					</Button>
+					{
+						dataState.screenType == "new" && 
+						(
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickAddCode}>
+								추가
+							</Button>
+						)
+					}
+					{
+						dataState.screenType == "modify" && 
+						(
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickModifyCode}>
+								수정
+							</Button>
+						)
+					}
+					{
+						dataState.screenType == "modify" && 
+						(
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickRemoveCode}>
+								삭제
+							</Button>
+						)
+					}
+					{
+						dataState.screenType == "modify" && 
+						(
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickLowerCode}>
+								하위코드추가
+							</Button>
+						)
+					}
 				</div>
 			</Toolbar>
 		</>

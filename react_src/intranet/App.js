@@ -180,7 +180,7 @@ export default function App() {
 						</MainLayout>
 					} />
 					{/* 코드 수정*/}
-					<Route path='/admin/modifyCode/view/:id' render={(props) =>
+					<Route path='/admin/modifyCode/view' render={(props) =>
 						<MainLayout routeProps={props}>
 							<ModifyCode routeProps={props}/>
 						</MainLayout>
