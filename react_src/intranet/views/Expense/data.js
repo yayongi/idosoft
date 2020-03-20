@@ -1,5 +1,5 @@
 function createData(seq, expenseType, expenseTypeText, memo, status, statusText, register, payDate, pay, rejectMemo, prevAuthPerson, authPerson, prevAuthDate, authDate) {
-  return { seq, expenseType, expenseTypeText, memo, status, statusText, register, payDate, pay, rejectMemo, prevAuthPerson, authPerson, prevAuthDate, authDate};
+	return {seq, expenseType, expenseTypeText, memo, status, statusText, register, payDate, pay, rejectMemo, prevAuthPerson, authPerson, prevAuthDate, authDate};
 }
 /**
  *  yyyyMMdd 포맷으로 반환
