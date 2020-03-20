@@ -50,16 +50,16 @@ export default function App() {
 					<Route exact path="/resPassword">
 						<MinimalLayout><ResPassword /></MinimalLayout>
 					</Route>
-					<Route exact path="/member/memberlist">
+					<Route exact path="/member/">
 						<MainLayout><MemberList /></MainLayout>
 					</Route>
 					<Route exact path="/member/memberreg">
 						<MainLayout><MemberReg /></MainLayout>
 					</Route>
-					<Route exact path="/member/membermod_admin">
+					<Route exact path="/member/membermod/admin">
 						<MainLayout><MemberMod_admin /></MainLayout>
 					</Route>
-					<Route exact path="/member/membermod_user">
+					<Route exact path="/member/membermod/user">
 						<MainLayout><MemberMod_user /></MainLayout>
 					</Route>
 					<Route exact path="/resource">

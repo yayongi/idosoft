@@ -60,7 +60,7 @@ export default function MenuList() {
 					</ListItemIcon>
 					<ListItemText primary="Dashboard"/>
 				</ListItem>
-				<ListItem button component={RouterLink} to="/member/memberlist">
+				<ListItem button component={RouterLink} to="/member">
 					<ListItemIcon>
 						<PeopleIcon />
 					</ListItemIcon>

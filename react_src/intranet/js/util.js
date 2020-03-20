@@ -72,6 +72,18 @@ export function positionFormatter(param){
 	})
   return result;
 }
+
+//직급 역포맷
+//작성자 : 강성우
+export function positionUnFormatter(param){
+	let result;
+	positions.map(position => {
+    	if(position.label == param){
+			result = position.value;
+		}
+	})
+  return result;
+}
 //이메일 Validation
 //작성자 : 강성우
 export function emailValidation(param){
@@ -125,6 +137,30 @@ export function downloadFile(event,path){
       console.log(e);
     });
 } 
+//엑셀 내보내기
+export function excelExport(json){
+		axios({
+			url: '/intranet/downloadExcelFile',
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			data: {
+				title : 'TEST',
+				jsonArrData : JSON.stringify(json)
+			}
+		}).then(response => {
+			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', response.headers.filename);
+			document.body.appendChild(link);
+			link.click();
+			console.log('Excel Export Success' + JSON.stringify(response));	
+		}).catch(e => {
+			console.log(e);
+		});
+	}
 
 
 

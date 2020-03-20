@@ -89,7 +89,7 @@ const ContentModal = ({props, closeModal}) => {
 		//수정 페이지로 이동할 때 필요한 데이터 함께 이동 
 		localStorage.setItem('savedData', JSON.stringify(datum));
   }
-  
+
   return (
     <div>
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={props.openModal}>
@@ -117,7 +117,7 @@ const ContentModal = ({props, closeModal}) => {
         </DialogContent>
         <DialogActions>
           {props.buttonName !== "" && (
-            <RouterLink button="true" to={props.manager_yn? "/member/membermod_admin":"/member/membermod_user"}>
+            <RouterLink button="true" to={props.manager_yn? "/member/membermod/admin":"/member/membermod/user"}>
               <Button autoFocus color="primary" onClick={() => setLocalstorage(props.datum)}>
                 {props.buttonName}
               </Button>

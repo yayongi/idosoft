@@ -40,6 +40,12 @@ const useStyles = makeStyles(theme => ({
     width: theme.spacing(17),
     height: theme.spacing(17),
   },
+  button_tool: {
+		marginRight: '10px',
+	},
+	router_link: {
+		textDecoration: 'none',
+	}
 }));
 
 
@@ -327,7 +333,7 @@ const MemberReg = () => {
                         <Button variant="contained" color="primary" onClick={setLocalstorage}>
                                                   저장하기
                         </Button>
-                      <RouterLink button="true" to="/member/memberlist" >
+                      <RouterLink button="true" to="/member/memberlist" className={classes.router_link}>
                         <Button variant="contained" color="primary">
                                                   뒤로가기
                         </Button>

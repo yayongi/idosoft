@@ -18,9 +18,11 @@ const DialogContent = withStyles(theme => ({
 }))(MuiDialogContent);
 
 //다이얼 로그
-const FilterModal = ({props,closeModal}) => {
-	  const [open, setOpen] = React.useState(false);
-	  const {searchState, setSearchState} = props;
+const FilterModal = ({props,state,setState,closeModal}) => {
+	const [open, setOpen] = React.useState(false);
+
+	const searchState = state;
+	const setSearchState = setState;
 
 	// 검색 버튼 클릭 전, 임시로 값 저장
 	const [dialogState, setDialogState] = React.useState({
@@ -55,7 +57,8 @@ const FilterModal = ({props,closeModal}) => {
 		setSearchState({
 			...searchState,
 			category : document.getElementsByName("category")[0].value,
-			searchword : document.getElementsByName("searchword")[0].value
+			searchword : document.getElementsByName("searchword")[0].value,
+			test : true
 		});
 		handleClose();
 	}
@@ -69,13 +72,13 @@ const FilterModal = ({props,closeModal}) => {
 			<DialogContent dividers>
 				<Grid container justify="flex-start">
 					<Grid item xs={6} style={{paddingRight: 10}}>
-					<TextField
+						<TextField
 								id="category"
 								name="category"
 								select
 								margin="dense"
 								label="유형"
-								value={dialogState.expenseType}
+								defaultValue={dialogState.category}
 								onChange={handleChange}
 								fullWidth>
 								<MenuItem key={0} value={0}>이름</MenuItem>

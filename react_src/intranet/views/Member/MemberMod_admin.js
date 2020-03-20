@@ -39,6 +39,12 @@ const useStyles = makeStyles(theme => ({
     width: theme.spacing(17),
     height: theme.spacing(17),
   },
+  button_tool: {
+		marginRight: '10px',
+	},
+	router_link: {
+		textDecoration: 'none',
+	}
 }));
 
 const MemberReg = () => {
@@ -401,10 +407,10 @@ const MemberReg = () => {
                       <TextField size="small" style={{width:'20%'}} id="mar_date" defaultValue={dateFormatter(row.mar_date)} label="결혼기념일" variant="outlined" />
                     </div>
                     <div className={classes.textfield}>
-                        <Button variant="contained" color="primary" onClick={setLocalstorage}>
-                                                  저장하기
-                        </Button>
-                      <RouterLink button="true" to="/member/memberlist">
+                      <Button variant="contained" color="primary" onClick={setLocalstorage}>
+                                                저장하기
+                      </Button>
+                      <RouterLink button="true" to="/member/memberlist" className={classes.router_link}>
                         <Button variant="contained" color="primary">
                                                   뒤로가기
                         </Button>
