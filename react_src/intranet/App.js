@@ -5,7 +5,6 @@ import { Switch, Redirect } from 'react-router-dom';
 import { Main as MainLayout, Minimal as MinimalLayout  } from './layouts';
 import {
 	Code as Code,
-	AddCode as AddCode,
 	ModifyCode as ModifyCode,
 	Dashboard as Dashboard,
 	AnnualList as AnnualList,
@@ -28,6 +27,7 @@ import {
   
 	History as History,
 	Manage as Manage,
+	ModifyProject as ModifyProject,
 	ResourceList as ResourceList,
 	ResourceRegist as ResourceRegist,
 	NotFound as NotFound
@@ -113,17 +113,29 @@ export default function App() {
 							<History routeProps={props} />
 						</MainLayout>
 					} />
+					{/* 중첩 Router 적용 - state Left 메뉴의 state가 유실되는 문제가 있어서 폐기 - 20200319: 오경섭*/}
+					{/* <Route path="/expense/annualList" component={AnnualList} />> */}
+					{/* <Route path="/expense/approvalList" component={ApprovalList} />> */}
+					{/* 중첩 Router 적용*/}
+
 					{/* 프로젝트 관리 */}
 					<Route exact path='/project/manage' render={(props) =>
 						<MainLayout routeProps={props}>
 							<Manage routeProps={props} />
 						</MainLayout>
 					} />
-					
-					{/* 중첩 Router 적용 - state Left 메뉴의 state가 유실되는 문제가 있어서 폐기 - 20200319: 오경섭*/}
-					{/* <Route path="/expense/annualList" component={AnnualList} />> */}
-					{/* <Route path="/expense/approvalList" component={ApprovalList} />> */}
-					{/* 중첩 Router 적용*/}
+					{/* 프로젝트 등록 */}
+					<Route exact path='/project/manage/new' render={(props) =>
+						<MainLayout routeProps={props}>
+							<ModifyProject routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 프로젝트 수정 */}
+					<Route exact path='/project/manage/view' render={(props) =>
+						<MainLayout routeProps={props}>
+							<ModifyProject routeProps={props} />
+						</MainLayout>
+					} />
 					{/* 경비관리 목록 화면 */}
 					<Route exact path='/expense/annualList' render={(props) =>
 						<MainLayout routeProps={props}>
