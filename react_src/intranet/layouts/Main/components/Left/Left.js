@@ -19,7 +19,7 @@ export default function Left(props) {
 				</IconButton>
 			</div>
 			<Divider />
-			<MenuList routeProps={routeProps} />
+			<MenuList routeProps={routeProps} handleDrawerClose={handleDrawerClose}/>
 		</div>
 	);
 

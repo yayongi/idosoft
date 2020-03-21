@@ -33,7 +33,8 @@ let menuCss = {};
 export default function MenuList(props) {
 	const classes = useStyles();
 	const [active, setActive] = useState({});
-	const {match} = props.routeProps;
+	const {routeProps, handleDrawerClose} = props;		// handleDrawerClose : 메뉴바 열기/닫기 이벤트
+	const {match} = routeProps;
 	
 	function urlMatch() {
 		if(preUrl != match.url) {
@@ -80,7 +81,7 @@ export default function MenuList(props) {
 							<Fragment key={idx}>
 								{/* 1Depth 메뉴 */}		
 								<ListItem button 
-									component={RouterLink} to={item.submenu[0].href}>
+									component={RouterLink} to={item.submenu[0].href} onClick={handleDrawerClose}>
 									<ListItemIcon className={menuCss[item.title]}>
 										{item.icon}
 									</ListItemIcon>
@@ -91,7 +92,7 @@ export default function MenuList(props) {
 									{
 										item.submenu.map((subItem, subIdx) => (
 											<ListItem key={subIdx} button 
-												className={classes.nested} component={RouterLink} to={subItem.href}>
+												className={classes.nested} component={RouterLink} to={subItem.href} onClick={handleDrawerClose}>
 												<ListItemIcon className={menuCss[subItem.title]}>
 													{subItem.icon}
 												</ListItemIcon>
@@ -115,7 +116,7 @@ export default function MenuList(props) {
 									)
 								}
 								<ListItem key={'listItem' + idx} button 
-									component={RouterLink} to={item.href}>
+									component={RouterLink} to={item.href} onClick={handleDrawerClose}>
 									<ListItemIcon className={menuCss[item.title]}>
 										{item.icon}
 									</ListItemIcon>
