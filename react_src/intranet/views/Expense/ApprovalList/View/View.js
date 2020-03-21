@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,8 +16,10 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import DateFnsUtils from '@date-io/date-fns';
-import ko from "date-fns/locale/ko";
+import CardMedia from '@material-ui/core/CardMedia';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -61,6 +62,10 @@ const useStyles = makeStyles(theme => ({
 		fontSize: '13px',
 		border: '1px solid black',
 		marginTop: theme.spacing(1), 
+	},
+	media: {
+		height: 0,
+		paddingTop: '100%', // 16:9
 	},
 	
 }));
@@ -149,6 +154,33 @@ export default function  View(props) {
 		
 		return setAppOpen(false);
 	}
+
+	// 이미지 영역 인쇄
+	const printImageArea = () => {
+		let container = document.getElementsByName("image");
+		
+		//console.log('container : ' + JSON.stringify(container));
+		/** 팝업 */
+		let innerHtml = container[0].innerHTML
+		let popupWindow = window.open("", "_blank", "width=700,height=800");
+		
+		popupWindow.document.write("<!DOCTYPE html>"+
+		"<html>"+
+			"<head>"+
+			"</head>"+
+			"<body>"+innerHtml+"</body>"+
+		"</html>")
+	
+		popupWindow.document.close()
+		popupWindow.focus()
+
+		/** 1초 지연 */
+		setTimeout(() => {
+			popupWindow.print()         // 팝업의 프린트 도구 시작
+			popupWindow.close()         // 프린트 도구 닫혔을 경우 팝업 닫기
+		}, 1000)
+	}
+
 	// 반려 처리
 	const handleClickReject = () => {
 		console.log("call handleClickReject");
@@ -338,7 +370,20 @@ export default function  View(props) {
 						<TableRow>
 							<TableCell align="left" component="th" scope="row">영수증</TableCell>
 							<TableCell align="left">
-								{/*영수증 이미지*/}
+								<Card className={classes.root}>
+									<CardContent>
+										<div name="image">
+											<img
+												src="http://cafefiles.naver.net/20091123_20/ippoom2_1258970814632O7W2g_jpg/i8mqtlp05mmg18_n00489_ippoom2.jpg"
+												title="image"
+												id="image"
+											/>
+										</div>
+									</CardContent>
+									<CardActions>
+										<Button size="small" onClick={printImageArea}>인쇄</Button>
+									</CardActions>
+									</Card>
 							</TableCell>
 						</TableRow>
 					</TableBody>
