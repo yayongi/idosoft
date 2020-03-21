@@ -13,8 +13,8 @@ IDOSOFT 인트라넷
 
 * 번들 최적화를 위한 분석방법
 
-npm run stat 을 실행하면 stats.json 이 생성됨 (package.json scipts.stat에 정의)
-json 파일을 아래 사이트에 업로드하여 살펴보면 됨.
+1. npm run stat 을 실행하면 stats.json 이 생성됨 (package.json scipts.stat에 정의)
+2. json 파일을 아래 사이트에 업로드하여 살펴보면 됨.
 
 https://webpack.github.io/analyse/
 
