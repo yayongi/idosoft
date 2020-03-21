@@ -187,6 +187,50 @@ export default function ProjectInfoForm(props) {
 		history.goBack();
 	}
 
+	const handleClickRemoveProject = () => {
+		var resProjData = JSON.parse(localStorage.getItem("resProjData"));
+
+		var idx = -1;
+		resProjData.filter((projData, index) => {
+			if(projData.project_no == dataState.project_no){
+				idx = index;
+				return projData;
+			}
+		});
+
+		if(idx > -1){
+			resProjData.splice(idx, 1);
+			localStorage.setItem("resProjData", JSON.stringify(resProjData));
+			alert("삭제되었습니다.");
+		}else{
+			alert("삭제 중 오류가 발생했습니다.");
+		}
+		history.goBack();
+	}
+
+	const handleClickUpdateProject = () => {
+		console.log("handleClickModifyCode");
+		var resProjData = JSON.parse(localStorage.getItem("resProjData"));
+		var idx = -1;
+		resProjData.filter((projData, index) => {
+			if(projData.project_no == dataState.project_no){
+				idx = index;
+				return resProjData;
+			}
+		});
+
+		resProjData[idx]["project_nm"] 	= dataState.project_nm;
+		resProjData[idx]["instt_code"] 	= dataState.instt_code;
+		resProjData[idx]["bgnde"] 	= dataState.bgnde.replace(/[^0-9]/g, '');
+		resProjData[idx]["endde"] 	= dataState.endde.replace(/[^0-9]/g, '');
+		resProjData[idx]["transport_ct"] 	= dataState.transport_ct.replace(/[^0-9]/g, '');
+		resProjData[idx]["pm"] 	= dataState.pm;
+		localStorage.setItem("resProjData", JSON.stringify(resProjData));
+		
+		alert("수정되었습니다.");
+		history.goBack();
+	}
+
 	const handleClickCancle = () => {
 		history.goBack();
 	};
@@ -226,12 +270,12 @@ export default function ProjectInfoForm(props) {
 							<TableCell align="left" component="th" scope="row">발주처</TableCell>
 							<TableCell align="left">
 								<TextField
-									id="instt"
-									name="instt"
+									id="instt_code"
+									name="instt_code"
 									margin="dense"
 									variant="outlined"
 									onChange={handleChange}
-									value={dataState.instt}
+									value={dataState.instt_code}
 									fullWidth
 									select>
 									{dataState.insttList.map((tmp) => (
@@ -346,7 +390,7 @@ export default function ProjectInfoForm(props) {
 					{
 						dataState.screenType == "modify" &&
 						(
-							<Button variant="contained" color="primary" size="small" className={classes.button}>
+							<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickUpdateProject}>
 								수정
 							</Button>
 						)
@@ -354,7 +398,7 @@ export default function ProjectInfoForm(props) {
 					{
 						dataState.screenType == "modify" &&
 						(
-							<Button variant="contained" color="primary" size="small" className={classes.button}>
+							<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickRemoveProject}>
 								삭제
 							</Button>
 						)

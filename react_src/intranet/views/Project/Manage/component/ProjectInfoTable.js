@@ -60,7 +60,7 @@ function ProjectInfo(props) {
   const handleClickDetailView = (event, row) => {
     console.log("call handleClickDetailView");
 
-    var url = "/admin/modifyCode/view";
+    var url = "/project/manage/view";
     var queryString = jsonToQuery(row);
 
     //console.log("url : " + url);
