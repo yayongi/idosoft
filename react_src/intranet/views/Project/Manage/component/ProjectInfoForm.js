@@ -37,7 +37,7 @@ function initData(location) {
 	var data = {};
 	data["screenType"] = currentLastPath == "new" ? "new" : "modify";
 	data["project_nm"] = "";
-	data["instt"] = "";
+	data["instt_code"] = "";
 	data["insttList"] = getSiteInfoDB();
 	data["bgnde"] = Moment(new Date()).format('YYYY-MM-DD');
 	data["endde"] = Moment((new Date()).setFullYear(new Date().getFullYear() + 1)).format('YYYY-MM-DD');
@@ -147,7 +147,7 @@ export default function ProjectInfoForm(props) {
 
 		var project_no  = projectData.length+1;
 		var project_nm  = dataState.project_nm;
-		var instt_code  = dataState.instt;
+		var instt_code  = dataState.instt_code;
 		var bgnde  = dataState.bgnde;
 		var endde  = dataState.endde;
 		var pm  = dataState.pm;

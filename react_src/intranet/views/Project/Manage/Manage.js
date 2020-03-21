@@ -5,6 +5,8 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import ProjectSearchDiv from './component/ProjectSearchDiv';
 import ProjectInfoTable from './component/ProjectInfoTable';
+import ProjectGraph from './component/ProjectGraph';
+
 /*
     개발 소스 db 연결 시 변경 및 수정 필요
 */
@@ -65,6 +67,13 @@ const mainStyles = makeStyles(theme => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
+  paper2: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+    height:300,
+    overflowY: 'scroll'
+  }
 }));
 
 export default function ManageView(props) {
@@ -112,10 +121,11 @@ export default function ManageView(props) {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Paper className={classes.paper}>
+            <ProjectGraph projectInfo={projectInfo} />
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <Paper className={classes.paper}>
+          <Paper className={classes.paper2}>
             <ProjectInfoTable projectInfo={projectInfo} routeProps={props.routeProps}/>
           </Paper>
         </Grid>
