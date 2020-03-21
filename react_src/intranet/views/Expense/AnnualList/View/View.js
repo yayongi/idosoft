@@ -182,17 +182,19 @@ export default function  View(props) {
 		setIsError(false);
 		setStateOpen(true);
 	}
-
 	
 	const valuedationCheck = () => {
-		if(dataState.pay == ''){
+
+		console.log('dataState.pay : ' + dataState.pay);
+		
+		if(dataState.pay == '' || dataState.pay == undefined){
 			setStateOpen(true);
 			setStateMessage('금액을 입력해주세요.');
 			setIsError(true);
 
 			return false;
 		} 
-		
+
 		if(dataState.memo == ''){
 			setStateOpen(true);
 			setStateMessage('내용을 입력해주세요.');
