@@ -1,6 +1,6 @@
 var path = require('path');
 const webpack = require('webpack');
-const CompressionPlugin = require('compression-webpack-plugin');    // https://webpack.js.org/plugins/compression-webpack-plugin/ 참
+const CompressionPlugin = require('compression-webpack-plugin');    // https://webpack.js.org/plugins/compression-webpack-plugin/ 참고 
 // output.filname를 포함한 index.html 자동 생성해주는 플러그인 
 // npm install --save-dev html-webpack-plugin
 const HtmlWebpackPlugin = require('html-webpack-plugin');
