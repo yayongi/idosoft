@@ -58,7 +58,7 @@ const FilterModal = ({props,state,setState,closeModal}) => {
 			...searchState,
 			category : document.getElementsByName("category")[0].value,
 			searchword : document.getElementsByName("searchword")[0].value,
-			test : true
+			flag : true
 		});
 		handleClose();
 	}

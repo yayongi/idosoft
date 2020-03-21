@@ -9,9 +9,11 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Avatar from '@material-ui/core/Avatar';
 import { Link as RouterLink, } from 'react-router-dom';
 import { positionFormatter } from '../../../js/util';
+
+const pathProfile = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\";
 
 const styles = theme => ({
   root: {
@@ -35,10 +37,9 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
   },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
+  large: {
+    width: theme.spacing(17),
+    height: theme.spacing(17),
   },
 }));
 
@@ -98,20 +99,23 @@ const ContentModal = ({props, closeModal}) => {
         </DialogTitle>
         <DialogContent dividers>
           <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                {props.email}
-              </Paper>
+            <Grid item xs={6}>
+               <div style={{textAlign:'-webkit-center'}}>
+                  <Avatar src={props.photo_path != undefined ? pathProfile + props.photo_path : ""} className={classes.large} />
+                </div>
             </Grid>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                {props.address1}
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                {props.address2}
-              </Paper>
+            <Grid item xs={6}>
+               <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    {props.email}
+                  </Grid>
+                  <Grid item xs={12}>
+                      {props.address1}
+                  </Grid>
+                  <Grid item xs={12}>
+                      {props.address2}
+                  </Grid>
+               </Grid>
             </Grid>
           </Grid>
         </DialogContent>

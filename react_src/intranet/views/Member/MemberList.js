@@ -68,28 +68,16 @@ const useStyles = makeStyles(theme =>({
 	}
 }));
 
-var selected = [];
-
-// 모든체크박스 선택
-const onSelectAllClick = () =>{
-
-}
-// 체크박스 선택
-const isItemSelected = (event,id) =>{
-	if(event.target.checked){
-		selected.push(id);
-	}else{
-		selected.splice(selected.indexOf(id),1)
-	}
-}
-
 const MemberList = () => {
 	const classes = useStyles();
 	
+	const [selected, setSelected] = React.useState([]);
+
 	const [state, setState] = React.useState({
+		preMemberList : tableList, //변경 직전 리스
 		memberList : tableList,	// 사원관리 리스트
 		manager_yn : true,		// 관리자 여부
-		showAll : false,
+		showAll : true,
 		showAllValue : 0
 	});
 
@@ -108,7 +96,7 @@ const MemberList = () => {
 	const[searchState, setSearchState] = React.useState({
 		category : "",
 		searchword : "",
-		test :false
+		flag :false
 	})
 
 	const [openFilter, setOpenFilter] = React.useState({
@@ -122,14 +110,14 @@ const MemberList = () => {
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10);
 
 	//퇴사자의 정보의 경우 체크 박스 미 체크시 보여주지 않음.
-	if(state.showAll == false){
+	if(state.showAll == true){
 		let temp = state.memberList;
 		temp = temp.filter(temp => temp.isexisted !== false);
 
 		setState({
 			...state,
 			memberList : temp,
-			showAll:true
+			showAll:false
 		});
 	}
 
@@ -230,17 +218,18 @@ const MemberList = () => {
 		});
 	};
 
-	if(searchState.test){
-		let temp = state.memberList;
-	
+	if(searchState.flag){
+		let temp = state.preMemberList;
+
 		if(searchState.category == 0){
 		//이름 검색
+
 			temp = temp.filter(temp => temp.name == searchState.searchword);
 		}else if(searchState.category == 1){
 		//직급 검색
 			temp = temp.filter(temp => temp.position == positionUnFormatter(searchState.searchword));
 		}
-	
+		
 		setState({
 			...state,
 			memberList : temp
@@ -248,7 +237,7 @@ const MemberList = () => {
 
 		setSearchState({
 			...searchState,
-			test : false
+			flag : false
 		});
 	}
 
@@ -270,6 +259,7 @@ const MemberList = () => {
 			setState({
 				...state,
 				memberList : tableList,	// 사원관리 리스트
+				preMemberList : tableList,
 				showAllValue : 1
 			});
 		}else if(value == 1){
@@ -279,7 +269,8 @@ const MemberList = () => {
 			setPage(0);
 			setState({
 				...state,
-				showAll : false,
+				preMemberList : tableList,
+				showAll : true,
 				showAllValue : 0
 			});
 		}
@@ -308,6 +299,38 @@ const MemberList = () => {
 			return;
 		}
 	}
+
+	//전체 선택
+	const onSelectAllClick = () =>{
+		if (event.target.checked) {
+			const newSelecteds = state.memberList.map(datum => datum.id);
+			setSelected(newSelecteds);
+			return;
+		}
+		setSelected([]);
+	} 
+
+	//체크박스 개별 선택
+	const selectedItem = (event, id) => {
+		const selectedIndex = selected.indexOf(id);
+		let newSelected = [];
+
+		if (selectedIndex === -1) {
+			newSelected = newSelected.concat(selected, id);
+		} else if (selectedIndex === 0) {
+			newSelected = newSelected.concat(selected.slice(1));
+		} else if (selectedIndex === selected.length - 1) {
+			newSelected = newSelected.concat(selected.slice(0, -1));
+		} else if (selectedIndex > 0) {
+			newSelected = newSelected.concat(
+				selected.slice(0, selectedIndex),
+				selected.slice(selectedIndex + 1),
+			);
+		}
+
+		setSelected(newSelected);
+	};
+
 	return (
 		<div>
 			<ContentModal props={openModal} closeModal={handleCloseModal}/>
@@ -326,17 +349,23 @@ const MemberList = () => {
 							<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={() => excelExport(state.memberList)} className={classes.button_tool}>
 								엑셀 내보내기
 							</Button>
-							<RouterLink button="true" to="/member/memberreg" className={classes.router_link}>
-								<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />}>
-									직원정보등록
+							{state.manager_yn && (
+								<RouterLink button="true" to="/member/memberreg" className={classes.router_link}>
+									<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />}>
+										직원정보등록
+									</Button>
+								</RouterLink>
+							)}
+							{state.manager_yn && (
+								<Button variant="contained" color="primary" size="small" startIcon={<AssignmentIndIcon />} onClick={() => showAll(state.showAllValue)} style={{marginLeft:"10px"}}>
+									<a id="bLabel">모든직원보이기</a>
 								</Button>
-							</RouterLink>
-							<Button variant="contained" color="primary" size="small" startIcon={<AssignmentIndIcon />} onClick={() => showAll(state.showAllValue)} style={{marginLeft:"10px"}}>
-								<a id="bLabel">모든직원보이기</a>
-							</Button>
-							<Button variant="contained" color="primary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"537px"}}>
-								직원정보삭제
-							</Button>
+							)}
+							{state.manager_yn && (
+								<Button variant="contained" color="primary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"1030px",position:"fixed"}}>
+									직원정보삭제
+								</Button>
+							)}
 						</Hidden>
 						<Hidden mdUp>
 							<IconButton color="primary" onClick={handleClickOpen} className={classes.button_tool}>
@@ -345,17 +374,23 @@ const MemberList = () => {
 							<IconButton color="primary" onClick={excelExport} className={classes.button_tool}>
 								<SaveIcon />
 							</IconButton>
-							<RouterLink button="true" to="/member/memberreg" className={`${classes.router_link} ${classes.button_tool}`}>
-								<IconButton color="primary">
-									<AddIcon />
+							{state.manager_yn && (
+								<RouterLink button="true" to="/member/memberreg" className={`${classes.router_link} ${classes.button_tool}`}>
+									<IconButton color="primary">
+										<AddIcon />
+									</IconButton>
+								</RouterLink>
+							)}
+							{state.manager_yn && (
+								<IconButton color="primary" onClick={() => handleOpenDialog(...confirmData)}>
+									<RemoveIcon />
 								</IconButton>
-							</RouterLink>
-							<IconButton color="primary" onClick={() => handleOpenDialog(...confirmData)}>
-								<RemoveIcon />
-							</IconButton>
-							<IconButton color="primary" onClick={showAll} className={classes.button_tool} onClick={() => showAll(state.showAllValue)}>
-								<AssignmentIndIcon />
-							</IconButton>
+							)}
+							{state.manager_yn && (
+								<IconButton color="primary" onClick={showAll} className={classes.button_tool} onClick={() => showAll(state.showAllValue)}>
+									<AssignmentIndIcon />
+								</IconButton>
+							)}
 						</Hidden>
 					</div>
 				</Toolbar>
@@ -385,22 +420,23 @@ const MemberList = () => {
 									<TableRow key={row.id}>
 										<TableCell padding="checkbox">
 											<Checkbox
-												onChange={() => isItemSelected(event,row.id)}
+												checked={(selected.indexOf(row.id) !== -1)? true : false}
+												onChange={() => selectedItem(event,row.id)}
 												key = {row.id}
 											/>
 										</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
-											{row.manager_yn === 1 && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
+											{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
 											{row.name}
 										</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{positionFormatter(row.position)}</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{positionFormatter(row.position)}</TableCell>
 										<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
 											{row.address1} {row.address2}
 											</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{phoneFormatter(row.phone)}</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{row.career} </TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{dateFormatter(row.entry)}</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{phoneFormatter(row.phone)}</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{row.career} </TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{dateFormatter(row.entry)}</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
 											{row.cert_yn == 1? '유':'무'}
 										</TableCell>
 										<TableCell align="center">
@@ -443,7 +479,7 @@ const MemberList = () => {
 											/>
 										</TableCell>
 										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
-											{row.manager_yn === 1 && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
+											{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
 											{row.name}
 										</TableCell>
 										<TableCell align="center">
