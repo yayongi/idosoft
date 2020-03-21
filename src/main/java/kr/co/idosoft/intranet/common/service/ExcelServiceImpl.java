@@ -45,18 +45,20 @@ public class ExcelServiceImpl implements ExcelService {
 		
 		Map<String, Object> headItem = list.get(0);
 
-		Row headerRow = sheet.createRow(0);
 		
+		for(Map.Entry<String, Object> subItem: headItem.entrySet()){
+			// 열너비 설정
+			sheet.setColumnWidth(0, 2000);
+		}
+
+		Row headerRow = sheet.createRow(0);
+		Cell headerCell = headerRow.createCell(0);
+
 		LOG.debug("###################################################################");
 		for(Map.Entry<String, Object> subItem: headItem.entrySet()){
-			// 셀 너비 설정
-			sheet.setColumnWidth(0, 2000);
 			
 			// 해당 행의 첫번째 열 셀 생성
-			Cell headerCell = headerRow.createCell(0);
-			
 			LOG.debug("# subItem : " + subItem.getKey());
-			
 			// 키값으로 header
 			headerCell.setCellValue(String.valueOf(subItem.getKey()));
 		}
@@ -71,8 +73,11 @@ public class ExcelServiceImpl implements ExcelService {
 		for(Map<String, Object> bodyItem : list){
 			// 행 생성
 			j 		= 0;
+			
 			bodyRow = sheet.createRow(i+1);
-
+			
+			LOG.debug(" ROW : " + bodyRow.getRowNum());
+			
 			for(Map.Entry<String, Object> subItem: bodyItem.entrySet()){
 				bodyCell = bodyRow.createCell(j);
 				
@@ -143,8 +148,11 @@ public class ExcelServiceImpl implements ExcelService {
 			e.printStackTrace();
 		}
 		
+		LOG.debug("# fileName : " + fileName);
+		
 		response.setContentType("application/download;charset=utf-8");
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\";");
+		response.setHeader("filename", fileName);
 		response.setHeader("Content-Transfer-Encoding", "binary");
 
 		OutputStream os = null;
@@ -174,6 +182,4 @@ public class ExcelServiceImpl implements ExcelService {
 			}
 		}
 	}
-	
-	
 }

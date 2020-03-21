@@ -16,6 +16,9 @@ import SaveIcon from '@material-ui/icons/Save';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+
 import {useStyles} from './styles';
 import {dataAdmin2020, dataAdmin2019, dataAdmin2018, dataAdmin2017, nodata} from './data';
 
@@ -80,83 +83,85 @@ export default function PayList() {
 	};
 	
 	return (
-		<Fragment>
-			<FormControl variant="outlined" className={classes.formControl} >
-				<InputLabel ref={inputLabel} htmlFor="outlined-age-native-simple">
-					Year
-				</InputLabel>
-				<Select
-					native
-					value={state.buttonYear}
-					onChange={handleChange('buttonYear')}
-					labelWidth={labelWidth}
-					inputProps={{
-						name: 'buttonYear',
-						id: 'outlined-age-native-simple',
-					}}
-					className={classes.select}
-				>
-					{getYearList(4).map((value, idx) => (
-						<option key={idx} value={value}>{value}</option>
-					))};
-				</Select>
-			</FormControl>
-			<Fab variant="extended" color="primary" aria-label="add" className={classes.fab} onClick={excelDownload}>
-				<SaveIcon className={classes.saveIcon} />
-				엑셀다운로드
-			</Fab>
+		<Card>
+			<CardContent>
+				<FormControl variant="outlined" className={classes.formControl} >
+					<InputLabel ref={inputLabel} htmlFor="outlined-age-native-simple">
+						Year
+					</InputLabel>
+					<Select
+						native
+						value={state.buttonYear}
+						onChange={handleChange('buttonYear')}
+						labelWidth={labelWidth}
+						inputProps={{
+							name: 'buttonYear',
+							id: 'outlined-age-native-simple',
+						}}
+						className={classes.select}
+					>
+						{getYearList(4).map((value, idx) => (
+							<option key={idx} value={value}>{value}</option>
+						))};
+					</Select>
+				</FormControl>
+				<Fab variant="extended" color="primary" aria-label="add" className={classes.fab} onClick={excelDownload}>
+					<SaveIcon className={classes.saveIcon} />
+					엑셀다운로드
+				</Fab>
 
-			<Table>
-				<TableHead className={ classes.tableHead }>								
-					<TableRow>
-						{headerCells.map((cell, idx) => (
-							<TableCell key={idx} align={'center'} className={classes.tableHeadCell}>
-								{cell}
-							</TableCell>
-						))}
-					</TableRow>
-				</TableHead>
-				<TableBody>
-				{members.map((member, idx) => (
-					<Fragment key={`row${idx}`}>
+				<Table>
+					<TableHead className={ classes.tableHead }>								
 						<TableRow>
-							{/* 성명 */}
-							<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
-								{member.name}
-							</TableCell>
-							<TableCell  align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>교통비</TableCell>
-							{/* 1월~12월 교통비*/}
-							{member.tptCosts.map((tptCost, idx) => (	
-								<TableCell key={idx} align={'right'} className={classes.tableBodyCell}>
-									{typeof tptCost === 'number' ? tptCost.toLocaleString() : tptCost}
+							{headerCells.map((cell, idx) => (
+								<TableCell key={idx} align={'center'} className={classes.tableHeadCell}>
+									{cell}
 								</TableCell>
 							))}
-							{/* 교통비 합계*/}
-							<TableCell align={'right'} className={classes.tableBodyCell}>
-								{typeof member.tptCostsSum === 'number' ? member.tptCostsSum.toLocaleString() : member.tptCostsSum}
-							</TableCell>
-							{/* 교통비/통신비 총합계*/}
-							<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
-								{typeof member.totalSum === 'number' ? member.totalSum.toLocaleString() : member.totalSum}
-							</TableCell>
 						</TableRow>
-						<TableRow>
-							<TableCell align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>통신비</TableCell>
-							{/* 1월~12월 통신비*/}
-							{new Array(12).fill(0).map((foo, idx) => (
-								<TableCell key={idx} align={'right'} className={classes.tableBodyCell}>
-									{typeof member.cmncCost === 'number' ? member.cmncCost.toLocaleString() : member.cmncCost}
+					</TableHead>
+					<TableBody>
+					{members.map((member, idx) => (
+						<Fragment key={`row${idx}`}>
+							<TableRow>
+								{/* 성명 */}
+								<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
+									{member.name}
 								</TableCell>
-							))}
-							{/* 통신비 합계*/}
-							<TableCell align={'right'} className={classes.tableBodyCell}>
-								{typeof member.cmncCostSum === 'number' ? member.cmncCostSum.toLocaleString() : member.cmncCostSum}
-							</TableCell>
-						</TableRow>	
-					</Fragment>							
-				))}
-				</TableBody>
-			</Table>				
-		</Fragment>
+								<TableCell  align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>교통비</TableCell>
+								{/* 1월~12월 교통비*/}
+								{member.tptCosts.map((tptCost, idx) => (	
+									<TableCell key={idx} align={'right'} className={classes.tableBodyCell}>
+										{typeof tptCost === 'number' ? tptCost.toLocaleString() : tptCost}
+									</TableCell>
+								))}
+								{/* 교통비 합계*/}
+								<TableCell align={'right'} className={classes.tableBodyCell}>
+									{typeof member.tptCostsSum === 'number' ? member.tptCostsSum.toLocaleString() : member.tptCostsSum}
+								</TableCell>
+								{/* 교통비/통신비 총합계*/}
+								<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
+									{typeof member.totalSum === 'number' ? member.totalSum.toLocaleString() : member.totalSum}
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>통신비</TableCell>
+								{/* 1월~12월 통신비*/}
+								{new Array(12).fill(0).map((foo, idx) => (
+									<TableCell key={idx} align={'right'} className={classes.tableBodyCell}>
+										{typeof member.cmncCost === 'number' ? member.cmncCost.toLocaleString() : member.cmncCost}
+									</TableCell>
+								))}
+								{/* 통신비 합계*/}
+								<TableCell align={'right'} className={classes.tableBodyCell}>
+									{typeof member.cmncCostSum === 'number' ? member.cmncCostSum.toLocaleString() : member.cmncCostSum}
+								</TableCell>
+							</TableRow>	
+						</Fragment>							
+					))}
+					</TableBody>
+				</Table>
+			</CardContent>
+		</Card>				
 	);
 }
