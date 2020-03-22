@@ -187,8 +187,6 @@ export function excelExport(json){
   //  작성자 : 유기환
   export function getSessionMemberInfo(){
     
-    let sessionObject = {}
- 
     axios({
     url: '/intranet/getSession',
     method: 'get',
