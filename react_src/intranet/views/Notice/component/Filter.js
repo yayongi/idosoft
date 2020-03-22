@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import SaveIcon from '@material-ui/icons/Save';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
@@ -29,7 +28,6 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-import { returnValue } from '../uitl/ResUtil';
 
 
 const useToolbarStyles = makeStyles(theme => ({
@@ -53,11 +51,11 @@ const useToolbarStyles = makeStyles(theme => ({
 }));
 
 // 자원 유형 Select 값
-const resType = [
+const searchType = [
 	{ value: '-1', label: '전체'  },
-	{ value: 'a1', label: '모니터' },
-	{ value: 'a2', label: '노트북' },
-	{ value: 'a3', label: '테스트폰' },
+	{ value: 'title', label: '제목' },
+	{ value: 'content', label: '내용' },
+	{ value: 'regId', label: '작성자' },
 ];
 
 
@@ -82,7 +80,7 @@ export default function  Filter(props) {
 	
 	const classes = useToolbarStyles();
 	const {
-		state, setState,setResData
+		state, setState,setNoticeData
 	} = props;
 	const [open, setOpen] = React.useState(false);
 	const [isDelete, setIsDelete] = React.useState(false);
@@ -93,10 +91,6 @@ export default function  Filter(props) {
 	const handleClose = () => {
 		setOpen(false);
 	};
-	const excelExport = () => {
-		alert("엑셀 내보내기");
-	}
-
 
 	const [confirm, setConfirm] = React.useState({});
 
@@ -119,19 +113,19 @@ export default function  Filter(props) {
 	//삭제버튼 클릭 Handler
 	const handleSelectDelete = () => {
 		setIsDelete(true);
-		handleOpenConfirm('자원관리', '선택항목을 삭제하시겠습니까?', true);
+		handleOpenConfirm('공지사항', '선택항목을 삭제하시겠습니까?', true);
 	}
 
 	//localStorage resData 선택요소 삭제 처리
 	const selectDelete = (result) => {
 		if(result){
 			console.log(props.selected);
-			const resData = JSON.parse(localStorage.resData);
-			const upStreamData = resData.filter((row => {
-				return !props.selected.includes((row.resNo));
+			const noticeData = JSON.parse(localStorage.noticeTestData);
+			const upStreamData = noticeData.filter((row => {
+				return !props.selected.includes((row.noticeNo));
 			}));
-			localStorage.setItem('resData',JSON.stringify(upStreamData));
-			setResData(upStreamData);
+			localStorage.setItem('noticeTestData',JSON.stringify(upStreamData));
+			setNoticeData(upStreamData);
 		}
 		setIsDelete(false);
 		return setIsDelete(false);
@@ -139,22 +133,20 @@ export default function  Filter(props) {
 
 	// Dialog 값 상위 컴포넌트의 state값으로 초기화
 	const initDialogState = {
-		holFder: "",
-		resType: '-1',
+		searchType: '-1',
+		search: "",
 		stDt: null,
 		edDt: null,
 	};
 
 	// 검색 버튼 클릭 전, 임시로 값 저장
 	const [dialogState, setDialogState] = React.useState(
-		// {
-		// holder: undefined,
-		// resType: '-1',
-		// stDt: null,
-		// edDt: null,
-		// }
 		initDialogState
 	);
+
+	// React.useEffect(()=>{
+	// 	console.log(`검색조건 : ${JSON.stringify(dialogState)}`);
+	// }, [dialogState])
 
 	// Dialog 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {
@@ -162,6 +154,7 @@ export default function  Filter(props) {
 			...dialogState,
 			[event.target.name]: event.target.value
 		});
+		// console.log(dialogState);
 	};
 	// 시작년월 
 	const handleChangeStDt = (date) => {
@@ -187,8 +180,8 @@ export default function  Filter(props) {
 	// 상위 컴포넌트의 state를 갱신 처리 해줌
 	const handleClickSearch = () => {
 		setState({
-			holder: document.getElementsByName("holder")[0].value,
-			resType: document.getElementsByName("resType")[0].value,
+			search: document.getElementsByName("search")[0].value,
+			searchType: document.getElementsByName("searchType")[0].value,
 			stDt: Moment(document.getElementsByName("stDt")[0].value).format('YYYYMM'),
 			edDt: Moment(document.getElementsByName("edDt")[0].value).format('YYYYMM')
 		});
@@ -202,33 +195,29 @@ export default function  Filter(props) {
 
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} variant="h6" >					
-					자원관리
+					공지사항
 				</Typography>
 				<div className={classes.container}>
 					<Hidden smDown>
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button}>
 							검색
 						</Button>
-						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={excelExport} className={classes.button}>
-							엑셀 내보내기
-						</Button>
-						<RouterLink button="true" to="/resource/regist">
+						
+						<RouterLink button="true" to="/notice/regist">
 						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
-							자원등록
+							공지사항 등록
 						</Button>
 						</RouterLink>
 						<Button variant="contained" color="secondary" size="small" onClick={handleSelectDelete} startIcon={<DeleteIcon />}>
-							자원삭제
+							공지사항 삭제
 						</Button>
 					</Hidden>
 					<Hidden mdUp>
 						<IconButton color="primary" onClick={handleClickOpen} className={classes.button}>
 							<FilterListIcon />
 						</IconButton>
-						<IconButton color="primary" onClick={excelExport} className={classes.button}>
-							<SaveIcon />
-						</IconButton>
-						<RouterLink button="true" to="/resource/regist">
+						
+						<RouterLink button="true" to="/notice/regist">
 							<IconButton color="primary" className={classes.button}>
 								<AddIcon />
 							</IconButton>
@@ -251,15 +240,16 @@ export default function  Filter(props) {
 					<Grid container justify="flex-start">
 						<Grid item xs={6} style={{paddingRight: 10}}>
 							<TextField
-								id="resType"
-								name="resType"
+								id="searchType"
+								name="searchType"
 								select
 								margin="dense"
-								label="자원종류"
-								value={dialogState.resType}
+								label="검색타입"
+								value={dialogState.searchType}
 								onChange={handleChange}
-								fullWidth>
-								{resType.map(option => (
+								fullWidth
+							>
+								{searchType.map(option => (
 									<MenuItem key={option.value} value={option.value}>
 										{option.label}
 									</MenuItem>
@@ -268,10 +258,10 @@ export default function  Filter(props) {
 						</Grid>
 						<Grid item xs={6} style={{paddingRight: 10}}>
 							<TextField
-								label="보유자"
-								id="holder"
-								name="holder"
-								placeholder="김OO"
+								label="검색어"
+								id="search"
+								name="search"
+								placeholder="검색어를 입력하세요."
 								margin="dense"
 								InputLabelProps={{
 									shrink: true,
@@ -292,7 +282,7 @@ export default function  Filter(props) {
 										margin="normal"
 										id="stDt"
 										name="stDt"
-										label="구입년월 시작"
+										label="작성일 검색기간 시작"
 										views={["year", "month"]}
 										format="yyyy/MM" 
 										maxDate={new Date()}
@@ -317,7 +307,7 @@ export default function  Filter(props) {
 										margin="normal"
 										id="edDt"
 										name="edDt"
-										label="구입년월 종료"
+										label="작성일 검색기간 종료"
 										views={["year", "month"]}
 										format="yyyy/MM" 
 										maxDate={new Date()}

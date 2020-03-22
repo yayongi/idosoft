@@ -3,7 +3,7 @@
 export function MacAddrCheck(str){
 	if(str !== undefined){
 		const regex = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
-		return regex.test(str);
+		return !regex.test(str);
 	}else{
 		return true;
 	}
@@ -31,7 +31,13 @@ export function resDataCheck(resData){
 	}
 }
 
-export const returnValue = (obj, key) => {
-	const value = obj.filter(item=>{return item.key === key});
-	return value[0].str;
+// export const returnValue = (obj=[{key:-1, value:false}], key=-1, valueName='value') => {
+export const returnValue = (obj=[{key:-1, value:false}], key=-1, valueName='value') => {
+	if((obj.filter(item=>{return item.key === key}))[0] == undefined){
+		return false;
+	}else{
+		let result = (obj.filter(item=>{return item.key === key}))[0][valueName];
+		// console.log(result);
+		return result;
+	}
 }

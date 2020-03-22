@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -13,9 +13,11 @@ import CardContent from '@material-ui/core/CardContent';
 
 import YearMonthPicker from '../component/YearMonthPicker';
 import SelectType from '../component/SelectType';
-
-import {resDataCheck} from '../uitl/ResUtil';
 import CommonDialog from '../../../js/CommonDialog';
+
+import {MacAddrCheck} from '../uitl/ResUtil';
+
+import {resTypeData, resProductData, resDisplaySizeData, resHolderData} from '../Data';
 
 // const localResData = JSON.parse(localStorage.getItem('resData'));
 
@@ -77,16 +79,16 @@ const useStyles = makeStyles(theme => ({
 	flex: '1 1 100%',
 	textAlign: 'left'
   },
-  buttonMargin: {
-	textAlign: 'right',
-	marginRight: '10px',
-  },
-  buttonRoot: {
-	width: '100%',
-	marginRight: theme.spacing(2),
+  btn: {
+	marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   cardRoot: {
 	  width: '100%',
+  },
+  btnArea: {
+	  flex:'1',
   }
 }));
 
@@ -108,41 +110,62 @@ function RegistGrid() {
 
 	const classes = useStyles();
 	const inputLabel = React.useRef(null);
-
-	const resTypeData= {dataKey: "resCode", label: "자원종류", list:[ {key:'a1', value:"모니터"}, {key:'a2', value:"노트북"}, {key:'a3', value:"테스트폰"} ] };
-	const resProductData= {dataKey: "markCode", label: "제조사", list:[ {key:'b1', value:"삼성"}, {key:'b2', value:"엘지"}, {key: 'b3', value:"애플"} ] };
-	const resDisplaySizeData= {dataKey: "displaySizeCode", label: "화면사이즈", list:[ {key:'c1', value:"18인치"}, {key:'c2', value:"21인치"}, {key: 'c3', value:"24인치"}, {key: 'c4', value:"28인치"} ] };
-	const resHolder= {
-							dataKey: "holder",
-							label: "보유자",
-							list:[ 
-								{key:'d1', value:"최문걸"}, 
-								{key:'d2', value:"조현철"}, 
-								{key: 'd3', value:"이인성"}, 
-								{key: 'd4', value:"신우인"},
-								{key: 'd5', value: "오경섭"},
-								{key: 'd6', value: "송원회"},
-								{key: 'd7', value: "강성우"},
-								{key: 'd8', value: "유기환"},
-								{key: 'd9', value: "김준선"}
-							]
-						};
+	const initValidation = {
+		resCode : false,
+		modelNm : false,
+		markCode : false,
+		productMtn: false,
+		purchaseMtn: false,
+		displaySizeCode: false,
+		serialNo: false,
+		macAddr: false,
+		holder: false
+	}
 
 	const generator = (resNo, resCode, modelNm, markCode, productMtn, purchaseMtn, displaySizeCode, serialNo, macAddr, holder) =>{
 		return {resNo, resCode, modelNm, markCode, productMtn, purchaseMtn, displaySizeCode, serialNo, macAddr, holder};
 	}
 
-	const [resData, setResData] = React.useState(generator(localStorage.getItem('resEditIndex') !==null?Number(localStorage.getItem('resEditIndex')):null));
+	const [resData, setResData] = React.useState({
+		resNo : null,
+		resCode: undefined,
+		modelNm: '',
+		markCode: undefined,
+		productMtn: null,
+		purchaseMtn: null,
+		displaySizeCode: undefined,
+		serialNo: '',
+		macAddr: '',
+		holder: undefined
+	});
 	const [dialog, setDialog] = React.useState({});
 	const [resultDialog, setResultDialog] = React.useState(false);
+	const [validation , setValidation] = React.useState(initValidation);
+
+	//수정시 데이터 설정
+	useEffect(()=>{
+		if(localStorage.getItem('resEditIndex') !== null){
+			const obj = JSON.parse(localStorage.getItem('resData'));
+			setResData(obj.filter((item=>{
+				return item.resNo === Number(localStorage.getItem('resEditIndex'));
+			}))[0]);
+		}
+	}, []);
+
+	useEffect(()=>{
+		console.log(resData);
+	},[resData]);
 
 	// Child Component Click Handler
-	const handleChildClick = (text) => {
-		setResData({...resData, [text.split('_')[0]] : text.split('_')[1] });
+	const handleChildClick = (obj) => {
+		// setResData({...resData, [text.split('_')[0]] : text.split('_')[1] });
+		setValidation(initValidation);
+		setResData({...resData, [obj.key]:obj.value});
 	}
 
 	// Input Change Handler
 	const handleInputChange = (event) => {
+		setValidation(initValidation);
 		setResData({...resData, [event.target.name] : event.target.value});
 	}
 
@@ -183,21 +206,42 @@ function RegistGrid() {
 
 		return location.href="/#/resource";
 	}
-	
-	// const handleRouterClick = (event) => {
-	// 	event.preventdefault;
-	// 	return trigger;
-	// }
-
 	// 등록, 수정버튼 Click Handler
 	const handleButtonClick = (event) => {
-		//검증 ok
-		// if( resDataCheck(resData) ){
+		validationCheck(resData)
+	}
+	// validation 체크
+	const validationCheck = (resData) => {
+		if(resData.resCode === undefined){
+			handleOpenDialog('자원관리', '자원종류를 선택해주세요.');
+			validation.resCode = true;
+		}else if(resData.modelNm === ''){
+			handleOpenDialog('자원관리', '모델명을 입력해주세요.');
+			validation.modelNm = true;
+		}else if(resData.markCode === undefined){
+			handleOpenDialog('자원관리', '제조사를 선택해주세요.');
+			validation.markCode = true;
+		}else if(resData.productMtn === 'Invalid date'){
+			handleOpenDialog('자원관리', '제조년월을 정확히 선택해주세요.');
+			validation.productMtn = true;
+		}else if(resData.purchaseMtn === 'Invalid date'){
+			handleOpenDialog('자원관리', '구입년월을 정확히 선택해주세요.');
+			validation.purchaseMtn = true;
+		}else if(resData.displaySizeCode === undefined){
+			handleOpenDialog('자원관리', '화면사이즈를 선택해주세요.');
+			validation.displaySizeCode = true;
+		}else if(resData.serialNo === ''){
+			handleOpenDialog('자원관리', '시리얼번호를 입력해주세요.');
+			validation.serialNo = true;
+		}else if(MacAddrCheck(resData.macAddr)){
+			handleOpenDialog('자원관리', 'MAC주소 형식과 맞게 입력해주세요.');
+			validation.macAddr = true;
+		}else if(resData.holder === undefined){
+			handleOpenDialog('자원관리', '보유자를 선택해주세요.');
+			validation.holder = true;
+		}else{
 			handleOpenDialog('자원관리', localStorage.getItem('resEditIndex')===null?'등록하시겠습니까?':'수정하시겠습니까?', true);
-		//검증 x
-		// }else{
-			// handleOpenDialog('자원관리', '정확히 입력해주세요.');
-		// }
+		}
 	}
 
 	// 뒤로가기 Button Click Handler
@@ -210,9 +254,8 @@ function RegistGrid() {
 
 	return (
 		<React.Fragment>
-			{/* <Card className={classes.cardRoot}> */}
-				<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
-				<CardContent>
+			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
+			<CardContent>
 				<CssBaseline />
 				<Container maxWidth="sm">
 					<div className={classes.gridRoot}>
@@ -222,7 +265,10 @@ function RegistGrid() {
 							<Typography className={classes.title} variant="h6" id="tableTitle">자원종류*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<SelectType props={resTypeData} onChildClick={handleChildClick}/>
+							<SelectType 
+										defaultValue={resData.resCode} 
+										label={'자원종류'} resKey={"resCode"} props={resTypeData} 
+										onChildClick={handleChildClick} validation={validation.resCode}/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<Typography className={classes.title} variant="h6" id="tableTitle">모델명*</Typography>
@@ -231,31 +277,42 @@ function RegistGrid() {
 							<TextField type="search" className={classes.inputRoot} 
 										id="outlined-basic" label="모델명" variant="outlined"
 										onChange={handleInputChange} name="modelNm"
+										value={resData.modelNm} error={validation.modelNm}
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<Typography className={classes.title} variant="h6" id="tableTitle">제조사*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<SelectType props={resProductData} onChildClick={handleChildClick}/>
+							<SelectType defaultValue={resData.markCode} 
+										label={'제조사'} resKey="markCode" props={resProductData} 
+										onChildClick={handleChildClick} validation={validation.markCode}/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<Typography className={classes.title} variant="h6" id="tableTitle">제조년월</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<YearMonthPicker label="제조년월을 선택하세요." dataKey="productMtn" onChildClick={handleChildClick}/>
+							<YearMonthPicker defaultValue={resData.productMtn} label="제조년월을 선택하세요." 
+												resKey="productMtn" onChildClick={handleChildClick}
+												validation={validation.productMtn}
+							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<Typography className={classes.title} variant="h6" id="tableTitle">구입년월</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<YearMonthPicker label="구입년월을 선택하세요." dataKey="purchaseMtn" onChildClick={handleChildClick}/>
+							<YearMonthPicker defaultValue={resData.purchaseMtn} label="구입년월을 선택하세요."
+											 resKey="purchaseMtn" onChildClick={handleChildClick}
+											 validation={validation.purchaseMtn}
+							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<Typography className={classes.title} variant="h6" id="tableTitle">화면사이즈*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<SelectType props={resDisplaySizeData} onChildClick={handleChildClick}/>
+							<SelectType defaultValue={resData.displaySizeCode}  
+										label={'화면사이즈'} resKey='displaySizeCode' props={resDisplaySizeData} 
+										onChildClick={handleChildClick} validation={validation.displaySizeCode}/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<Typography className={classes.title} variant="h6" id="tableTitle">시리얼번호*</Typography>
@@ -264,6 +321,7 @@ function RegistGrid() {
 							<TextField type="search" className={classes.inputRoot} 
 								id="outlined-basic" label="시리얼번호" variant="outlined"
 								onChange={handleInputChange} name="serialNo"
+								value={resData.serialNo} error={validation.serialNo}
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
@@ -271,39 +329,41 @@ function RegistGrid() {
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<TextField type="search" className={classes.inputRoot} 
-								id="outlined-basic" label="Mac주소" variant="outlined"
+								id="outlined-basic" label="OO-OO-OO-OO-OO-OO" variant="outlined"
 								onChange={handleInputChange} name="macAddr"
+								value={resData.macAddr} error={validation.macAddr}
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
 							<Typography className={classes.title} variant="h6" id="tableTitle">보유자*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<SelectType props={resHolder} onChildClick={handleChildClick}/>
+							<SelectType defaultValue={resData.holder} 
+										label='보유자' resKey='holder' props={resHolderData} 
+										onChildClick={handleChildClick} validation={validation.holder}
+							/> 
 						</Grid>
 					</Grid>
 					</div>
 				</Container>
-				</CardContent>
-				<CardContent className={classes.cardRoot}>
-					<div className={classes.buttonRoot}>
-						<RouterLink button="true" to="/resource">
-							<Button variant="contained" className={classes.buttonMargin} onClick={handleHistoryBack}>
-								뒤로가기
-							</Button>
-						</RouterLink>
-						{/* <RouterLink button="true" to="/resource" 
-							onClick={trigger?handleRouterClick:preventdefault}
-						> */}
-							<Button variant="contained" color="primary" className={classes.buttonMargin} onClick={handleButtonClick}>
-								{localStorage.getItem('resEditIndex') === null
-									?"자원등록":"자원수정"
-								}
-							</Button>
-						{/* </RouterLink> */}
-					</div>
-				</CardContent>
-			{/* </Card> */}
+			</CardContent>
+			<CardContent className={classes.cardRoot}>
+				<Toolbar>
+				<Typography className={classes.btnArea} variant="h6" id="tableTitle"></Typography>
+				<div>
+					<RouterLink button="true" to="/resource">
+						<Button variant="contained" color="primary" className={classes.btn} onClick={handleHistoryBack}>
+							목록
+						</Button>
+					</RouterLink>
+					<Button variant="contained" color="primary" className={classes.btn} onClick={handleButtonClick}>
+						{localStorage.getItem('resEditIndex') === null
+							?"등록":"수정"
+						}
+					</Button>
+				</div>
+				</Toolbar>
+			</CardContent>
 		</React.Fragment>
   );
 }
