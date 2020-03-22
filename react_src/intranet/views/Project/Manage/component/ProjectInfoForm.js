@@ -18,6 +18,8 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 
+import ProjectMemberTable from './ProjectMemberTable';
+
 import {
   MuiPickersUtilsProvider,
   DatePicker,
@@ -28,8 +30,6 @@ import { getSiteInfoDB, getMemberInfoDB } from '../../data';
 
 function initData(location) {
 	console.log("initData");
-	//console.log(location.pathname);
-	//console.log(location.search);
 
 	var urlSplitList = location.pathname.split("/");
 	var currentLastPath = urlSplitList[urlSplitList.length - 1];
@@ -236,175 +236,173 @@ export default function ProjectInfoForm(props) {
 	};
 
 	return (
-		<>
+			<>
 			<div className={classes.root}>
+				<TableContainer component={Paper}>
+					<Table aria-label="simple table">
+						<TableHead>
+							<TableRow>
+								<TableCell align="left" colSpan="2">
+									<Toolbar>
+										<Typography className={classes.title} color="inherit" variant="h6">
+											{dataState.screenType == "new" ? "프로젝트 등록" : "프로젝트 수정"}
+										</Typography>
+										<div>
+											<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickCancle}>
+												취소
+											</Button>
+											{
+												dataState.screenType == "new" &&
+												(
+													<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickAddProject}>
+														등록
+													</Button>
+												)
+											}
+											{
+												dataState.screenType == "modify" &&
+												(
+													<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickUpdateProject}>
+														수정
+													</Button>
+												)
+											}
+											{
+												dataState.screenType == "modify" &&
+												(
+													<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickRemoveProject}>
+														삭제
+													</Button>
+												)
+											}
+										</div>
+									</Toolbar>
+								</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row" style={{ width: '120px' }}>프로젝트명</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="project_nm"
+										name="project_nm"
+										margin="dense"
+										variant="outlined"
+										defaultValue={dataState.project_nm}
+										onChange={handleChange}
+										fullWidth
+									>
+									</TextField>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">발주처</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="instt_code"
+										name="instt_code"
+										margin="dense"
+										variant="outlined"
+										onChange={handleChange}
+										value={dataState.instt_code}
+										fullWidth
+										select>
+										{dataState.insttList.map((tmp) => (
+											<MenuItem key={tmp.instt_code} value={tmp.instt_code} name={tmp.instt_name}>
+												{tmp.instt_name}
+											</MenuItem>
+										))}
+									</TextField>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">착수일</TableCell>
+								<TableCell align="left">
+									<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+										<Grid container justify="space-around">
+											<DatePicker
+												locale='ko'
+												margin="dense"
+												id="bgnde"
+												name="bgnde"
+												views={["year", "month", "date"]}
+												format="yyyy-MM-dd"
+												minDate={new Date()}
+												value={new Date(Number(dataState.bgnde.slice(0, 4)), Number(dataState.bgnde.slice(5, 7)) - 1, Number(dataState.bgnde.slice(8, 10)))}
+												onChange={handleChangeBgnDate}
+												inputVariant="outlined"
+												readOnly={false}
+												// InputAdornmentProps={{ position: "start" }}
+												fullWidth
+											/>
+										</Grid>
+									</MuiPickersUtilsProvider>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">종료일</TableCell>
+								<TableCell align="left" >
+									<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+										<Grid container justify="space-around">
+											<DatePicker
+												locale='ko'
+												margin="dense"
+												id="endde"
+												name="endde"
+												views={["year", "month", "date"]}
+												format="yyyy-MM-dd"
+												maxDate={dataState.endde}
+												value={new Date(Number(dataState.endde.slice(0, 4)), Number(dataState.endde.slice(5, 7)) - 1, Number(dataState.endde.slice(8, 10)))}
+												onChange={handleChangeEndDate}
+												inputVariant="outlined"
+												readOnly={false}
+												fullWidth
+											/>
+										</Grid>
+									</MuiPickersUtilsProvider>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">교통비</TableCell>
+								<TableCell align="left">
+									<CurrencyTextField
+										id="transport_ct"
+										name="transport_ct"
+										variant="outlined"
+										currencySymbol="￦"
+										minimumValue="0"
+										decimalPlaces={0}
+										defaultValue={dataState.pay}
+										defaultValue={dataState.transport_ct}
+										onChange={handleChange}
+										fullWidth
+									/>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">PM</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="pm"
+										name="pm"
+										variant="outlined"
+										onChange={handleChange}
+										value={dataState.pm}
+										fullWidth
+										select>
+										{dataState.memberList.map((mem) => (
+											<MenuItem key={mem.member_id} value={mem.member_id}>
+												{mem.member_name + " " + mem.rank}
+											</MenuItem>
+										))}
+									</TextField>
+								</TableCell>
+							</TableRow>
+						</TableBody>
+					</Table>
+				</TableContainer>
 			</div>
-			<TableContainer component={Paper}>
-				<Table aria-label="simple table">
-					<TableHead>
-						<TableRow>
-							<TableCell align="left" colSpan="2">
-								<Typography className={classes.title} color="inherit" variant="h6">
-									{dataState.screenType == "new" ? "프로젝트 등록" : "프로젝트 수정"}
-								</Typography>
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row" style={{ width: '120px' }}>프로젝트명</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="project_nm"
-									name="project_nm"
-									margin="dense"
-									variant="outlined"
-									defaultValue={dataState.project_nm}
-									onChange={handleChange}
-									fullWidth
-								>
-								</TextField>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">발주처</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="instt_code"
-									name="instt_code"
-									margin="dense"
-									variant="outlined"
-									onChange={handleChange}
-									value={dataState.instt_code}
-									fullWidth
-									select>
-									{dataState.insttList.map((tmp) => (
-										<MenuItem key={tmp.instt_code} value={tmp.instt_code} name={tmp.instt_name}>
-											{tmp.instt_name}
-										</MenuItem>
-									))}
-								</TextField>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">착수일</TableCell>
-							<TableCell align="left">
-								<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-									<Grid container justify="space-around">
-										<DatePicker
-											locale='ko'
-											margin="dense"
-											id="bgnde"
-											name="bgnde"
-											views={["year", "month", "date"]}
-											format="yyyy-MM-dd"
-											minDate={new Date()}
-											value={new Date(Number(dataState.bgnde.slice(0, 4)), Number(dataState.bgnde.slice(5, 7)) - 1, Number(dataState.bgnde.slice(8, 10)))}
-											onChange={handleChangeBgnDate}
-											inputVariant="outlined"
-											readOnly={false}
-											// InputAdornmentProps={{ position: "start" }}
-											fullWidth
-										/>
-									</Grid>
-								</MuiPickersUtilsProvider>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">종료일</TableCell>
-							<TableCell align="left" >
-								<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-									<Grid container justify="space-around">
-										<DatePicker
-											locale='ko'
-											margin="dense"
-											id="endde"
-											name="endde"
-											views={["year", "month", "date"]}
-											format="yyyy-MM-dd"
-											maxDate={dataState.endde}
-											value={new Date(Number(dataState.endde.slice(0, 4)), Number(dataState.endde.slice(5, 7)) - 1, Number(dataState.endde.slice(8, 10)))}
-											onChange={handleChangeEndDate}
-											inputVariant="outlined"
-											readOnly={false}
-											fullWidth
-										/>
-									</Grid>
-								</MuiPickersUtilsProvider>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">교통비</TableCell>
-							<TableCell align="left">
-								<CurrencyTextField
-									id="transport_ct"
-									name="transport_ct"
-									variant="outlined"
-									currencySymbol="￦"
-									minimumValue="0"
-									decimalPlaces={0}
-									defaultValue={dataState.pay}
-									defaultValue={dataState.transport_ct}
-									onChange={handleChange}
-									fullWidth
-								/>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">PM</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="pm"
-									name="pm"
-									variant="outlined"
-									onChange={handleChange}
-									value={dataState.pm}
-									fullWidth
-									select>
-									{dataState.memberList.map((mem) => (
-										<MenuItem key={mem.member_id} value={mem.member_id}>
-											{mem.member_name + " " + mem.rank}
-										</MenuItem>
-									))}
-								</TextField>
-							</TableCell>
-						</TableRow>
-					</TableBody>
-				</Table>
-			</TableContainer>
-			<Toolbar>
-				<Typography className={classes.title} color="secondary" variant="subtitle2">
-				</Typography>
-				<div>
-					<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickCancle}>
-						취소
-					</Button>
-					{
-						dataState.screenType == "new" &&
-						(
-							<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickAddProject}>
-								등록
-							</Button>
-						)
-					}
-					{
-						dataState.screenType == "modify" &&
-						(
-							<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickUpdateProject}>
-								수정
-							</Button>
-						)
-					}
-					{
-						dataState.screenType == "modify" &&
-						(
-							<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickRemoveProject}>
-								삭제
-							</Button>
-						)
-					}
-				</div>
-			</Toolbar>
 		</>
 	);
 }

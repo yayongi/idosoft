@@ -27,11 +27,11 @@ function makeHistoryInfo(){
 	var historyInfo = getHistoryData();
 	var memberInfo = getMemberInfoDB();
 
-	console.log(historyInfo);	
-	var userInfo = memberInfo.filter((info) => {
-		return info.member_id == historyInfo[0].member_no;
-	});
-
+	if(historyInfo.length > 0){
+		var userInfo = memberInfo.filter((info) => {
+			return info.member_id == historyInfo[0].member_no;
+		});
+	}
 	for(var i=0; i < historyInfo.length; i++){
 		historyInfo[i]["member_name"] = userInfo[0]["member_name"];
 		historyInfo[i]["term"] = historyInfo[i]["inpt_bgnde"] + " ~ " + historyInfo[i]["inpt_endde"]; 
@@ -42,6 +42,9 @@ function makeHistoryInfo(){
 
 function getUser_name(historyInfo){
 	console.log(historyInfo);
+	if(historyInfo.length > 0){
+		return historyInfo[0]["member_name"];
+	}
 }
 
 const mainStyles = makeStyles(theme => ({
