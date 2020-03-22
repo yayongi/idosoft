@@ -19,6 +19,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
+import { AnnualStorage } from 'views/Expense/data';
+
 import Moment from "moment";
 
 import {
@@ -29,6 +31,7 @@ import {
 
 import { expenseTypes, statuses } from 'views/Expense/data'
 
+import {isEmpty} from '../../../../../../js/util';
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
 		// justifyContent: 'flex-end',
@@ -58,6 +61,7 @@ export default function  Filter(props) {
 		filterRows,
 		state, setState,
 	} = props;
+
 	const [open, setOpen] = React.useState(false);
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -98,8 +102,77 @@ export default function  Filter(props) {
 		});
 		handleClose();
 	}
+	// 다중 결재 처리 
+	let dataList = JSON.parse(AnnualStorage.getItem("ANNUAL_LIST"));		// 데이터 목록
 
-	
+	const [appOpen, setAppOpen] = React.useState(false);
+	const [errOpen, setErrOpen] = React.useState(false);
+	const [errMsg, setErrMsg]	= React.useState('');
+
+	const appHandleClickOpen = () => {
+
+		if(isEmpty(state.selected)){ // Object 비었을 경우 true
+			setErrMsg('결재할 항목이 없습니다.');
+			return setErrOpen(true);
+		}
+
+		return setAppOpen(true);
+	};
+
+	const appHandleClickClose = (att) => {
+		if(att === 'err'){
+			setErrOpen(false)
+		} else {
+			setAppOpen(false);
+		}
+	};
+
+	// 결재처리
+	const handleClickApprove =() => {
+		
+		console.log("call handleClickApprove");
+
+		state.selected.map((data) => {
+
+			console.log('data' + JSON.stringify(data));
+			
+			const dataIdx = dataList.findIndex(item => item.seq === data);
+
+			console.log('before dataList[dataIdx].status : ' +dataList[dataIdx].status);
+
+			if(dataList[dataIdx].status == '0'){ // 진행 - 1차 결재 수행
+				dataList[dataIdx].status = "1";
+				dataList[dataIdx].statusText = "1차결재완료";
+				dataList[dataIdx].prevAuthDate = Moment().format('YYYY-MM-DD'); 
+			} else { // data.status == '1' // 1차결재완료 - 2차 결재 수행
+				dataList[dataIdx].status = "2";
+				dataList[dataIdx].statusText = "완료";
+				dataList[dataIdx].authDate = Moment().format('YYYY-MM-DD'); 
+			}
+
+			console.log('after dataList[dataIdx].status : ' +dataList[dataIdx].status);
+
+			if(dataIdx > -1) {
+				dataList = [
+					...dataList.slice(0, dataIdx),
+					dataList[dataIdx],
+					...dataList.slice(dataIdx+1)
+				];
+
+				console.log('dataList' + JSON.stringify(dataList));
+
+				AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
+			}
+
+			return setState({
+				...state,
+				//selected :[]
+			});
+		});
+		
+		return setAppOpen(false);
+	}
+
 	// 검색 버튼 클릭 전, 임시로 값 저장
 	const [dialogState, setDialogState] = React.useState(initDialogState);
 
@@ -144,8 +217,11 @@ export default function  Filter(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button}>
 							검색
 						</Button>
-						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={excelExport} className={classes.button}>
+						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon  />} onClick={excelExport} className={classes.button}>
 							엑셀 내보내기
+						</Button>
+						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} onClick={appHandleClickOpen} className={classes.button}>
+							경비 결재
 						</Button>
 					</Hidden>
 					<Hidden mdUp>
@@ -154,6 +230,9 @@ export default function  Filter(props) {
 						</IconButton>
 						<IconButton color="primary" onClick={excelExport} className={classes.button}>
 							<SaveIcon />
+						</IconButton>
+						<IconButton color="primary" onClick={appHandleClickOpen} className={classes.button}>
+							<AddIcon />
 						</IconButton>
 					</Hidden>
 				</div>
@@ -290,6 +369,46 @@ export default function  Filter(props) {
 					<Button onClick={handleClickSearch} color="primary">
 						검색
 					</Button>
+				</DialogActions>
+			</Dialog>
+
+			{/* 다중 결재 Alert */}
+			<Dialog
+				open={appOpen}
+				onClose={() => appHandleClickClose('')}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogContent>
+				<DialogContentText id="alert-dialog-description">
+					결재하시겠습니까?
+				</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+				<Button onClick={() => appHandleClickClose('')} color="primary">
+					취소
+				</Button>
+				<Button onClick={handleClickApprove} color="primary" autoFocus>
+					확인
+				</Button>
+				</DialogActions>
+			</Dialog>
+
+			<Dialog
+				open={errOpen}
+				onClose={() => appHandleClickClose('err')}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						{errMsg}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+				<Button onClick={() => appHandleClickClose('err')} color="primary" autoFocus>
+					확인
+				</Button>
 				</DialogActions>
 			</Dialog>
 		</Fragment>

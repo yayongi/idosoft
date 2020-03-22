@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme =>({
 	},
 	button :{
 		textAlign:'right',
-		marginTop:10
+		marginTop:10,
 	},
 	root: {
 		flexGrow: 1,

@@ -1,25 +1,15 @@
-import React, {Fragment} from 'react';
+import React, { Fragment, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import Collapse from '@material-ui/core/Collapse'
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import PeopleIcon from '@material-ui/icons/People';
-import BarChartIcon from '@material-ui/icons/BarChart';
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
-import CreditCard from '@material-ui/icons/CreditCard';
-import DesktopMac from '@material-ui/icons/DesktopMac';
-// import menus from './data' 
-// import ExpandLess from '@material-ui/icons/ExpandLess';
-// import ExpandMore from '@material-ui/icons/ExpandMore';
+// import AccountTreeIcon from '@material-ui/icons/AccountTree';
 
+import { menus } from './data';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -30,29 +20,57 @@ const useStyles = makeStyles(theme => ({
 	nested: {
 		paddingLeft: theme.spacing(4),
 	},
+	active: {
+		color: '#1565c0',
+		fontWeight: 600
+	},
+	inactive: {
+		color: '#37474f',
+	},
 }));
-
-export default function MenuList() {
+let preUrl = "";
+let menuCss = {};
+export default function MenuList(props) {
 	const classes = useStyles();
-/* 	// 하위 메뉴 열고 닫는 이벤트 주석처리 - 20200319.오경섭
-	const [openStep4, setOpenStep4] = React.useState(false);	
-	const [openStep5, setOpenStep5] = React.useState(false);
-
-	const handleToggle = (step) => {
-		if(step == 4) {
-			setOpenStep4(!openStep4);
-		} else {
-			setOpenStep5(!openStep5);
+	const [active, setActive] = useState({});
+	const {routeProps, handleDrawerClose} = props;		// handleDrawerClose : 메뉴바 열기/닫기 이벤트
+	const {match} = routeProps;
+	
+	function urlMatch() {
+		if(preUrl != match.url) {
+			preUrl = match.url;
+			
+			for(let i=0; i<menus.length; i++) {
+				let menu = menus[i], submenu = menus[i].submenu;
+				// 메뉴 목록에서 url 이 포함되어 있는 목록의 타이틀을 추출
+				// location.href 값은 이전 URL 을 가져오므로 Router의 Props를 이용해야 됨.
+				if(match.url.includes(menu.href)) {
+					menuCss[menu.title] = classes.active;
+				} else {
+					menuCss[menu.title] = classes.inactive;
+				}
+				if(submenu != undefined && submenu.length > 0) {
+					for(let j=0; j<submenu.length; j++) {
+						if(match.url.includes(submenu[j].href)) {
+							menuCss[submenu[j].title] = classes.active;
+						} else {
+							menuCss[submenu[j].title] = classes.inactive;
+						}
+					}
+				}
+			}
 		}
 		
-	}; */
-
-	const handleClick = (event) => {
-		event.target.style.color="blue";
 	}
-
+	
+	React.useEffect(()=>{
+		urlMatch();
+		setActive(match.url);	// URL이 변경될 때, 상태 변경을 한다.
+	});
+	
+	
 	return (
-		<Fragment>
+		<>
 			<List>
 				<ListItem button component={RouterLink} to="/dashboard">
 					<ListItemIcon>
@@ -102,55 +120,70 @@ export default function MenuList() {
 						</ListItem>
 					</List>
 				</Collapse>
-
-				<ListItem button onClick={() => handleToggle(5)}>
-					<ListItemIcon>
-						<CreditCard />
-					</ListItemIcon>
-					<ListItemText primary="경비관리" />
-					{/* 부모메뉴 우측 아이콘 표시 주석처리 - 20200319.오경섭*/}
-					{/* {openStep4 ? <ExpandLess /> : <ExpandMore />} */}
-				</ListItem>
-				<Collapse in={true} timeout="auto" unmountOnExit>
-					<List component="div" disablePadding>
-						<ListItem button className={classes.nested} component={RouterLink} to="/expense/annualList">
-							<ListItemIcon>
-								<SubdirectoryArrowRightIcon fontSize="small"/>
-							</ListItemIcon>
-							<ListItemText secondary="경비관리목록" />
-						</ListItem>
-						<ListItem button className={classes.nested} component={RouterLink} to="/expense/approvalList">
-							<ListItemIcon>
-								<SubdirectoryArrowRightIcon fontSize="small"/>
-							</ListItemIcon>
-							<ListItemText secondary="경비결재관리목록" />
-						</ListItem>
-						<ListItem button className={classes.nested} component={RouterLink} to="/expense/payList">
-							<ListItemIcon>
-								<SubdirectoryArrowRightIcon fontSize="small"/>
-							</ListItemIcon>
-							<ListItemText secondary="교통/통신비관리목록" />
-						</ListItem>
-						<ListItem button className={classes.nested} component={RouterLink} to="/expense/monthyStatMSelectView">
-							<ListItemIcon>
-								<SubdirectoryArrowRightIcon  fontSize="small"/>
-							</ListItemIcon>
-							<ListItemText secondary="경비월별통계" />
-						</ListItem>
-					</List>
-				</Collapse>
+				{menus.map((item, idx) => {		
+					if(item.submenu != undefined && item.submenu.length > 0) {
+						{/* 2Depth를 포함하는 메뉴 출력 */}
+						return (
+							<Fragment key={idx}>
+								{/* 1Depth 메뉴 */}		
+								<ListItem button 
+									component={RouterLink} to={item.submenu[0].href} onClick={handleDrawerClose}>
+									<ListItemIcon className={menuCss[item.title]}>
+										{item.icon}
+									</ListItemIcon>
+									<ListItemText primary={item.title} disableTypography={true} className={menuCss[item.title]}/>
+								</ListItem>
+								{/* 2Depth 메뉴 */}		
+								<List component="div" disablePadding>
+									{
+										item.submenu.map((subItem, subIdx) => (
+											<ListItem key={subIdx} button 
+												className={classes.nested} component={RouterLink} to={subItem.href} onClick={handleDrawerClose}>
+												<ListItemIcon className={menuCss[subItem.title]}>
+													{subItem.icon}
+												</ListItemIcon>
+												<ListItemText secondary={subItem.title} disableTypography={true} className={menuCss[subItem.title]} />
+											</ListItem>
+										))
+									}
+								</List>
+							</Fragment>
+						)
+					} else {
+						{/* 1Depth 메뉴 출력 */}
+						return (
+							<Fragment key={idx}>
+								{	// 관리자인 경우 => 관리자 메뉴가 늘어나면 이부분이 1번만 호출되도록 추가 개발이 필요!!!
+									item.admin && (
+										<Fragment key={'admin' + idx}>
+											<Divider key={'adminDevider' + idx} />
+											<ListSubheader key={'listSubHeader' + idx} inset>Administrator</ListSubheader>
+										</Fragment>
+									)
+								}
+								<ListItem key={'listItem' + idx} button 
+									component={RouterLink} to={item.href} onClick={handleDrawerClose}>
+									<ListItemIcon className={menuCss[item.title]}>
+										{item.icon}
+									</ListItemIcon>
+									<ListItemText primary={item.title} disableTypography={true} className={menuCss[item.title]} />
+								</ListItem>
+							</Fragment>
+						)
+					}
+				})}
 			</List>
 			<Divider />
-			<List>
+			{/* <List>
 					<ListSubheader inset>Administrator</ListSubheader>
 					<ListItem button component={RouterLink} to="/admin/code">
 						<ListItemIcon>
 							<AccountTreeIcon />
 						</ListItemIcon>
-						<ListItemText primary="코드관리"/>
+						<ListItemText primary="코드관리" />
 					</ListItem>
 			</List>
-			<Divider />
-		</Fragment>		
+			<Divider /> */}
+		</>		
 	);
 }

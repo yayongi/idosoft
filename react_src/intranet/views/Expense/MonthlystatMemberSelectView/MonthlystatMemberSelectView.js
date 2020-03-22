@@ -24,6 +24,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
 import Moment from "moment";
+Moment.locale('ko'); // 한국 시간
 
 import {
   MuiPickersUtilsProvider,
@@ -38,7 +39,6 @@ import {data_2020_03, data_2020_01,data_2019_12, data_2019_11
 	, data_2019_10, data_2019_09, data_2019_08
 	, data_2019_07, nondata} from './data';
 
-	Moment.locale('ko'); // 한국 시간
 
 	const Transition = React.forwardRef(function Transition(props, ref) {
 		return <Slide direction="up" ref={ref} {...props} />;

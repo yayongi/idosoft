@@ -20,6 +20,12 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import CurrencyTextField from '@unicef/material-ui-currency-textfield';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
@@ -30,7 +36,7 @@ import {
 } from '@material-ui/pickers';
 
 import { AnnualStorage, expenseTypes, getStepInfo } from 'views/Expense/data';
-import PreviewFileUpload from 'common/PreviewFileUpload/PreviewFileUpload';
+import PreviewFileUpload from 'common/PreviewFileUpload';
 
 
 const useStyles = makeStyles(theme => ({
@@ -154,9 +160,61 @@ export default function  View(props) {
 		setAnchorEl(event.currentTarget);
 		setOpen(!open);
 	}
+
+	// 값 체크 START
+	const [stateOpen, setStateOpen] 		= React.useState(false);
+	const [stateMessage, setStateMessage]	= React.useState("");
+	const [isError, setIsError] 			= React.useState(false);
+
+	const stateCloseClick = () => {
+		setStateOpen(false);
+	}
+
+	const stateComfClick = () => {
+		if(!isError){
+			return history.goBack();
+		}
+		return setStateOpen(false);;
+	}
+
+	const stateOpenEvent = (msg) => {
+		setStateMessage(msg);
+		setIsError(false);
+		setStateOpen(true);
+	}
+	
+	const valuedationCheck = () => {
+
+		console.log('dataState.pay : ' + dataState.pay);
+		
+		if(dataState.pay == '' || dataState.pay == undefined){
+			setStateOpen(true);
+			setStateMessage('금액을 입력해주세요.');
+			setIsError(true);
+
+			return false;
+		} 
+
+		if(dataState.memo == ''){
+			setStateOpen(true);
+			setStateMessage('내용을 입력해주세요.');
+			setIsError(true);
+			return false;
+		}
+
+		return true;
+	}
+
+	// 값 체크 END
+
 	// 글 등록 후, 목록으로 이동
 	const handleClickNew = () => {
 		console.log("call handleClickNew");
+
+		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
+			return;
+		}
+
 		let max = 0;
 		dataList.map(item => {
 			Number(item.seq) > max ? max = Number(item.seq) : max  
@@ -169,7 +227,8 @@ export default function  View(props) {
 			...dataList
 		];
 		AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
-		history.goBack();
+
+		stateOpenEvent("등록이 완료되었습니다.");
 	}
 
 	// 글 삭제 후, 목록으로 이동
@@ -183,13 +242,20 @@ export default function  View(props) {
 				...dataList.slice(dataIdx+1)
 			];
 			AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
-			alert("삭제 완료 후, 목록으로 이동합니다.");
-			history.goBack();
+			
+			stateOpenEvent("삭제  완료되었습니다.");
+
+			//history.goBack();
 		}
 	}
 	// 수정처리
 	const handleClickModify =() => {
+
 		console.log("call handleClickModify");
+		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
+			return;
+		}
+
 		const dataIdx = dataList.findIndex(item => item.seq === data.seq);
 
 		if(dataIdx > -1) {
@@ -200,13 +266,19 @@ export default function  View(props) {
 			];
 			AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
 			AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(dataState));
-			alert("수정 완료되었습니다.");
+			
+			stateOpenEvent("수정 완료되었습니다.");
 			history.goBack();
 		}
 	}
 	// 반려건, 다시 진행
 	const handleClickRetry = () => {
+
 		console.log("call handleClickRetry");
+		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
+			return;
+		}
+
 		const dataIdx = dataList.findIndex(item => item.seq === data.seq);
 		data.status="0";
 		data.statusText="진행";
@@ -221,8 +293,8 @@ export default function  View(props) {
 			];
 			AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
 			AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(data));
-			alert("다시 결재 진행합니다.");
-			// history.goBack();
+			
+			stateOpenEvent("다시 결재 진행합니다.");
 		}
 	}
 	return (
@@ -407,6 +479,23 @@ export default function  View(props) {
 					}
 				</div>
 			</Toolbar>
+			<Dialog
+				open={stateOpen}
+				onClose={stateCloseClick}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogContent>
+				<DialogContentText id="alert-dialog-description">
+					{stateMessage}
+				</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+				<Button onClick={stateComfClick} color="primary" autoFocus>
+					확인
+				</Button>
+				</DialogActions>
+			</Dialog>
 		</>
 	);
 }

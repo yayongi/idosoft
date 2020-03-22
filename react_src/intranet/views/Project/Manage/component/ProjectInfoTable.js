@@ -11,27 +11,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
-function getTableFormData(codeInfo, rootCodeList) {
-  var rows = [];
-  for (var i = 0; i < codeInfo.length; i++) {
-    var upper_code = codeInfo[i].upper_code;
-
-    if (!upper_code) {
-      //codeInfo[i]["upper_name"] = "분류코드";
-      rows.push(codeInfo[i])
-      continue;
-    }
-
-    var upperRoot = rootCodeList.filter((info) => (
-      info["code_id"] === upper_code
-    ));
-
-    codeInfo[i]["upper_name"] = upperRoot.length > 0 ? upperRoot[0]["code_name"] : "-";
-    rows.push(codeInfo[i]);
-  }
-  return rows;
-}
-
 function jsonToQuery(obj) {
   return ('?' +
     Object.keys(obj).map(function (key) {
@@ -47,26 +26,28 @@ const useStyles = makeStyles({
   },
 });
 
-function CodeInfoTable(props) {
+function ProjectInfo(props) {
   const classes = useStyles();
-  const { codeInfo, rootCodeList, routeProps } = props;
-  const rows = getTableFormData(codeInfo, rootCodeList);
+  const { projectInfo, routeProps } = props;
+  const rows = projectInfo;
+
+  console.log(rows);
 
   //console.log(rows);
   // 상세페이지로 이동
 
-
+  //연도, 프로젝트명, 기관,  프로젝트 기간, PM, 교통비
   const columnsUp = [
-    { id: 'code_id', label: '코드ID', minWidth: 100, align: 'center' },
-    { id: 'code_level', label: 'Level', minWidth: 100, align: 'center' },
-    { id: 'code_name', label: '코드명', minWidth: 100, align: 'center' },
-    { id: 'upper_code', label: '상위코드', minWidth: 100, align: 'center' },
-    { id: 'upper_name', label: '코드유형', minWidth: 100, align: 'center' },
+    { id: 'year', label: '연도', minWidth: 100, align: 'center' },
+    { id: 'project_nm', label: '프로젝트명', minWidth: 100, align: 'center' },
+    { id: 'instt_name', label: '기관', minWidth: 100, align: 'center' },
+    { id: 'term', label: '프로젝트 기간', minWidth: 100, align: 'center' },
+    { id: 'pm_name', label: 'PM', minWidth: 100, align: 'center' },
+    { id: 'transport_ct', label: '교통비', minWidth: 100, align: 'center' },
   ];
   const columnsDown = [
-    { id: 'code_id', label: '코드ID', minWidth: 100, align: 'center' },
-    { id: 'code_name', label: '코드명', minWidth: 100, align: 'center' },
-    { id: 'upper_name', label: '코드유형', minWidth: 100, align: 'center' },
+    { id: 'year', label: '연도', minWidth: 100, align: 'center' },
+    { id: 'project_nm', label: '프로젝트명', minWidth: 100, align: 'center' },
   ];
   // Width에 따라 반응형으로 열이 없어
   let columns = columnsUp;
@@ -79,7 +60,7 @@ function CodeInfoTable(props) {
   const handleClickDetailView = (event, row) => {
     console.log("call handleClickDetailView");
 
-    var url = "/admin/modifyCode/view";
+    var url = "/project/manage/view";
     var queryString = jsonToQuery(row);
 
     //console.log("url : " + url);
@@ -112,18 +93,16 @@ function CodeInfoTable(props) {
                 <TableRow hover
                   role="checkbox"
                   tabIndex={-1}
-                  key={row.code_id}
+                  key={row.project_no}
                   onClick={() => handleClickDetailView(event, row)} // react router의 상세
                 >
-                  {columns.map(column => {
+                  {columns.map((column, idx) => {
                     var value = row[column.id];
-                    if (column.id === "upper_name") {
-                      if (row["code_level"] === "1") {
-                        value = "분류코드";
-                      }
+                    if(column.id === "transport_ct"){
+                      value = row["printMoney"];
                     }
                     return (
-                      <TableCell key={row.code_id + column.id} align={column.align} className={column.className}>
+                      <TableCell key={row.project_no + idx} align={column.align} className={column.className}>
                         {value !== "" ? value : "-"}
                       </TableCell>
                     );
@@ -138,4 +117,4 @@ function CodeInfoTable(props) {
   );
 }
 
-export default withWidth()(CodeInfoTable);
+export default withWidth()(ProjectInfo);

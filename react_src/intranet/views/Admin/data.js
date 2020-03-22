@@ -24,7 +24,6 @@ function getCodeInfoDB() {
     console.log("createCodeInfo");
     //test
     array.push(createCodeInfo(i=i+1, "test", "test", "3", "DG0002", "test", "20200318", "", "2017041701", "", "", ""));
-    array.push(createCodeInfo(i=i+1, "test", "test", "3", "DG0003", "test", "20200318", "", "2017041701", "", "", ""));
     /* 
     array.push(createCodeInfo(i=i+1, "test", "test", "4", "CD0005", "test", "20200318", "", "2017041701", "", "", ""));
     array.push(createCodeInfo(i=i+1, "test1", "test1", "5", "CD0001", "test", "20200318", "", "2017041701", "", "", ""));

@@ -7,6 +7,8 @@ import AddIcon from '@material-ui/icons/Add';
 import IconButton from '@material-ui/core/IconButton';
 import { Divider, Button, Grid, Hidden } from '@material-ui/core';
 
+import { getSiteInfoDB } from '../../data';
+
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -16,6 +18,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import { Link as RouterLink } from 'react-router-dom';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
@@ -36,14 +43,29 @@ const useToolbarStyles = makeStyles(theme => ({
 		marginRight: '10px',
 	}
 }));
+
 /*
 	경비관리목록 검색영역
 */
-export default function CodeSearchDiv(props) {
+export default function ProjectSearchDiv(props) {
 	
 	const classes = useToolbarStyles();
-	const {condition, updateCondition} = props;
 	const [open, setOpen] = React.useState(false);
+	const {condition, updateCondition} = props;
+	
+	const searchTypes = [
+		{ value: "0", label: "전체"},
+		{ value: "1", label: "연도"},
+		{ value: "2", label: "기관"},
+	]
+	// Dialog 값 상위 컴포넌트의 state값으로 초기화
+	const initDialogState = {
+		searchType: searchTypes,
+		searchDetailType: "",
+		searchDetailTypes: []
+	};
+	const [dialogState, setDialogState] = React.useState(initDialogState);
+
 	const handleClickOpen = () => {
 		setOpen(true);
 	};
@@ -51,60 +73,60 @@ export default function CodeSearchDiv(props) {
 		setOpen(false);
 	};
 
-	const searchTypes = [
-		{ value: "0", label: "전체"},
-		{ value: "1", label: "코드ID"},
-		{ value: "2", label: "코드명"},
-		{ value: "3", label: "레벨"},
-		{ value: "4", label: "상위코드"},
-		{ value: "5", label: "최상위코드목록"},
-	]
-
-	// Dialog 값 상위 컴포넌트의 state값으로 초기화
-	const initDialogState = {
-		searchType: condition.searchType,
-    	searchKeyword:    condition.searchKeyword,
-	};
 	// Dialog에서 취소버튼 클릭 시
 	const handleClickCancel = () => {
 		setDialogState(initDialogState);
 		handleClose();
 	}
+
 	// Dialog에서 검색버튼 클릭 시
 	// 상위 컴포넌트의 state를 갱신 처리 해줌
 	const handleClickSearch = () => {
 		updateCondition({
-			searchType: document.getElementsByName("searchType")[0].value,
-			searchKeyword:    (document.getElementsByName("searchKeyword")[0]).value,
+			searchType: 		document.getElementsByName("searchType")[0].value,
+			searchDetailType:  (document.getElementsByName("searchDetailType")[0]).value,
 		});
 		handleClose();
 	}
 
 	
-	// 검색 버튼 클릭 전, 임시로 값 저장
-	const [dialogState, setDialogState] = React.useState(initDialogState);
-
 	// searchType change
 	const handleTypeChange= event => {
-		setDialogState({
-			...dialogState,
-			searchType: event.target.value,
-			searchKeyword: ""
-		});
-	};
+		var searchDetailTypeList = [];
+		switch(event.target.value){
+			case "0" :
+				break;
+			case "1" :
+				var projectInfoList = JSON.parse(localStorage.getItem("resProjData"));
+				var start_year = projectInfoList[projectInfoList.length-1]["bgnde"].slice(0, 4);
+				var end_year = projectInfoList[0]["bgnde"].slice(0, 4);
 
-	//keyword change
-	const handleKeywordChange= event => {
-		var selectedSearchType = document.getElementsByName("searchType")[0].value;
-
-		if(!selectedSearchType || selectedSearchType === "0"){
-			alert("검색조건을 선택해주세요");
-			return;
+				for(var i = start_year; i <= end_year; i++){
+					searchDetailTypeList.push({"value":i, "label":i});
+				}
+				break;
+			case "2" :
+				var siteInfo = getSiteInfoDB();
+				for(var i=0; i < siteInfo.length; i++){
+					searchDetailTypeList.push({"value":siteInfo[i]["instt_code"], "label": siteInfo[i]["instt_name"]})
+				}
+				break;
+			default :
+				break;
 		}
 
 		setDialogState({
 			...dialogState,
-			searchKeyword: event.target.value
+			searchType:   event.target.value,
+			searchDetailTypes:  searchDetailTypeList,
+		});
+	}
+
+	//keyword change
+	const handleDetailTypeChange= event => {
+		setDialogState({
+			...dialogState,
+			searchDetailType: event.target.value
 		});
 	};
 
@@ -112,16 +134,16 @@ export default function CodeSearchDiv(props) {
 		<Fragment>
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">					
-					코드 관리
+					프로젝트 관리
 				</Typography>
 				<div className={classes.container}>
 					<Hidden smDown>
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button}>
 							검색
 						</Button>
-						<RouterLink button="true" to="/admin/modifyCode/new">
+						<RouterLink button="true" to="/project/manage/new">
 							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} >
-								코드추가
+								프로젝트 등록
 							</Button>
 						</RouterLink>	
 					</Hidden>
@@ -129,7 +151,7 @@ export default function CodeSearchDiv(props) {
 						<IconButton color="primary" onClick={handleClickOpen} className={classes.button}>
 							<FilterListIcon />
 						</IconButton>
-						<RouterLink button="true" to="/admin/modifyCode/new">
+						<RouterLink button="true" to="/project/manage/new">
 							<IconButton color="primary">
 								<AddIcon />
 							</IconButton>
@@ -167,20 +189,24 @@ export default function CodeSearchDiv(props) {
 						</Grid>
 						<Grid item xs={6} style={{paddingRight: 10}}>
 							<TextField
-								label="검색어"
-								id="searchKeyword"
-								name="searchKeyword"
-								placeholder="검색어"
+								label="검색조건"
+								id="searchDetailType"
+								name="searchDetailType"
+								placeholder="검색조건"
 								margin="dense"
 								InputLabelProps={{
 									shrink: true,
 								}}
-								value={dialogState.searchKeyword}
-								type="search"
-								onChange={handleKeywordChange}
-								fullWidth
-								// helperText="직책을 포함하여 넣어주세요."
-							/>
+								value={dialogState.searchDetailType}
+								onChange={handleDetailTypeChange}
+								select
+								fullWidth>
+								{(dialogState.searchDetailTypes).map(option => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
 						</Grid>
 					</Grid>
 				</DialogContent>

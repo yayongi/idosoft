@@ -49,7 +49,7 @@ function TransitionComponent(props) {
 
 
 function CodeInfoToTree(props){
-  console.log("codeTree");
+  //console.log("codeTree");
   const sortedCodeInfo = props;
   var divisionByLevel = [];
 
@@ -77,11 +77,11 @@ function CodeInfoToTree(props){
 
 function MakeCodeTree(props){
   const codeInfoToTree = props.props;
-  console.log("codeInfoToTree : ");
+  //console.log("codeInfoToTree : ");
   //console.log(codeInfoToTree);
-  var oneDepthList = codeInfoToTree[0].length > 0 ? codeInfoToTree[0] : [];
-  var twoDepthList = codeInfoToTree[1].length > 0 ? codeInfoToTree[1] : [];
-  var threeDepthList = codeInfoToTree[2].length > 0 ? codeInfoToTree[2] : [];
+  var oneDepthList = codeInfoToTree.length > 0 ? codeInfoToTree[0] : [];
+  var twoDepthList = codeInfoToTree.length > 1 ? codeInfoToTree[1] : [];
+  var threeDepthList = codeInfoToTree.length > 2 ? codeInfoToTree[2] : [];
 
   var sortedList = new Array();
 
@@ -157,7 +157,7 @@ const useStyles = makeStyles({
 
 export default function CodeTreeView(props) {
   const classes = useStyles();
-  const [codeInfoToTree, setCodeInfoToTree] = useState(CodeInfoToTree(props.props));
+  const [codeInfoToTree, setCodeInfoToTree] = useState(CodeInfoToTree(props.codeInfo));
 
 
   return (

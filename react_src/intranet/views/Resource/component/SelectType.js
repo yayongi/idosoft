@@ -46,11 +46,6 @@ const SelectType = ({props, onChildClick}) => {
           onChange={handleChange}
           labelWidth={labelWidth}
         > 
-          {/* {
-            props.list.map((row, idx) => {
-              return (<MenuItem value={`${props.dataKey}_${row.key}`} key={idx}>{row.value}</MenuItem>)
-            })
-          } */}
           {
             props.list.map((row, idx) => (
               <MenuItem value={`${props.dataKey}_${row.key}`} key={idx}>{row.value}</MenuItem>

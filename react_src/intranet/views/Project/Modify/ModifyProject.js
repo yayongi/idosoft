@@ -1,23 +1,15 @@
 import React, {Fragment} from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CodeInfo from '../component/CodeInfo';
+import ProjectInfoForm from '../Manage/component/ProjectInfoForm'
 
-const useStyles = makeStyles({
-});
-
-export default function AddCode(props) {
-  const classes = useStyles();
-
+export default function ModifyProject(props) {
   return (
     <Fragment>
 		<Card>
 			<CardContent>
-				코드정보
-				<br/>
-				<CodeInfo/>
+				<ProjectInfoForm routeProps={props}/>
 			</CardContent>
 		</Card>
 	</Fragment>
