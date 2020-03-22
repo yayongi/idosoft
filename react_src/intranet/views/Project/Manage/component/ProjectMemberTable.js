@@ -10,7 +10,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
-import { getProjMemberInfoDB, getMemberInfoDB } from '../../data';
+import { getProjMemberInfoDB, getMemberInfoDB, getProjectInfoDB } from '../../data';
 import { getCodeInfoDB } from '../../../Admin/data';
 function initData(location){
   console.log("initData");
@@ -36,29 +36,41 @@ function initData(location){
       });
     }
 
-    var makeProjectMem = getMemberInfoDB();
-    for(var i=0; i < projMemberList.length; i++){
-      var temp = projMemberList[i]["member_no"];
+    var projectInfoList = getProjectInfoDB();
+    var selectProjectInfoList = [];
 
-      var list = makeProjectMem.filter(member => {
-        return member.member_id == temp;
+    if(projectInfoList.length > 0){
+      selectProjectInfoList = projectInfoList.filter(info => {
+        return info.project_no == data["project_no"];
       });
-      if(list.length > 0){
-        projMemberList[i]["member_name"] = list[0]["member_name"];
+    }
+
+    var memberInfo = getMemberInfoDB();
+    for(var i=0; i < projMemberList.length; i++){
+      var selected_memberInfo = projMemberList[i]["member_no"];
+
+      var member_list = memberInfo.filter(member => {
+        return member.member_id == selected_memberInfo;
+      });
+      if(member_list.length > 0){
+        projMemberList[i]["member_name"] = member_list[0]["member_name"];
       }
 
-      var temp2 = getCodeInfoDB();
-
-      var code_list = temp2.filter(code => {
+      var codeInfo = getCodeInfoDB();
+      var code_list = codeInfo.filter(code => {
         return code.upper_code == "CD0009";
       });
       if(code_list.length > 0){
-        var temp3 = code_list.filter(cl => {
+        var select_codeInfo = code_list.filter(cl => {
           return cl.code_id == projMemberList[i]["role_code"];
         });
-        if(temp3.length > 0){
-          projMemberList[i]["role"] = temp3[0]["code_name"];
+        if(select_codeInfo.length > 0){
+          projMemberList[i]["role"] = select_codeInfo[0]["code_name"];
         }
+      }
+
+      if(selectProjectInfoList.length > 0){
+        projMemberList[i]["instt_code"] = selectProjectInfoList[0]["instt_code"];
       }
 
       projMemberList[i]["term"] = projMemberList[i]["inpt_bgnde"] + " ~ " + projMemberList[i]["inpt_endde"]; 
