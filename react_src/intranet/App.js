@@ -26,6 +26,7 @@ import {
 	NoticeRegist as NoticeRegist,
   
 	History as History,
+	ModifyHistory as ModifyHistory,
 	Manage as Manage,
 	ModifyProject as ModifyProject,
 	ResourceList as ResourceList,
@@ -51,36 +52,30 @@ export default function App() {
 					<Route exact path="/resPassword">
 						<MinimalLayout><ResPassword /></MinimalLayout>
 					</Route>
-					<Route exact path="/member/">
-						<MainLayout><MemberList /></MainLayout>
-					</Route>
-					<Route exact path="/member/memberreg">
-						<MainLayout><MemberReg /></MainLayout>
-					</Route>
-					<Route exact path="/member/membermod/admin">
-						<MainLayout><MemberMod_admin /></MainLayout>
-					</Route>
-					<Route exact path="/member/membermod/user">
-						<MainLayout><MemberMod_user /></MainLayout>
-					</Route>
-					<Route exact path="/resource">
-						<MainLayout><ResourceList /></MainLayout>
-					</Route>
-					<Route exact path="/resource/regist">
-						<MainLayout><ResourceRegist /></MainLayout>
-					</Route>
-					<Route exact path="/notice">
-						<MainLayout><NoticeList /></MainLayout>
-					</Route>
-					<Route exact path="/notice/regist">
-						<MainLayout><NoticeRegist /></MainLayout>
-					</Route>
-					<Route exact path="/project/history">
-						<MainLayout><History /></MainLayout>
-					</Route>
-					<Route exact path="/project/manage">
-						<MainLayout><Manage /></MainLayout>
-					</Route>
+					{/* Dashboard*/}
+					<Route exact path='/dashboard' render={(props) =>
+						<MainLayout routeProps={props}>
+							<Dashboard routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 사원관리 목록*/}
+					<Route exact path='/member/memberlist' render={(props) =>
+						<MainLayout routeProps={props}>
+							<MemberList routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 사원관리 등록 */}
+					<Route exact path='/member/memberreg' render={(props) =>
+						<MainLayout routeProps={props}>
+							<MemberReg routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 사원관리 수정 - 관리자 */}
+					<Route exact path='/member/membermod_admin' render={(props) =>
+						<MainLayout routeProps={props}>
+							<MemberMod_admin routeProps={props} />
+						</MainLayout>
+					} />
 
 					{/* 사원관리 수정 - 사용자 */}
 					<Route exact path='/member/membermod_user' render={(props) =>
@@ -113,17 +108,28 @@ export default function App() {
 							<NoticeRegist routeProps={props} />
 						</MainLayout>
 					} />
+					{/* 중첩 Router 적용 - state Left 메뉴의 state가 유실되는 문제가 있어서 폐기 - 20200319: 오경섭*/}
+					{/* <Route path="/expense/annualList" component={AnnualList} />> */}
+					{/* <Route path="/expense/approvalList" component={ApprovalList} />> */}
+					{/* 중첩 Router 적용*/}
 					{/* 이력관리 */}
 					<Route exact path='/project/history' render={(props) =>
 						<MainLayout routeProps={props}>
 							<History routeProps={props} />
 						</MainLayout>
 					} />
-					{/* 중첩 Router 적용 - state Left 메뉴의 state가 유실되는 문제가 있어서 폐기 - 20200319: 오경섭*/}
-					{/* <Route path="/expense/annualList" component={AnnualList} />> */}
-					{/* <Route path="/expense/approvalList" component={ApprovalList} />> */}
-					{/* 중첩 Router 적용*/}
-
+					{/* 이력 등록 */}
+					<Route exact path='/project/history/new' render={(props) =>
+						<MainLayout routeProps={props}>
+							<ModifyHistory routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 이력 수정 */}
+					<Route exact path='/project/history/view' render={(props) =>
+						<MainLayout routeProps={props}>
+							<ModifyHistory routeProps={props} />
+						</MainLayout>
+					} />
 					{/* 프로젝트 관리 */}
 					<Route exact path='/project/manage' render={(props) =>
 						<MainLayout routeProps={props}>
