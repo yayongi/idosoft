@@ -57,37 +57,24 @@ export default function App() {
 					<Route exact path="/resPassword">
 						<MinimalLayout><ResPassword /></MinimalLayout>
 					</Route>
-					<Route exact path="/member/">
-						<MainLayout><MemberList /></MainLayout>
-					</Route>
-					<Route exact path="/member/memberreg">
-						<MainLayout><MemberReg /></MainLayout>
-					</Route>
-					<Route exact path="/member/membermod/admin">
-						<MainLayout><MemberMod_admin /></MainLayout>
-					</Route>
-					<Route exact path="/member/membermod/user">
-						<MainLayout><MemberMod_user /></MainLayout>
-					</Route>
-					<Route exact path="/resource">
-						<MainLayout><ResourceList /></MainLayout>
-					</Route>
-					<Route exact path="/resource/regist">
-						<MainLayout><ResourceRegist /></MainLayout>
-					</Route>
-					<Route exact path="/notice">
-						<MainLayout><NoticeList /></MainLayout>
-					</Route>
-					<Route exact path="/notice/regist">
-						<MainLayout><NoticeRegist /></MainLayout>
-					</Route>
-					<Route exact path="/project/history">
-						<MainLayout><History /></MainLayout>
-					</Route>
-					<Route exact path="/project/manage">
-						<MainLayout><Manage /></MainLayout>
-					</Route>
-
+					{/* 사원관리 목록 */}
+					<Route exact path='/member/' render={(props) =>
+						<MainLayout routeProps={props}>
+							<MemberList routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 사원관리 등록 */}
+					<Route exact path='/member/memberreg' render={(props) =>
+						<MainLayout routeProps={props}>
+							<MemberReg routeProps={props} />
+						</MainLayout>
+					} />
+					{/* 사원관리 수정 - 관리자 */}
+					<Route exact path='/member/membermod/admin' render={(props) =>
+						<MainLayout routeProps={props}>
+							<MemberMod_admin routeProps={props} />
+						</MainLayout>
+					} />
 					{/* 사원관리 수정 - 사용자 */}
 					<Route exact path='/member/membermod/user' render={(props) =>
 						<MainLayout routeProps={props}>
