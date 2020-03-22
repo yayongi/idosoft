@@ -18,15 +18,13 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 
-import ProjectMemberTable from './ProjectMemberTable';
-
 import {
   MuiPickersUtilsProvider,
   DatePicker,
 } from '@material-ui/pickers';
 
 import { Link as RouterLink } from 'react-router-dom';
-import { getSiteInfoDB, getMemberInfoDB } from '../../data';
+import { getSiteInfoDB, getMemberInfoDB, getProjMemberInfoDB  } from '../../data';
 
 function initData(location) {
 	console.log("initData");
@@ -142,9 +140,8 @@ export default function ProjectInfoForm(props) {
 	}
 
 	const handleClickAddProject = () => {
-
+		//project data
 		var projectData = JSON.parse(localStorage.getItem("resProjData"));
-
 		var project_no  = projectData.length+1;
 		var project_nm  = dataState.project_nm;
 		var instt_code  = dataState.instt_code;
@@ -180,8 +177,41 @@ export default function ProjectInfoForm(props) {
 		projectData.sort((a, b) => {
 			return parseInt(b.bgnde) - parseInt(a.bgnde);
 		});
-
 		localStorage.setItem('resProjData', JSON.stringify(projectData));
+
+
+		//history
+		var histData = getProjMemberInfoDB();
+		var member_no  = pm;
+		var project_no  = project_no;
+		var inpt_bgnde  = dataState.bgnde;
+		var inpt_endde  = dataState.endde;
+		var role_code   = "RL0000";
+		var chrg_job	= "pm";
+		var reg_datetime  = "20200321";
+		var upd_datetime  = "";
+		var reg_id  = dataState.pm;
+		var upd_id  = "";
+		var note  = "";
+		var temp_colum  = "";
+
+		histData.push(
+			{
+				"member_no" :  member_no,
+				"project_no" : project_no,
+				"inpt_bgnde" : inpt_bgnde.replace(/[^0-9]/g, ''),
+				"inpt_endde" : inpt_endde.replace(/[^0-9]/g, ''),
+				"role_code" : role_code,
+				"chrg_job" : chrg_job,
+				"reg_datetime" : reg_datetime,
+				"upd_datetime" : upd_datetime,
+				"reg_id" : reg_id,
+				"upd_id" : upd_id,
+				"note" : note,
+				"temp_colum" : temp_colum
+			}
+		)
+		localStorage.setItem('resProjMem', JSON.stringify(histData));
 
 		alert("등록 되었습니다.");
 		history.goBack();
@@ -231,6 +261,11 @@ export default function ProjectInfoForm(props) {
 		history.goBack();
 	}
 
+	const handleClickProjectMemberAdd = (dataState) => {
+		console.log("handleClickProjectMemberAdd");
+		console.log(dataState);
+	}
+
 	const handleClickCancle = () => {
 		history.goBack();
 	};
@@ -272,6 +307,14 @@ export default function ProjectInfoForm(props) {
 												(
 													<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickRemoveProject}>
 														삭제
+													</Button>
+												)
+											}
+											{
+												dataState.screenType == "modify" &&
+												(
+													<Button variant="contained" color="primary" size="small" className={classes.button} onClick={() => handleClickProjectMemberAdd(dataState)}>
+														투입인원추가
 													</Button>
 												)
 											}

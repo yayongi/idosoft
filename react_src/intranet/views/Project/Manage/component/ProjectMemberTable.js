@@ -9,6 +9,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import { getProjMemberInfoDB, getMemberInfoDB, getProjectInfoDB } from '../../data';
 import { getCodeInfoDB } from '../../../Admin/data';
@@ -135,6 +137,10 @@ function ProjectMemberTable(props) {
     //console.log("queryString : " + queryString);
 
     history.push(url + queryString);
+  }
+
+  const handleClickAddCode = (row) => {
+    console.log(row);
   }
 
   return (
