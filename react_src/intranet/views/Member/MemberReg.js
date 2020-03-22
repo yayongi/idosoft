@@ -8,10 +8,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
-import axios from 'axios';
 import CommonDialog from '../../js/CommonDialog';
 import { Link as RouterLink, } from 'react-router-dom';
-import { findAdress,positions,certYn,schCareer,emailValidation } from '../../js/util'
+import Avatar from '@material-ui/core/Avatar';
+import { findAdress,positions,certYn,schCareer,emailValidation,uploadFile,downloadFile } from '../../js/util'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,12 +35,23 @@ const useStyles = makeStyles(theme => ({
       margin: theme.spacing(1),
     },
   },
+  large: {
+    width: theme.spacing(17),
+    height: theme.spacing(17),
+  },
+  button_tool: {
+		marginRight: '10px',
+	},
+	router_link: {
+		textDecoration: 'none',
+	}
 }));
 
 const MemberReg = (props) => {
   const classes = useStyles();
-
-  const { routeProps } = props;
+  const pathProfile = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathItcert = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\itCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathSchoolcert = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
   
   const [state, setState] = React.useState({
     selectedFile : null,
@@ -48,89 +59,14 @@ const MemberReg = (props) => {
   });
   
   const [validation, setValidation] = React.useState({
-    name:{
-      error:false,
-      helperText:""
-    },
-    position:{
-      error:false,
-      helperText:""
-    },
-    email:{
-      error:false,
-      helperText:""
-    },
-    address1:{
-      error:false,
-      helperText:""
-    }
-    ,address2:{
-      error:false,
-      helperText:""
-    },
-    entry:{
-      error:false,
-      helperText:""
-    },
-    sch_car:{
-      error:false,
-      helperText:""
-    }
+    name:       {error:false,helperText:""},
+    position:   {error:false,helperText:""},
+    email:      {error:false,helperText:""},
+    address1:   {error:false,helperText:""},
+    address2:   {error:false,helperText:""},
+    entry:      {error:false,helperText:""},
+    sch_car:    {error:false,helperText:""}
   })
-
-
-  // 파일 업로드
-  const uploadFile = (event) => {
-    setState({
-      ...state,
-      selectedFile : event.target.files[0],
-      preFile: "test.txt",
-    })
-
-    const formData = new FormData();
-    formData.append('file', event.target.files[0]);
-    formData.append('path', "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\");
-    formData.append('prefilename',"test.txt")
-    const property = {
-      url : '/intranet/fileUpload',
-      method : 'post',
-      data : formData,
-      header : {
-        'enctype': 'multipart/form-data'
-      }
-    }
-
-    axios(property).then(response => {
-        console.log(JSON.stringify(response));	
-			}).catch(e => {
-				console.log(e);
-			});
-  } 
-
-  // 파일 다운로
-  const downloadFile = (event) => {
-    const formData = new FormData();
-    formData.append('filename', event.target.children[0].value);
-    formData.append('path', "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\");
-
-    const property = {
-      url : '/intranet/fileDownload',
-      method : 'post',
-      data : formData,
-      responseType: 'blob',
-    }
-
-    axios(property).then(response => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', response.headers.filename);
-        document.body.appendChild(link);
-        link.click();
-			}).catch(e => {
-				console.log(e);
-			});
-  } 
 
   //임시 로컬스토리지에 저장하기
   const setLocalstorage = () => {
@@ -256,34 +192,13 @@ const MemberReg = (props) => {
 
   const defaultValidation = () =>{
     setValidation({
-      name:{
-        error:false,
-        helperText:""
-      },
-      position:{
-        error:false,
-        helperText:""
-      },
-      email:{
-        error:false,
-        helperText:""
-      },
-      address1:{
-        error:false,
-        helperText:""
-      }
-      ,address2:{
-        error:false,
-        helperText:""
-      },
-      entry:{
-        error:false,
-        helperText:""
-      },
-      sch_car:{
-        error:false,
-        helperText:""
-      }
+      name:       {error:false,helperText:""},
+      position:   {error:false,helperText:""},
+      email:      {error:false,helperText:""},
+      address1:   {error:false,helperText:""},
+      address2:   {error:false,helperText:""},
+      entry:      {error:false,helperText:""},
+      sch_car:    {error:false,helperText:""}
     })
   }
 
@@ -311,6 +226,14 @@ const MemberReg = (props) => {
     }
 	}
 
+  const uploadImgFile = (event,pathProfile) => {
+    uploadFile(event,pathProfile);
+    setState({
+      ...state,
+      preFile:pathProfile + event.target.files[0].name
+    })
+  }
+
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
@@ -330,38 +253,36 @@ const MemberReg = (props) => {
                 <CardContent style={{
                   height:'100%'
                 }}>
-                  <div style={{textAlign:'center'}}>
-                    <img 
-                      className={classes.image} 
-                      alt="complex" 
-                      src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AABNXGc.img?h=1080&w=1920&m=6&q=60&o=f&l=f&x=345&y=399"
-                    />
+                  <div style={{textAlign:'-webkit-center'}}>
+                    <Avatar src={state.preFile != null ? state.preFile : ""} className={classes.large} />
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
-                      <input type="file" id="myFile" style={{display:"none"}} onChange={() => uploadFile(event)}/>
-                      <Button variant="contained" color="primary" onClick={() => document.getElementById("myFile").click()}>
+                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadImgFile(event,pathProfile)}/>
+                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadFile(event,pathItcert)}/>
+                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadFile(event,pathSchoolcert)}/>
+                      <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
                                                 프로필 업로드
                       </Button>
-                      <Button variant="contained" color="primary" onClick={() => downloadFile(event)}>
+                      <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
                         <input type="hidden" value="test.jpg"/> 
                                                 프로필 다운로드
                       </Button>
                     </div>
                     <div className={classes.textfield}>
-                      <Button variant="contained" color="primary">
+                      <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileItcert").click()}>
                                                 자격증 업로드
                       </Button>
-                      <Button variant="contained" color="primary">
+                      <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
                         <input type="hidden" value="test.txt"/> 
                                                 자격증 다운로드
                       </Button>
                     </div>
                     <div className={classes.textfield}>
-                      <Button variant="contained" color="primary">
+                      <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileSchoolcert").click()}>
                                                 증명서 업로드
                       </Button>
-                      <Button variant="contained" color="primary">
+                      <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
                         <input type="hidden" value="test.txt"/> 
                                                 증명서 다운로드
                       </Button>
@@ -500,7 +421,7 @@ const MemberReg = (props) => {
                       <Button variant="contained" color="primary" onClick={setLocalstorage}>
                               저장하기
                       </Button>
-                      <RouterLink button="true" to="/member/memberlist" >
+                      <RouterLink button="true" to="/member/memberlist" className={classes.router_link}>
                         <Button variant="contained" color="primary">
                                 뒤로가기
                         </Button>

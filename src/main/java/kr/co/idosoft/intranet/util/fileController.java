@@ -38,12 +38,16 @@ public class fileController {
 		String original = mf.getOriginalFilename(); // 업로드하는 파일 name
 
 		uploadPath = path+original; // 파일 업로드 경로 + 파일 이름
+		
+		File file = new File(uploadPath);
 
 		try {
-			mf.transferTo(new File(uploadPath)); // 파일을 위에 지정 경로로 업로드
+			if(!file.exists()) {
+				file.mkdirs();
+			}
+			mf.transferTo(file); // 파일을 위에 지정 경로로 업로드
+			
 			//기존 파일 삭제 로직
-
-			logger.debug(preFileName);
 			if(!"".equals(preFileName) || preFileName != null) {
 				deleteFile(preFileName,path);
 			}
