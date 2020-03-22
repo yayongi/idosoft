@@ -19,7 +19,15 @@
 	<!-- <resources mapping="/attatchFile/**" location="/attatchFile/" /> -->
 	<!-- <resources mapping="/assets/**" location="/assets/" /> -->
 	
-	<beans:bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" id="jsonView">
+	<interceptors>
+		<interceptor>
+			<mapping path="/**"/>
+			<exclude-mapping path="/login" />
+			<beans:bean id="commonInterceptor" class="kr.co.idosoft.common.interceptor.CommonInterceptor"/>
+		</interceptor>
+	</interceptors>
+
+	<beans:bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
 	    <beans:property name="contentType" value="application/json;`charset=UTF-8"/>
 	</beans:bean>
 	

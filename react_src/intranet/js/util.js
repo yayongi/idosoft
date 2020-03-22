@@ -1,3 +1,6 @@
+// Server
+import axios from 'axios';
+
 export const positions = [
   { label: '대표',value: 'A01', },
   { label: '이사',value: 'A02', },
@@ -82,7 +85,40 @@ export function positionFormatter(param){
   // [], {} 도 빈값으로 처리
   //작성자 : 유기환
   export function isEmpty(value){ if( value == "" || value == null || value == undefined || ( value != null && typeof value == "object" && !Object.keys(value).length ) ){return true}else{return false}};
+  
+  //  axios 공통 에러 코드 처리 프로세스
+  //  작성자 : 유기환
 
+  export function processErrCode(e){
+
+    const errCode = e.response.status;
+
+    if(errCode == 400){
+      alert("세션이 만료되어 로그아웃 되었습니다. 다시 로그인 해주세요.");
+      location.href = "/#/signIn";
+    } else {
+    }
+  }
+
+  //  로그인 회원정보 세션 스토리지에 저장
+  //  작성자 : 유기환
+  export function getSessionMemberInfo(){
+    
+    let sessionObject = {}
+ 
+    axios({
+    url: '/intranet/getSession',
+    method: 'get',
+    data: {}
+    }).then(response => {
+      console.log('SESSION_DATA' + JSON.stringify(response.data.SESSION_DATA));
+      
+      localStorage.setItem('SESSION_DATA', response.data.SESSION_DATA);
+    }).catch(e => {
+      processErrCode(e);
+      console.log(e);
+    });
+  }
 
 
 
