@@ -23,10 +23,4 @@ public interface ExcelService {
 	 * @return SXSSFWorkbook
 	 */
 	public SXSSFWorkbook commonExcelWorkbook(String title,List<Map<String,Object>> list);
-	/**
-	 *  엑셀 파일 다운로드 프로세스 
-	 * @param list
-	 * @return SXSSFWorkbook
-	 */
-	public void excelFileExportProcess(String title, SXSSFWorkbook workbook,HttpServletRequest request, HttpServletResponse response);
 }

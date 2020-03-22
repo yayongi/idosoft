@@ -3,6 +3,7 @@ package kr.co.idosoft.intranet.common.controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,8 +42,7 @@ public class ExcelController {
 	
 	@RequestMapping(value = "/downloadExcelFile", method = RequestMethod.POST)
 	@ResponseBody
-	public void downloadExcelFile(Model m,
-									@RequestBody Map<String, Object> params,
+	public ModelAndView downloadExcelFile(@RequestBody Map<String, Object> params,
 									HttpServletResponse response,
 									HttpServletRequest request){ //JSON Object	
 		
@@ -66,11 +67,17 @@ public class ExcelController {
 		try {
 			list = om.readValue(jsonArrData, typeRef);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.debug("### IOException : " + e.getMessage());
 		}
 		
 		SXSSFWorkbook workbook = excelService.commonExcelWorkbook(title, list);
 		
-		excelService.excelFileExportProcess(title, workbook, request, response);
+		ModelAndView mv = new ModelAndView(); 
+		mv.setViewName("excelDownloadView"); // 
+		mv.addObject("locale", Locale.KOREA); // 뷰로 보낼 데이터 값
+		mv.addObject("workbook", workbook); // 뷰로 보낼 데이터 값
+		mv.addObject("workbookName", title); // 뷰로 보낼 데이터 값
+		
+		return mv;
 	}
 }
