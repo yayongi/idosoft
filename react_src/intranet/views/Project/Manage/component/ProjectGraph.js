@@ -34,6 +34,8 @@ const useStyles = makeStyles({
     width: '100%',
     textDecoration: 'none',
   },
+  chart: {
+  }
 });
 
 function ProjectGraph(props) {
@@ -47,6 +49,7 @@ function ProjectGraph(props) {
     }
     return (
       <BarChart
+        className={classes.chart}
         width={500}
         height={300}
         data={makeGraph(projectInfo)}

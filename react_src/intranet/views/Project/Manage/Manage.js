@@ -66,6 +66,7 @@ const mainStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    overflowX: 'scroll'
   },
   paper2: {
     padding: theme.spacing(2),

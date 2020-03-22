@@ -19,8 +19,9 @@ export {default as MemberMod_user} from './Member/MemberMod_user';		// 사원관
 export {NoticeList as NoticeList} from './Notice';				// 공지사항 -> 목록
 export {NoticeRegist as NoticeRegist} from './Notice';			// 공지사항 -> 공지사항등록관리
 export {History as History} from './Project';					// 프로젝트 -> 프로젝트이력
+export {ModifyHistory as ModifyHistory} from './Project/Modify';		// 프로젝트 -> 프로젝트이력  -> 프로젝트추가
 export {Manage as Manage} from './Project';						// 프로젝트 -> 프로젝트관리
-export {default as ModifyProject} from './Project/Modify';// 프로젝트 -> 프로젝트관리
+export {ModifyProject as ModifyProject} from './Project/Modify';// 프로젝트 -> 프로젝트관리
 export {ResourceList as ResourceList} from './Resource';		// 자원관리 -> 자원리스트
 export {ResourceRegist as ResourceRegist} from './Resource';	// 자원관리 -> 자원등록관리
 export {default as NotFound} from './NotFound';	// 페이지 없는 경우
