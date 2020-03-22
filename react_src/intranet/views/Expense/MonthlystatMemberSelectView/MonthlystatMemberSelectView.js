@@ -23,6 +23,8 @@ import TableRow from '@material-ui/core/TableRow';
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
+import {excelExport} from '../../../js/util';
+
 import Moment from "moment";
 Moment.locale('ko'); // 한국 시간
 
@@ -38,7 +40,6 @@ import {useStyles} from './styles';
 import {data_2020_03, data_2020_01,data_2019_12, data_2019_11
 	, data_2019_10, data_2019_09, data_2019_08
 	, data_2019_07, nondata} from './data';
-
 
 	const Transition = React.forwardRef(function Transition(props, ref) {
 		return <Slide direction="up" ref={ref} {...props} />;
@@ -187,47 +188,18 @@ import {data_2020_03, data_2020_01,data_2019_12, data_2019_11
 		console.log('close');
 		setOpen(false);
 	};
-
+	
 	const excelDownload = (e) => {
 		console.log('엑셀다운로드 실행');
 		console.log(`excel export member : ${typeof(JSON.stringify(data_2020_01.members))}`)
 		
-		axios({
-			url: '/intranet/downloadExcelFile',
-			method: 'post',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			data: {
-				title : 'TEST',
-				jsonArrData : JSON.stringify(data_2020_01.members)
-			}
-		}).then(response => {
-			console.log('Excel Export Success' + JSON.stringify(response));	
-		}).catch(e => {
-			console.log(e);
-		});
+		excelExport(data_2020_01.members);
 	};
+
 	
 	const indiExcelDownload = (e) => {
-		console.log('엑셀다운로드 실행');
 		console.log(`excel export member : ${typeof(JSON.stringify(data_2020_01.members))}`)
-		
-		axios({
-			url: '/intranet/downloadExcelFile',
-			method: 'post',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			data: {
-				title : 'TEST',
-				jsonArrData : JSON.stringify(data_2020_01.members)
-			}
-		}).then(response => {
-			console.log('Excel Export Success' + JSON.stringify(response));	
-		}).catch(e => {
-			console.log(e);
-		});
+		excelExport(data_2020_01.members);
 	};
 
 	return (
@@ -331,7 +303,6 @@ import {data_2020_03, data_2020_01,data_2019_12, data_2019_11
 					</TableContainer> 
 				</div>
 			</Dialog>
-
 			{/* Diallog Area END */}
 		</Fragment>
 	);
