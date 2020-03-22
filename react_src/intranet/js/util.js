@@ -196,7 +196,7 @@ export function excelExport(json){
     }).then(response => {
       console.log('SESSION_DATA' + JSON.stringify(response.data.SESSION_DATA));
       
-      localStorage.setItem('SESSION_DATA', response.data.SESSION_DATA);
+      sessionStorage.setItem('SESSION_DATA', response.data.SESSION_DATA);
     }).catch(e => {
       processErrCode(e);
       console.log(e);
