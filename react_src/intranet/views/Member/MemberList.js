@@ -420,7 +420,7 @@ const MemberList = () => {
 									<TableRow key={row.id}>
 										<TableCell padding="checkbox">
 											<Checkbox
-												
+												checked={(selected.indexOf(row.id) !== -1)? true : false}
 												onChange={() => selectedItem(event,row.id)}
 												key = {row.id}
 											/>
