@@ -17,7 +17,7 @@ export const menus = [
 	},
 	{
 		title: '사원관리',
-		href: '/member/memberlist',
+		href: '/member',
 		icon: <PeopleIcon />, 
 	},
 	{
