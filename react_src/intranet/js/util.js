@@ -187,8 +187,6 @@ export function excelExport(json){
   //  작성자 : 유기환
   export function getSessionMemberInfo(){
     
-    let sessionObject = {}
- 
     axios({
     url: '/intranet/getSession',
     method: 'get',
@@ -196,7 +194,7 @@ export function excelExport(json){
     }).then(response => {
       console.log('SESSION_DATA' + JSON.stringify(response.data.SESSION_DATA));
       
-      localStorage.setItem('SESSION_DATA', response.data.SESSION_DATA);
+      sessionStorage.setItem('SESSION_DATA', response.data.SESSION_DATA);
     }).catch(e => {
       processErrCode(e);
       console.log(e);

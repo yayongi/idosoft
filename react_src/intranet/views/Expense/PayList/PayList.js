@@ -18,6 +18,8 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import TableContainer from '@material-ui/core/TableContainer';
+import Paper from '@material-ui/core/Paper';
 
 import {useStyles} from './styles';
 import {dataAdmin2020, dataAdmin2019, dataAdmin2018, dataAdmin2017, nodata} from './data';
@@ -109,8 +111,8 @@ export default function PayList() {
 					<SaveIcon className={classes.saveIcon} />
 					엑셀다운로드
 				</Fab>
-
-				<Table>
+				<TableContainer component={Paper}>
+					<Table>
 					<TableHead className={ classes.tableHead }>								
 						<TableRow>
 							{headerCells.map((cell, idx) => (
@@ -160,7 +162,8 @@ export default function PayList() {
 						</Fragment>							
 					))}
 					</TableBody>
-				</Table>
+					</Table>
+				</TableContainer>
 			</CardContent>
 		</Card>				
 	);
