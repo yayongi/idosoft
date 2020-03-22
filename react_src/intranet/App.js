@@ -89,7 +89,7 @@ export default function App() {
 					</Route>
 
 					{/* 사원관리 수정 - 사용자 */}
-					<Route exact path='/member/membermod_user' render={(props) =>
+					<Route exact path='/member/membermod/user' render={(props) =>
 						<MainLayout routeProps={props}>
 							<MemberMod_user routeProps={props} />
 						</MainLayout>
