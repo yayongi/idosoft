@@ -45,6 +45,11 @@ export default function App() {
 						from="/"
 						to="/dashboard"
 					/>
+					<Route exact path='/dashboard' render={(props) =>
+						<MainLayout routeProps={props}>
+							<Dashboard routeProps={props} />
+						</MainLayout>
+					} />
 					<Route exact path="/signIn">
 						<MinimalLayout><SignIn /></MinimalLayout>
 					</Route>
