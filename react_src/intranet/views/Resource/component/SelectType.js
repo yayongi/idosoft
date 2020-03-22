@@ -4,6 +4,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import DateFnsUtils from '@date-io/date-fns';
+
+import {returnValue} from '../uitl/ResUtil';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -15,10 +18,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SelectType = ({props, onChildClick}) => {
-
+const SelectType = ({label, resKey, props, onChildClick, defaultValue, validation}) => {
   const classes = useStyles();
   const [type, setType] = React.useState('');
+
+  const [trigger, setTrigger] = React.useState(true);
 
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
@@ -27,16 +31,23 @@ const SelectType = ({props, onChildClick}) => {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
-  const handleChange = event => {
-	  setType(event.target.value);
-    onChildClick(event.target.value);
-  };
+  React.useEffect(()=>{
+    if(trigger && defaultValue!==undefined){
+      setTrigger(false);
+      setType(defaultValue);
+    }
+  }, [defaultValue]);
 
+  const handleChange = event => {
+    console.log(defaultValue);
+    setType(event.target.value);
+    onChildClick({key:resKey, value:event.target.value});
+  };
 
   return (
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-          {props.label}
+          {label}
         </InputLabel>
         <Select
           labelId="demo-simple-select-outlined-label"
@@ -45,10 +56,12 @@ const SelectType = ({props, onChildClick}) => {
           // onChange={handleChange, handleClick}
           onChange={handleChange}
           labelWidth={labelWidth}
+          error={validation}
         > 
           {
-            props.list.map((row, idx) => (
-              <MenuItem value={`${props.dataKey}_${row.key}`} key={idx}>{row.value}</MenuItem>
+            props.map((row, idx) => (
+              // <MenuItem value={`${props.dataKey}_${row.key}`} key={idx}>{row.value}</MenuItem>
+              <MenuItem value={row.key} key={idx}>{row.value}</MenuItem>
             ))
           }
         </Select>

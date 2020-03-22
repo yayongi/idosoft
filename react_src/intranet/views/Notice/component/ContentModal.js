@@ -89,11 +89,11 @@ const ContentModal = ({props, closeModal}) => {
             auctor fringilla.
           </Typography> */}
         </DialogContent>
-        <DialogActions>
+        {/* <DialogActions>
           <Button autoFocus onClick={handleClose} color="primary">
             Save changes
           </Button>
-        </DialogActions>
+        </DialogActions> */}
       </Dialog>
     </div>
   );
