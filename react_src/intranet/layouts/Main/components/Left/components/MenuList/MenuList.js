@@ -72,55 +72,9 @@ export default function MenuList(props) {
 	return (
 		<>
 			<List>
-				<ListItem button component={RouterLink} to="/dashboard">
-					<ListItemIcon>
-						<DashboardIcon />
-					</ListItemIcon>
-					<ListItemText primary="Dashboard"/>
-				</ListItem>
-				<ListItem button component={RouterLink} to="/member">
-					<ListItemIcon>
-						<PeopleIcon />
-					</ListItemIcon>
-					<ListItemText primary="사원관리" />
-				</ListItem>
-				<ListItem button component={RouterLink} to="/resource">
-					<ListItemIcon>
-						<DesktopMac />
-					</ListItemIcon>
-					<ListItemText primary="자원관리" />
-				</ListItem>
-				<ListItem button component={RouterLink} to="/notice">
-					<ListItemIcon>
-						<AssignmentIcon />
-					</ListItemIcon>
-					<ListItemText primary="공지사항" />
-				</ListItem>
-				<ListItem button onClick={() => handleToggle(4)}>
-					<ListItemIcon>
-						<BarChartIcon />
-					</ListItemIcon>
-					<ListItemText primary="프로젝트" />
-					{/* 부모메뉴 우측 아이콘 표시 주석처리 - 20200319.오경섭*/}
-					{/* {openStep4 ? <ExpandLess /> : <ExpandMore />} */}
-				</ListItem>
-				<Collapse in={true} timeout="auto" unmountOnExit>  
-					<List component="div" disablePadding>
-						<ListItem button className={classes.nested} component={RouterLink} to="/project/history">
-							<ListItemIcon>
-								<SubdirectoryArrowRightIcon fontSize="small"/>
-							</ListItemIcon>
-							<ListItemText secondary="이력관리" />
-						</ListItem>
-						<ListItem button className={classes.nested} component={RouterLink} to="/project/manage">
-							<ListItemIcon>
-								<SubdirectoryArrowRightIcon fontSize="small"/>
-							</ListItemIcon>
-							<ListItemText secondary="프로젝트관리" />
-						</ListItem>
-					</List>
-				</Collapse>
-				{menus.map((item, idx) => {		
+				{menus.map((item, idx) => {
+
+					
 					if(item.submenu != undefined && item.submenu.length > 0) {
 						{/* 2Depth를 포함하는 메뉴 출력 */}
 						return (
