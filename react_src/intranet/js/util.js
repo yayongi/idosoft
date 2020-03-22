@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export const positions = [
   { label: '대표',value: 'A01', },
   { label: '이사',value: 'A02', },
@@ -70,18 +72,103 @@ export function positionFormatter(param){
 	})
   return result;
 }
-  //이메일 Validation
-  //작성자 : 강성우
-  export function emailValidation(param){
-    let emailValidation=/([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
-    return emailValidation.test(param);
+
+//직급 역포맷
+//작성자 : 강성우
+export function positionUnFormatter(param){
+	let result;
+	positions.map(position => {
+    	if(position.label == param){
+			result = position.value;
+		}
+	})
+  return result;
+}
+//이메일 Validation
+//작성자 : 강성우
+export function emailValidation(param){
+  let emailValidation=/([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+  return emailValidation.test(param);
+}
+
+// 파일 업로드
+export function uploadFile(event,path){
+  const formData = new FormData();
+  formData.append('file', event.target.files[0]);
+  formData.append('path', path);
+  formData.append('prefilename',"test.txt")
+  const property = {
+    url : '/intranet/fileUpload',
+    method : 'post',
+    data : formData,
+    header : {
+      'enctype': 'multipart/form-data'
+    }
   }
+  
+  axios(property).then(response => {
+      console.log(JSON.stringify(response));	
+    }).catch(e => {
+      console.log(e);
+    });
+} 
+
+// 파일 다운로드
+export function downloadFile(event,path){
+  const formData = new FormData();
+  formData.append('filename', event.target.children[0].value);
+  formData.append('path', path);
+
+  const property = {
+    url : '/intranet/fileDownload',
+    method : 'post',
+    data : formData,
+    responseType: 'blob',
+  }
+
+  axios(property).then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', response.headers.filename);
+      document.body.appendChild(link);
+      link.click();
+    }).catch(e => {
+      console.log(e);
+    });
+} 
+//엑셀 내보내기
+export function excelExport(json){
+		axios({
+			url: '/intranet/downloadExcelFile',
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			data: {
+				title : 'TEST',
+				jsonArrData : JSON.stringify(json)
+			}
+		}).then(response => {
+			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', response.headers.filename);
+			document.body.appendChild(link);
+			link.click();
+			console.log('Excel Export Success' + JSON.stringify(response));	
+		}).catch(e => {
+			console.log(e);
+		});
+	}
+
   // 넘어온 값이 빈값인지 체크합니다.
   // !value 하면 생기는 논리적 오류를 제거하기 위해 
   // 명시적으로 value == 사용 
   // [], {} 도 빈값으로 처리
   //작성자 : 유기환
   export function isEmpty(value){ if( value == "" || value == null || value == undefined || ( value != null && typeof value == "object" && !Object.keys(value).length ) ){return true}else{return false}};
+
 
 
 

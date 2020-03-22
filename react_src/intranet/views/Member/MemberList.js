@@ -14,19 +14,25 @@ import StarIcon from '@material-ui/icons/Star';
 import Toolbar from '@material-ui/core/Toolbar';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import SaveIcon from '@material-ui/icons/Save';
+import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import IconButton from '@material-ui/core/IconButton';
-import { Divider, Button, Grid, Hidden } from '@material-ui/core';
-import axios from 'axios';
+import { Button, Hidden } from '@material-ui/core';
+import TablePagination from '@material-ui/core/TablePagination'
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import CommonDialog from '../../js/CommonDialog';
 
-import {tableList} from './data';
-import ContentModal from "./ContentModal";
-import FilterModal from "./FilterModal";
-import {dateFormatter, phoneFormatter, positionFormatter} from '../../js/util';
+import {tableList} from './data/data';
+import ContentModal from "./component/ContentModal";
+import FilterModal from "./component/FilterModal";
+import {dateFormatter, phoneFormatter, positionFormatter,excelExport,positionUnFormatter} from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
-	table: {
+	tableWeb: {
 		minWidth: 650,
+	},
+	tableApp: {
+		
 	},
 	button :{
 		textAlign:'right',
@@ -56,35 +62,28 @@ const useStyles = makeStyles(theme =>({
 	},
 	router_link: {
 		textDecoration: 'none',
+	},
+	fontsize:{
+		fontSize : "smaller",
 	}
 }));
-
-var selected = [];
-
-// 모든체크박스 선택
-const onSelectAllClick = () =>{
-
-}
-// 체크박스 선택
-const isItemSelected = (event,id) =>{
-	if(event.target.checked){
-		selected.push(id);
-	}else{
-		selected.splice(selected.indexOf(id),1)
-	}
-}
 
 const MemberList = () => {
 	const classes = useStyles();
 	
+	const [selected, setSelected] = React.useState([]);
+
 	const [state, setState] = React.useState({
+		preMemberList : tableList, //변경 직전 리스
 		memberList : tableList,	// 사원관리 리스트
-		manager_yn : true		// 관리자 여부
+		manager_yn : true,		// 관리자 여부
+		showAll : true,
+		showAllValue : 0
 	});
 
 	const [openModal, setOpenModal] = React.useState({
 		name:'',
-		postion:'',
+		position:'',
 		address1:'',
 		address2:'',
 		email:'', 
@@ -94,9 +93,33 @@ const MemberList = () => {
 		datum : null
 	});
 
+	const[searchState, setSearchState] = React.useState({
+		category : "",
+		searchword : "",
+		flag :false
+	})
+
 	const [openFilter, setOpenFilter] = React.useState({
-		openModal:false
+		openModal:false,
+		searchState:searchState,
+		setSearchState:setSearchState
 	});
+
+	const [ page, setPage ] = React.useState(0);
+
+	const [ rowsPerPage, setRowsPerPage ] = React.useState(10);
+
+	//퇴사자의 정보의 경우 체크 박스 미 체크시 보여주지 않음.
+	if(state.showAll == true){
+		let temp = state.memberList;
+		temp = temp.filter(temp => temp.isexisted !== false);
+
+		setState({
+			...state,
+			memberList : temp,
+			showAll:false
+		});
+	}
 
 	//만약 등록화면에서 넘어 오면 리스트 추가
 	if((localStorage.getItem('savedData') != null) || (localStorage.getItem('savedData') != undefined)){
@@ -156,7 +179,7 @@ const MemberList = () => {
 	const openContentModal = (datum) => {
 		return setOpenModal({
 			name:datum.name,
-			postion:datum.position,
+			position:datum.position,
 			address1:datum.address1,
 			address2:datum.address2,
 			email:datum.email,
@@ -170,7 +193,7 @@ const MemberList = () => {
 	const handleCloseModal = (trigger) => {
 		return setOpenModal({
 			name:'',
-			postion:'',
+			position:'',
 			address1:'',
 			address2:'',
 			email:'', 
@@ -190,41 +213,129 @@ const MemberList = () => {
 
 	//검색창 닫기
 	const handleClickClose = () => {
-		return setOpenFilter({
+		setOpenFilter({
 			openModal:false
 		});
 	};
 
-	//엑셀 내보내기
-	const excelExport = () => {
-		console.log("test : " + JSON.stringify(state.memberList));
-		axios({
-			url: '/intranet/downloadExcelFile',
-			method: 'post',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			data: {
-				title : 'TEST',
-				jsonArrData : JSON.stringify(state.memberList)
-			}
-		}).then(response => {
-			const url = window.URL.createObjectURL(new Blob([response.data]));
-			const link = document.createElement('a');
-			link.href = url;
-			link.setAttribute('download', response.headers.filename);
-			document.body.appendChild(link);
-			link.click();
-			console.log('Excel Export Success' + JSON.stringify(response));	
-		}).catch(e => {
-			console.log(e);
+	if(searchState.flag){
+		let temp = state.preMemberList;
+
+		if(searchState.category == 0){
+		//이름 검색
+
+			temp = temp.filter(temp => temp.name == searchState.searchword);
+		}else if(searchState.category == 1){
+		//직급 검색
+			temp = temp.filter(temp => temp.position == positionUnFormatter(searchState.searchword));
+		}
+		
+		setState({
+			...state,
+			memberList : temp
+		});
+
+		setSearchState({
+			...searchState,
+			flag : false
 		});
 	}
+
+
+	const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = event => {
+      setRowsPerPage(+event.target.value);
+      setPage(0);
+	};
+	
+	const showAll = (value) => {
+		if(value == 0){
+			if(document.getElementById("bLabel") != null){
+				document.getElementById("bLabel").innerText = "퇴사직원숨기기";
+			}
+			setState({
+				...state,
+				memberList : tableList,	// 사원관리 리스트
+				preMemberList : tableList,
+				showAllValue : 1
+			});
+		}else if(value == 1){
+			if(document.getElementById("bLabel") != null){
+				document.getElementById("bLabel").innerText = "모든직원보이기";
+			}
+			setPage(0);
+			setState({
+				...state,
+				preMemberList : tableList,
+				showAll : true,
+				showAllValue : 0
+			});
+		}
+	}
+
+	// confirm, alert 창 함수
+  	// 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
+	const [dialog, setDialog] = React.useState({});
+
+	// Dialog창의 title과 content, confirm여부  담는 배열
+	// 배열 없이도 파라미터 입력해서 사용가능
+	const confirmData = ['confirm', '직원정보를 삭제하시게습니까?', true];
+
+	//Dialog open handler
+	const handleOpenDialog = (title, content, isConfirm) => {
+		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
+	}
+
+	//Dialog close handler
+	//확인:true 취소:false 리턴
+	const handleCloseDialog = (result) => {
+		setDialog({title:'', content:'', onOff:false, isConfirm:false});
+		if(result){
+			removeData();
+		}else{
+			return;
+		}
+	}
+
+	//전체 선택
+	const onSelectAllClick = () =>{
+		if (event.target.checked) {
+			const newSelecteds = state.memberList.map(datum => datum.id);
+			setSelected(newSelecteds);
+			return;
+		}
+		setSelected([]);
+	} 
+
+	//체크박스 개별 선택
+	const selectedItem = (event, id) => {
+		const selectedIndex = selected.indexOf(id);
+		let newSelected = [];
+
+		if (selectedIndex === -1) {
+			newSelected = newSelected.concat(selected, id);
+		} else if (selectedIndex === 0) {
+			newSelected = newSelected.concat(selected.slice(1));
+		} else if (selectedIndex === selected.length - 1) {
+			newSelected = newSelected.concat(selected.slice(0, -1));
+		} else if (selectedIndex > 0) {
+			newSelected = newSelected.concat(
+				selected.slice(0, selectedIndex),
+				selected.slice(selectedIndex + 1),
+			);
+		}
+
+		setSelected(newSelected);
+	};
 
 	return (
 		<div>
 			<ContentModal props={openModal} closeModal={handleCloseModal}/>
-			<FilterModal props={openFilter} closeModal={handleClickClose}/>
+			<FilterModal props={openFilter}  state = {searchState} setState = {setSearchState} closeModal={handleClickClose}/>
+			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<Card>
 				<CardContent>
 					사원관리
@@ -235,12 +346,26 @@ const MemberList = () => {
 							<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button_tool}>
 								검색
 							</Button>
-							<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={excelExport} className={classes.button_tool}>
+							<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={() => excelExport(state.memberList)} className={classes.button_tool}>
 								엑셀 내보내기
 							</Button>
-							<Button variant="contained" color="primary" size="small" startIcon={<RemoveIcon />} onClick={removeData}>
-								직원정보삭제
-							</Button>
+							{state.manager_yn && (
+								<RouterLink button="true" to="/member/memberreg" className={classes.router_link}>
+									<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />}>
+										직원정보등록
+									</Button>
+								</RouterLink>
+							)}
+							{state.manager_yn && (
+								<Button variant="contained" color="primary" size="small" startIcon={<AssignmentIndIcon />} onClick={() => showAll(state.showAllValue)} style={{marginLeft:"10px"}}>
+									<a id="bLabel">모든직원보이기</a>
+								</Button>
+							)}
+							{state.manager_yn && (
+								<Button variant="contained" color="primary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"1030px",position:"fixed"}}>
+									직원정보삭제
+								</Button>
+							)}
 						</Hidden>
 						<Hidden mdUp>
 							<IconButton color="primary" onClick={handleClickOpen} className={classes.button_tool}>
@@ -249,79 +374,143 @@ const MemberList = () => {
 							<IconButton color="primary" onClick={excelExport} className={classes.button_tool}>
 								<SaveIcon />
 							</IconButton>
-							<IconButton color="primary" onClick={removeData}>
-								<RemoveIcon />
-							</IconButton>
+							{state.manager_yn && (
+								<RouterLink button="true" to="/member/memberreg" className={`${classes.router_link} ${classes.button_tool}`}>
+									<IconButton color="primary">
+										<AddIcon />
+									</IconButton>
+								</RouterLink>
+							)}
+							{state.manager_yn && (
+								<IconButton color="primary" onClick={() => handleOpenDialog(...confirmData)}>
+									<RemoveIcon />
+								</IconButton>
+							)}
+							{state.manager_yn && (
+								<IconButton color="primary" onClick={showAll} className={classes.button_tool} onClick={() => showAll(state.showAllValue)}>
+									<AssignmentIndIcon />
+								</IconButton>
+							)}
 						</Hidden>
 					</div>
 				</Toolbar>
 				<TableContainer>
-					<Table className={classes.table} aria-label="simple table">
-						<TableHead>
-							<TableRow>	
-								<TableCell padding="checkbox">
-									<Checkbox 
-										onChange={onSelectAllClick}
-									></Checkbox>
-								</TableCell>
-								<TableCell align="center">이름</TableCell>
-								<TableCell align="center">직급</TableCell>
-								<TableCell align="center">주소</TableCell>
-								<TableCell align="center">휴대전화</TableCell>
-								<TableCell align="center">경력</TableCell>
-								<TableCell align="center">입사일</TableCell>
-								<TableCell align="center">자격증<br/>유무</TableCell>
-								<TableCell align="center">개인이력</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-						{state.memberList.map(row => (
-							<TableRow key={row.id}>
-								<TableCell padding="checkbox">
-									<Checkbox
-										onChange={() => isItemSelected(event,row.id)}
-										key = {row.id}
-									/>
-								</TableCell>
-								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
-									{row.manager_yn === 1 && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
-									{row.name}
-								</TableCell>
-								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{positionFormatter(row.position)}</TableCell>
-								<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
-									{row.address1} {row.address2}
-									</TableCell>
-								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{phoneFormatter(row.phone)}</TableCell>
-								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{row.career} </TableCell>
-								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>{dateFormatter(row.entry)}</TableCell>
-								<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
-									{row.cert_yn == 1? '유':'무'}
-								</TableCell>
-								<TableCell align="center">
-									<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod_admin":"/member/membermod_user"} className={`${classes.router_link} ${classes.button_tool}`} >
-										<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
-											수정
-										</Button>
-									</RouterLink>
-									<RouterLink button="true" to="/project/history" className={classes.router_link}>
-										<Button variant="contained" color="primary">
-											개인이력
-										</Button>
-									</RouterLink>
-								</TableCell>
-							</TableRow>
-						))}
-						</TableBody>
-					</Table>
+					<Toolbar>
+						<Hidden smDown>
+							<Table className={classes.tableWeb} aria-label="simple table">
+								<TableHead>
+									<TableRow>	
+										<TableCell padding="checkbox">
+											<Checkbox 
+												onChange={onSelectAllClick}
+											></Checkbox>
+										</TableCell>
+										<TableCell align="center">이름</TableCell>
+										<TableCell align="center">직급</TableCell>
+										<TableCell align="center">주소</TableCell>
+										<TableCell align="center">휴대전화</TableCell>
+										<TableCell align="center">경력</TableCell>
+										<TableCell align="center">입사일</TableCell>
+										<TableCell align="center">자격증<br/>유무</TableCell>
+										<TableCell align="center"></TableCell>
+									</TableRow>
+								</TableHead>
+								<TableBody>
+								{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+									<TableRow key={row.id}>
+										<TableCell padding="checkbox">
+											<Checkbox
+												checked={(selected.indexOf(row.id) !== -1)? true : false}
+												onChange={() => selectedItem(event,row.id)}
+												key = {row.id}
+											/>
+										</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
+											{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
+											{row.name}
+										</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{positionFormatter(row.position)}</TableCell>
+										<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
+											{row.address1} {row.address2}
+											</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{phoneFormatter(row.phone)}</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{row.career} </TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{dateFormatter(row.entry)}</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
+											{row.cert_yn == 1? '유':'무'}
+										</TableCell>
+										<TableCell align="center">
+											<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod/admin":"/member/membermod/user"} className={`${classes.router_link} ${classes.button_tool}`} >
+												<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
+													수정
+												</Button>
+											</RouterLink>
+											<RouterLink button="true" to="/project/history" className={classes.router_link}>
+												<Button variant="contained" color="primary">
+													개인이력
+												</Button>
+											</RouterLink>
+										</TableCell>
+									</TableRow>
+								))}
+								</TableBody>
+							</Table>
+						</Hidden>
+						<Hidden mdUp>
+							<Table className={classes.tableApp} aria-label="simple table">
+								<TableHead>
+									<TableRow>	
+										<TableCell padding="checkbox">
+											<Checkbox 
+												onChange={onSelectAllClick}
+											></Checkbox>
+										</TableCell>
+										<TableCell align="center">이름</TableCell>
+										<TableCell align="center"></TableCell>
+									</TableRow>
+								</TableHead>
+								<TableBody>
+								{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+									<TableRow key={row.id}>
+										<TableCell padding="checkbox">
+											<Checkbox
+												onChange={() => isItemSelected(event,row.id)}
+												key = {row.id}
+											/>
+										</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
+											{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
+											{row.name}
+										</TableCell>
+										<TableCell align="center">
+											<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod/admin":"/member/membermod/user"} className={`${classes.router_link} ${classes.button_tool} `} >
+												<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
+													수정
+												</Button>
+											</RouterLink>
+											<RouterLink button="true" to="/project/history" className={classes.router_link}>
+												<Button variant="contained" color="primary">
+													이력
+												</Button>
+											</RouterLink>
+										</TableCell>
+									</TableRow>
+								))}
+								</TableBody>
+							</Table>				
+						</Hidden>
+					</Toolbar>
 				</TableContainer>
+				<TablePagination
+					rowsPerPageOptions={[10, 25, 100]}
+					component="div"
+					count={state.memberList.length}
+					rowsPerPage={rowsPerPage}
+					page={page}
+					onChangePage={handleChangePage}
+        			onChangeRowsPerPage={handleChangeRowsPerPage}
+				/>
 			</Card>
-			<div className={classes.button}>
-				<RouterLink button="true" to="/member/memberreg" className={classes.router_link}>
-					<Button variant="contained" color="primary" >
-						사원정보 등록
-					</Button>
-				</RouterLink>
-			</div>
 		</div>
 	);
 }
