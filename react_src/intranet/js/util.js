@@ -97,6 +97,7 @@ export function uploadFile(event,path){
   formData.append('file', event.target.files[0]);
   formData.append('path', path);
   formData.append('prefilename',"test.txt")
+
   const property = {
     url : '/intranet/fileUpload',
     method : 'post',

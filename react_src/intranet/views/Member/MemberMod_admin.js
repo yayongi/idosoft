@@ -226,7 +226,7 @@ const MemberReg = () => {
 	const handleCloseDialog = (result) => {
     setDialog({title:'', content:'', onOff:false, isConfirm:false});
     if(result){
-      return location.href="/#/member/memberlist/";
+      return location.href="/#/member/";
     }else{
       return;
     }
@@ -410,7 +410,7 @@ const MemberReg = () => {
                       <Button variant="contained" color="primary" onClick={setLocalstorage}>
                                                 저장하기
                       </Button>
-                      <RouterLink button="true" to="/member/memberlist" className={classes.router_link}>
+                      <RouterLink button="true" to="/member/" className={classes.router_link}>
                         <Button variant="contained" color="primary">
                                                   뒤로가기
                         </Button>

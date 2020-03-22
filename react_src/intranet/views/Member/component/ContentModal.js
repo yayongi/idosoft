@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles,makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import { Button, Hidden } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
@@ -10,6 +10,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
+import Toolbar from '@material-ui/core/Toolbar';
 import { Link as RouterLink, } from 'react-router-dom';
 import { positionFormatter } from '../../../js/util';
 
@@ -98,26 +99,50 @@ const ContentModal = ({props, closeModal}) => {
 		      {props.name} {positionFormatter(props.position)}의 정보
         </DialogTitle>
         <DialogContent dividers>
-          <Grid container spacing={3}>
-            <Grid item xs={6}>
-               <div style={{textAlign:'-webkit-center'}}>
-                  <Avatar src={props.photo_path != undefined ? pathProfile + props.photo_path : ""} className={classes.large} />
-                </div>
-            </Grid>
-            <Grid item xs={6}>
-               <Grid container spacing={3}>
+          <Toolbar className={classes.root_tool}>
+            <div className={classes.container}>
+              <Hidden smDown>
+                <Grid container spacing={3}>
+                  <Grid item xs={6}>
+                    <div style={{textAlign:'-webkit-center'}}>
+                      <Avatar src={props.photo_path != undefined ? pathProfile + props.photo_path : ""} className={classes.large} />
+                    </div>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                          {props.email}
+                        </Grid>
+                        <Grid item xs={12}>
+                            {props.address1}
+                        </Grid>
+                        <Grid item xs={12}>
+                            {props.address2}
+                        </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Hidden>
+              <Hidden mdUp>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <div style={{textAlign:'-webkit-center'}}>
+                      <Avatar src={props.photo_path != undefined ? pathProfile + props.photo_path : ""} className={classes.large} />
+                    </div>
+                  </Grid>
                   <Grid item xs={12}>
                     {props.email}
                   </Grid>
                   <Grid item xs={12}>
-                      {props.address1}
+                    {props.address1}
                   </Grid>
                   <Grid item xs={12}>
-                      {props.address2}
+                    {props.address2}
                   </Grid>
-               </Grid>
-            </Grid>
-          </Grid>
+                </Grid>
+              </Hidden>
+            </div>
+          </Toolbar>
         </DialogContent>
         <DialogActions>
           {props.buttonName !== "" && (

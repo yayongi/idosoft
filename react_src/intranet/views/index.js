@@ -11,10 +11,10 @@ export {MonthlystatMemberSelectView as MonthlystatMemberSelectView} from './Expe
 export {SignIn as SignIn} from './Login';				// 로그인
 
 export {ResPassword as ResPassword} from './Login';				// 로그인
-export {default as MemberList} from './Member';		// 사원관리
+export {default as MemberList} from './Member/MemberList';		// 사원관리
 export {default as MemberReg} from './Member/MemberReg';		// 사원관리
-export {default as MemberMod_admin} from './Member/MemberMod/admin';		// 사원관리
-export {default as MemberMod_user} from './Member/MemberMod/user';		// 사원관리
+export {default as MemberMod_admin} from './Member/MemberMod_admin';		// 사원관리
+export {default as MemberMod_user} from './Member/MemberMod_user';		// 사원관리
 
 export {NoticeList as NoticeList} from './Notice';				// 공지사항 -> 목록
 export {NoticeRegist as NoticeRegist} from './Notice';			// 공지사항 -> 공지사항등록관리

@@ -160,7 +160,7 @@ const MemberList = () => {
 			temp = temp.filter(temp => temp.id !== String(selected[i]));
 		}
 
-		selected = [];
+		setSelected([]);
 
 		setState({
 			...state,
@@ -362,7 +362,7 @@ const MemberList = () => {
 								</Button>
 							)}
 							{state.manager_yn && (
-								<Button variant="contained" color="primary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"1030px",position:"fixed"}}>
+								<Button variant="contained" color="primary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"1030px",position:"absolute"}}>
 									직원정보삭제
 								</Button>
 							)}
@@ -420,7 +420,7 @@ const MemberList = () => {
 									<TableRow key={row.id}>
 										<TableCell padding="checkbox">
 											<Checkbox
-												checked={(selected.indexOf(row.id) !== -1)? true : false}
+												
 												onChange={() => selectedItem(event,row.id)}
 												key = {row.id}
 											/>
@@ -474,7 +474,8 @@ const MemberList = () => {
 									<TableRow key={row.id}>
 										<TableCell padding="checkbox">
 											<Checkbox
-												onChange={() => isItemSelected(event,row.id)}
+												checked={(selected.indexOf(row.id) !== -1)? true : false}
+												onChange={() => selectedItem(event,row.id)}
 												key = {row.id}
 											/>
 										</TableCell>

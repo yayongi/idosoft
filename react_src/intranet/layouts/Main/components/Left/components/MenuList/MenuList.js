@@ -34,39 +34,39 @@ export default function MenuList(props) {
 	const classes = useStyles();
 	const [active, setActive] = useState({});
 	const {routeProps, handleDrawerClose} = props;		// handleDrawerClose : 메뉴바 열기/닫기 이벤트
-	const {match} = routeProps;
+	// const {match} = routeProps;
 	
-	function urlMatch() {
-		if(preUrl != match.url) {
-			preUrl = match.url;
+	// function urlMatch() {
+	// 	if(preUrl != match.url) {
+	// 		preUrl = match.url;
 			
-			for(let i=0; i<menus.length; i++) {
-				let menu = menus[i], submenu = menus[i].submenu;
-				// 메뉴 목록에서 url 이 포함되어 있는 목록의 타이틀을 추출
-				// location.href 값은 이전 URL 을 가져오므로 Router의 Props를 이용해야 됨.
-				if(match.url.includes(menu.href)) {
-					menuCss[menu.title] = classes.active;
-				} else {
-					menuCss[menu.title] = classes.inactive;
-				}
-				if(submenu != undefined && submenu.length > 0) {
-					for(let j=0; j<submenu.length; j++) {
-						if(match.url.includes(submenu[j].href)) {
-							menuCss[submenu[j].title] = classes.active;
-						} else {
-							menuCss[submenu[j].title] = classes.inactive;
-						}
-					}
-				}
-			}
-		}
+	// 		for(let i=0; i<menus.length; i++) {
+	// 			let menu = menus[i], submenu = menus[i].submenu;
+	// 			// 메뉴 목록에서 url 이 포함되어 있는 목록의 타이틀을 추출
+	// 			// location.href 값은 이전 URL 을 가져오므로 Router의 Props를 이용해야 됨.
+	// 			if(match.url.includes(menu.href)) {
+	// 				menuCss[menu.title] = classes.active;
+	// 			} else {
+	// 				menuCss[menu.title] = classes.inactive;
+	// 			}
+	// 			if(submenu != undefined && submenu.length > 0) {
+	// 				for(let j=0; j<submenu.length; j++) {
+	// 					if(match.url.includes(submenu[j].href)) {
+	// 						menuCss[submenu[j].title] = classes.active;
+	// 					} else {
+	// 						menuCss[submenu[j].title] = classes.inactive;
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 		
-	}
+	// }
 	
-	React.useEffect(()=>{
-		urlMatch();
-		setActive(match.url);	// URL이 변경될 때, 상태 변경을 한다.
-	});
+	// React.useEffect(()=>{
+	// 	urlMatch();
+	// 	setActive(match.url);	// URL이 변경될 때, 상태 변경을 한다.
+	// });
 	
 	
 	return (

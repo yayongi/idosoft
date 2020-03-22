@@ -1,11 +1,9 @@
 package kr.co.idosoft.intranet.util;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletOutputStream;
@@ -38,6 +36,8 @@ public class fileController {
 		String original = mf.getOriginalFilename(); // 업로드하는 파일 name
 
 		uploadPath = path+original; // 파일 업로드 경로 + 파일 이름
+		logger.debug("uploadPath : " + uploadPath);
+		
 		
 		File file = new File(uploadPath);
 
