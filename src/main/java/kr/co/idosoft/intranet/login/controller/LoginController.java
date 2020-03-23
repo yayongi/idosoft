@@ -86,10 +86,15 @@ public class LoginController {
 				LOG.debug("# 초기비밀번호 입니다. 비밀번호 재설정화면으로 이동합니다. ");
 				data.put("resPassSign", "true"); 
 			}
+			// 세션 저장
+			session.setAttribute("IS_ADMIN", sessionVo.getMANAGER_YN());
+
 			// 비밀번호 delete
 			sessionVo.setPWD("");
-			// 세션 저장
+			sessionVo.setMANAGER_YN("");
+			
 			session.setAttribute("SESSION_DATA", sessionVo);
+			
 			LOG.debug("# session : " + session.getAttribute("SESSION_DATA").toString());
 			LOG.debug("# sessionVO : " + sessionVo);
 
