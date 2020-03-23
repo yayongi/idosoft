@@ -1,8 +1,6 @@
 package kr.co.idosoft.intranet.login.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -22,12 +20,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import kr.co.idosoft.intranet.common.util.JsonUtils;
-import kr.co.idosoft.intranet.common.util.SHAPasswordEncoder;
+import kr.co.idosoft.common.util.SHAPasswordEncoder;
 import kr.co.idosoft.intranet.login.model.service.LoginService;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
-
 /**
  * 
  * @author 유기환
