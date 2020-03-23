@@ -1,6 +1,8 @@
 package kr.co.idosoft.intranet.login.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -15,12 +17,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import kr.co.idosoft.common.util.JsonUtils;
-import kr.co.idosoft.common.util.SHAPasswordEncoder;
+import kr.co.idosoft.intranet.common.util.JsonUtils;
+import kr.co.idosoft.intranet.common.util.SHAPasswordEncoder;
 import kr.co.idosoft.intranet.login.model.service.LoginService;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
@@ -42,7 +45,8 @@ public class LoginController {
 	/**
 	 * 로그인 처리
 	 * @param model
-	 * @param vo
+	 * @param loginVo
+	 * @param request
 	 * @return data
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
@@ -137,7 +141,7 @@ public class LoginController {
 	/**
 	 * 세션 정보 JSON OBJECT 문자열로 반환
 	 * @param model
-	 * @param vo
+	 * @param request
 	 * @return data
 	 */
 	@RequestMapping(value="/getSession", method=RequestMethod.GET)
@@ -171,4 +175,54 @@ public class LoginController {
 		return data;
 	}
 	
+	/**
+	 * 비밀번호 재설정
+	 * @param Map<String, Object>
+	 * @param request
+	 * @param params
+	 * @return ModelAndView
+	 */
+	@RequestMapping(value="/resPassword", method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView resPassword(Model model, HttpServletRequest request, @RequestBody Map<String, Object> params) {
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("/resPassword");
+		}
+		
+		ModelAndView mv = new ModelAndView();
+		
+		// 세션 객체 생성
+		String prevPassword = (String)params.get("prevPassword");
+		String password = (String)params.get("password");			// 비밀번호 
+		
+		if(!prevPassword.equals(password)) {
+			
+			mv.setViewName("jsonView");
+			mv.addObject("isEquals", "false");
+			
+			return mv;
+		}
+		
+		HttpSession session = request.getSession();
+		
+		Map<String, Object> data = new HashMap<String, Object>();
+
+		// 세션 VO에 세션 값 저장
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");
+		
+		String mno = sessionVo.getMEMBER_NO();						// 회원번호
+		
+		SHAPasswordEncoder shaPasswordEncoder = new SHAPasswordEncoder(512); // SHA512
+		shaPasswordEncoder.setEncodeHashAsBase64(true);
+		
+		// 비밀번호 암호화 처리
+		password = shaPasswordEncoder.encode(password);
+		
+		data.put("MEMBER_NO", mno);
+		data.put("PWD", password);
+		
+		loginService.updateResetPassword(data);
+		
+		return mv;
+	}
 }
