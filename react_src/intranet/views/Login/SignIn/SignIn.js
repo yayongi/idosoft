@@ -39,14 +39,12 @@ class SignIn extends Component {
 	// errorArart 열기
 	errorArartOpen(){
 		this.setState({open:true,});
-		console.log('open : ' + this.state.open);
 		this.forceUpdate();
 	}
 
 	// errorArart 닫기 
 	errorArartClose(){
 		this.setState({open:false,});
-		console.log('open : ' + this.state.open);
 		this.forceUpdate();
 	}
 
@@ -95,8 +93,6 @@ class SignIn extends Component {
 		
 		if(email != "" && password != "") {
 			
-			console.log(`email : ${email} , password : ${password}`);
-			
 			axios({
 				url: '/intranet/login',
 				method: 'post',
@@ -105,7 +101,6 @@ class SignIn extends Component {
 					password : password
 				}
 			}).then(response => {
-				console.log('로그인 여부' + JSON.stringify(response.data));	
 				
 				const loginSign = response.data.loginSign;
 				const resPassSign = response.data.resPassSign;

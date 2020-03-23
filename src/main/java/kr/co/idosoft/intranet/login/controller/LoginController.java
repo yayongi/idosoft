@@ -187,14 +187,18 @@ public class LoginController {
 		
 		ModelAndView mv = new ModelAndView();
 		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");
+		
 		// 세션 객체 생성
 		String prevPassword = (String)params.get("prevPassword");
 		String password = (String)params.get("password");			// 비밀번호 
 		
 		if(!prevPassword.equals(password)) {
 			
-			mv.setViewName("jsonView");
-			mv.addObject("isEquals", "false");
+			mv.addObject("isError", "true");
+			mv.addObject("errMessage", "비밀번호가 일치하지 않습니다.");
 			
 			return mv;
 		}
@@ -217,7 +221,12 @@ public class LoginController {
 		data.put("MEMBER_NO", mno);
 		data.put("PWD", password);
 		
-		loginService.updateResetPassword(data);
+		if(loginService.updateResetPassword(data)) {
+			mv.addObject("isError", "false");
+		} else {
+			mv.addObject("isError", "true");
+			mv.addObject("errMessage", "비밀번호 재설정 오류가 발생했습니다. 관리자에게 문의해주세요.");
+		}
 		
 		return mv;
 	}
