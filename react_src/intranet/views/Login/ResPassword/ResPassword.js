@@ -14,6 +14,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 
 // Server
 import axios from 'axios';
+import { isEqual } from 'date-fns';
 
 class ResPassword extends Component {
 	
@@ -36,6 +37,7 @@ class ResPassword extends Component {
 	
 	// errorArart 열기
 	errorArartOpen(errMsg){
+
 		this.setState({
 			open : true,
 			errMsg : errMsg,
@@ -113,30 +115,29 @@ class ResPassword extends Component {
 				
 				console.log(`prevPassword : ${prevPassword} , password : ${password}`);
 				
-				if(prevPassword == password){
-					/* axios({
-						url: '/intranet/login',
+					axios({
+						url: '/intranet/resPassword',
 						method: 'post',
 						data: {
 							prevPassword : prevPassword,
 							password : password
 						}
 					}).then(response => {
-						console.log('로그인 여부' + JSON.stringify(response));	
-					}).catch(e => {
-						console.log(e);
-					}); */
+						const isError = response.data.isError;
+						
+						if(isError == "true"){
+							const errMessage = response.data.errMessage;
+							const errorArartOpen = this.errorArartOpen.bind(this);
 
-					console.log("비밀번호 일치");
-					
-					location.href="/";
-				} else {
-					const errorArartOpen = this.errorArartOpen.bind(this);
-					
-					errorArartOpen("비밀번호가 일치하지 않습니다.");
-	
-					console.log("비밀번호 불일치");
-				}
+							errorArartOpen(errMessage);
+						} else {
+							location.href="/";
+						}
+						
+					}).catch(e => {
+						processErrCode(e);
+						console.log(e);
+					});
 			}
 		}
 	} 
