@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-const MemberReg = () => {
+const MemberMod_admin = () => {
   const classes = useStyles();
 
   const pathProfile = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
@@ -450,4 +450,4 @@ const MemberReg = () => {
 	);
 }
 
-export default MemberReg;
+export default MemberMod_admin;
