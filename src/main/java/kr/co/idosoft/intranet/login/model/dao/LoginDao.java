@@ -1,6 +1,5 @@
 package kr.co.idosoft.intranet.login.model.dao;
 
-import java.util.List;
 import java.util.Map;
 
 import kr.co.idosoft.intranet.login.vo.LoginVO;

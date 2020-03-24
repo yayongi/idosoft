@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="expense">
+	<!-- 
+		datetime 형식을 가져올 때는 date_format으로 변환 후, alias를 잡아줘야 된다.
+	 -->
+	<!-- 소속 프로젝트 PM 번호 추출 -->
+	<select id="getProjectPMNo" resultType="hashmap">
+		SELECT B.PM FROM 
+		TB_PROJECT_MEMBER A
+		LEFT JOIN TB_PROJECT B
+		ON A.PROJECT_NO = B.PROJECT_NO
+		WHERE NOW() BETWEEN A.INPT_BGNDE AND A.INPT_ENDDE
+	</select>
+	<!-- 1차결재자 번호 추출 -->
+	<select id="getFirSancternerMno" resultType="hashmap">
+		SELECT 
+		MEMBER_NO
+		FROM TB_MEMBER 
+		WHERE APPROVAL_YN = 1
+	</select>
+	<!-- 직급인 대표인 사원 번호 추출 -->
+	<select id="getRepresentativeNo" resultType="hashmap">
+		SELECT MEMBER_NO FROM (
+			SELECT 
+			ROW_NUMBER() OVER() ROW
+			, MEMBER_NO
+			, REG_DATETIME 
+			FROM TB_MEMBER 
+			WHERE POSITION = "RK0000"
+			ORDER BY REG_DATETIME ASC
+		) MEMBER
+	</select>
+	
+	<update id="insertExpense" parameterType="hashmap">
+		INSERT INTO TB_EXPENSE(MEMBER_NO, EXPENS_TY_CODE, USE_DATE, USE_AMOUNT
+								, USE_CN, FIR_SANCTENER_MEMBER_NO, SANCTNER_MEMBER_NO
+								, EXPENS_ATCHMNF_ID) 
+		VALUES (#{MEMBER_NO}, #{EXPENS_TY_CODE}, #{USE_DATE}, #{USE_AMOUNT}
+				,#{USE_CN}, #{FIR_SANCTENER_MEMBER_NO}, #{SANCTNER_MEMBER_NO}
+				, #{EXPENS_ATCHMNF_ID})
+	</update>
+	
+	<!-- <update id="updateResetPassword" parameterType="hashmap">
+		UPDATE TB_MEMBER 
+		SET PWD=#{PWD}, UPD_DATE=NOW() 
+		WHERE MEMBER_NO=#{MEMBER_NO}
+	</update> -->
+</mapper>

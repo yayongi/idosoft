@@ -30,6 +30,10 @@ import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
 
+import { processErrCode } from "../../../../js/util";
+
+import axios from 'axios';
+
 import {
   MuiPickersUtilsProvider,
   DatePicker,
@@ -81,9 +85,6 @@ const emptyData = {
 	payDate: Moment(new Date()).format('YYYY-MM-DD'),
 	status: "-1",
 	statusText: "진행",
-	memo: "",
-	rejectMemo: "",
-	register: "오경섭"
 };
 
 /*
@@ -142,7 +143,7 @@ export default function  View(props) {
 	const handleChangePayDate = date => {
 		setDataState({
 			...dataState,
-			payDate: Moment(date).format('YYYY-MM-DD')
+			payDate: Moment(date).format('YYYYMMDD')
 		});
 	}
 
@@ -210,25 +211,36 @@ export default function  View(props) {
 	// 글 등록 후, 목록으로 이동
 	const handleClickNew = () => {
 		console.log("call handleClickNew");
+		
+		console.log("dataState : " + JSON.stringify(dataState));
+		
+		const formData = new FormData();
+		formData.append('file',files[0]);
+		formData.append('EXPENS_TY_CODE',dataState.expenseType);
+		formData.append('USE_DATE',dataState.payDate);
+		formData.append('USE_AMOUNT',dataState.pay);
+		formData.append('USE_CN',dataState.memo); 
 
 		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
 			return;
 		}
 
-		let max = 0;
-		dataList.map(item => {
-			Number(item.seq) > max ? max = Number(item.seq) : max  
-		})
-		const next = max + 1;
-		dataState.seq = next.toString();
-		
-		dataList = [
-			dataState,
-			...dataList
-		];
-		AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
+		axios({
+			url: '/intranet/resister.exp',
+			method : 'post',
+			data : formData,
+			header : {
+				'enctype': 'multipart/form-data'
+			}
+			}).then(response => {
+				console.log(`${JSON.stringify(response)}`);
+				
+				stateOpenEvent("등록이 완료되었습니다.");
+			}).catch(e => {
+				processErrCode(e);
+				console.log(e);
+		});
 
-		stateOpenEvent("등록이 완료되었습니다.");
 	}
 
 	// 글 삭제 후, 목록으로 이동
