@@ -24,12 +24,13 @@ export const certYn = [
 
 //주소 찾기
 //작성자 : 강성우
-//onClick={() => findAdress("address1")} > 주소가 입력될 컴포넌트 명을 넘긴다.
-export function findAdress(component){
+//onClick={() => findAddress("address1")} > 주소가 입력될 컴포넌트 명을 넘긴다.
+export function findAddress(component1,component2){
 	daum.postcode.load(function(){
         new daum.Postcode({
             oncomplete: function(data) {
-              document.getElementById(component).value = data.address;
+              document.getElementById(component1).value = data.address; //기본주소 입력
+              document.getElementById(component2).value = data.zonecode; // 우편번호 입력
             }
         }).open();
     });
