@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import CommonDialog from '../../js/CommonDialog';
 import { Link as RouterLink, } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
-import { findAdress,positions,certYn,schCareer,emailValidation,uploadFile,downloadFile } from '../../js/util'
+import { findAddress,positions,certYn,schCareer,emailValidation,uploadFile,downloadFile } from '../../js/util'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -65,7 +65,8 @@ const MemberReg = (props) => {
     address1:   {error:false,helperText:""},
     address2:   {error:false,helperText:""},
     entry:      {error:false,helperText:""},
-    sch_car:    {error:false,helperText:""}
+    sch_car:    {error:false,helperText:""},
+    postcode:{error:false,helperText:""}
   })
 
   //임시 로컬스토리지에 저장하기
@@ -141,6 +142,18 @@ const MemberReg = (props) => {
       return;
     }
 
+    //우편번호 Validation
+    if(document.getElementById("postcode").value === "" || document.getElementById("postcode").value === null){
+      setValidation({
+        ...validation,
+        entry:{
+          error:true,
+          helperText:"우편번호을 입력해주세요."
+        },
+      })
+      return;
+    }
+
       //최종학력 Validation
       if(document.getElementById("sch_car").nextSibling.value == "" || document.getElementById("sch_car").nextSibling.value == null){
         setValidation({
@@ -198,7 +211,8 @@ const MemberReg = (props) => {
       address1:   {error:false,helperText:""},
       address2:   {error:false,helperText:""},
       entry:      {error:false,helperText:""},
-      sch_car:    {error:false,helperText:""}
+      sch_car:    {error:false,helperText:""},
+      postcode:{error:false,helperText:""}
     })
   }
 
@@ -296,7 +310,7 @@ const MemberReg = (props) => {
                 <CardContent>
                   <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField id="name" label="이름" size="small" variant="outlined" placeholder=""  onClick={defaultValidation} error={validation.name.error} helperText={validation.name.helperText} InputLabelProps={{
+                      <TextField autoComplete="off" id="name" label="이름" size="small" variant="outlined" placeholder=""  onClick={defaultValidation} error={validation.name.error} helperText={validation.name.helperText} InputLabelProps={{
                         shrink: true,
                       }}/>
                       <TextField style={{width:'20%'}}
@@ -337,24 +351,30 @@ const MemberReg = (props) => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <TextField style={{width:'34%'}} id="phone" size="small" label="휴대전화" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" style={{width:'34%'}} id="phone" size="small" label="휴대전화" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField  style={{width:'70%'}} id="address1" size="small" label="기본주소" variant="outlined" onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} placeholder="" InputLabelProps={{
+                      <TextField  autoComplete="off" style={{width:'34%'}} id="address1" size="small" label="기본주소" variant="outlined" onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}          
                       InputProps={{
                         readOnly: true,
                       }}/>
-                      <TextField style={{width:'70%'}} id="address2" size="small" label="상세주소" variant="outlined" onClick={defaultValidation} error={validation.address2.error} helperText={validation.address2.helperText} placeholder="" InputLabelProps={{
+                      <TextField  autoComplete="off" style={{width:'34%'}} id="postcode" size="small" label="우편번호" variant="outlined" onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} placeholder="" InputLabelProps={{
+                        shrink: true,
+                      }}          
+                      InputProps={{
+                        readOnly: true,
+                      }}/>
+                      <TextField autoComplete="off" style={{width:'70%'}} id="address2" size="small" label="상세주소" variant="outlined" onClick={defaultValidation} error={validation.address2.error} helperText={validation.address2.helperText} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <Button variant="contained" color="primary" onClick={() => findAdress("address1")}>
+                      <Button variant="contained" color="primary" onClick={() => findAddress("address1","postcode")}>
                                               주소찾기
                       </Button>
                     </div>
@@ -373,10 +393,10 @@ const MemberReg = (props) => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField style={{width:'20%'}} id="entry" size="small" label="입사일" variant="outlined" onClick={defaultValidation} error={validation.entry.error} helperText={validation.entry.helperText} placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" style={{width:'20%'}} id="entry" size="small" label="입사일" variant="outlined" onClick={defaultValidation} error={validation.entry.error} helperText={validation.entry.helperText} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <TextField style={{width:'20%'}} id="birth" size="small" label="생일" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" style={{width:'20%'}} id="birth" size="small" label="생일" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                       <FormControlLabel
@@ -391,7 +411,7 @@ const MemberReg = (props) => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField size="small" id="sch_mjr" style={{width:'20%'}} label="학교/학과" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" size="small" id="sch_mjr" style={{width:'20%'}} label="학교/학과" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                       <TextField style={{width:'20%'}}
@@ -410,10 +430,10 @@ const MemberReg = (props) => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField  id="car_date" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField  autoComplete="off" id="car_date" size="small" style={{width:'20%'}} label="경력시작일" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <TextField id="mar_date" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" id="mar_date" size="small" style={{width:'20%'}} label="결혼기념일" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                     </div>
