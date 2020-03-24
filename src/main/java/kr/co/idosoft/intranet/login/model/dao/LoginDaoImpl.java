@@ -1,7 +1,5 @@
 package kr.co.idosoft.intranet.login.model.dao;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -10,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import kr.co.idosoft.demo.vo.TodoVO;
-import kr.co.idosoft.intranet.login.controller.LoginController;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 
