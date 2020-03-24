@@ -11,6 +11,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
+import {
+  MuiPickersUtilsProvider,
+  DatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import ko from "date-fns/locale/ko";
+import Moment from "moment";
 import CommonDialog from '../../js/CommonDialog';
 import {findAddress,dateFormatter, phoneFormatter, positionFormatter,schCareer,unFormatter,certYn,uploadFile,downloadFile } from '../../js/util';
 
@@ -72,6 +79,13 @@ const MemberMod_user = () => {
 
   //임시파일 불러오기
   const row = state.memberData;
+
+  const [dateState, setDateState] = React.useState({
+    car_date : dateFormatter(row.car_date),
+    entry : dateFormatter(row.entry),
+    mar_date : dateFormatter(row.mar_date),
+    birth : dateFormatter(row.birth)
+  });
 
   //임시 로컬스토리지에 저장하기
   const setLocalstorage = () => {
@@ -207,6 +221,27 @@ const MemberMod_user = () => {
     })
   }
 
+  const getCarDate = (date) => {
+    setDateState({
+      car_date : Moment(date).format('YYYY-MM-DD')
+    })
+  }
+  const getEntry = (date) => {
+    setDateState({
+      entry : Moment(date).format('YYYY-MM-DD')
+    })
+  }
+  const getMarDate = (date) => {
+    setDateState({
+      car_date : Moment(date).format('YYYY-MM-DD')
+    })
+  }
+  const getBirth = (date) => {
+    setDateState({
+      car_date : Moment(date).format('YYYY-MM-DD')
+    })
+  }
+  
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
@@ -235,12 +270,6 @@ const MemberMod_user = () => {
                     </Typography>
                     <Typography>
                       {row.name} {positionFormatter(row.position)} ({row.career} 년)
-                    </Typography>
-                    <Typography>
-                      {row.id}
-                    </Typography>
-                    <Typography>
-                      {row.email}
                     </Typography>
                   </div>
                   <div style={{textAlign:'center'}}>
@@ -283,6 +312,9 @@ const MemberMod_user = () => {
                 <CardContent>
                   <form>
                     <div className={classes.textfield} style={{width:'auto'}}>
+                      <TextField autoComplete="off" style={{width:'70%'}} id="email" size="small" label="이메일" defaultValue={row.email} onClick={defaultValidation}  error={validation.email.error} helperText={validation.email.helperText} variant="outlined" InputProps={{}}/>
+                    </div>
+                    <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField autoComplete="off" style={{width:'34%'}} id="address1" size="small" label="기본주소" defaultValue={row.address1} onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
@@ -313,21 +345,8 @@ const MemberMod_user = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField autoComplete="off" style={{width:'20%'}} size="small" id="entry" label="입사일" onClick={defaultValidation} error={validation.entry.error} helperText={validation.entry.helperText} defaultValue={dateFormatter(row.entry)} variant="outlined" />
-                      <TextField autoComplete="off" style={{width:'20%'}} size="small" id="birth" label="생일" defaultValue={dateFormatter(row.birth)} variant="outlined" />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            value="checkedB"
-                            color="primary"
-                            id="moon_cal"
-                            defaultChecked={row.moon_cal}
-                          />
-                        }
-                        label="음력"
-                      />
-                    </div>
-                    <div className={classes.textfield} style={{width:'auto'}}>
+                      
+                      
                       <TextField autoComplete="off" style={{width:'20%'}} size="small" id="sch_mjr" label="학교/학과" defaultValue={row.sch_mjr} variant="outlined" />
                       <TextField style={{width:'20%'}}
                         id="sch_car"
@@ -346,19 +365,106 @@ const MemberMod_user = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField autoComplete="off" style={{width:'20%'}} size="small" id="car_date" label="경력시작일" defaultValue={dateFormatter(row.entry)} variant="outlined" />
-                      <TextField autoComplete="off" style={{width:'20%'}} size="small" id="mar_date" label="결혼기념일" defaultValue={dateFormatter(row.mar_date)} variant="outlined" />
+                    </div>
+                    <div className={classes.textfield} style={{width:'auto'}}>
+                      <div style={{width:'17%', display:'inline-flex'}} >
+                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                            <Grid container justify="space-around">
+                              <DatePicker
+                                label="경력시작일"
+                                locale='ko'
+                                margin="dense"
+                                id="car_date"
+                                views={["year", "month", "date"]}
+                                format="yyyy-MM-dd"
+                                value={dateState.car_date}
+                                onChange={getCarDate}
+                                inputVariant="outlined"
+                                readOnly={false}
+                                fullWidth
+                              />
+                            </Grid>
+                          </MuiPickersUtilsProvider>
+                        </div>
+                        <div style={{width:'17%', display:'inline-flex'}} >
+                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                            <Grid container justify="space-around">
+                              <DatePicker
+                                label="결혼기념일"
+                                locale='ko'
+                                margin="dense"
+                                id="mar_date"
+                                views={["year", "month", "date"]}
+                                format="yyyy-MM-dd"
+                                value={dateState.mar_date}
+                                onChange={getMarDate}
+                                inputVariant="outlined"
+                                readOnly={false}
+                                fullWidth
+                              />
+                            </Grid>
+                          </MuiPickersUtilsProvider>
+                        </div>
+                        <div style={{width:'17%', display:'inline-flex'}} >
+                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                            <Grid container justify="space-around">
+                              <DatePicker
+                                label="입사일"
+                                locale='ko'
+                                margin="dense"
+                                id="entry"
+                                views={["year", "month", "date"]}
+                                format="yyyy-MM-dd"
+                                value={dateState.entry}
+                                onChange={getEntry}
+                                inputVariant="outlined"
+                                readOnly={false}
+                                fullWidth
+                              />
+                            </Grid>
+                          </MuiPickersUtilsProvider>
+                        </div>
+                        <div style={{width:'17%', display:'inline-flex'}} >
+                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                            <Grid container justify="space-around">
+                              <DatePicker
+                                label="생일"
+                                locale='ko'
+                                margin="dense"
+                                id="birth"
+                                views={["year", "month", "date"]}
+                                format="yyyy-MM-dd"
+                                value={dateState.birth}
+                                onChange={getBirth}
+                                inputVariant="outlined"
+                                readOnly={false}
+                                fullWidth
+                              />
+                            </Grid>
+                          </MuiPickersUtilsProvider>
+                        </div>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            value="checkedB"
+                            color="primary"
+                            id="moon_cal"
+                            defaultChecked={row.moon_cal}
+                          />
+                        }
+                        label="음력"
+                      />
                     </div>
                     <div className={classes.textfield}>
                         <Button variant="contained" color="primary" onClick={setLocalstorage}>
                                                   저장하기
                         </Button>
-                      <RouterLink button="true" to="/member/" className={classes.router_link}>
+                      <RouterLink button="true" to="/member/" className={`${classes.router_link} ${classes.button_tool}`}>
                         <Button variant="contained" color="primary">
                                                   뒤로가기
                         </Button>
                       </RouterLink>
-                      <RouterLink button="true" to="/resPassword/" >
+                      <RouterLink button="true" to="/resPassword/" className={classes.router_link}>
                         <Button variant="contained" color="primary">
                                                   비밀번호변경하기
                         </Button>

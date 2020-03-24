@@ -76,7 +76,7 @@ const MemberList = () => {
 	const [selected, setSelected] = React.useState([]);
 
 	const [state, setState] = React.useState({
-		preMemberList : tableList, //변경 직전 리스
+		preMemberList : tableList, //변경 직전 리스트
 		memberList : tableList,	// 사원관리 리스트
 		manager_yn : true,		// 관리자 여부
 		showAll : true,
@@ -120,6 +120,7 @@ const MemberList = () => {
 
 		setState({
 			...state,
+			preMemberList: temp,
 			memberList : temp,
 			showAll:false
 		});

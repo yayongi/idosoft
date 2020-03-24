@@ -62,7 +62,7 @@ const DialogTitle = withStyles(styles)(props => {
 const DialogContent = withStyles(theme => ({
   root: {
     padding: theme.spacing(2),
-    minWidth: '400px',
+    //minWidth: '400px',
     minHeight: '500px',
   },
 }))(MuiDialogContent);
@@ -99,7 +99,7 @@ const ContentModal = ({props, closeModal}) => {
 		      {props.name} {positionFormatter(props.position)}의 정보
         </DialogTitle>
         <DialogContent dividers>
-          <Toolbar className={classes.root_tool}>
+          <Toolbar>
             <div className={classes.container}>
               <Hidden smDown>
                 <Grid container spacing={3}>

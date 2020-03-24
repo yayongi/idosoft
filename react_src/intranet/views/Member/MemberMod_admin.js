@@ -12,6 +12,13 @@ import Avatar from '@material-ui/core/Avatar';
 import CommonDialog from '../../js/CommonDialog';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import {
+  MuiPickersUtilsProvider,
+  DatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import ko from "date-fns/locale/ko";
+import Moment from "moment";
 import {findAddress,dateFormatter, phoneFormatter,schCareer,unFormatter,positions,certYn,emailValidation,uploadFile,downloadFile } from '../../js/util';
 
 const useStyles = makeStyles(theme => ({
@@ -72,6 +79,13 @@ const MemberMod_admin = () => {
 
   //임시파일 불러오기
   const row = state.memberData;
+
+  const [dateState, setDateState] = React.useState({
+    car_date : dateFormatter(row.car_date),
+    entry : dateFormatter(row.entry),
+    mar_date : dateFormatter(row.mar_date),
+    birth : dateFormatter(row.birth)
+  });
   
   //임시데이터 저장하기
   const setLocalstorage = () => {
@@ -255,6 +269,27 @@ const MemberMod_admin = () => {
     })
   }
 
+  const getCarDate = (date) => {
+    setDateState({
+      car_date : Moment(date).format('YYYY-MM-DD')
+    })
+  }
+  const getEntry = (date) => {
+    setDateState({
+      entry : Moment(date).format('YYYY-MM-DD')
+    })
+  }
+  const getMarDate = (date) => {
+    setDateState({
+      car_date : Moment(date).format('YYYY-MM-DD')
+    })
+  }
+  const getBirth = (date) => {
+    setDateState({
+      car_date : Moment(date).format('YYYY-MM-DD')
+    })
+	}
+
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
@@ -391,21 +426,6 @@ const MemberMod_admin = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="entry" defaultValue={dateFormatter(row.entry)}  onClick={defaultValidation} error={validation.entry.error} helperText={validation.entry.helperText} label="입사일" variant="outlined" />
-                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="birth" defaultValue={dateFormatter(row.birth)} label="생일" variant="outlined" />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            value="checkedB"
-                            color="primary"
-                            id="moon_cal"
-                            defaultChecked={row.moon_cal}
-                          />
-                        }
-                        label="음력"
-                      />
-                    </div>
-                    <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField autoComplete="off" size="small" style={{width:'20%'}} id="sch_mjr" defaultValue={row.sch_mjr} label="학교/학과" variant="outlined" />
                       <TextField style={{width:'20%'}}
                         id="sch_car"
@@ -424,8 +444,95 @@ const MemberMod_admin = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="car_date" defaultValue={dateFormatter(row.car_date)} label="경력시작일" variant="outlined" />
-                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="mar_date" defaultValue={dateFormatter(row.mar_date)} label="결혼기념일" variant="outlined" />
+                    </div>
+                    <div className={classes.textfield} style={{width:'auto'}}>
+                      <div style={{width:'17%', display:'inline-flex'}} >
+                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                            <Grid container justify="space-around">
+                              <DatePicker
+                                label="경력시작일"
+                                locale='ko'
+                                margin="dense"
+                                id="car_date"
+                                views={["year", "month", "date"]}
+                                format="yyyy-MM-dd"
+                                value={dateState.car_date}
+                                onChange={getCarDate}
+                                inputVariant="outlined"
+                                readOnly={false}
+                                fullWidth
+                              />
+                            </Grid>
+                          </MuiPickersUtilsProvider>
+                        </div>
+                        <div style={{width:'17%', display:'inline-flex'}} >
+                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                            <Grid container justify="space-around">
+                              <DatePicker
+                                label="결혼기념일"
+                                locale='ko'
+                                margin="dense"
+                                id="mar_date"
+                                views={["year", "month", "date"]}
+                                format="yyyy-MM-dd"
+                                value={dateState.mar_date}
+                                onChange={getMarDate}
+                                inputVariant="outlined"
+                                readOnly={false}
+                                fullWidth
+                              />
+                            </Grid>
+                          </MuiPickersUtilsProvider>
+                        </div>
+                        <div style={{width:'17%', display:'inline-flex'}} >
+                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                            <Grid container justify="space-around">
+                              <DatePicker
+                                label="입사일"
+                                locale='ko'
+                                margin="dense"
+                                id="entry"
+                                views={["year", "month", "date"]}
+                                format="yyyy-MM-dd"
+                                value={dateState.entry}
+                                onChange={getEntry}
+                                inputVariant="outlined"
+                                readOnly={false}
+                                fullWidth
+                              />
+                            </Grid>
+                          </MuiPickersUtilsProvider>
+                        </div>
+                        <div style={{width:'17%', display:'inline-flex'}} >
+                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                            <Grid container justify="space-around">
+                              <DatePicker
+                                label="생일"
+                                locale='ko'
+                                margin="dense"
+                                id="birth"
+                                views={["year", "month", "date"]}
+                                format="yyyy-MM-dd"
+                                value={dateState.birth}
+                                onChange={getBirth}
+                                inputVariant="outlined"
+                                readOnly={false}
+                                fullWidth
+                              />
+                            </Grid>
+                          </MuiPickersUtilsProvider>
+                        </div>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            value="checkedB"
+                            color="primary"
+                            id="moon_cal"
+                            defaultChecked={row.moon_cal}
+                          />
+                        }
+                        label="음력"
+                      />
                     </div>
                     <div className={classes.textfield}>
                       <Button variant="contained" color="primary" onClick={setLocalstorage}>
