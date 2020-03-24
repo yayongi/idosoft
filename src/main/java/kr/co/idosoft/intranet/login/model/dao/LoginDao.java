@@ -19,5 +19,7 @@ public interface LoginDao {
 	 */
 
 	public SessionVO selectMemberInfo(LoginVO loginInfo);
+
+	public Boolean updateResetPassword(Map<String, Object> data);
 }
 

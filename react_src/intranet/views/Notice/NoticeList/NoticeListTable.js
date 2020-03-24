@@ -18,6 +18,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import CommonDialog from '../../../js/CommonDialog';
 import ContentModal from '../component/ContentModal';
 
+import Moment from "moment"
+
 function createData(noticeNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder) {
     return { noticeNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder };
 }
@@ -74,6 +76,7 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
   useEffect(()=>{
     // console.log(resData);
     setRows(resData);
+    setSelected([]);
   },[resData]);
 
   useEffect(()=>{
@@ -173,6 +176,12 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
 
   // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+  const nowDate = Moment(new Date()).format('YYYYMMDD');
+
+	const dateStr = (date) => {
+		return date.substr(0,4)+date.substr(5,2)+date.substr(8,2);
+	}
+
   return (
     <div className={classes.root}>
       <CommonDialog props={confirm} closeCommonDialog={handleCloseConfirm}/>
@@ -233,7 +242,7 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
                       tabIndex={-1}
                       // key={row.noticeNo}
                       key={`row${index}`}
-                      selected={isItemSelected}
+                      // selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
@@ -245,7 +254,7 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
                       </TableCell>
                       <TableCell align="center" component="th" id={labelId} scope="row" padding="none"
                                   onClick={event => openContentModal(row.title, row.content)} >
-                        {row.majorYn ? '[중요]' : row.noticeNo}
+                        {row.majorYn && eval(nowDate <= dateStr(row.majorPeriodDate)) ? '[중요]' : row.noticeNo}
                       </TableCell>
                       <TableCell align="center"  onClick={event => openContentModal(row.title, row.content)}>{row.title}</TableCell>
                       <TableCell align="center"  onClick={event => openContentModal(row.title, row.content)}>{row.regDatetime}</TableCell>

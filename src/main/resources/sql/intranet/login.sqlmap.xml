@@ -13,5 +13,9 @@
 			*
 		FROM TB_MEMBER WHERE EMAIL = #{email}
 	</select>
-	
+	<update id="updateResetPassword" parameterType="hashmap">
+		UPDATE TB_MEMBER 
+		SET PWD=#{PWD}, UPD_DATE=NOW() 
+		WHERE MEMBER_NO=#{MEMBER_NO}
+	</update>
 </mapper>

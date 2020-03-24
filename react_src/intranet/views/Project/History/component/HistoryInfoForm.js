@@ -167,27 +167,58 @@ export default function ProjectInfoForm(props) {
 
 	// 필드 값 변경 시, 임시로 값 저장
 	const handleChange = event => {
-		if(event.target.name == 'project_no'){
-			if(event.target.value == "-1"){
-				setIsShowProject(true);
-			}else{
-				setIsShowProject(false);
-			}
-		}
-
-		if(event.target.name == 'instt_code'){
-			if(event.target.value == "-1"){
-				setIsShowProject(true);
-			}else{
-				setIsShowProject(false);
-			}
-		}
-
 		setDataState({
 			...dataState,
 			[event.target.name]: event.target.value
 		});
 	};
+
+	const hadleChangeProject = (event) => {
+		if(event.target.value == "-1"){
+			setIsShowProject(true);
+
+			setDataState({
+				...dataState,
+				project_no: event.target.value, 
+			});
+		}else{
+			setIsShowProject(false);
+			var project_select_list = dataState.projectList.filter((info) => {
+				return info.project_no == event.target.value; 
+			});
+
+			if(project_select_list.length > 0){
+				var instt_select_list = dataState.insttList.filter((info) => {
+					return info.instt_code == project_select_list[0]["instt_code"];
+				})
+
+				if(instt_select_list.length > 0){
+					setDataState({
+						...dataState,
+						project_no: event.target.value, 
+						instt_code: instt_select_list[0]["instt_code"]
+					});
+				}
+			}
+		}
+	}
+
+	const hadleChangeInstt = (event) => {
+		if(event.target.value == "-1"){
+			setIsShowProject(true);
+
+			setDataState({
+				...dataState,
+				instt_code: event.target.value, 
+			});
+		}else{
+			setIsShowProject(false);
+			setDataState({
+				...dataState,
+				instt_code: event.target.value, 
+			});
+		}
+	}
 
 	const handleChangeInpt_bgnde = (date) => {
 		setDataState({
@@ -381,7 +412,7 @@ export default function ProjectInfoForm(props) {
 									name="project_no"
 									margin="dense"
 									variant="outlined"
-									onChange={handleChange}
+									onChange={hadleChangeProject}
 									value={dataState.project_no != "" ? dataState.project_no : "-1"}
 									fullWidth
 									select>
@@ -422,7 +453,7 @@ export default function ProjectInfoForm(props) {
 									margin="dense"
 									variant="outlined"
 									fullWidth
-									onChange={handleChange}
+									onChange={hadleChangeInstt}
 									value={dataState.instt_code != "" ? dataState.instt_code : "-1"}
 									select>
 									<MenuItem key={-1} value={-1} name={"직접입력"}>

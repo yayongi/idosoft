@@ -47,86 +47,6 @@ function TransitionComponent(props) {
   );
 }
 
-
-function CodeInfoToTree(props){
-  //console.log("codeTree");
-  const sortedCodeInfo = props;
-  var divisionByLevel = [];
-
-  for(var i=0; sortedCodeInfo.length > i; i++){
-    var insertArray = new Array();
-    if(i === 0){
-      insertArray.push(sortedCodeInfo[i]);
-      divisionByLevel.push(insertArray);
-      continue;
-    }
-
-    var getInsertedLevel = divisionByLevel[divisionByLevel.length-1][0].code_level;
-    if(sortedCodeInfo[i].code_level === getInsertedLevel){
-      insertArray = divisionByLevel[divisionByLevel.length-1];
-      insertArray.push(sortedCodeInfo[i]);
-      divisionByLevel[divisionByLevel.length-1] = insertArray;
-    }else{
-      insertArray.push(sortedCodeInfo[i]);
-      divisionByLevel.push(insertArray);
-    }
-  }
-  //console.log(divisionByLevel);
-  return divisionByLevel;
-}
-
-function MakeCodeTree(props){
-  const codeInfoToTree = props.props;
-  //console.log("codeInfoToTree : ");
-  //console.log(codeInfoToTree);
-  var oneDepthList = codeInfoToTree.length > 0 ? codeInfoToTree[0] : [];
-  var twoDepthList = codeInfoToTree.length > 1 ? codeInfoToTree[1] : [];
-  var threeDepthList = codeInfoToTree.length > 2 ? codeInfoToTree[2] : [];
-
-  var sortedList = new Array();
-
-  for (var i=0; i < oneDepthList.length; i++){
-    sortedList.push(oneDepthList[i]);
-
-    var selectedCodeId = oneDepthList[i].code_id;
-    for(var j=0; j < twoDepthList.length; j++){
-      if(twoDepthList[j].upper_code === selectedCodeId){
-        sortedList.push(twoDepthList[j]);
-
-        var twoSelectCodeId = twoDepthList[j].code_id;
-        for(var k=0; k < threeDepthList.length; k++){
-          if(threeDepthList[k].upper_code === twoSelectCodeId){
-            sortedList.push(threeDepthList[k]);
-          }
-        }
-      }
-    }
-    
-  }
-
-  //console.log("sortedList : ");
-  //console.log(sortedList);
-
-  return (
-    <React.Fragment>
-      <StyledTreeItem nodeId="1" label="Main">
-        <StyledTreeItem nodeId="2" label="Hello" />
-        <StyledTreeItem nodeId="3" label="Subtree with children">
-          <StyledTreeItem nodeId="6" label="Hello" />
-          <StyledTreeItem nodeId="7" label="Sub-subtree with children">
-            <StyledTreeItem nodeId="9" label="Child 1" />
-            <StyledTreeItem nodeId="10" label="Child 2" />
-            <StyledTreeItem nodeId="11" label="Child 3" />
-          </StyledTreeItem>
-          <StyledTreeItem nodeId="8" label="Hello" />
-        </StyledTreeItem>
-        <StyledTreeItem nodeId="4" label="World" />
-        <StyledTreeItem nodeId="5" label="Something something" />
-      </StyledTreeItem>
-    </React.Fragment>
-  );
-}
-
 TransitionComponent.propTypes = {
   /**
    * Show the component; triggers the enter or exit states
@@ -155,20 +75,40 @@ const useStyles = makeStyles({
   },
 });
 
+/*
+    재귀함수로 렌더링할 트리구조 구성
+  */
+function nestedRendered(item) {
+  if(item.subTrees) {
+    return  (
+      <StyledTreeItem key={item.code_id} nodeId={item.code_id} label={item.code_name}>
+        {
+          item.subTrees.map((item) => (nestedRendered(item)))
+        }
+      </StyledTreeItem>
+    )
+  } else {
+    return (
+      <StyledTreeItem key={item.code_id} nodeId={item.code_id} label={item.code_name} />
+    )
+  }
+}
+
 export default function CodeTreeView(props) {
   const classes = useStyles();
-  const [codeInfoToTree, setCodeInfoToTree] = useState(CodeInfoToTree(props.codeInfo));
-
+  const rebuildSortedData = props.rebuildSortedData;
 
   return (
-      <TreeView
+    <TreeView
         className={classes.root}
-        defaultExpanded={['1']}
+        defaultExpanded={['']}
         defaultCollapseIcon={<MinusSquare />}
         defaultExpandIcon={<PlusSquare />}
         defaultEndIcon={<CloseSquare />}
       >
-        <MakeCodeTree props={codeInfoToTree} />
-      </TreeView>
-  );
+        {
+          rebuildSortedData.map((item) => (nestedRendered(item)))
+        }
+    </TreeView>
+  )
 }

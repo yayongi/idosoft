@@ -74,6 +74,7 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
 
   useEffect(()=>{
     setRows(resData);
+    setSelected([]);
   },[resData]);
 
   useEffect(()=>{
@@ -213,7 +214,7 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
                       tabIndex={-1}
                       // key={row.resNo}
                       key={`row${index}`}
-                      selected={isItemSelected}
+                      // selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox

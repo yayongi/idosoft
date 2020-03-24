@@ -122,31 +122,36 @@ function getProjMemberInfoDB(){
   const array=[];
   console.log("getProjectInfoDB");
 
-  //member_no, project_no, inpt_bgnde, inpt_endde, role_code, chrg_job, use_lang, reg_datetime, upd_datetime, reg_id, upd_id, note, temp_colum
-  // 1. 콕뱅크 4차 고도화
-  array.push(createProjMemberInfo("0000000001", "1", "20190601", "20191212", "RL0000", "pm", "20190601", "", "0000000001", "0000000001", "", ""));
-  array.push(createProjMemberInfo("2017041701", "1", "20190601", "20191212", "RL0001", "송금, 대출, 예금", "20190601", "", "0000000001", "0000000001", "", ""));
-  array.push(createProjMemberInfo("2018060102", "1", "20190701", "20191212", "RL0001", "인증/보안", "20190601", "", "0000000001", "0000000001", "", ""));
-  array.push(createProjMemberInfo("2019060101", "1", "20190815", "20191212", "RL0001", "설정", "20190601", "", "0000000001", "0000000001", "", ""));
-  
-  // 2. 올원뱅크 4차 고도화
-  array.push(createProjMemberInfo("0000000003", "2", "20190613", "20200120", "RL0000", "pm", "20190613", "", "0000000003", "0000000003", "", ""));
-  array.push(createProjMemberInfo("2018060101", "2", "20190920", "20200120", "RL0001", "공통", "20190920", "", "0000000003", "0000000003", "", ""));
+  if(!localStorage.getItem("resProjMem")){
+    //member_no, project_no, inpt_bgnde, inpt_endde, role_code, chrg_job, use_lang, reg_datetime, upd_datetime, reg_id, upd_id, note, temp_colum
+    // 1. 콕뱅크 4차 고도화
+    array.push(createProjMemberInfo("0000000001", "1", "20190601", "20191212", "RL0000", "pm", "java, jsp", "20190601", "", "0000000001", "0000000001", "", ""));
+    array.push(createProjMemberInfo("2017041701", "1", "20190601", "20191212", "RL0001", "송금, 대출, 예금", "java, jsp","20190601", "", "0000000001", "0000000001", "", ""));
+    array.push(createProjMemberInfo("2018060102", "1", "20190701", "20191212", "RL0001", "인증/보안", "java, jsp","20190601", "", "0000000001", "0000000001", "", ""));
+    array.push(createProjMemberInfo("2019060101", "1", "20190815", "20191212", "RL0001", "설정", "java, jsp","20190601", "", "0000000001", "0000000001", "", ""));
+    
+    // 2. 올원뱅크 4차 고도화
+    array.push(createProjMemberInfo("0000000003", "2", "20190613", "20200120", "RL0000", "pm", "java, jsp","20190613", "", "0000000003", "0000000003", "", ""));
+    array.push(createProjMemberInfo("2018060101", "2", "20190920", "20200120", "RL0001", "공통", "java, jsp","20190920", "", "0000000003", "0000000003", "", ""));
 
-  // 3. 콕뱅크 상시
-  array.push(createProjMemberInfo("0000000003", "3", "20200301", "20200330", "RL0000", "pm", "20200301", "", "0000000003", "0000000003", "", ""));
-  array.push(createProjMemberInfo("2017041701", "3", "20200301", "20200330", "RL0001", "송금, 대출, 예금", "20200301", "", "0000000003", "0000000003", "", ""));
-  array.push(createProjMemberInfo("2018060101", "3", "20200301", "20200330", "RL0001", "송금, 대출, 예금", "20200301", "", "0000000003", "0000000003", "", ""));
-  array.push(createProjMemberInfo("2018060102", "3", "20200301", "20200330", "RL0001", "송금, 대출, 예금", "20200301", "", "0000000003", "0000000003", "", ""));
-  array.push(createProjMemberInfo("2019060101", "3", "20200301", "20200330", "RL0001", "송금, 대출, 예금", "20200301", "", "0000000003", "0000000003", "", ""));
-  
-  // 4. 기업은행
-  array.push(createProjMemberInfo("0000000002", "4", "20200101", "20200820", "RL0000", "pm", "20200101", "", "0000000002", "0000000002", "", ""));
-  array.push(createProjMemberInfo("2017041702", "4", "20200301", "20200820", "RL0001", "", "20200301", "", "0000000002", "0000000002", "", ""));
+    // 3. 콕뱅크 상시
+    array.push(createProjMemberInfo("0000000003", "3", "20200301", "20200330", "RL0000", "pm", "java, jsp","20200301", "", "0000000003", "0000000003", "", ""));
+    array.push(createProjMemberInfo("2017041701", "3", "20200301", "20200330", "RL0001", "송금, 대출, 예금", "java, jsp","20200301", "", "0000000003", "0000000003", "", ""));
+    array.push(createProjMemberInfo("2018060101", "3", "20200301", "20200330", "RL0001", "송금, 대출, 예금", "java, jsp","20200301", "", "0000000003", "0000000003", "", ""));
+    array.push(createProjMemberInfo("2018060102", "3", "20200301", "20200330", "RL0001", "송금, 대출, 예금", "java, jsp","20200301", "", "0000000003", "0000000003", "", ""));
+    array.push(createProjMemberInfo("2019060101", "3", "20200301", "20200330", "RL0001", "송금, 대출, 예금", "java, jsp","20200301", "", "0000000003", "0000000003", "", ""));
+    
+    // 4. 기업은행
+    array.push(createProjMemberInfo("0000000002", "4", "20200101", "20200820", "RL0000", "pm", "java, jsp","20200101", "", "0000000002", "0000000002", "", ""));
+    array.push(createProjMemberInfo("2017041702", "4", "20200301", "20200820", "RL0001", "", "java, jsp","20200301", "", "0000000002", "0000000002", "", ""));
 
-  // 5. 우리은행 고도화
-  array.push(createProjMemberInfo("0000000004", "5", "20200103", "20201230", "RL0000", "pm", "20200103", "", "0000000004", "0000000004", "", ""));
-  return array;
+    // 5. 우리은행 고도화
+    array.push(createProjMemberInfo("0000000004", "5", "20200103", "20201230", "RL0000", "pm", "java, jsp", "20200103", "", "0000000004", "0000000004", "", ""));
+
+    localStorage.setItem("resProjMem", JSON.stringify(array));
+  }
+  
+    return JSON.parse(localStorage.getItem("resProjMem"));
 }
 
 

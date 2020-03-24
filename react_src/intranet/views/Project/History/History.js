@@ -26,22 +26,31 @@ function getHistoryData(){
 function makeHistoryInfo(){
 	var historyInfo = getHistoryData();
 	var memberInfo = getMemberInfoDB();
-
-	console.log(historyInfo);	
-	var userInfo = memberInfo.filter((info) => {
-		return info.member_id == historyInfo[0].member_no;
-	});
-
-	for(var i=0; i < historyInfo.length; i++){
-		historyInfo[i]["member_name"] = userInfo[0]["member_name"];
-		historyInfo[i]["term"] = historyInfo[i]["inpt_bgnde"] + " ~ " + historyInfo[i]["inpt_endde"]; 
+	
+	var userInfo = "";
+	if(historyInfo.length > 0){
+		userInfo = memberInfo.filter((info) => {
+			return info.member_id == historyInfo[0].member_no;
+		});
+	}
+	if(userInfo.length > 0){
+		var selectHistoryInfo = historyInfo.filter(info => {
+			return info.member_no == userInfo[0]["member_id"];
+		});
+		for(var i=0; i < selectHistoryInfo.length; i++){
+			selectHistoryInfo[i]["member_name"] = userInfo[0]["member_name"];
+			selectHistoryInfo[i]["term"] = historyInfo[i]["inpt_bgnde"] + " ~ " + historyInfo[i]["inpt_endde"]; 
+		}
 	}
 
-	return historyInfo;
+	return selectHistoryInfo;
 }
 
 function getUser_name(historyInfo){
 	console.log(historyInfo);
+	if(historyInfo.length > 0){
+		return historyInfo[0]["member_name"];
+	}
 }
 
 const mainStyles = makeStyles(theme => ({

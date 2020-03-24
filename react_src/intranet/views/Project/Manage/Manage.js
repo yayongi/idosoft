@@ -35,11 +35,19 @@ import ProjectGraph from './component/ProjectGraph';
       var member_id  = mainProjectInfo[i]["pm"];
       var site_name = siteInfo.filter((info) => {
         return info.instt_code == instt_code;
-      })[0]["instt_name"];
+      });
+
+      if(site_name.length > 0){
+        site_name = site_name[0]["instt_name"];
+      }
 
       var pm_name = memberInfo.filter((info) => {
         return info.member_id == member_id;
-      })[0]["member_name"];
+      });
+
+      if(pm_name.length > 0){
+        pm_name = pm_name[0]["member_name"];
+      }
 
 
       tempJSON["instt_name"]  = site_name;

@@ -1,5 +1,7 @@
 package kr.co.idosoft.intranet.login.model.service;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -20,6 +22,11 @@ public class LoginServiceImpl implements LoginService {
 	@Override
 	public SessionVO selectMemberInfo(LoginVO loginInfo) {
 		return loginDao.selectMemberInfo(loginInfo);
+	}
+	@Override
+	public Boolean updateResetPassword(Map<String, Object> data) {
+		
+		return loginDao.updateResetPassword(data);
 	}
 
 

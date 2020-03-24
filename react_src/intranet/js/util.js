@@ -24,12 +24,13 @@ export const certYn = [
 
 //주소 찾기
 //작성자 : 강성우
-//onClick={() => findAdress("address1")} > 주소가 입력될 컴포넌트 명을 넘긴다.
-export function findAdress(component){
+//onClick={() => findAddress("address1")} > 주소가 입력될 컴포넌트 명을 넘긴다.
+export function findAddress(component1,component2){
 	daum.postcode.load(function(){
         new daum.Postcode({
             oncomplete: function(data) {
-              document.getElementById(component).value = data.address;
+              document.getElementById(component1).value = data.address; //기본주소 입력
+              document.getElementById(component2).value = data.zonecode; // 우편번호 입력
             }
         }).open();
     });
@@ -110,6 +111,7 @@ export function uploadFile(event,path){
   axios(property).then(response => {
       console.log(JSON.stringify(response));	
     }).catch(e => {
+      processErrCode(e)
       console.log(e);
     });
 } 
@@ -135,6 +137,7 @@ export function downloadFile(event,path){
       document.body.appendChild(link);
       link.click();
     }).catch(e => {
+      processErrCode(e)
       console.log(e);
     });
 } 
@@ -142,7 +145,8 @@ export function downloadFile(event,path){
 export function excelExport(json){
 		axios({
 			url: '/intranet/downloadExcelFile',
-			method: 'post',
+      method: 'post',
+      responseType: 'blob',
 			headers: {
 				'Content-Type': 'application/json'
 			},
@@ -151,14 +155,15 @@ export function excelExport(json){
 				jsonArrData : JSON.stringify(json)
 			}
 		}).then(response => {
-			const url = window.URL.createObjectURL(new Blob([response.data]));
-			const link = document.createElement('a');
-			link.href = url;
-			link.setAttribute('download', response.headers.filename);
-			document.body.appendChild(link);
-			link.click();
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', response.headers.filename);
+      document.body.appendChild(link);
+      link.click();
 			console.log('Excel Export Success' + JSON.stringify(response));	
 		}).catch(e => {
+      processErrCode(e)
 			console.log(e);
 		});
 	}
