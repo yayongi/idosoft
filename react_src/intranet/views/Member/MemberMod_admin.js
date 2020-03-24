@@ -11,7 +11,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Avatar from '@material-ui/core/Avatar';
 import CommonDialog from '../../js/CommonDialog';
 import Button from '@material-ui/core/Button';
-import {findAdress,dateFormatter, phoneFormatter,schCareer,unFormatter,positions,certYn,emailValidation,uploadFile,downloadFile } from '../../js/util';
+import Typography from '@material-ui/core/Typography';
+import {findAddress,dateFormatter, phoneFormatter,schCareer,unFormatter,positions,certYn,emailValidation,uploadFile,downloadFile } from '../../js/util';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -65,7 +66,8 @@ const MemberReg = () => {
       address1:   {error:false,helperText:""},
       address2:   {error:false,helperText:""},
       entry:      {error:false,helperText:""},
-      sch_car:    {error:false,helperText:""}
+      sch_car:    {error:false,helperText:""},
+      postcode:{error:false,helperText:""}
   })
 
   //임시파일 불러오기
@@ -157,6 +159,18 @@ const MemberReg = () => {
         return;
       }
 
+      //우편번호 Validation
+      if(document.getElementById("postcode").value === "" || document.getElementById("postcode").value === null){
+        setValidation({
+          ...validation,
+          entry:{
+            error:true,
+            helperText:"우편번호을 입력해주세요."
+          },
+        })
+        return;
+      }
+
     const getData = {
       id : row.id,
       name : document.getElementById("name").value,
@@ -204,7 +218,8 @@ const MemberReg = () => {
       address1:   {error:false,helperText:""},
       address2:   {error:false,helperText:""},
       entry:      {error:false,helperText:""},
-      sch_car:    {error:false,helperText:""}
+      sch_car:    {error:false,helperText:""},
+      postcode:{error:false,helperText:""}
     })
   }
 
@@ -263,6 +278,9 @@ const MemberReg = () => {
                     <Avatar src={row.photo_path != undefined ? pathProfile + row.photo_path : ""} className={classes.large} />
                   </div>
                   <div style={{textAlign:'center'}}>
+                    <Typography>
+                      {row.id}
+                    </Typography>
                     <div className={classes.textfield}>
                       <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadImgFile(event,pathProfile)}/>
                       <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadFile(event,pathItcert)}/>
@@ -301,7 +319,7 @@ const MemberReg = () => {
               <Card>
                 <CardContent>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField size="small" id="name"   onClick={defaultValidation} error={validation.name.error} helperText={validation.name.helperText} defaultValue={row.name} label="이름" variant="outlined" />
+                      <TextField size="small" id="name"  autoComplete="off" onClick={defaultValidation} error={validation.name.error} helperText={validation.name.helperText} defaultValue={row.name} label="이름" variant="outlined" />
                       <TextField style={{width:'20%'}}
                         id="position"
                         select
@@ -343,17 +361,20 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField size="small" style={{width:'34%'}} id="email"  onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} defaultValue={row.email} label="이메일" variant="outlined" />
-                      <TextField size="small" style={{width:'34%'}} id="phone" defaultValue={phoneFormatter(row.phone)} label="휴대전화" variant="outlined" />
+                      <TextField autoComplete="off" size="small" style={{width:'34%'}} id="email"  onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} defaultValue={row.email} label="이메일" variant="outlined" />
+                      <TextField autoComplete="off" size="small" style={{width:'34%'}} id="phone" defaultValue={phoneFormatter(row.phone)} label="휴대전화" variant="outlined" />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField size="small" style={{width:'70%'}} id="address1"  onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} defaultValue={row.address1} label="기본주소" variant="outlined" InputProps={{
+                      <TextField autoComplete="off" size="small" style={{width:'34%'}} id="address1"  onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} defaultValue={row.address1} label="기본주소" variant="outlined" InputProps={{
                         readOnly: true,
                       }}/>
-                      <Button variant="contained" color="primary" onClick={() => findAdress("address1")}>
+                      <TextField autoComplete="off" size="small" style={{width:'34%'}} id="postcode"  onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} defaultValue={row.postcode} label="우편번호" variant="outlined" InputProps={{
+                        readOnly: true,
+                      }}/>
+                      <Button variant="contained" color="primary" onClick={() => findAddress("address1","postcode")}>
                                               주소찾기
                       </Button>
-                      <TextField size="small" style={{width:'70%'}} onClick={defaultValidation} error={validation.address2.error} helperText={validation.address2.helperText} id="address2" defaultValue={row.address2} label="상세주소" variant="outlined"/>
+                      <TextField autoComplete="off" size="small" style={{width:'70%'}} onClick={defaultValidation} error={validation.address2.error} helperText={validation.address2.helperText} id="address2" defaultValue={row.address2} label="상세주소" variant="outlined"/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField style={{width:'20%'}}
@@ -370,8 +391,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField size="small" style={{width:'20%'}} id="entry" defaultValue={dateFormatter(row.entry)}  onClick={defaultValidation} error={validation.entry.error} helperText={validation.entry.helperText} label="입사일" variant="outlined" />
-                      <TextField size="small" style={{width:'20%'}} id="birth" defaultValue={dateFormatter(row.birth)} label="생일" variant="outlined" />
+                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="entry" defaultValue={dateFormatter(row.entry)}  onClick={defaultValidation} error={validation.entry.error} helperText={validation.entry.helperText} label="입사일" variant="outlined" />
+                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="birth" defaultValue={dateFormatter(row.birth)} label="생일" variant="outlined" />
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -385,7 +406,7 @@ const MemberReg = () => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField size="small" style={{width:'20%'}} id="sch_mjr" defaultValue={row.sch_mjr} label="학교/학과" variant="outlined" />
+                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="sch_mjr" defaultValue={row.sch_mjr} label="학교/학과" variant="outlined" />
                       <TextField style={{width:'20%'}}
                         id="sch_car"
                         label="최종학력"
@@ -403,8 +424,8 @@ const MemberReg = () => {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField size="small" style={{width:'20%'}} id="car_date" defaultValue={dateFormatter(row.car_date)} label="경력시작일" variant="outlined" />
-                      <TextField size="small" style={{width:'20%'}} id="mar_date" defaultValue={dateFormatter(row.mar_date)} label="결혼기념일" variant="outlined" />
+                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="car_date" defaultValue={dateFormatter(row.car_date)} label="경력시작일" variant="outlined" />
+                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="mar_date" defaultValue={dateFormatter(row.mar_date)} label="결혼기념일" variant="outlined" />
                     </div>
                     <div className={classes.textfield}>
                       <Button variant="contained" color="primary" onClick={setLocalstorage}>
