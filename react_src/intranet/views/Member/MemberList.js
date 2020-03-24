@@ -1,6 +1,5 @@
 import React from 'react';
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import { Link as RouterLink, } from 'react-router-dom';
 import { makeStyles, theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -20,8 +19,11 @@ import IconButton from '@material-ui/core/IconButton';
 import { Button, Hidden } from '@material-ui/core';
 import TablePagination from '@material-ui/core/TablePagination'
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import CommonDialog from '../../js/CommonDialog';
+import Typography from '@material-ui/core/Typography';
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
 
+import CommonDialog from '../../js/CommonDialog';
 import {tableList} from './data/data';
 import ContentModal from "./component/ContentModal";
 import FilterModal from "./component/FilterModal";
@@ -108,6 +110,8 @@ const MemberList = () => {
 	const [ page, setPage ] = React.useState(0);
 
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10);
+
+	const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
 	//퇴사자의 정보의 경우 체크 박스 미 체크시 보여주지 않음.
 	if(state.showAll == true){
@@ -239,6 +243,8 @@ const MemberList = () => {
 			...searchState,
 			flag : false
 		});
+
+		setOpenSnackBar(true);
 	}
 
 
@@ -331,17 +337,44 @@ const MemberList = () => {
 		setSelected(newSelected);
 	};
 
+	const snackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackBar(false);
+  };
+
 	return (
 		<div>
 			<ContentModal props={openModal} closeModal={handleCloseModal}/>
 			<FilterModal props={openFilter}  state = {searchState} setState = {setSearchState} closeModal={handleClickClose}/>
 			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
+
+			<Snackbar
+				anchorOrigin={{
+				vertical: 'top',
+				horizontal: 'center',
+				}}
+				onClose={snackBarClose}
+				open={openSnackBar}
+				autoHideDuration={6000}
+				message={searchState.category === 0 ? "이름 : "+searchState.searchword:"직급 : "+searchState.searchword}
+				action={
+				<React.Fragment>
+					<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
+						<CloseIcon fontSize="small" />
+					</IconButton>
+				</React.Fragment>
+				}
+				/>
+
 			<Card>
-				<CardContent>
-					사원관리
-				</CardContent>
 				<Toolbar className={classes.root_tool}>
-					<div className={classes.container} style={{textAlign:"right"}}>
+					<Typography className={classes.title} variant="h6" style={{minWidth:"85px"}} >
+						사원관리
+					</Typography>
+					<div className={classes.container}>
 						<Hidden smDown>
 							<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button_tool}>
 								검색
@@ -362,7 +395,7 @@ const MemberList = () => {
 								</Button>
 							)}
 							{state.manager_yn && (
-								<Button variant="contained" color="primary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"1030px",position:"absolute"}}>
+								<Button variant="contained" color="secondary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"10px"}}>
 									직원정보삭제
 								</Button>
 							)}
@@ -382,7 +415,7 @@ const MemberList = () => {
 								</RouterLink>
 							)}
 							{state.manager_yn && (
-								<IconButton color="primary" onClick={() => handleOpenDialog(...confirmData)}>
+								<IconButton color="secondary" onClick={() => handleOpenDialog(...confirmData)}>
 									<RemoveIcon />
 								</IconButton>
 							)}
@@ -394,10 +427,19 @@ const MemberList = () => {
 						</Hidden>
 					</div>
 				</Toolbar>
+				<TablePagination
+					rowsPerPageOptions={[10, 25, 100]}
+					component="div"
+					count={state.memberList.length}
+					rowsPerPage={rowsPerPage}
+					page={page}
+					onChangePage={handleChangePage}
+        			onChangeRowsPerPage={handleChangeRowsPerPage}
+				/>
 				<TableContainer>
 					<Toolbar>
 						<Hidden smDown>
-							<Table className={classes.tableWeb} aria-label="simple table">
+							<Table className={classes.tableWeb} stickyHeader aria-label="simple table">
 								<TableHead>
 									<TableRow>	
 										<TableCell padding="checkbox">
@@ -411,13 +453,13 @@ const MemberList = () => {
 										<TableCell align="center">휴대전화</TableCell>
 										<TableCell align="center">경력</TableCell>
 										<TableCell align="center">입사일</TableCell>
-										<TableCell align="center">자격증<br/>유무</TableCell>
+										<TableCell align="center">자격증</TableCell>
 										<TableCell align="center"></TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
 								{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-									<TableRow key={row.id}>
+									<TableRow key={row.id} hover style={!row.isexisted ? {backgroundColor:"lightgrey"} : {}}>
 										<TableCell padding="checkbox">
 											<Checkbox
 												checked={(selected.indexOf(row.id) !== -1)? true : false}
@@ -457,21 +499,21 @@ const MemberList = () => {
 							</Table>
 						</Hidden>
 						<Hidden mdUp>
-							<Table className={classes.tableApp} aria-label="simple table">
+							<Table className={classes.tableApp} stickyHeader aria-label="simple table">
 								<TableHead>
 									<TableRow>	
 										<TableCell padding="checkbox">
 											<Checkbox 
 												onChange={onSelectAllClick}
 											></Checkbox>
-										</TableCell>
+										</TableCell> 
 										<TableCell align="center">이름</TableCell>
 										<TableCell align="center"></TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
 								{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-									<TableRow key={row.id}>
+									<TableRow key={row.id} hover style={!row.isexisted ? {backgroundColor:"lightgrey"} : {}}>
 										<TableCell padding="checkbox">
 											<Checkbox
 												checked={(selected.indexOf(row.id) !== -1)? true : false}
