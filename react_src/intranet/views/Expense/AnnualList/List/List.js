@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import { AnnualStorage } from 'views/Expense/data';
 
 import Axios from 'axios';
-import { processErrCode } from '../../../../js/util'
+import { processErrCode, isEmpty } from '../../../../js/util'
 export default function  List(props) {
 	const [state, setState] = React.useState({
 		name: "",
@@ -17,6 +17,7 @@ export default function  List(props) {
 	});
 	const [rows, setRows] = React.useState([]);
 
+	const [paging, setPaging] = React.useState({});
 	useEffect(() => {
 		console.log("call useEffect");
 
@@ -31,55 +32,35 @@ export default function  List(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response));
+			console.log(JSON.stringify(response.data));
+			setRows(JSON.parse(response.data.list));
+			setPaging(JSON.parse(response.data.result));
+
 		}).catch(e => {
 			//processErrCode(e);
 			console.log(e);
 		});
 		
-		setRows(JSON.parse(AnnualStorage.getItem("ANNUAL_LIST")));
 	}, [state]);
-	
-	// 검색 필터링된 데이터
-	const getFilterRows = () => {
-		console.log("call List.js -> filterRows");
-		return (rows.filter((row) => {
-			let result = true;
-			let tmpPayDate = row.payDate.replace(/-/g, '').slice(0,6);
-			if(state.name != "" && !row.register.includes(state.name)) {
-				result = false;
-			} else if(state.expenseType != "-1" && row.expenseType != state.expenseType) {
-				result = false;
-			} else if(Number(state.payStDt) > Number(tmpPayDate) 
-					|| Number(state.payEdDt) < Number(tmpPayDate)) {
-				result = false;
-			} else if(state.status != "-1" && row.status != state.status) {
-				result = false;
-			} else if(state.memo != "" && !row.memo.includes(state.memo)) {
-				result = false;
-			}
-			
-			return result;
-		})).map((row, i, arr) => {
-			row.num = arr.length - i;
-			return row;
-		});
-	}
-	const filterRows = getFilterRows();
-
 
 	return (
 		<Fragment>
 			{console.log("call List.js -> return")}
 			<Fragment>
 				<Filter 
-					filterRows={filterRows}
+					filterRows={rows}
 					state={state} setState={setState}
 					routeProps={props.routeProps}
 				/>
 			</Fragment>
 			<Paper>
-				<Body rows={filterRows} routeProps={props.routeProps} />
+				<Body 
+					rows={rows} 
+					setRows={setRows}
+					routeProps={props.routeProps} 
+					paging={paging} 
+					setPaging={setPaging} 
+				/>
 			</Paper>
 		</Fragment>
 	);

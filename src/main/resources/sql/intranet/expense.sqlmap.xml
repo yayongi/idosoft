@@ -43,20 +43,35 @@
 	</update>
 	
 	<select id="getAnnalList" parameterType="hashmap" resultType="hashmap">
-	SELECT A.EXPENS_NO EXPENS_NO, C.CODE_NAME EXPENS_TY_NAME, A.USE_CN USE_CN
-		,D.CODE_NAME SANCTN_STTUS_NAME, B.NAME NAME, A.USE_DATE USE_DATE 
+	SELECT A.EXPENS_NO seq
+			, C.CODE_NAME expenseTypeText
+			, A.USE_CN memo
+			, D.CODE_NAME statusText
+			, B.NAME register
+			, A.USE_AMOUNT pay
+			, A.USE_DATE payDate
+			, A.RETURN_CN rejectMemo
+			, E.NAME prevAuthPerson
+			, F.NAME authPerson
+			, A.FIR_SANCTN_DATETIME prevAuthDate
+			, A.SCD_SANCTN_DATETIME authDate
 	FROM TB_EXPENSE A
 	LEFT JOIN TB_MEMBER B
 	ON A.MEMBER_NO = B.MEMBER_NO
 	LEFT JOIN TB_CODE C
 	ON A.EXPENS_TY_CODE = C.CODE_ID
 	LEFT JOIN TB_CODE D
-	ON A.SANCTN_STTUS_CODE = C.CODE_ID
+	ON A.SANCTN_STTUS_CODE = D.CODE_ID
+	LEFT JOIN TB_MEMBER E
+	ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
+	LEFT JOIN TB_MEMBER F
+	ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
 	<where>
 		<if test="isAdmin != 1">
-			AND A.MEMBER_NO == #{mno}
+			AND A.MEMBER_NO = #{MEMBER_NO}
 		</if>
 	</where>
+	ORDER BY A.EXPENS_NO DESC
 	</select>
 	
 	<select id="getAnnalListCount" parameterType="hashmap" resultType="_int">
@@ -70,7 +85,7 @@
 	ON A.SANCTN_STTUS_CODE = C.CODE_ID
 	<where>
 		<if test="isAdmin != 1">
-			AND A.MEMBER_NO == #{mno}
+			AND A.MEMBER_NO = #{MEMBER_NO}
 		</if>
 	</where>
 	</select>
@@ -79,5 +94,6 @@
 	SELECT CODE_ID value, CODE_NAME label 
 	FROM TB_CODE
 	WHERE UPPER_CODE = #{TYPE}
+	ORDER BY CODE_ID ASC
 	</select>
 </mapper>

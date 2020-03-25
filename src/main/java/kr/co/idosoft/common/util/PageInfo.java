@@ -7,7 +7,6 @@ public class PageInfo {
 	private int maxPage;
 	private int startPage;
 	private int endPage;
-	private String MEMBER_NO;
 	public PageInfo() {
 		super();
 	}
@@ -19,7 +18,6 @@ public class PageInfo {
 		this.maxPage = maxPage;
 		this.startPage = startPage;
 		this.endPage = endPage;
-		this.MEMBER_NO = MEMBER_NO;
 	}
 	public int getCurrentPage() {
 		return currentPage;
@@ -57,16 +55,10 @@ public class PageInfo {
 	public void setEndPage(int endPage) {
 		this.endPage = endPage;
 	}
-	public String getMEMBER_NO() {
-		return MEMBER_NO;
-	}
-	public void setMEMBER_NO(String MEMBER_NO) {
-		this.MEMBER_NO = MEMBER_NO;
-	}
 	@Override
 	public String toString() {
 		return "PageInfo [currentPage=" + currentPage + ", listCount=" + listCount + ", limit=" + limit + ", maxPage="
-				+ maxPage + ", startPage=" + startPage + ", endPage=" + endPage + ", MEMBER_NO=" + MEMBER_NO + "]";
+				+ maxPage + ", startPage=" + startPage + ", endPage=" + endPage + "]";
 	}
 	
 	

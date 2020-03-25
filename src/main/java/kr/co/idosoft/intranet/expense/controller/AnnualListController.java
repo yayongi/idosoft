@@ -122,8 +122,13 @@ public class AnnualListController {
 		
 		data.putAll(CollectionsUtil.beanToMap(pi));
 		
+		LOG.debug("data : " + data);
+		
 		// 목록 조회
-		List<Map<String, Object>> list = (List<Map<String, Object>>)annalListService.getlist(data);
+		List<Map<String, Object>> list = annalListService.getlist(data);
+		
+		data.remove("MEMBER_NO");		// 사원번호 제거
+		data.remove("isAdmin");			// 관리자 여부 제거
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -137,7 +142,7 @@ public class AnnualListController {
 		}
 		
 		LOG.debug("#################################################################################");
-		LOG.debug("# RTURN JSON ");
+		LOG.debug("# RETURN JSON ");
 		LOG.debug("# jsonArrayList : " + jsonArrayList);
 		LOG.debug("# jsonObjectData : " + jsonObjectData);
 		LOG.debug("#################################################################################");

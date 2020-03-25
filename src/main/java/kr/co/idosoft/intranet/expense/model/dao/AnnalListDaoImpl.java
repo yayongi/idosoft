@@ -30,34 +30,35 @@ public class AnnalListDaoImpl implements AnnalListDao {
 	 * @param data
 	 * @return int
 	 */
-	
+
 	@Override
 	public int getListCount(Map<String, Object> data) {
-		return (int) sqlTemplate.selectOne("expense.getAnnalListCount");
+		return (int) sqlTemplate.selectOne("expense.getAnnalListCount", data);
 	}
-	
+
 	/**
 	 * 경비관리목록 조회
 	 * 
 	 * @return String
 	 */
-	/*
+
 	@Override
-	
-	 * public ArrayList<Object> getList() { Pageing 처리 START int offset =
-	 * (pi.getCurrentPage() - 1) * pi.getLimit(); RowBounds rowBounds = new
-	 * RowBounds(offset, pi.getLimit());
-	 * 
-	 * return (ArrayList<Object>)sqlTemplate.selectList("getAnnalList", pi,
-	 * rowBounds); Pageing 처리 END }
-	 */
+	public List<Map<String, Object>> getlist(Map<String, Object> data) {
+		/* Pageing 처리 START */ 
+		int offset =
+		((int)data.get("currentPage") - 1) * (int)data.get("limit"); 
+		RowBounds rowBounds = new RowBounds(offset, (int)data.get("limit"));
+
+		return (ArrayList)sqlTemplate.selectList("getAnnalList", data, rowBounds); 
+		/* Pageing 처리 END */ 
+	}
 	/**
 	 * 직급인 대표인 사원 번호 추출
 	 * 
 	 * @return String
 	 */
-	
-	
+
+
 	@Override
 	public String getRepresentativeNo() {
 		return (String) sqlTemplate.selectOne("getRepresentativeNo");
@@ -98,4 +99,6 @@ public class AnnalListDaoImpl implements AnnalListDao {
 	public List<Map<String, Object>> getCode(Map<String, Object> data) {
 		return sqlTemplate.selectList("expense.getCode", data);
 	}
+
+	
 }
