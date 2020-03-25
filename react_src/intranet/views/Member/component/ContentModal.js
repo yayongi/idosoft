@@ -96,7 +96,7 @@ const ContentModal = ({props, closeModal}) => {
     <div>
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={props.openModal}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-		      {props.name} {positionFormatter(props.position)}의 정보
+		      {props.name} {props.position_name}의 정보
         </DialogTitle>
         <DialogContent dividers>
           <Toolbar>
@@ -114,10 +114,10 @@ const ContentModal = ({props, closeModal}) => {
                           {props.email}
                         </Grid>
                         <Grid item xs={12}>
-                            {props.address1}
+                            {props.address_1}
                         </Grid>
                         <Grid item xs={12}>
-                            {props.address2}
+                            {props.address_2}
                         </Grid>
                     </Grid>
                   </Grid>
@@ -134,10 +134,10 @@ const ContentModal = ({props, closeModal}) => {
                     {props.email}
                   </Grid>
                   <Grid item xs={12}>
-                    {props.address1}
+                    {props.address_1}
                   </Grid>
                   <Grid item xs={12}>
-                    {props.address2}
+                    {props.address_2}
                   </Grid>
                 </Grid>
               </Hidden>
