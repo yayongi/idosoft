@@ -6,7 +6,7 @@
 		datetime 형식을 가져올 때는 date_format으로 변환 후, alias를 잡아줘야 된다.
 	 -->
 	<!-- 소속 프로젝트 PM 번호 추출 -->
-	<select id="getProjectPMNo" resultType="hashmap">
+	<select id="getProjectPMNo" resultType="String">
 		SELECT B.PM FROM 
 		TB_PROJECT_MEMBER A
 		LEFT JOIN TB_PROJECT B
@@ -14,14 +14,14 @@
 		WHERE NOW() BETWEEN A.INPT_BGNDE AND A.INPT_ENDDE
 	</select>
 	<!-- 1차결재자 번호 추출 -->
-	<select id="getFirSancternerMno" resultType="hashmap">
+	<select id="getFirSancternerMno" resultType="String">
 		SELECT 
 		MEMBER_NO
 		FROM TB_MEMBER 
 		WHERE APPROVAL_YN = 1
 	</select>
 	<!-- 직급인 대표인 사원 번호 추출 -->
-	<select id="getRepresentativeNo" resultType="hashmap">
+	<select id="getRepresentativeNo" resultType="String">
 		SELECT MEMBER_NO FROM (
 			SELECT 
 			ROW_NUMBER() OVER() ROW
@@ -42,9 +42,42 @@
 				, #{EXPENS_ATCHMNF_ID})
 	</update>
 	
-	<!-- <update id="updateResetPassword" parameterType="hashmap">
-		UPDATE TB_MEMBER 
-		SET PWD=#{PWD}, UPD_DATE=NOW() 
-		WHERE MEMBER_NO=#{MEMBER_NO}
-	</update> -->
+	<select id="getAnnalList" parameterType="hashmap" resultType="hashmap">
+	SELECT A.EXPENS_NO EXPENS_NO, C.CODE_NAME EXPENS_TY_NAME, A.USE_CN USE_CN
+		,D.CODE_NAME SANCTN_STTUS_NAME, B.NAME NAME, A.USE_DATE USE_DATE 
+	FROM TB_EXPENSE A
+	LEFT JOIN TB_MEMBER B
+	ON A.MEMBER_NO = B.MEMBER_NO
+	LEFT JOIN TB_CODE C
+	ON A.EXPENS_TY_CODE = C.CODE_ID
+	LEFT JOIN TB_CODE D
+	ON A.SANCTN_STTUS_CODE = C.CODE_ID
+	<where>
+		<if test="isAdmin != 1">
+			AND A.MEMBER_NO == #{mno}
+		</if>
+	</where>
+	</select>
+	
+	<select id="getAnnalListCount" parameterType="hashmap" resultType="_int">
+	SELECT COUNT(*)
+	FROM TB_EXPENSE A
+	LEFT JOIN TB_MEMBER B
+	ON A.MEMBER_NO = B.MEMBER_NO
+	LEFT JOIN TB_CODE C
+	ON A.EXPENS_TY_CODE = C.CODE_ID
+	LEFT JOIN TB_CODE D
+	ON A.SANCTN_STTUS_CODE = C.CODE_ID
+	<where>
+		<if test="isAdmin != 1">
+			AND A.MEMBER_NO == #{mno}
+		</if>
+	</where>
+	</select>
+	
+	<select id="getCode" parameterType="hashmap" resultType="hashmap">
+	SELECT CODE_ID value, CODE_NAME label 
+	FROM TB_CODE
+	WHERE UPPER_CODE = #{TYPE}
+	</select>
 </mapper>

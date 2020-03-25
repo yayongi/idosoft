@@ -39,8 +39,9 @@ import {
   DatePicker,
 } from '@material-ui/pickers';
 
-import { AnnualStorage, expenseTypes, getStepInfo } from 'views/Expense/data';
+import { AnnualStorage, getStepInfo } from 'views/Expense/data';
 import PreviewFileUpload from 'common/PreviewFileUpload';
+import Axios from 'axios';
 
 
 const useStyles = makeStyles(theme => ({
@@ -104,6 +105,7 @@ export default function  View(props) {
 	if(screenType == 'new') {
 		data = emptyData
 	}
+	const [expenseTypes, setExpenseTypes] = React.useState([]);
 
 	// state : 진행 상태
 	const [activeStep, setActiveStep] = React.useState(1);
@@ -151,6 +153,33 @@ export default function  View(props) {
 	
 	React.useEffect(() => {		// render 완료 후, 호출
 		console.log("call useEffect");
+		Axios({
+			url: '/intranet/getType.exp',
+			method: 'post',
+			data: {
+				value : ''
+			},
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		}).then(response => {
+			console.log(JSON.stringify(response.data));
+
+			const exPenseTypeList 	= JSON.parse(response.data.exPenseTypeList);
+			const payTypeList 		= response.data.payTypeList;
+
+			setDataState({
+				...dataState,
+				expenseType: exPenseTypeList[0].value,
+			});
+
+			setExpenseTypes(exPenseTypeList);
+
+		}).catch(e => {
+			//processErrCode(e);
+			console.log(e);
+		});
+		
 		setActiveStep(stepInfo.activeStep);
 	}, []);
 
@@ -363,14 +392,13 @@ export default function  View(props) {
 									select
 									margin="dense"
 									variant="outlined"
-									value={dataState.expenseType}
+									defaultValue="ET0001"
 									onChange={handleChange}
 									InputProps={{
 									 	 readOnly: isReadOnly,
 									}}
 									fullWidth>
 									{expenseTypes.map((option, idx) => (
-										idx != 0 && 
 										<MenuItem key={option.value} value={option.value}>
 											{option.label}
 										</MenuItem>

@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.expense.model.service;
 
 import java.util.Map;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -61,8 +62,21 @@ public class AnnalListServiceImpl implements AnnalListService {
 	 */
 	@Override
 	public boolean insertExpense(Map<String, Object> data) {
-		// TODO Auto-generated method stub
 		return dao.insertExpense(data);
+	}
+	@Override
+	public int getlistCount(Map<String, Object> data) {
+		return dao.getListCount(data);
+	}
+	@Override
+	public List<Map<String, Object>> getlist(Map<String, Object> data) {
+		return null;
+	}
+	@Override
+	public List<Map<String, Object>> getCode(Map<String, Object> data) {
+		
+		
+		return dao.getCode(data);
 	}
 	
 }

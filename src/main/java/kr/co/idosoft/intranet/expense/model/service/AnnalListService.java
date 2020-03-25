@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.expense.model.service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,6 +11,21 @@ import java.util.Map;
  */
 
 public interface AnnalListService {
+	/**
+	 * 결재관리 목록 총 개수
+	 * @return String
+	 */
+	int getlistCount(Map<String, Object> data);
+	/**
+	 * 결재관리 목록
+	 * @return int
+	 */
+	List<Map<String, Object>> getlist(Map<String, Object> data);
+	/**
+	 * 코드 목록
+	 * @return String
+	 */
+	List<Map<String, Object>> getCode(Map<String, Object> data);
 	/**
 	 * 1차결재자 조건에 맞는 사원번호 추출
 	 * @return String
@@ -25,4 +41,7 @@ public interface AnnalListService {
 	 * @return boolean
 	 */
 	boolean insertExpense(Map<String, Object> data);
+	
+
+	
 }

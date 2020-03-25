@@ -64,7 +64,7 @@ public class JsonUtils {
 	}
 	
 	/**
-	 * JsonObject를 Map<String, String>으로 변환한다.
+	 * JsonObject를 Map<String, String>으로 변환한다
 	 *
 	 * @param jsonObj JSONObject.
 	 * @return Map<String, Object>.
