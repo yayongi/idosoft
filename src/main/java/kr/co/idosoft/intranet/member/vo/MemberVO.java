@@ -34,8 +34,15 @@ public class MemberVO implements Serializable {
 	private String upd_id;					//수정아이디
 	private String note;					//비고1
 	private String temp_colum;				//비고2
+	private String code_name;
 	
 	
+	public String getCode_name() {
+		return code_name;
+	}
+	public void setCode_name(String code_name) {
+		this.code_name = code_name;
+	}
 	public String getMember_no() {
 		return member_no;
 	}
