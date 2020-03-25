@@ -18,6 +18,7 @@ import {
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
+import axios from 'axios';
 import { findAddress,positions,certYn,schCareer,emailValidation,uploadFile,downloadFile } from '../../js/util'
 
 const useStyles = makeStyles(theme => ({
@@ -55,15 +56,39 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const MemberReg = (props) => {
+
   const classes = useStyles();
-  const pathProfile = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathItcert = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\itCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathSchoolcert = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathProfile = "\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathItcert = "\\itCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathSchoolcert = "\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
   
   const [state, setState] = React.useState({
     selectedFile : null,
-    preFile: null,
+    preFile: null
   });
+
+  const [infoState,setInfoState] = React.useState({
+      name : '',
+      position : '',
+      address_1 : '',
+      address_2 : '',
+      phone_num : '',
+      entry_date : '',
+      birth_date : '',
+      school_major : '',
+      cert_yn : '',
+      email : '',
+      manager_yn : 0,
+      school_career : '',
+      marriage_date : '',
+      approval_yn : 0,
+      mooncal_yn : 0,
+      career_date : '',
+      photo_path:'',
+      certfile_job_path:'',
+      certfile_school_path:'',
+      reg_id:''
+  })
   
   const [validation, setValidation] = React.useState({
     name:       {error:false,helperText:""},
@@ -76,15 +101,43 @@ const MemberReg = (props) => {
     postcode:   {error:false,helperText:""}
   })
 
+  const [codeState, setCodeState] = React.useState({
+    positionCode:[
+      { code_id:"",code_name:""},
+    ],
+    graduationCode:[
+      { code_id:"",code_name:""},
+    ]
+  });
+
+  useEffect(() => {
+    axios({
+      url: '/intranet/member/code',
+      method: 'post',
+      data : {
+        position_code_id : 'CD0000',
+        graduation_code_id:'CD0001'
+      },
+      headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    }).then(response => {
+      console.log("positionResult : " + JSON.stringify(response));
+      //직급 코드 관리
+      setCodeState(response.data);
+    }).catch(e => {
+      console.log(e);
+    });
+  },[])
+
   const [dateState, setDateState] = React.useState({
-    car_date : Moment(new Date()).format('YYYY-MM-DD'),
-    entry : Moment(new Date()).format('YYYY-MM-DD'),
-    mar_date : Moment(new Date()).format('YYYY-MM-DD'),
-    birth : Moment(new Date()).format('YYYY-MM-DD')
+    car_date : null,
+    entry : null,
+    mar_date : null,
+    birth : null
   });	
 
-  //임시 로컬스토리지에 저장하기
-  const setLocalstorage = () => {
+  const setValidationLevel = () => {
     //이름 Validation
     if(document.getElementById("name").value == "" || document.getElementById("name").value == null){
       setValidation({
@@ -180,28 +233,26 @@ const MemberReg = (props) => {
         return;
       }
 
-    const getData = {
-      id : document.getElementById("entry").value+"11",
-      name : document.getElementById("name").value,
-      position : document.getElementById("position").nextSibling.value,
-      address1 : document.getElementById("address1").value,
-      address2 : document.getElementById("address2").value,
-      phone : document.getElementById("phone").value,
-      career : String(Number(new Date().getFullYear()) - Number(document.getElementById("car_date").value.substring( 0, 4 ))),
-      entry : document.getElementById("entry").value.replace(/\-/gi,""),
-      birth : document.getElementById("birth").value.replace(/\-/gi,""),
-      sch_mjr : document.getElementById("sch_mjr").value,
-      cert_yn : document.getElementById("cert_yn").nextSibling.value,
-      email : document.getElementById("email").value,
-      manager_yn : document.getElementById("manager_yn").checked,
-      sch_car : document.getElementById("sch_car").nextSibling.value,
-      mar_date : document.getElementById("mar_date").value.replace(/\-/gi,""),
-      approval_yn : document.getElementById("approval_yn").checked,
-      moon_cal : document.getElementById("moon_cal").checked,
-      car_date : document.getElementById("car_date").value.replace(/\-/gi,"")
-    }
-
-    localStorage.setItem('savedData', JSON.stringify(getData));
+      setInfoState({
+        ...infoState,
+        name : document.getElementById("name").value,
+        position : document.getElementById("position").nextSibling.value,
+        address_1 : document.getElementById("address1").value,
+        address_2 : document.getElementById("address2").value,
+        phone_num : document.getElementById("phone").value,
+        entry_date : document.getElementById("entry").value.replace(/\-/gi,""),
+        birth_date : document.getElementById("birth").value.replace(/\-/gi,""),
+        school_major : document.getElementById("sch_mjr").value,
+        cert_yn : document.getElementById("cert_yn").nextSibling.value,
+        email : document.getElementById("email").value,
+        manager_yn : document.getElementById("manager_yn").checked ? 0:1,
+        school_career : document.getElementById("sch_car").nextSibling.value,
+        marriage_date : document.getElementById("mar_date").value.replace(/\-/gi,""),
+        approval_yn : document.getElementById("approval_yn").checked ? 0:1,
+        mooncal_yn : document.getElementById("moon_cal").checked ? 0:1,
+        career_date : document.getElementById("car_date").value.replace(/\-/gi,""),
+      })
+    //localStorage.setItem('savedData', JSON.stringify(getData));
 
     handleOpenDialog(...confirmData);
   }
@@ -248,17 +299,73 @@ const MemberReg = (props) => {
 	const handleCloseDialog = (result) => {
     setDialog({title:'', content:'', onOff:false, isConfirm:false});
     if(result){
+      axios({
+				url: '/intranet/member/memberinst',
+				method: 'post',
+        data: {
+          member_no : '123123123',
+          name : infoState.name,
+          position : infoState.position,
+          address_1 : infoState.address_1,
+          address_2 : infoState.address_2,
+          phone_num : infoState.phone_num,
+          entry_date : infoState.entry_date,
+          birth_date : infoState.birth_date,
+          school_major : infoState.school_major,
+          cert_yn : infoState.cert_yn,
+          email : infoState.email,
+          manager_yn : infoState.manager_yn,
+          school_career : infoState.school_career,
+          marriage_date : infoState.marriage_date,
+          approval_yn : infoState.approval_yn,
+          mooncal_yn : infoState.mooncal_yn,
+          career_date : infoState.career_date,
+          photo_path : infoState.photo_path,
+          certfile_job_path : infoState.certfile_job_path,
+          certfile_school_path : infoState.certfile_school_path,
+          reg_id:''
+        },
+        headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+			}).then(response => {
+				
+			}).catch(e => {
+				console.log(e);
+			});
       return location.href="/#/member/";
     }else{
       return;
     }
 	}
 
-  const uploadImgFile = (event,pathProfile) => {
+  const uploadProfileImg = (event,pathProfile) => {
     uploadFile(event,pathProfile);
     setState({
       ...state,
       preFile:pathProfile + event.target.files[0].name
+    })
+
+    setInfoState({
+      photo_path : pathProfile +event.target.files[0].name,
+    })
+  }
+
+  const uploadCertImg = (event,pathItcert) => {
+    uploadFile(event,pathItcert);
+
+    setInfoState({
+      ...infoState,
+      certfile_job_path : pathItcert+event.target.files[0].name,
+    })
+  }
+
+  const uploadSchoolImg = (event,pathSchoolcert) => {
+    uploadFile(event,pathSchoolcert);
+
+    setInfoState({
+      ...infoState,
+      certfile_school_path : pathSchoolcert+event.target.files[0].name
     })
   }
 
@@ -282,7 +389,7 @@ const MemberReg = (props) => {
       car_date : Moment(date).format('YYYY-MM-DD')
     })
 	}
-
+  
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
@@ -307,9 +414,9 @@ const MemberReg = (props) => {
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
-                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadImgFile(event,pathProfile)}/>
-                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadFile(event,pathItcert)}/>
-                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadFile(event,pathSchoolcert)}/>
+                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile)}/>
+                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert)}/>
+                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert)}/>
                       <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
                                                 프로필 업로드
                       </Button>
@@ -358,9 +465,9 @@ const MemberReg = (props) => {
                         helperText={validation.position.helperText}
                         onClick={defaultValidation} 
                       >
-                        {positions.map(option => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                        {codeState.positionCode.map((option,index) => (
+                          <MenuItem key={index} value={option.CODE_ID}>
+                            {option.CODE_NAME}
                           </MenuItem>
                         ))}
                       </TextField>
@@ -442,9 +549,9 @@ const MemberReg = (props) => {
                         helperText={validation.sch_car.helperText}
                         onClick={defaultValidation} 
                       >
-                        {schCareer.map(option => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                        {codeState.graduationCode.map((option,index) => (
+                          <MenuItem key={index} value={option.CODE_ID}>
+                            {option.CODE_NAME}
                           </MenuItem>
                         ))}
                       </TextField>
@@ -538,7 +645,7 @@ const MemberReg = (props) => {
                       />
                     </div>
                     <div className={classes.textfield}>
-                      <Button variant="contained" color="primary" onClick={setLocalstorage}>
+                      <Button variant="contained" color="primary" onClick={setValidationLevel}>
                               저장하기
                       </Button>
                       <RouterLink button="true" to="/member/" className={classes.router_link}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Card from '@material-ui/core/Card';
 import { Link as RouterLink, } from 'react-router-dom';
 import { makeStyles, theme } from '@material-ui/core/styles';
@@ -27,6 +27,7 @@ import CommonDialog from '../../js/CommonDialog';
 import {tableList} from './data/data';
 import ContentModal from "./component/ContentModal";
 import FilterModal from "./component/FilterModal";
+import axios from 'axios';
 import {dateFormatter, phoneFormatter, positionFormatter,excelExport,positionUnFormatter} from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
@@ -76,8 +77,8 @@ const MemberList = () => {
 	const [selected, setSelected] = React.useState([]);
 
 	const [state, setState] = React.useState({
-		preMemberList : tableList, //변경 직전 리스트
-		memberList : tableList,	// 사원관리 리스트
+		preMemberList : null, //변경 직전 리스트
+		memberList : null,	// 사원관리 리스트
 		manager_yn : true,		// 관리자 여부
 		showAll : true,
 		showAllValue : 0
@@ -113,50 +114,39 @@ const MemberList = () => {
 
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
-	//퇴사자의 정보의 경우 체크 박스 미 체크시 보여주지 않음.
-	if(state.showAll == true){
-		let temp = state.memberList;
-		temp = temp.filter(temp => temp.isexisted !== false);
-
-		setState({
-			...state,
-			preMemberList: temp,
-			memberList : temp,
-			showAll:false
+	useEffect(() => {
+		axios({
+			url: '/intranet/member/memberlist',
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+		}).then(response => {
+			console.log("positionResult : " + JSON.stringify(response));
+			// 사원리스트
+			setState({
+				...state,
+				preMemberList : response.data,
+				memberList : response.data
+			});
+		}).catch(e => {
+			console.log(e);
 		});
-	}
 
-	//만약 등록화면에서 넘어 오면 리스트 추가
-	if((localStorage.getItem('savedData') != null) || (localStorage.getItem('savedData') != undefined)){
-		const savedData = JSON.parse(localStorage.getItem('savedData'));	//등록, 수정 화면에서 받아온 데이터
-		let temp_data = null;	//임시
-		let flag = true;
+		//퇴사자의 정보의 경우 체크 박스 미 체크시 보여주지 않음.
+		if(state.showAll == true && state.memberList != null){
+			let temp = state.memberList;
+			temp = temp.filter(temp => temp.isexisted !== false);
 
-		// 기존의 리스트에 해당 직원이 있는지 없는지 확인한다.
-		state.memberList.map((member,index) => {
-			if(member.id == savedData.id){
-				state.memberList[index] = savedData;
-				flag = false;
-				temp_data = state.memberList;
-			}
-		})
-
-		//기존의 리스트에 직원 아이디가 없는 경우 추가되는 직원으로 판단한다.
-		if(flag){
-			//새로 등록된 사원인 경우
-			temp_data = state.memberList.concat(savedData)
+			setState({
+				...state,
+				preMemberList: temp,
+				memberList : temp,
+				showAll:false
+			});
 		}
-
-		//변경된 직원리스트 state에 업데이트
-		setState({
-			...state,
-			memberList : temp_data
-		});
-
-		//local스토리지에 보관중인 기존 데이터 삭제.
-		localStorage.removeItem('savedData');
-	}
-
+	},[])
+	
 	//사원삭제
 	const removeData = () => {
 		//체크박스로 선택된 직원 아이디로 선택적으로 필터링
@@ -171,14 +161,6 @@ const MemberList = () => {
 			...state,
 			memberList : temp
 		});
-	}
-
-	//임시 로컬스토리지에 저장하기
-	const setLocalstorage = (data) => {
-		//기존 스토리지에 있는 데이터 삭제.
-		localStorage.removeItem('savedData');
-		//수정 페이지로 이동할 때 필요한 데이터 함께 이동 
-		localStorage.setItem('savedData', JSON.stringify(data));
 	}
 
 	const openContentModal = (datum) => {
@@ -339,12 +321,12 @@ const MemberList = () => {
 	};
 
 	const snackBarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+		if (reason === 'clickaway') {
+		return;
+		}
 
-    setOpenSnackBar(false);
-  };
+		setOpenSnackBar(false);
+	};
 
 	return (
 		<div>
@@ -428,15 +410,15 @@ const MemberList = () => {
 						</Hidden>
 					</div>
 				</Toolbar>
-				<TablePagination
+				{<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
 					component="div"
-					count={state.memberList.length}
+					count={state.memberList !=null && state.memberList.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
 					onChangePage={handleChangePage}
         			onChangeRowsPerPage={handleChangeRowsPerPage}
-				/>
+				/>}
 				<TableContainer>
 					<Toolbar>
 						<Hidden smDown>
@@ -459,22 +441,22 @@ const MemberList = () => {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-								{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-									<TableRow key={row.id} hover style={!row.isexisted ? {backgroundColor:"lightgrey"} : {}}>
+								{state.memberList !=null && state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+									<TableRow key={row.MEMBER_NO} hover style={row.RET_DATE != null ? {backgroundColor:"lightgrey"} : {}}>
 										<TableCell padding="checkbox">
 											<Checkbox
-												checked={(selected.indexOf(row.id) !== -1)? true : false}
-												onChange={() => selectedItem(event,row.id)}
-												key = {row.id}
+												checked={(selected.indexOf(row.MEMBER_NO) !== -1)? true : false}
+												onChange={() => selectedItem(event,row.MEMBER_NO)}
+												key = {row.MEMBER_NO}
 											/>
 										</TableCell>
 										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
-											{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
-											{row.name}
+											{row.MANAGER_YN === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
+											{row.NAME}
 										</TableCell>
 										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{positionFormatter(row.position)}</TableCell>
 										<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
-											{row.address1} {row.address2}
+											{row.ADDRESS_1} {row.ADDRESS_2}
 											</TableCell>
 										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{phoneFormatter(row.phone)}</TableCell>
 										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{row.career} </TableCell>
@@ -513,33 +495,35 @@ const MemberList = () => {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-								{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-									<TableRow key={row.id} hover style={!row.isexisted ? {backgroundColor:"lightgrey"} : {}}>
-										<TableCell padding="checkbox">
-											<Checkbox
-												checked={(selected.indexOf(row.id) !== -1)? true : false}
-												onChange={() => selectedItem(event,row.id)}
-												key = {row.id}
-											/>
-										</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
-											{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
-											{row.name}
-										</TableCell>
-										<TableCell align="center">
-											<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod/admin":"/member/membermod/user"} className={`${classes.router_link} ${classes.button_tool} `} >
-												<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
-													수정
-												</Button>
-											</RouterLink>
-											<RouterLink button="true" to="/project/history" className={classes.router_link}>
-												<Button variant="contained" color="primary">
-													이력
-												</Button>
-											</RouterLink>
-										</TableCell>
-									</TableRow>
-								))}
+								{state.memberList !=null &&
+									state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+										<TableRow key={row.id} hover style={!row.isexisted ? {backgroundColor:"lightgrey"} : {}}>
+											<TableCell padding="checkbox">
+												<Checkbox
+													checked={(selected.indexOf(row.id) !== -1)? true : false}
+													onChange={() => selectedItem(event,row.id)}
+													key = {row.id}
+												/>
+											</TableCell>
+											<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
+												{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
+												{row.name}
+											</TableCell>
+											<TableCell align="center">
+												<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod/admin":"/member/membermod/user"} className={`${classes.router_link} ${classes.button_tool} `} >
+													<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
+														수정
+													</Button>
+												</RouterLink>
+												<RouterLink button="true" to="/project/history" className={classes.router_link}>
+													<Button variant="contained" color="primary">
+														이력
+													</Button>
+												</RouterLink>
+											</TableCell>
+										</TableRow>
+									))
+								}}
 								</TableBody>
 							</Table>				
 						</Hidden>
@@ -548,7 +532,7 @@ const MemberList = () => {
 				<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
 					component="div"
-					count={state.memberList.length}
+					count={state.memberList !=null && state.memberList.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
 					onChangePage={handleChangePage}

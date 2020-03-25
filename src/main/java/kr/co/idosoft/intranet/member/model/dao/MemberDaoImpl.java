@@ -1,0 +1,56 @@
+package kr.co.idosoft.intranet.member.model.dao;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.mybatis.spring.SqlSessionTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import kr.co.idosoft.intranet.member.vo.MemberVO;
+
+@Repository
+public class MemberDaoImpl implements MemberDao {
+
+	@Autowired
+	private SqlSessionTemplate sqlTemplate;
+	
+	private static final Logger logger = LoggerFactory.getLogger(MemberDaoImpl.class);
+	
+	// 사원 정보 리스트 가져오기
+	@Override
+	public List<Object> selectMemberList() {
+		return sqlTemplate.selectList("selectMemberList");
+	}
+
+	// 사원 정보 가져오기
+	@Override
+	public MemberVO selectMember(String member_no) {
+		return sqlTemplate.selectOne("getMemberInfo", member_no);
+	}
+
+	// 사원 정보 등록하기
+	@Override
+	public int registerMember(MemberVO memberInfo) {
+		return sqlTemplate.insert("registerMemberInfo", memberInfo);
+	}
+	
+	// 사원 정보 수정하기
+	@Override
+	public int updateMember(MemberVO memberInfo) {
+		return sqlTemplate.update("updateMemberInfo", memberInfo);
+	}
+	
+	// 사원 정보 삭제하기
+	@Override
+	public int deleteMember(String member_no) {
+		return sqlTemplate.delete("deleteMemberInfo", member_no);
+	}
+
+	@Override
+	public List<Object> getCode(String code_id) {
+		return sqlTemplate.selectList("getCode",code_id);
+	}
+}

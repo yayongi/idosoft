@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+	<parameterMap id="MemberVO" type="kr.co.idosoft.intranet.member.vo.MemberVO"  />
+	<resultMap id="MemberVO" type="kr.co.idosoft.intranet.member.vo.MemberVO"  />
+	
+	<!-- 사원 정보 리스트 -->
+	<select id="selectMemberList" resultMap="MemberVO">
+		SELECT	
+			*
+		FROM TB_MEMBER
+	</select>
+	
+	<!-- 사원 정보  -->
+	<select id="getMemberInfo" resultMap="MemberVO" parameterType="String">
+		SELECT	
+			*
+		FROM TB_MEMBER
+		WHERE MEMBER_NO=#{member_no}
+	</select>
+	
+	<!-- 사원 정보 등록 -->
+	<insert id="registerMemberInfo" parameterMap="MemberVO">
+		INSERT INTO TB_MEMBER 
+		(
+			MEMBER_NO,			
+			EMAIL,				
+			PWD,				
+			NAME,				
+			POSITION,			
+			ADDRESS_1,			
+			ADDRESS_2,			
+			PHONE_NUM,			
+			BIRTH_DATE,			
+			MARRIAGE_DATE,		
+			CAREER_DATE,			
+			ENTRY_DATE,			
+			SCHOOL_MAJOR,		
+			SCHOOL_CAREER,		
+			MOONCAL_YN,			
+			CERT_YN,				
+			MANAGER_YN,			
+			APPROVAL_YN,		
+			PHOTO_PATH,			
+			CERTFILE_JOB_PATH,	
+			CERTFILE_SCHOOL_PATH,
+			REG_DATETIME,		
+			REG_ID,				
+			RET_DATE,			
+			NOTE,				
+			TEMP_COLUM
+		)
+		VALUES
+		(
+			#{member_no},
+			#{email},
+			#{pwd},
+			#{name},
+			#{position},
+			#{address_1},
+			#{address_2},
+			#{phone_num},
+			#{birth_date},
+			#{marriage_date},
+			#{career_date},
+			#{entry_date},
+			#{school_major},
+			#{school_career},
+			#{mooncal_yn},
+			#{cert_yn},
+			#{manager_yn},
+			#{approval_yn},
+			#{photo_path},
+			#{certfile_job_path},
+			#{certfile_school_path},
+			NOW(),
+			#{reg_id},
+			#{ret_date},
+			#{note},
+			#{temp_colum}
+		)
+	</insert>
+	
+	<!-- 사원 정보 수정 -->
+	<update id="updateMemberInfo" parameterMap="MemberVO">
+		UPDATE TB_MEMBER 
+		SET 
+			MEMBER_NO = #{member_no},                      
+			EMAIL = #{email},
+			PWD = #{pwd},
+			NAME = #{name},
+			POSITION = #{position},
+			ADDRESS_1 = #{address_1},
+			ADDRESS_2 = #{address_2},
+			PHONE_NUM = #{phone_num},
+			BIRTH_DATE = #{birth_date},
+			MARRIAGE_DATE = #{marriage_date},
+			CAREER_DATE = #{career_date},
+			ENTRY_DATE = #{entry_date},
+			SCHOOL_MAJOR = #{school_major},
+			SCHOOL_CAREER = #{school_career},
+			MOONCAL_YN = #{mooncal_yn},
+			CERT_YN = #{cert_yn},
+			MANAGER_YN = #{manager_yn},
+			APPROVAL_YN = #{approval_yn},
+			PHOTO_PATH = #{photo_path},
+			CERTFILE_JOB_PATH = #{certfile_job_path},
+			CERTFILE_SCHOOL_PATH = #{certfile_school_path},
+			UPD_DATE = NOW(),
+			RET_DATE = #{ret_date},
+			UPD_ID = #{upd_id},
+			NOTE = #{note},
+			TEMP_COLUM = #{temp_colum}
+		WHERE MEMBER_NO=#{member_no}
+	</update>
+	
+	<!-- 사원 정보 삭제 -->
+	<update id="deleteMemberInfo" parameterType="String">
+		UPDATE TB_MEMBER 
+		SET 
+			RET_DATE=#{ret_date}, 
+		WHERE MEMBER_NO=#{member_no}
+	</update>
+	
+	<!-- 코드 정보 -->
+	<select id="getCode" resultType="HashMap">
+		SELECT 
+		*
+		FROM TB_CODE
+		WHERE UPPER_CODE = #{code_id}
+	</select>
+</mapper>
