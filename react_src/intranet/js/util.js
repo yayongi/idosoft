@@ -94,9 +94,12 @@ export function emailValidation(param){
 // 파일 업로드
 export function uploadFile(event,path){
   const formData = new FormData();
+
+  console.log('files[0] : ' + JSON.stringify(event.target.files));
+  console.log('path : ' + path);
   formData.append('file', event.target.files[0]);
   formData.append('path', path);
-  formData.append('prefilename',"test.txt")
+  formData.append('prefilename',"test.txt");
 
   const property = {
     url : '/intranet/fileUpload',
@@ -162,7 +165,7 @@ export function excelExport(json){
       link.click();
 			console.log('Excel Export Success' + JSON.stringify(response));	
 		}).catch(e => {
-      processErrCode(e)
+      processErrCode(e);
 			console.log(e);
 		});
 	}
@@ -188,7 +191,7 @@ export function excelExport(json){
     }
   }
 
-  //  로그인 회원정보 세션 스토리지에 저장
+  //  로그인 회원정보 세션데이터 가져오기
   //  작성자 : 유기환
   export function getSessionMemberInfo(){
     
@@ -198,8 +201,6 @@ export function excelExport(json){
     data: {}
     }).then(response => {
       console.log('SESSION_DATA' + JSON.stringify(response.data.SESSION_DATA));
-      
-      sessionStorage.setItem('SESSION_DATA', response.data.SESSION_DATA);
     }).catch(e => {
       processErrCode(e);
       console.log(e);
