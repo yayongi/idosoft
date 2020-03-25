@@ -45,12 +45,12 @@ public class MemberDaoImpl implements MemberDao {
 	
 	// 사원 정보 삭제하기
 	@Override
-	public int deleteMember(String member_no) {
-		return sqlTemplate.delete("deleteMemberInfo", member_no);
+	public int deleteMember(List<String> member_no_list) {
+		return sqlTemplate.delete("deleteMemberInfo", member_no_list);
 	}
 
 	@Override
-	public List<Object> getCode(String code_id) {
-		return sqlTemplate.selectList("getCode",code_id);
+	public List<Object> getCodeInfo(String code_id) {
+		return sqlTemplate.selectList("getCodeInfo",code_id);
 	}
 }
