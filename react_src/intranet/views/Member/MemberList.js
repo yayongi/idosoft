@@ -28,7 +28,7 @@ import {tableList} from './data/data';
 import ContentModal from "./component/ContentModal";
 import FilterModal from "./component/FilterModal";
 import axios from 'axios';
-import {dateFormatter, phoneFormatter, positionFormatter,excelExport,positionUnFormatter} from '../../js/util';
+import {dateFormatter, phoneFormatter, positionFormatter,excelExport,positionUnFormatter,dataCalculator} from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
 	tableWeb: {
@@ -79,6 +79,7 @@ const MemberList = () => {
 	const [state, setState] = React.useState({
 		preMemberList : null, //변경 직전 리스트
 		memberList : null,	// 사원관리 리스트
+		hiddenMemberList : null,
 		manager_yn : true,		// 관리자 여부
 		showAll : true,
 		showAllValue : 0
@@ -87,8 +88,9 @@ const MemberList = () => {
 	const [openModal, setOpenModal] = React.useState({
 		name:'',
 		position:'',
-		address1:'',
-		address2:'',
+		position_name:'',
+		address_1:'',
+		address_2:'',
 		email:'', 
 		openModal:false,
 		manager_yn : null,
@@ -123,43 +125,52 @@ const MemberList = () => {
 			},
 		}).then(response => {
 			console.log("positionResult : " + JSON.stringify(response));
-			// 사원리스트
-			setState({
-				...state,
-				preMemberList : response.data,
-				memberList : response.data
-			});
+
+			if(state.showAll == true && response.data != null){
+				let temp = response.data;
+				temp = temp.filter(temp => temp.ret_date === null);
+
+				// 사원리스트
+				setState({
+					...state,
+					showMemberList : response.data,
+					hiddenMemberList: temp,
+					memberList : temp,
+					showAll:false
+				});
+			}
 		}).catch(e => {
 			console.log(e);
 		});
-
-		//퇴사자의 정보의 경우 체크 박스 미 체크시 보여주지 않음.
-		if(state.showAll == true && state.memberList != null){
-			let temp = state.memberList;
-			temp = temp.filter(temp => temp.isexisted !== false);
-
-			setState({
-				...state,
-				preMemberList: temp,
-				memberList : temp,
-				showAll:false
-			});
-		}
 	},[])
 	
 	//사원삭제
 	const removeData = () => {
-		//체크박스로 선택된 직원 아이디로 선택적으로 필터링
-		let temp = state.memberList;
-		for(let i=0;i<selected.length;i++){
-			temp = temp.filter(temp => temp.id !== String(selected[i]));
-		}
+		// 사원 정보 삭제
+		axios({
+			url: '/intranet/member/memberdel',
+			method: 'post',
+			data : selected,
+			headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+		}).then(response => {
+			console.log("positionResult : " + JSON.stringify(response));
+			//
+			//체크박스로 선택된 직원 아이디로 선택적으로 필터링
+			let temp = state.memberList;
+			for(let i=0;i<selected.length;i++){
+				temp = temp.filter(temp => temp.member_no !== String(selected[i]));
+			}
 
-		setSelected([]);
+			setSelected([]);
 
-		setState({
-			...state,
-			memberList : temp
+			setState({
+				...state,
+				memberList : temp
+			});
+		}).catch(e => {
+			console.log(e);
 		});
 	}
 
@@ -167,8 +178,9 @@ const MemberList = () => {
 		return setOpenModal({
 			name:datum.name,
 			position:datum.position,
-			address1:datum.address1,
-			address2:datum.address2,
+			position_name:datum.code_name,
+			address_1:datum.address_1,
+			address_2:datum.address_2,
 			email:datum.email,
 			openModal:true,
 			manager_yn : state.manager_yn,
@@ -181,8 +193,9 @@ const MemberList = () => {
 		return setOpenModal({
 			name:'',
 			position:'',
-			address1:'',
-			address2:'',
+			position_name:'',
+			address_1:'',
+			address_2:'',
 			email:'', 
 			openModal:trigger,
 			manager_yn : null,
@@ -206,11 +219,16 @@ const MemberList = () => {
 	};
 
 	if(searchState.flag){
-		let temp = state.preMemberList;
+		let temp = null;
+
+		if(state.showAllValue == 0){
+			temp = state.hiddenMemberList;
+		}else{
+			temp = state.showMemberList;
+		}
 
 		if(searchState.category == 0){
 		//이름 검색
-
 			temp = temp.filter(temp => temp.name == searchState.searchword);
 		}else if(searchState.category == 1){
 		//직급 검색
@@ -247,8 +265,7 @@ const MemberList = () => {
 			}
 			setState({
 				...state,
-				memberList : tableList,	// 사원관리 리스트
-				preMemberList : tableList,
+				memberList : state.showMemberList,
 				showAllValue : 1
 			});
 		}else if(value == 1){
@@ -258,8 +275,7 @@ const MemberList = () => {
 			setPage(0);
 			setState({
 				...state,
-				preMemberList : tableList,
-				showAll : true,
+				memberList : state.hiddenMemberList,
 				showAllValue : 0
 			});
 		}
@@ -336,21 +352,21 @@ const MemberList = () => {
 
 			<Snackbar
 				anchorOrigin={{
-				vertical: 'top',
-				horizontal: 'center',
+					vertical: 'top',
+					horizontal: 'center',
 				}}
 				onClose={snackBarClose}
 				open={openSnackBar}
 				autoHideDuration={6000}
 				message={searchState.category === 0 ? "이름 : "+searchState.searchword:"직급 : "+searchState.searchword}
 				action={
-				<React.Fragment>
-					<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
-						<CloseIcon fontSize="small" />
-					</IconButton>
-				</React.Fragment>
+					<React.Fragment>
+						<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
+							<CloseIcon fontSize="small" />
+						</IconButton>
+					</React.Fragment>
 				}
-				/>
+			/>
 
 			<Card>
 				<Toolbar className={classes.root_tool}>
@@ -410,15 +426,17 @@ const MemberList = () => {
 						</Hidden>
 					</div>
 				</Toolbar>
-				{<TablePagination
-					rowsPerPageOptions={[10, 25, 100]}
-					component="div"
-					count={state.memberList !=null && state.memberList.length}
-					rowsPerPage={rowsPerPage}
-					page={page}
-					onChangePage={handleChangePage}
-        			onChangeRowsPerPage={handleChangeRowsPerPage}
-				/>}
+				{state.memberList !=null && (
+					<TablePagination
+						rowsPerPageOptions={[10, 25, 100]}
+						component="div"
+						count={state.memberList.length}
+						rowsPerPage={rowsPerPage}
+						page={page}
+						onChangePage={handleChangePage}
+						onChangeRowsPerPage={handleChangeRowsPerPage}
+					/>
+				)}
 				<TableContainer>
 					<Toolbar>
 						<Hidden smDown>
@@ -442,25 +460,25 @@ const MemberList = () => {
 								</TableHead>
 								<TableBody>
 								{state.memberList !=null && state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-									<TableRow key={row.MEMBER_NO} hover style={row.RET_DATE != null ? {backgroundColor:"lightgrey"} : {}}>
+									<TableRow key={row.member_no} hover style={(row.ret_date != null)? {backgroundColor:"lightgrey"}:{}}>
 										<TableCell padding="checkbox">
 											<Checkbox
-												checked={(selected.indexOf(row.MEMBER_NO) !== -1)? true : false}
-												onChange={() => selectedItem(event,row.MEMBER_NO)}
-												key = {row.MEMBER_NO}
+												checked={(selected.indexOf(row.member_no) !== -1)? true : false}
+												onChange={() => selectedItem(event,row.member_no)}
+												key = {row.member_no}
 											/>
 										</TableCell>
 										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
-											{row.MANAGER_YN === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
-											{row.NAME}
+											{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
+											{row.name}
 										</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{positionFormatter(row.position)}</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{row.code_name}</TableCell>
 										<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
-											{row.ADDRESS_1} {row.ADDRESS_2}
+											{row.address_1} {row.address_2}
 											</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{phoneFormatter(row.phone)}</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{row.career} </TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{dateFormatter(row.entry)}</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{phoneFormatter(row.phone_num)}</TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{dataCalculator(row.career_date)} </TableCell>
+										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{dateFormatter(row.entry_date)}</TableCell>
 										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
 											{row.cert_yn == 1? '유':'무'}
 										</TableCell>
@@ -497,12 +515,12 @@ const MemberList = () => {
 								<TableBody>
 								{state.memberList !=null &&
 									state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-										<TableRow key={row.id} hover style={!row.isexisted ? {backgroundColor:"lightgrey"} : {}}>
+										<TableRow key={row.member_no} hover style={(row.ret_date != null)?  {backgroundColor:"lightgrey"}:{}}>
 											<TableCell padding="checkbox">
 												<Checkbox
-													checked={(selected.indexOf(row.id) !== -1)? true : false}
-													onChange={() => selectedItem(event,row.id)}
-													key = {row.id}
+													checked={(selected.indexOf(row.member_no) !== -1)? true : false}
+													onChange={() => selectedItem(event,row.member_no)}
+													key = {row.member_no}
 												/>
 											</TableCell>
 											<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
@@ -523,21 +541,23 @@ const MemberList = () => {
 											</TableCell>
 										</TableRow>
 									))
-								}}
+								}
 								</TableBody>
 							</Table>				
 						</Hidden>
 					</Toolbar>
 				</TableContainer>
-				<TablePagination
-					rowsPerPageOptions={[10, 25, 100]}
-					component="div"
-					count={state.memberList !=null && state.memberList.length}
-					rowsPerPage={rowsPerPage}
-					page={page}
-					onChangePage={handleChangePage}
-        			onChangeRowsPerPage={handleChangeRowsPerPage}
-				/>
+				{state.memberList !=null && (
+					<TablePagination
+						rowsPerPageOptions={[10, 25, 100]}
+						component="div"
+						count={state.memberList.length}
+						rowsPerPage={rowsPerPage}
+						page={page}
+						onChangePage={handleChangePage}
+						onChangeRowsPerPage={handleChangeRowsPerPage}
+					/>
+				)}
 			</Card>
 		</div>
 	);
