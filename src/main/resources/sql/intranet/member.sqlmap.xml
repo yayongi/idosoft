@@ -7,9 +7,12 @@
 	
 	<!-- 사원 정보 리스트 -->
 	<select id="selectMemberList" resultMap="MemberVO">
-		SELECT	
-			*
-		FROM TB_MEMBER
+		SELECT 
+			*,
+			B.CODE_NAME 
+		FROM TB_MEMBER A
+		INNER JOIN TB_CODE B
+		WHERE A.POSITION = B.CODE_ID
 	</select>
 	
 	<!-- 사원 정보  -->
@@ -74,7 +77,7 @@
 			#{photo_path},
 			#{certfile_job_path},
 			#{certfile_school_path},
-			NOW(),
+			DATE_FORMAT(NOW(),'%Y%m%d'),
 			#{reg_id},
 			#{ret_date},
 			#{note},
@@ -107,7 +110,7 @@
 			PHOTO_PATH = #{photo_path},
 			CERTFILE_JOB_PATH = #{certfile_job_path},
 			CERTFILE_SCHOOL_PATH = #{certfile_school_path},
-			UPD_DATE = NOW(),
+			UPD_DATE = DATE_FORMAT(NOW(),'%Y%m%d'),
 			RET_DATE = #{ret_date},
 			UPD_ID = #{upd_id},
 			NOTE = #{note},
@@ -117,14 +120,16 @@
 	
 	<!-- 사원 정보 삭제 -->
 	<update id="deleteMemberInfo" parameterType="String">
-		UPDATE TB_MEMBER 
-		SET 
-			RET_DATE=#{ret_date}, 
-		WHERE MEMBER_NO=#{member_no}
+		<foreach collection="list" item="item" index="index" separator=" , " >
+			UPDATE TB_MEMBER 
+			SET 
+				RET_DATE=DATE_FORMAT(NOW(),'%Y%m%d')
+	        WHERE MEMBER_NO=#{item}
+	    </foreach>	
 	</update>
 	
 	<!-- 코드 정보 -->
-	<select id="getCode" resultType="HashMap">
+	<select id="getCodeInfo" resultType="HashMap">
 		SELECT 
 		*
 		FROM TB_CODE
