@@ -43,14 +43,14 @@ public class MemberServiceImpl implements MemberService {
 
 	// 사원 정보 삭제
 	@Override
-	public int deleteMember(String member_no) {
-		return memberDao.deleteMember(member_no);
+	public int deleteMember(List<String> member_no_list) {
+		return memberDao.deleteMember(member_no_list);
 	}
 	
 	// 코드 정보 가져오기
 	@Override
-	public List<Object> getCode(String code_id) {
-		return memberDao.getCode(code_id);
+	public List<Object> getCodeInfo(String code_id) {
+		return memberDao.getCodeInfo(code_id);
 	}
 	
 
