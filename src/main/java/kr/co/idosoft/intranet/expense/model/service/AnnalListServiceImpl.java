@@ -70,7 +70,7 @@ public class AnnalListServiceImpl implements AnnalListService {
 	}
 	@Override
 	public List<Map<String, Object>> getlist(Map<String, Object> data) {
-		return null;
+		return dao.getlist(data);
 	}
 	@Override
 	public List<Map<String, Object>> getCode(Map<String, Object> data) {

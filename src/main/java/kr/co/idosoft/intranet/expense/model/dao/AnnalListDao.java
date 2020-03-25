@@ -1,10 +1,7 @@
 package kr.co.idosoft.intranet.expense.model.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import kr.co.idosoft.common.util.PageInfo;
 
 /**
  * 
@@ -27,7 +24,7 @@ public interface AnnalListDao {
 	 * 경비관리 목록 가져오기
 	 * @return String
 	 */
-	//ArrayList<Object> getList(PageInfo pi);
+	List<Map<String, Object>> getlist(Map<String, Object> data);
 	/**
 	 * 소속 프로젝트 PM 번호 추출
 	 * @return String
@@ -43,6 +40,5 @@ public interface AnnalListDao {
 	 * @return String
 	 */
 	public String getRepresentativeNo();
-	
 }
 
