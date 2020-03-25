@@ -32,7 +32,12 @@ public class MemberController {
 	@RequestMapping(value="/member/memberlist", method=RequestMethod.POST)
 	@ResponseBody
 	public List<Object> getMemberList(Model model, HttpServletRequest request){
-		return memberService.selectMemberList();
+		try {
+			return memberService.selectMemberList();
+		}catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	// 사원정보 등록하기
@@ -64,7 +69,12 @@ public class MemberController {
 	@RequestMapping(value="/member/memberreg/", method=RequestMethod.POST)
 	@ResponseBody
 	public MemberVO getMemberInfo(Model model, @RequestBody String member_no,HttpServletRequest request){
-		return memberService.selectMember(member_no);
+		try {
+			return memberService.selectMember(member_no);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	// 사원정보 수정
@@ -75,6 +85,7 @@ public class MemberController {
 			memberService.updateMember(memberVo);
 			return true;
 		}catch(Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -82,11 +93,12 @@ public class MemberController {
 	// 사원정보 삭제
 	@RequestMapping(value="/member/memberdel", method=RequestMethod.POST)
 	@ResponseBody
-	public boolean deleteMemberInfo(Model model, @RequestBody String member_no,HttpServletRequest request){
+	public boolean deleteMemberInfo(Model model, @RequestBody List<String> member_no_list,HttpServletRequest request){
 		try {
-			memberService.deleteMember(member_no);
+			memberService.deleteMember(member_no_list);
 			return true;
 		}catch(Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -97,25 +109,12 @@ public class MemberController {
 	public HashMap<String, Object> getPosition(Model model, @RequestBody HashMap<String, String> code, HttpServletRequest request){
 		try {
 			HashMap<String, Object> tempMap = new HashMap<String, Object>();
-			tempMap.put("positionCode", memberService.getCode(code.get("position_code_id")));
-			tempMap.put("graduationCode", memberService.getCode(code.get("graduation_code_id")));
+			tempMap.put("positionCode", memberService.getCodeInfo(code.get("position_code_id")));
+			tempMap.put("graduationCode", memberService.getCodeInfo(code.get("graduation_code_id")));
 			return tempMap;
 		}catch(Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
-	//학위 정보 가져오기
-		@RequestMapping(value="/member/graduation", method=RequestMethod.POST)
-		@ResponseBody
-		public List<Object> getGraduation(Model model, @RequestBody HashMap<String, String> code, HttpServletRequest request){
-			try {
-				return memberService.getCode(code.get("code_id"));
-			}catch(Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-	
 }
