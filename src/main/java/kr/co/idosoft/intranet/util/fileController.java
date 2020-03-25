@@ -28,16 +28,17 @@ public class fileController {
 	@RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
 	@ResponseBody
 	public void uploadFile(MultipartHttpServletRequest multiparthttpservletrequest) throws IOException {
+		
+		String path = multiparthttpservletrequest.getSession().getServletContext().getRealPath("/")+"resources";
+		
 		MultipartFile mf = multiparthttpservletrequest.getFile("file"); // jsp file name mapping
 
 		String uploadPath = "";
-		String path = multiparthttpservletrequest.getParameter("path"); // 파일 업로드 경로
+		String detailPath = multiparthttpservletrequest.getParameter("path"); // 파일 업로드 경로
 		String preFileName = multiparthttpservletrequest.getParameter("prefilename"); // 기종 파일 명
 		String original = mf.getOriginalFilename(); // 업로드하는 파일 name
 
-		uploadPath = path+original; // 파일 업로드 경로 + 파일 이름
-		logger.debug("uploadPath : " + uploadPath);
-		
+		uploadPath = path+detailPath+original; // 파일 업로드 경로 + 파일 이름
 		
 		File file = new File(uploadPath);
 
