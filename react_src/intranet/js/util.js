@@ -92,6 +92,35 @@ export function emailValidation(param){
   return emailValidation.test(param);
 }
 
+//경력 계산기
+//작성자 : 강성우
+export function dataCalculator(param){
+  if(param == null || param == undefined) {
+    return false;
+  }
+  let now = new Date();
+
+  let startDate = param;
+  let nowDate = String(now.getFullYear()) + (now.getMonth().length==2? "" : "0"+ String(now.getMonth()+1)) + String(now.getDate());
+
+  //연도 
+  let year = String(nowDate.substring(0,4)-startDate.substring(0,4));
+
+  // let month = "";
+
+  // if(nowDate.substring(4,6) > startDate.substring(4,6)){
+  //   month = nowDate.substring(4,6) - startDate.substring(4,6);
+  // }else{
+  //   month = startDate.substring(4,6) -nowDate.substring(4,6) + 12;
+  // }
+  
+  //if(month == 0){
+    return year+"년";
+  // }else{
+  //   return year+"년 "+month+"개월";
+  // }
+}
+
 // 파일 업로드
 export function uploadFile(event,path){
   const formData = new FormData();
