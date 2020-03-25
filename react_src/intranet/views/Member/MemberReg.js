@@ -381,12 +381,12 @@ const MemberReg = (props) => {
   }
   const getMarDate = (date) => {
     setDateState({
-      car_date : Moment(date).format('YYYY-MM-DD')
+      mar_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getBirth = (date) => {
     setDateState({
-      car_date : Moment(date).format('YYYY-MM-DD')
+      birth : Moment(date).format('YYYY-MM-DD')
     })
 	}
   
