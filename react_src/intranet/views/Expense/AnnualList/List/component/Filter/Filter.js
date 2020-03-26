@@ -208,11 +208,7 @@ export default function  Filter(props) {
 		<Fragment>
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">					
-				{!isEmpty(filterRows) &&
-					<>
-						총금액 : {Number(totalAmount).toLocaleString()} 원
-					</>
-				}
+					총금액 : {Number(totalAmount).toLocaleString()} 원
 				</Typography>
 				<div className={classes.container}>
 					<Hidden smDown>
