@@ -2,98 +2,145 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="expense">
-	<!-- 
-		datetime 형식을 가져올 때는 date_format으로 변환 후, alias를 잡아줘야 된다.
-	 -->
+	<!-- datetime 형식을 가져올 때는 date_format으로 변환 후, alias를 잡아줘야 된다. -->
 	<!-- 소속 프로젝트 PM 번호 추출 -->
 	<select id="getProjectPMNo" resultType="String">
-		SELECT B.PM FROM 
+		SELECT B.PM FROM
 		TB_PROJECT_MEMBER A
 		LEFT JOIN TB_PROJECT B
-		ON A.PROJECT_NO = B.PROJECT_NO
+		ON A.PROJECT_NO =
+		B.PROJECT_NO
 		WHERE NOW() BETWEEN A.INPT_BGNDE AND A.INPT_ENDDE
 	</select>
 	<!-- 1차결재자 번호 추출 -->
 	<select id="getFirSancternerMno" resultType="String">
-		SELECT 
+		SELECT
 		MEMBER_NO
-		FROM TB_MEMBER 
+		FROM TB_MEMBER
 		WHERE APPROVAL_YN = 1
 	</select>
 	<!-- 직급인 대표인 사원 번호 추출 -->
 	<select id="getRepresentativeNo" resultType="String">
-		SELECT MEMBER_NO FROM (
-			SELECT 
-			ROW_NUMBER() OVER() ROW
-			, MEMBER_NO
-			, REG_DATETIME 
-			FROM TB_MEMBER 
-			WHERE POSITION = "RK0000"
-			ORDER BY REG_DATETIME ASC
+		SELECT MEMBER_NO
+		FROM (
+		SELECT
+		ROW_NUMBER() OVER() ROW
+		, MEMBER_NO
+		, REG_DATETIME
+		FROM TB_MEMBER
+		WHERE POSITION = "RK0000"
+		ORDER BY REG_DATETIME ASC
 		) MEMBER
 	</select>
-	
+	<!-- 경비등록 -->
 	<update id="insertExpense" parameterType="hashmap">
-		INSERT INTO TB_EXPENSE(MEMBER_NO, EXPENS_TY_CODE, USE_DATE, USE_AMOUNT
-								, USE_CN, FIR_SANCTENER_MEMBER_NO, SANCTNER_MEMBER_NO
-								, EXPENS_ATCHMNF_ID) 
+		INSERT INTO
+		TB_EXPENSE(MEMBER_NO, EXPENS_TY_CODE, USE_DATE, USE_AMOUNT
+		, USE_CN, FIR_SANCTENER_MEMBER_NO, SANCTNER_MEMBER_NO
+		, EXPENS_ATCHMNF_ID)
 		VALUES (#{MEMBER_NO}, #{EXPENS_TY_CODE}, #{USE_DATE}, #{USE_AMOUNT}
-				,#{USE_CN}, #{FIR_SANCTENER_MEMBER_NO}, #{SANCTNER_MEMBER_NO}
-				, #{EXPENS_ATCHMNF_ID})
+		,#{USE_CN}, #{FIR_SANCTENER_MEMBER_NO}, #{SANCTNER_MEMBER_NO}
+		, #{EXPENS_ATCHMNF_ID})
 	</update>
-	
-	<select id="getAnnalList" parameterType="hashmap" resultType="hashmap">
-	SELECT A.EXPENS_NO seq
-			, C.CODE_NAME expenseTypeText
-			, A.USE_CN memo
-			, D.CODE_NAME statusText
-			, B.NAME register
-			, A.USE_AMOUNT pay
-			, A.USE_DATE payDate
-			, A.RETURN_CN rejectMemo
-			, E.NAME prevAuthPerson
-			, F.NAME authPerson
-			, A.FIR_SANCTN_DATETIME prevAuthDate
-			, A.SCD_SANCTN_DATETIME authDate
-	FROM TB_EXPENSE A
-	LEFT JOIN TB_MEMBER B
-	ON A.MEMBER_NO = B.MEMBER_NO
-	LEFT JOIN TB_CODE C
-	ON A.EXPENS_TY_CODE = C.CODE_ID
-	LEFT JOIN TB_CODE D
-	ON A.SANCTN_STTUS_CODE = D.CODE_ID
-	LEFT JOIN TB_MEMBER E
-	ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
-	LEFT JOIN TB_MEMBER F
-	ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
-	<where>
-		<if test="isAdmin != 1">
-			AND A.MEMBER_NO = #{MEMBER_NO}
-		</if>
-	</where>
-	ORDER BY A.EXPENS_NO DESC
+	<!-- 경비수정 -->
+	<update id="updateExpense" parameterType="hashmap">
+		UPDATE TB_EXPENSE
+		<set>
+			<if test="EXPENS_TY_CODE != null">EXPENS_TY_CODE=#{EXPENS_TY_CODE},</if>
+			<if test="USE_DATE != null">USE_DATE=#{USE_DATE},</if>
+			<if test="USE_AMOUNT != null">USE_AMOUNT=#{USE_AMOUNT},</if>
+			<if test="UPD_DATETIME != null">UPD_DATETIME=NOW(),</if>
+			<if test="USE_CN != null">USE_CN=#{USE_CN},</if>
+			<if test="EXPENS_ATCHMNF_ID != null">EXPENS_ATCHMNF_ID=#{EXPENS_ATCHMNF_ID}</if>
+		</set>
+		WHERE EXPENS_NO = #{EXPENS_NO}
+	</update>
+	<!-- 경비관리목록리스트 -->
+	<select id="getAnnalList" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT A.EXPENS_NO seq
+		, C.CODE_NAME expenseTypeText
+		, A.USE_CN memo
+		, D.CODE_NAME statusText
+		, B.NAME register
+		, A.USE_AMOUNT pay
+		, A.USE_DATE payDate
+		, A.RETURN_CN rejectMemo
+		, E.NAME prevAuthPerson
+		, F.NAME authPerson
+		, A.FIR_SANCTN_DATETIME prevAuthDate
+		, A.SCD_SANCTN_DATETIME authDate
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		LEFT JOIN TB_CODE C
+		ON A.EXPENS_TY_CODE = C.CODE_ID
+		LEFT JOIN TB_CODE D
+		ON A.SANCTN_STTUS_CODE = D.CODE_ID
+		LEFT JOIN TB_MEMBER E
+		ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
+		LEFT JOIN TB_MEMBER F
+		ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				AND A.MEMBER_NO = #{MEMBER_NO}
+			</if>
+		</where>
+		ORDER BY A.EXPENS_NO DESC
 	</select>
-	
-	<select id="getAnnalListCount" parameterType="hashmap" resultType="_int">
-	SELECT COUNT(*)
-	FROM TB_EXPENSE A
-	LEFT JOIN TB_MEMBER B
-	ON A.MEMBER_NO = B.MEMBER_NO
-	LEFT JOIN TB_CODE C
-	ON A.EXPENS_TY_CODE = C.CODE_ID
-	LEFT JOIN TB_CODE D
-	ON A.SANCTN_STTUS_CODE = C.CODE_ID
-	<where>
-		<if test="isAdmin != 1">
-			AND A.MEMBER_NO = #{MEMBER_NO}
-		</if>
-	</where>
+	<!-- 경비관리목록 총 개수 -->
+	<select id="getAnnalListCount" parameterType="hashmap"
+		resultType="_int">
+		SELECT COUNT(*)
+		FROM TB_EXPENSE
+		<where>
+			<if test="isAdmin != 1">
+				AND MEMBER_NO = #{MEMBER_NO}
+			</if>
+		</where>
 	</select>
-	
-	<select id="getCode" parameterType="hashmap" resultType="hashmap">
-	SELECT CODE_ID value, CODE_NAME label 
-	FROM TB_CODE
-	WHERE UPPER_CODE = #{TYPE}
-	ORDER BY CODE_ID ASC
+	<!-- 코드 -->
+	<select id="getCode" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT CODE_ID value, CODE_NAME label
+		FROM TB_CODE
+		WHERE UPPER_CODE = #{TYPE}
+		ORDER BY CODE_ID ASC
 	</select>
+	<!-- 경비관리목록 -->
+	<select id="getView" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT A.EXPENS_NO seq
+		, A.EXPENS_TY_CODE expenseType
+		, C.CODE_NAME expenseTypeText
+		, A.USE_CN memo
+		, A.SANCTN_STTUS_CODE status
+		, D.CODE_NAME statusText
+		, B.NAME register
+		, A.USE_AMOUNT pay
+		, A.USE_DATE payDate
+		, A.RETURN_CN rejectMemo
+		, E.NAME prevAuthPerson
+		, F.NAME authPerson
+		, A.FIR_SANCTN_DATETIME prevAuthDate
+		, A.SCD_SANCTN_DATETIME authDate
+		, A.EXPENS_ATCHMNF_ID filePath
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		LEFT JOIN TB_CODE C
+		ON A.EXPENS_TY_CODE = C.CODE_ID
+		LEFT JOIN TB_CODE D
+		ON A.SANCTN_STTUS_CODE = D.CODE_ID
+		LEFT JOIN TB_MEMBER E
+		ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
+		LEFT JOIN TB_MEMBER F
+		ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
+		WHERE A.EXPENS_NO = #{EXPENS_NO}
+	</select>
+	<delete id="deleteExpense" parameterType="hashmap">
+		DELETE 
+		FROM TB_EXPENSE
+		WHERE EXPENS_NO = #{EXPENS_NO}
+	</delete>
 </mapper>

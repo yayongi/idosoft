@@ -13,6 +13,7 @@ public class MemberVO implements Serializable {
 	private String position;				//직급
 	private String address_1;				//기본주소
 	private String address_2;				//상세주소
+	private String zip_code;				//우편번호
 	private String phone_num;				//전화번호
 	private String birth_date;				//생일
 	private String marriage_date;			//결혼기념일
@@ -36,6 +37,12 @@ public class MemberVO implements Serializable {
 	private String temp_colum;				//비고2
 	private String code_name;
 	
+	public String getZip_code() {
+		return zip_code;
+	}
+	public void setZip_code(String zip_code) {
+		this.zip_code = zip_code;
+	}
 	
 	public String getCode_name() {
 		return code_name;

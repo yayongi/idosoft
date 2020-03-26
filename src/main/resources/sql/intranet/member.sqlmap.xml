@@ -17,10 +17,18 @@
 	
 	<!-- 사원 정보  -->
 	<select id="getMemberInfo" resultMap="MemberVO" parameterType="String">
-		SELECT	
-			*
-		FROM TB_MEMBER
-		WHERE MEMBER_NO=#{member_no}
+		SELECT 
+		A.*,
+		B.CODE_NAME
+		FROM 
+		(
+			SELECT	
+				*
+			FROM TB_MEMBER
+			WHERE MEMBER_NO=#{member_no}
+		) A
+		INNER JOIN TB_CODE B
+		WHERE A.POSITION = B.CODE_ID
 	</select>
 	
 	<!-- 사원 정보 등록 -->
@@ -91,11 +99,11 @@
 		SET 
 			MEMBER_NO = #{member_no},                      
 			EMAIL = #{email},
-			PWD = #{pwd},
 			NAME = #{name},
 			POSITION = #{position},
 			ADDRESS_1 = #{address_1},
 			ADDRESS_2 = #{address_2},
+			ZIP_CODE = #{zip_code},
 			PHONE_NUM = #{phone_num},
 			BIRTH_DATE = #{birth_date},
 			MARRIAGE_DATE = #{marriage_date},

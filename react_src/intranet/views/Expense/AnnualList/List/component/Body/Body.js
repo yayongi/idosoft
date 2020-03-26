@@ -115,7 +115,6 @@ function Body(props) {
     const handleClickView = (event, row) => {
       console.log("call handleClickView");      
       
-      //AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(row));  // 세션 스토리지에 선택한 Row Data 저장
       routeProps.history.push(`${routeProps.match.url}/view/${row.seq}`);
     };
 
