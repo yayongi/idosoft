@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin">
+	<!-- 
+		datetime 형식을 가져올 때는 date_format으로 변환 후, alias를 잡아줘야 된다.
+	 -->
+	<select id="getList" resultType="hashmap">
+	SELECT * 
+	FROM TB_CODE
+	ORDER BY CODE_ID ASC
+	</select>
+</mapper>

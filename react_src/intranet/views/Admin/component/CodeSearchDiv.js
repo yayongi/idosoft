@@ -128,7 +128,7 @@ export default function CodeSearchDiv(props) {
 		console.log("startLoading");
 		setShowLoadingBar(true);
 		axios({
-			url: '/intranet/login',
+			url: '/intranet/code',
 			method: 'post',
 			data: {}
 		}).then(response => {
