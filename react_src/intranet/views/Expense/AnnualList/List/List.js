@@ -2,15 +2,9 @@ import React, { Fragment, useEffect } from 'react';
 import Filter from './component/Filter'
 import Body from './component/Body'
 import Paper from '@material-ui/core/Paper';
-
 import Axios from 'axios';
-
 import ko from "date-fns/locale/ko";
-
 import Moment from "moment";
-
-
-
 import { processErrCode, isEmpty } from '../../../../js/util'
 
 export default function  List(props) {
@@ -61,30 +55,31 @@ export default function  List(props) {
 
 	return (
 		<Fragment>
-			{console.log("call List.js -> return")}
-			<Fragment>
-				<Filter 
-					filterRows={rows} filterSetRows={setRows}
-					paging={paging} setPaging={setPaging}
-					state={state} setState={setState}
-					routeProps={props.routeProps}
-					totalAmount={totalAmount} setTotalAmount={setTotalAmount}
-					holdUp={holdUp} setHoldUp={setHoldUp}
-					setPage={setPage} setRowsPerPage={setRowsPerPage}
-				/>
-			</Fragment>
-			<Paper>
-				<Body 
-					rows={rows} 
-					state={state}
-					setRows={setRows}
-					routeProps={props.routeProps} 
-					paging={paging} setPaging={setPaging} 
-					holdUp={holdUp} setHoldUp={setHoldUp}
-					page={page} setPage={setPage}
-					rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
-				/>
-			</Paper>
+				<Fragment>
+					<Filter 
+						filterRows={rows} filterSetRows={setRows}
+						paging={paging} setPaging={setPaging}
+						state={state} setState={setState}
+						routeProps={props.routeProps}
+						totalAmount={totalAmount} setTotalAmount={setTotalAmount}
+						holdUp={holdUp} setHoldUp={setHoldUp}
+						setPage={setPage} setRowsPerPage={setRowsPerPage}
+						/>
+				</Fragment>
+				{!isEmpty(rows) &&
+				<Paper>
+					<Body 
+						rows={rows} 
+						state={state}
+						setRows={setRows}
+						routeProps={props.routeProps} 
+						paging={paging} setPaging={setPaging} 
+						holdUp={holdUp} setHoldUp={setHoldUp}
+						page={page} setPage={setPage}
+						rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
+					/>
+				</Paper>
+				}
 		</Fragment>
-	);
+		);
 }
