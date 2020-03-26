@@ -143,4 +143,14 @@ public class AnnalListDaoImpl implements AnnalListDao {
 			return false;
 		}
 	}
+	/**
+	 * 총금액 합계
+	 * 
+	 * @return boolean
+	 */
+	@Override
+	public String getTotalAmount(Map<String, Object> data) {
+		
+		return String.valueOf((int)sqlTemplate.selectOne("expense.getTotalAmount", data));
+	}
 }

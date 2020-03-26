@@ -85,6 +85,19 @@
 			<if test="isAdmin != 1">
 				AND A.MEMBER_NO = #{MEMBER_NO}
 			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE '%' + #{name} + '%'
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE '%' + #{memo} + '%'
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 		</where>
 		ORDER BY A.EXPENS_NO DESC
 	</select>
@@ -92,11 +105,26 @@
 	<select id="getAnnalListCount" parameterType="hashmap"
 		resultType="_int">
 		SELECT COUNT(*)
-		FROM TB_EXPENSE
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
 		<where>
 			<if test="isAdmin != 1">
-				AND MEMBER_NO = #{MEMBER_NO}
+				AND A.MEMBER_NO = #{MEMBER_NO}
 			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE '%' + #{name} + '%'
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE '%' + #{memo} + '%'
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 		</where>
 	</select>
 	<!-- 코드 -->
@@ -138,9 +166,35 @@
 		ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
 		WHERE A.EXPENS_NO = #{EXPENS_NO}
 	</select>
+	<!-- 경비 삭제 -->
 	<delete id="deleteExpense" parameterType="hashmap">
 		DELETE 
 		FROM TB_EXPENSE
 		WHERE EXPENS_NO = #{EXPENS_NO}
 	</delete>
+	<!-- 경비 총금액 -->
+	<select id="getTotalAmount" parameterType="hashmap" resultType="_int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				AND A.MEMBER_NO = #{MEMBER_NO}
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE '%' + #{name} + '%'
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE '%' + #{memo} + '%'
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+		</where>
+	</select>
 </mapper>

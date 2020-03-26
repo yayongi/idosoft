@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -20,14 +20,14 @@ import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
 import Moment from "moment";
+import Axios from 'axios';
 
+import {processErrCode} from '../../../../../../js/util'
+ 
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-
-
-import { AnnualStorage, expenseTypes, statuses } from 'views/Expense/data';
 
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
@@ -55,10 +55,46 @@ export default function  Filter(props) {
 	
 	const classes = useToolbarStyles();
 	const {
-		filterRows,
+		filterRows, filterSetRows,
 		state, setState,
-		routeProps
+		paging, setPaging,
+		totalAmount, setTotalAmount,
+		routeProps, setHoldUp,
+		setPage ,setRowsPerPage
 	} = props;
+
+	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
+	const [statuses, setStatuses] 			= React.useState([]);
+
+	useEffect(() => {
+		console.log("call useEffect");
+
+		Axios({
+			url: '/intranet/getCode.exp',
+			method: 'post',
+			data: {
+				currentPage : '1',
+				limit : '10'
+			},
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		}).then(response => {
+			console.log(JSON.stringify(response.data));
+			
+			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
+			const payTypeList 		= JSON.parse(response.data.payTypeList);
+
+			setExpenseTypes(exPenseTypeList);
+			setStatuses(payTypeList);
+
+		}).catch(e => {
+			processErrCode(e);
+			console.log(e);
+		});
+		
+	}, []);
+
 	const [open, setOpen] = React.useState(false);
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -94,16 +130,53 @@ export default function  Filter(props) {
 	// Dialog에서 검색버튼 클릭 시
 	// 상위 컴포넌트의 state를 갱신 처리 해줌
 	const handleClickSearch = () => {
-		setState({
-			name: document.getElementsByName("name")[0].value,
-			expenseType: document.getElementsByName("expenseType")[0].value,
-			payStDt: document.getElementsByName("payStDt")[0].value.replace(/[^0-9]/g, ""),
-			payEdDt: document.getElementsByName("payEdDt")[0].value.replace(/[^0-9]/g, ""),
-			status: document.getElementsByName("status")[0].value,
-			memo: document.getElementsByName("memo")[0].value,
 
+		Axios({
+			url: '/intranet/getAnnaualList.exp',
+			method: 'post',
+			data: {
+				currentPage : '1',
+				limit : '10',
+				name: document.getElementsByName("name")[0].value,
+				expenseType: document.getElementsByName("expenseType")[0].value,
+				payStDt: document.getElementsByName("payStDt")[0].value.replace(/[^0-9]/g, ""),
+				payEdDt: document.getElementsByName("payEdDt")[0].value.replace(/[^0-9]/g, ""),
+				status: document.getElementsByName("status")[0].value,
+				memo: document.getElementsByName("memo")[0].value
+			},
+			headers: {
+				'Content-Type': 'application/json'
+			},
+
+		}).then(response => {
+			console.log(JSON.stringify(response.data));
+			filterSetRows(JSON.parse(response.data.list));
+			setTotalAmount(response.data.totalAmount);
+
+			const result = JSON.parse(response.data.result);
+
+			/* 페이징 관련 state */
+			setPaging(result);
+			setHoldUp(0);
+			setRowsPerPage(Number(result.limit));
+			setPage(Number(result.currentPage)-1);
+
+			setState({
+				name: document.getElementsByName("name")[0].value,
+				expenseType: document.getElementsByName("expenseType")[0].value,
+				payStDt: document.getElementsByName("payStDt")[0].value.replace(/[^0-9]/g, ""),
+				payEdDt: document.getElementsByName("payEdDt")[0].value.replace(/[^0-9]/g, ""),
+				status: document.getElementsByName("status")[0].value,
+				memo: document.getElementsByName("memo")[0].value,
+			});
+
+			handleClose();
+		}).catch(e => {
+			processErrCode(e);
+			console.log(e);
 		});
-		handleClose();
+
+		
 	}
 
 	
@@ -132,19 +205,11 @@ export default function  Filter(props) {
 		});
 	}
 
-		// 총 결제금액
-	let totalSum = 0; 
-	filterRows.map((row) => {
-		console.log("call Filter.js -> totalSum");
-		totalSum += Number(row.pay);
-	});
-
-
 	return (
 		<Fragment>
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">					
-					총금액 : {totalSum.toLocaleString()} 원
+					총금액 : {Number(totalAmount).toLocaleString()} 원
 				</Typography>
 				<div className={classes.container}>
 					<Hidden smDown>
@@ -180,6 +245,8 @@ export default function  Filter(props) {
 					<DialogContentText>
 						조건을 선택 및 입력 후, 하단의 검색버튼을 클릭해주세요.
 					</DialogContentText>
+					{
+					expenseTypes != null &&
 					<Grid container justify="flex-start">
 						<Grid item xs={6} style={{paddingRight: 10}}>
 							<TextField
@@ -191,6 +258,9 @@ export default function  Filter(props) {
 								value={dialogState.expenseType}
 								onChange={handleChange}
 								fullWidth>
+								<MenuItem key='-1' value='-1'>
+									전체
+								</MenuItem>
 								{expenseTypes.map(option => (
 									<MenuItem key={option.value} value={option.value}>
 										{option.label}
@@ -260,7 +330,6 @@ export default function  Filter(props) {
 									</Grid>
 								</MuiPickersUtilsProvider>
 						</Grid>
-
 						<Grid item xs={12} style={{paddingRight: 10}}>
 							<TextField
 								id="status"
@@ -271,6 +340,9 @@ export default function  Filter(props) {
 								value={dialogState.status}
 								onChange={handleChange}
 								fullWidth>
+								<MenuItem key='-1' value='-1'>
+									전체
+								</MenuItem>
 								{statuses.map(option => (
 									<MenuItem key={option.value} value={option.value}>
 										{option.label}
@@ -292,9 +364,8 @@ export default function  Filter(props) {
 								fullWidth
 							/>
 						</Grid>
-
-						
 					</Grid>
+				}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClickCancel} color="primary">
