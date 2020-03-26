@@ -1,22 +1,5 @@
 import axios from 'axios';
 
-export const positions = [
-  { label: '대표',value: 'A01', },
-  { label: '이사',value: 'A02', },
-  { label: '부장',value: 'A03', },
-  { label: '차장',value: 'B01', },
-  { label: '과장',value: 'B02', },
-  { label: '대리',value: 'B03', },
-  { label: '사원',value: 'B04', },
-];
-
-export const schCareer = [
-  { label:'고졸',value:'A01'},
-  { label:'초대졸',value:'A02'},
-  { label:'대졸',value:'A03'},
-  { label:'대학원졸',value:'A04'},
-];
-
 export const certYn = [
   { label:'유',value:1 },
   { label:'무',value:0 }
