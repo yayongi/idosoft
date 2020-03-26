@@ -79,4 +79,17 @@ public class AnnalListServiceImpl implements AnnalListService {
 		return dao.getCode(data);
 	}
 	
+	@Override
+	public Map<String, Object> getView(Map<String, Object> data) {
+		return dao.getView(data);
+	}
+	@Override
+	public boolean updateExpense(Map<String, Object> data) {
+		return dao.updateExpense(data);
+	}
+	@Override
+	public boolean deleteExpense(Map<String, Object> data) {
+		return dao.deleteExpense(data);
+	}
+	
 }
