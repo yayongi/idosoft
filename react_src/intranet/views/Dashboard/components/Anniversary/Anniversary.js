@@ -1,21 +1,32 @@
-import React from 'react';
+import React,{ useEffect } from 'react';
 import Title from '../Title';
-import { data } from './data';
 import { dateFormatter } from '../../../../js/util';
+import { getLunarDate } from '../../../../js/LunarCalendar';
 
-export default function Anniversary() {
+const Anniversary = () => {
+	const [state, setState] =  React.useState(null);
+
+	/* useEffect(() => {
+		axios({
+			url: '/intranet/member/memberlist',
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+		}).then(response => {
+			console.log("positionResult : " + JSON.stringify(response));
+			setState(response.data)
+;		}).catch(e => {
+			console.log(e);
+		});
+	},[]) */
+
 	return (
 		<React.Fragment>
 			<Title>기념일</Title>
-			{data.map(datum => (
-				<h3 key={datum.id}>	
-					{
-						datum.birth !== undefined? 
-						dateFormatter(datum.birth).substring(5,10)+"은 "+datum.name+"님의 생일입니다."
-						: dateFormatter(datum.mar_date).substring(5,10)+"은 "+datum.name+"님의 결혼기념일입니다." 
-					}		
-				</h3>
-			))}
+			
 		</React.Fragment>
 	);
 }
+
+export default Anniversary;

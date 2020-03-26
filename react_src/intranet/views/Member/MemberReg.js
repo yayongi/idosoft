@@ -63,32 +63,13 @@ const MemberReg = (props) => {
   const pathSchoolcert = "\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
   
   const [state, setState] = React.useState({
-    selectedFile : null,
-    preFile: null
+    profile : null,
+    certFile : null,
+    schoolFile : null
   });
 
   const [infoState,setInfoState] = React.useState({
-      name : '',
-      position : '',
-      address_1 : '',
-      address_2 : '',
-      zip_code:'',
-      phone_num : '',
-      entry_date : '',
-      birth_date : '',
-      school_major : '',
-      cert_yn : '',
-      email : '',
-      manager_yn : 0,
-      school_career : '',
-      marriage_date : '',
-      approval_yn : 0,
-      mooncal_yn : 0,
-      career_date : '',
-      photo_path:'',
-      certfile_job_path:'',
-      certfile_school_path:'',
-      reg_id:''
+      memberData : null
   })
   
   const [validation, setValidation] = React.useState({
@@ -102,14 +83,7 @@ const MemberReg = (props) => {
     zip_code:   {error:false,helperText:""}
   })
 
-  const [codeState, setCodeState] = React.useState({
-    positionCode:[
-      { code_id:"",code_name:""},
-    ],
-    graduationCode:[
-      { code_id:"",code_name:""},
-    ]
-  });
+  const [codeState, setCodeState] = React.useState(null);
 
   useEffect(() => {
     axios({
@@ -251,8 +225,11 @@ const MemberReg = (props) => {
         school_career : document.getElementById("school_career").nextSibling.value,
         marriage_date : document.getElementById("marriage_date").value.replace(/\-/gi,""),
         approval_yn : document.getElementById("approval_yn").checked ? 1:0,
-        mooncal_yn : document.getElementById("moon_cal").checked ? 1:0,
+        mooncal_yn : document.getElementById("mooncal_yn").checked ? 1:0,
         career_date : document.getElementById("career_date").value.replace(/\-/gi,""),
+        photo_path : state.profile,
+        certfile_job_path : state.certFile,
+        certfile_school_path : state.schoolFile,
       })
 
     handleOpenDialog(...confirmData);
@@ -303,35 +280,12 @@ const MemberReg = (props) => {
       axios({
 				url: '/intranet/member/memberinst',
 				method: 'post',
-        data: {
-          member_no : '123123123',
-          name : infoState.name,
-          position : infoState.position,
-          address_1 : infoState.address_1,
-          address_2 : infoState.address_2,
-          zip_code : infoState.zip_code,
-          phone_num : infoState.phone_num,
-          entry_date : infoState.entry_date,
-          birth_date : infoState.birth_date,
-          school_major : infoState.school_major,
-          cert_yn : infoState.cert_yn,
-          email : infoState.email,
-          manager_yn : infoState.manager_yn,
-          school_career : infoState.school_career,
-          marriage_date : infoState.marriage_date,
-          approval_yn : infoState.approval_yn,
-          mooncal_yn : infoState.mooncal_yn,
-          career_date : infoState.career_date,
-          photo_path : infoState.photo_path,
-          certfile_job_path : infoState.certfile_job_path,
-          certfile_school_path : infoState.certfile_school_path,
-          reg_id:''
-        },
+        data: infoState.memberData,
         headers: {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
 			}).then(response => {
-				
+				console.log(JSON.stringify(response));
 			}).catch(e => {
 				console.log(e);
 			});
@@ -345,29 +299,25 @@ const MemberReg = (props) => {
     uploadFile(event,pathProfile);
     setState({
       ...state,
-      preFile:pathProfile + event.target.files[0].name
-    })
-
-    setInfoState({
-      photo_path : pathProfile +event.target.files[0].name,
+      profile : pathProfile + event.target.files[0].name
     })
   }
 
   const uploadCertImg = (event,pathItcert) => {
     uploadFile(event,pathItcert);
 
-    setInfoState({
-      ...infoState,
-      certfile_job_path : pathItcert+event.target.files[0].name,
+    setState({
+      ...state,
+      certFile : pathProfile + event.target.files[0].name
     })
   }
 
   const uploadSchoolImg = (event,pathSchoolcert) => {
     uploadFile(event,pathSchoolcert);
 
-    setInfoState({
-      ...infoState,
-      certfile_school_path : pathSchoolcert+event.target.files[0].name
+    setState({
+      ...state,
+      schoolFile : pathProfile + event.target.files[0].name
     })
   }
 
@@ -412,7 +362,7 @@ const MemberReg = (props) => {
                   height:'100%'
                 }}>
                   <div style={{textAlign:'-webkit-center'}}>
-                    <Avatar src={state.preFile != null ? state.preFile : ""} className={classes.large} />
+                    <Avatar src="" className={classes.large} />
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
@@ -423,7 +373,7 @@ const MemberReg = (props) => {
                                                 프로필 업로드
                       </Button>
                       <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
-                        <input type="hidden" value="test.jpg"/> 
+                        <input type="hidden" value={state.profile}/> 
                                                 프로필 다운로드
                       </Button>
                     </div>
@@ -432,7 +382,7 @@ const MemberReg = (props) => {
                                                 자격증 업로드
                       </Button>
                       <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
-                        <input type="hidden" value="test.txt"/> 
+                        <input type="hidden" value={state.certFile}/> 
                                                 자격증 다운로드
                       </Button>
                     </div>
@@ -441,7 +391,7 @@ const MemberReg = (props) => {
                                                 증명서 업로드
                       </Button>
                       <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
-                        <input type="hidden" value="test.txt"/> 
+                        <input type="hidden" value={state.schoolFile}/> 
                                                 증명서 다운로드
                       </Button>
                     </div>
@@ -467,7 +417,7 @@ const MemberReg = (props) => {
                         helperText={validation.position.helperText}
                         onClick={defaultValidation} 
                       >
-                        {codeState.positionCode.map((option,index) => (
+                        {(codeState != null) && codeState.positionCode.map((option,index) => (
                           <MenuItem key={index} value={option.CODE_ID}>
                             {option.CODE_NAME}
                           </MenuItem>
@@ -551,7 +501,7 @@ const MemberReg = (props) => {
                         helperText={validation.school_career.helperText}
                         onClick={defaultValidation} 
                       >
-                        {codeState.graduationCode.map((option,index) => (
+                        {(codeState != null) && codeState.graduationCode.map((option,index) => (
                           <MenuItem key={index} value={option.CODE_ID}>
                             {option.CODE_NAME}
                           </MenuItem>
@@ -572,8 +522,6 @@ const MemberReg = (props) => {
                                 value={dateState.career_date}
                                 onChange={getCarDate}
                                 inputVariant="outlined"
-                                readOnly={false}
-                                fullWidth
                               />
                             </Grid>
                           </MuiPickersUtilsProvider>
@@ -591,8 +539,6 @@ const MemberReg = (props) => {
                                 value={dateState.marriage_date}
                                 onChange={getMarDate}
                                 inputVariant="outlined"
-                                readOnly={false}
-                                fullWidth
                               />
                             </Grid>
                           </MuiPickersUtilsProvider>
@@ -610,8 +556,6 @@ const MemberReg = (props) => {
                                 value={dateState.entry_date}
                                 onChange={getEntry}
                                 inputVariant="outlined"
-                                readOnly={false}
-                                fullWidth
                               />
                             </Grid>
                           </MuiPickersUtilsProvider>
@@ -629,8 +573,6 @@ const MemberReg = (props) => {
                                 value={dateState.birth_date}
                                 onChange={getBirth}
                                 inputVariant="outlined"
-                                readOnly={false}
-                                fullWidth
                               />
                             </Grid>
                           </MuiPickersUtilsProvider>
@@ -640,7 +582,7 @@ const MemberReg = (props) => {
                           <Checkbox
                             value="checkedB"
                             color="primary"
-                            id="moon_cal"
+                            id="mooncal_yn"
                           />
                         }
                         label="음력"

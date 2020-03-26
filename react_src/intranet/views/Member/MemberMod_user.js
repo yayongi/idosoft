@@ -69,6 +69,12 @@ const MemberMod_user = (props) => {
   const pathSchoolcert = "\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
 
   const [state, setState] = React.useState({
+    profile : null,
+    certFile : null,
+    schoolFile : null
+  });
+
+  const [infoState, setInfoState] = React.useState({
 		memberData : null,
 	});
 
@@ -94,7 +100,7 @@ const MemberMod_user = (props) => {
     graduationCode:null
   });
   
-  const row = state.memberData;
+  const row = infoState.memberData;
 
   useEffect(() => {
 		axios({
@@ -110,6 +116,12 @@ const MemberMod_user = (props) => {
       console.log("memberResult : " + JSON.stringify(response));
       
       setState({
+        profile : response.data.memberData.photo_path,
+        certFile : response.data.memberData.certfile_job_path,
+        schoolFile :response.data.memberData.certfile_school_path
+      })
+
+      setInfoState({
         memberData : response.data.memberData,
       })
 
@@ -128,8 +140,6 @@ const MemberMod_user = (props) => {
 		});
 	},[])
 
-
-  //임시 로컬스토리지에 저장하기
   const saveMemberData = () => {
 
     //기본주소 Validation
@@ -191,7 +201,7 @@ const MemberMod_user = (props) => {
         return;
       }
 
-    setState({
+    setInfoState({
       memberData:{
         member_no : row.member_no,
         name : row.name,
@@ -205,13 +215,16 @@ const MemberMod_user = (props) => {
         birth_date : unFormatter(document.getElementById("birth_date").value),
         school_major : document.getElementById("school_major").value,
         cert_yn : document.getElementById("cert_yn").nextSibling.value,
-        email : row.email,
+        email : document.getElementById("email").value,
         manager_yn : row.manager_yn,
         school_career : document.getElementById("school_career").nextSibling.value,
         marriage_date : unFormatter(document.getElementById("marriage_date").value),
         approval_yn : row.approval_yn,
-        moon_cal : document.getElementById("moon_cal").checked,
+        mooncal_yn : document.getElementById("mooncal_yn").checked? 1:0,
         career_date : unFormatter(document.getElementById("career_date").value),
+        photo_path : state.profile,
+        certfile_job_path : state.certFile,
+        certfile_school_path : state.schoolFile,
         upd_id : ''
       }
     });
@@ -219,15 +232,27 @@ const MemberMod_user = (props) => {
     handleOpenDialog(...confirmData);
   }
 
+  const isValidEmail = () => {
+    if(!emailValidation(document.getElementById("email").value)){
+      setValidation({
+        ...validation,
+        email:{
+          error:true,
+          helperText:"이메일을 입력을 확인해주세요."
+        },
+      })
+    }
+  }
+
   const defaultValidation = () =>{
     setValidation({
-      name:       {error:false,helperText:""},
-      position:   {error:false,helperText:""},
-      email:      {error:false,helperText:""},
-      address_1:   {error:false,helperText:""},
-      address_2:   {error:false,helperText:""},
+      name:           {error:false,helperText:""},
+      position:       {error:false,helperText:""},
+      email:          {error:false,helperText:""},
+      address_1:      {error:false,helperText:""},
+      address_2:      {error:false,helperText:""},
       entry_date:     {error:false,helperText:""},
-      school_major:   {error:false,helperText:""},
+      school_career:  {error:false,helperText:""},
       zip_code:       {error:false,helperText:""}
     })
   }
@@ -253,7 +278,7 @@ const MemberMod_user = (props) => {
         axios({
           url: '/intranet/member/memberupd/',
           method: 'post',
-          data:state.memberData,
+          data:infoState.memberData,
           headers: {
             'Content-Type': 'application/json;charset=UTF-8'
           },
@@ -263,18 +288,55 @@ const MemberMod_user = (props) => {
         }).catch(e => {
           console.log(e);
         });
-
-      return false;
     }else{
       return;
     }
   }
   
-   const uploadImgFile = (event,pathProfile) => {
+  const uploadProfileImg = (event,pathProfile) => {
     uploadFile(event,pathProfile);
     setState({
       ...state,
-      preFile:pathProfile + event.target.files[0].name
+      profile : event.target.files[0].name
+    })
+
+    setInfoState({
+      memberData : {
+      ...infoState.memberData,
+      photo_path : event.target.files[0].name
+      }
+    })
+  }
+
+  const uploadCertImg = (event,pathItcert) => {
+    uploadFile(event,pathItcert);
+
+    setState({
+      ...state,
+      certFile : event.target.files[0].name
+    })
+
+    setInfoState({
+      memberData : {
+        ...infoState.memberData,
+        certfile_job_path : event.target.files[0].name
+      }
+    })
+  }
+
+  const uploadSchoolImg = (event,pathSchoolcert) => {
+    uploadFile(event,pathSchoolcert);
+
+    setState({
+      ...state,
+      schoolFile : event.target.files[0].name
+    })
+
+    setInfoState({
+      memberData : {
+        ...infoState.memberData,
+        certfile_school_path : event.target.files[0].name
+      }
     })
   }
 
@@ -336,14 +398,14 @@ const MemberMod_user = (props) => {
                     </div>
                     <div style={{textAlign:'center'}}>
                       <div className={classes.textfield}>
-                        <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadImgFile(event,pathProfile)}/>
-                        <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadFile(event,pathItcert)}/>
-                        <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadFile(event,pathSchoolcert)}/>
+                        <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile)}/>
+                        <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert)}/>
+                        <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert)}/>
                         <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
                                                   프로필 업로드
                         </Button>
                         <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
-                          <input type="hidden" value="test.jpg"/> 
+                          <input type="hidden" value={infoState.memberData.photo_path}/> 
                                                   프로필 다운로드
                         </Button>
                       </div>
@@ -352,7 +414,7 @@ const MemberMod_user = (props) => {
                                                   자격증 업로드
                         </Button>
                         <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
-                          <input type="hidden" value="test.txt"/> 
+                          <input type="hidden" value={infoState.memberData.certFile}/> 
                                                   자격증 다운로드
                         </Button>
                       </div>
@@ -361,7 +423,7 @@ const MemberMod_user = (props) => {
                                                   증명서 업로드
                         </Button>
                         <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
-                          <input type="hidden" value="test.txt"/> 
+                          <input type="hidden" value={infoState.memberData.schoolFile}/> 
                                                   증명서 다운로드
                         </Button>
                       </div>
@@ -373,7 +435,7 @@ const MemberMod_user = (props) => {
                 <Card>
                   <CardContent>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField autoComplete="off" style={{width:'70%'}} id="email" size="small" label="이메일" defaultValue={row.email} onClick={defaultValidation}  error={validation.email.error} helperText={validation.email.helperText} variant="outlined" InputProps={{}}/>
+                      <TextField autoComplete="off" style={{width:'70%'}} id="email" size="small" label="이메일" defaultValue={row.email} onClick={defaultValidation}  error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} variant="outlined" InputProps={{}}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField autoComplete="off" style={{width:'34%'}} id="address_1" size="small" label="기본주소" defaultValue={row.address_1} onClick={defaultValidation}  error={validation.address_1.error} helperText={validation.address_1.helperText} variant="outlined" InputProps={{
@@ -500,7 +562,7 @@ const MemberMod_user = (props) => {
                           <Checkbox
                             value="checkedB"
                             color="primary"
-                            id="moon_cal"
+                            id="mooncal_yn"
                             defaultChecked={row.moon_cal}
                           />
                         }

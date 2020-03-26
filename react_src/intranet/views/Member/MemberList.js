@@ -81,12 +81,13 @@ const MemberList = (props) => {
 		preMemberList : null, //변경 직전 리스트
 		memberList : null,	// 사원관리 리스트
 		hiddenMemberList : null,
-		manager_yn : true,		// 관리자 여부
+		manager_yn : 1,		// 관리자 여부
 		showAll : true,
 		showAllValue : 0
 	});
 
 	const [openModal, setOpenModal] = React.useState({
+		member_no:'',
 		name:'',
 		position:'',
 		position_name:'',
@@ -177,6 +178,7 @@ const MemberList = (props) => {
 
 	const openContentModal = (datum) => {
 		return setOpenModal({
+			member_no:datum.member_no,
 			name:datum.name,
 			position:datum.position,
 			position_name:datum.code_name,
@@ -186,12 +188,14 @@ const MemberList = (props) => {
 			openModal:true,
 			manager_yn : state.manager_yn,
 			buttonName : '상세로 이동하기',
-			datum:datum
+			datum:datum,
+			routeProps : routeProps
 		});
 	  }
 	  
 	const handleCloseModal = (trigger) => {
 		return setOpenModal({
+			member_no:'',
 			name:'',
 			position:'',
 			position_name:'',
@@ -199,7 +203,7 @@ const MemberList = (props) => {
 			address_2:'',
 			email:'', 
 			openModal:trigger,
-			manager_yn : null,
+			manager_yn : 0,
 			buttonName : '',
 			datum:null
 		});
@@ -539,11 +543,9 @@ const MemberList = (props) => {
 												{row.name}
 											</TableCell>
 											<TableCell align="center">
-												<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod/admin":"/member/membermod/user"} className={`${classes.router_link} ${classes.button_tool} `} >
-													<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
-														수정
-													</Button>
-												</RouterLink>
+												<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
+													수정
+												</Button>
 												<RouterLink button="true" to="/project/history" className={classes.router_link}>
 													<Button variant="contained" color="primary">
 														이력

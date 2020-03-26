@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
@@ -19,7 +19,8 @@ import {
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
-import {findAddress,dateFormatter, phoneFormatter,schCareer,unFormatter,positions,certYn,emailValidation,uploadFile,downloadFile } from '../../js/util';
+import axios from 'axios';
+import {findAddress,dateFormatter, phoneFormatter,unFormatter,certYn,emailValidation,uploadFile,downloadFile } from '../../js/util';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -55,40 +56,85 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-const MemberMod_admin = () => {
+const MemberMod_admin = (props) => {
+  const { match } = props.routeProps;
+  const member_no = match.params.member_no; 
+  
   const classes = useStyles();
 
-  const pathProfile = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathItcert = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\itCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathSchoolcert = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathProfile     = "\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathItcert      = "\\itCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathSchoolcert  = "\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
   
   const [state, setState] = React.useState({
-		memberData : JSON.parse(localStorage.getItem('savedData')),
+    profile : null,
+    certFile : null,
+    schoolFile : null
+  });
+
+  const [infoState,setInfoState] = React.useState({
+		memberData : null,
 	});
 
    const [validation, setValidation] = React.useState({
-      name:       {error:false,helperText:""},
-      position:   {error:false,helperText:""},
-      email:      {error:false,helperText:""},
-      address1:   {error:false,helperText:""},
-      address2:   {error:false,helperText:""},
-      entry:      {error:false,helperText:""},
-      sch_car:    {error:false,helperText:""},
-      postcode:   {error:false,helperText:""}
+      name:           {error:false,helperText:""},
+      position:       {error:false,helperText:""},
+      email:          {error:false,helperText:""},
+      address_1:      {error:false,helperText:""},
+      address_2:      {error:false,helperText:""},
+      entry_date:     {error:false,helperText:""},
+      school_career:  {error:false,helperText:""},
+      zip_code:       {error:false,helperText:""}
   })
 
-  //임시파일 불러오기
-  const row = state.memberData;
-
   const [dateState, setDateState] = React.useState({
-    car_date : dateFormatter(row.car_date),
-    entry : dateFormatter(row.entry),
-    mar_date : dateFormatter(row.mar_date),
-    birth : dateFormatter(row.birth)
+    career_date     : null,
+    entry_date      : null,
+    marriage_date   : null,
+    birth_date      : null
   });
-  
-  //임시데이터 저장하기
-  const setLocalstorage = () => {
+
+  const [codeState, setCodeState] = React.useState({
+    graduationCode  : null,
+    positionCode    : null,
+  });
+
+  const row = infoState.memberData;
+
+  useEffect(() => {
+		axios({
+			url: '/intranet/member/membersel/',
+      method: 'post',
+      data:{
+        member_no : member_no
+      },
+      headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+		}).then(response => {
+      console.log("memberResult : " + JSON.stringify(response));
+      
+      setInfoState({
+        memberData : response.data.memberData,
+      })
+
+      setCodeState({
+        graduationCode  : response.data.graduationCode,
+        positionCode    : response.data.positionCode
+      })
+
+      setDateState({
+        career_date     : dateFormatter(response.data.memberData.career_date),
+        entry_date      : dateFormatter(response.data.memberData.entry_date),
+        marriage_date   : dateFormatter(response.data.memberData.marriage_date),
+        birth_date      : dateFormatter(response.data.memberData.birth_date)
+      })
+		}).catch(e => {
+			console.log(e);
+		});
+	},[])
+
+  const saveMemberData = () => {
 
       //이름 Validation
     if(document.getElementById("name").value == "" || document.getElementById("name").value == null){
@@ -127,10 +173,10 @@ const MemberMod_admin = () => {
     }
 
     //기본주소 Validation
-    if(document.getElementById("address1").value === "" || document.getElementById("address1").value === null){
+    if(document.getElementById("address_1").value === "" || document.getElementById("address_1").value === null){
       setValidation({
         ...validation,
-        address1:{
+        address_1:{
           error:true,
           helperText:"기본주소를 입력해주세요."
         },
@@ -138,10 +184,10 @@ const MemberMod_admin = () => {
       return;
     }
     //상세주소 Validation
-    if(document.getElementById("address2").value === "" || document.getElementById("address2").value === null){
+    if(document.getElementById("address_2").value === "" || document.getElementById("address_2").value === null){
       setValidation({
         ...validation,
-        address2:{
+        address_2:{
           error:true,
           helperText:"상세주소를 입력해주세요."
         },
@@ -150,10 +196,10 @@ const MemberMod_admin = () => {
     }
 
     //입사일 Validation
-    if(document.getElementById("entry").value === "" || document.getElementById("entry").value === null){
+    if(document.getElementById("entry_date").value === "" || document.getElementById("entry_date").value === null){
       setValidation({
         ...validation,
-        entry:{
+        entry_date:{
           error:true,
           helperText:"입사일을 선택해주세요."
         },
@@ -162,10 +208,10 @@ const MemberMod_admin = () => {
     }
 
       //최종학력 Validation
-      if(document.getElementById("sch_car").nextSibling.value == "" || document.getElementById("sch_car").nextSibling.value == null){
+      if(document.getElementById("school_career").nextSibling.value == "" || document.getElementById("school_career").nextSibling.value == null){
         setValidation({
           ...validation,
-          sch_car:{
+          school_career:{
             error:true,
             helperText:"최종학력을 선택해 주세요."
           }
@@ -174,10 +220,10 @@ const MemberMod_admin = () => {
       }
 
       //우편번호 Validation
-      if(document.getElementById("postcode").value === "" || document.getElementById("postcode").value === null){
+      if(document.getElementById("zip_code").value === "" || document.getElementById("zip_code").value === null){
         setValidation({
           ...validation,
-          entry:{
+          zip_code:{
             error:true,
             helperText:"우편번호을 입력해주세요."
           },
@@ -185,29 +231,32 @@ const MemberMod_admin = () => {
         return;
       }
 
-    const getData = {
-      id : row.id,
-      name : document.getElementById("name").value,
-      position : document.getElementById("position").nextSibling.value,
-      address1 : document.getElementById("address1").value,
-      address2 : document.getElementById("address2").value,
-      phone : unFormatter(document.getElementById("phone").value),
-      career : String(Number(new Date().getFullYear()) - Number(document.getElementById("car_date").value.substring( 0, 4 ))),
-      entry : unFormatter(document.getElementById("entry").value),
-      birth : unFormatter(document.getElementById("birth").value),
-      sch_mjr : document.getElementById("sch_mjr").value,
-      cert_yn : document.getElementById("cert_yn").nextSibling.value,
-      email : document.getElementById("email").value,
-      manager_yn : document.getElementById("manager_yn").checked,
-      sch_car : document.getElementById("sch_car").nextSibling.value,
-      mar_date : document.getElementById("mar_date").value,
-      approval_yn : document.getElementById("approval_yn").checked,
-      moon_cal : document.getElementById("moon_cal").checked,
-      car_date : unFormatter(document.getElementById("car_date").value)
-    }
-
-    localStorage.removeItem('savedData');
-    localStorage.setItem('savedData', JSON.stringify(getData));
+    setInfoState({
+      memberData : {
+        member_no : row.member_no,
+        name : document.getElementById("name").value,
+        position : document.getElementById("position").nextSibling.value,
+        address_1 : document.getElementById("address_1").value,
+        address_2 : document.getElementById("address_2").value,
+        zip_code : document.getElementById("zip_code").value,
+        phone_num : unFormatter(document.getElementById("phone_num").value),
+        career_date : unFormatter(document.getElementById("career_date").value),
+        entry_date : unFormatter(document.getElementById("entry_date").value),
+        birth_date : unFormatter(document.getElementById("birth_date").value),
+        school_major : document.getElementById("school_major").value,
+        cert_yn : document.getElementById("cert_yn").nextSibling.value,
+        email : document.getElementById("email").value,
+        manager_yn : document.getElementById("manager_yn").checked? 1:0,
+        school_career : document.getElementById("school_career").nextSibling.value,
+        marriage_date : unFormatter(document.getElementById("marriage_date").value),
+        approval_yn : document.getElementById("approval_yn").checked? 1:0,
+        mooncal_yn : document.getElementById("mooncal_yn").checked? 1:0,
+        photo_path : state.profile,
+        certfile_job_path : state.certFile,
+        certfile_school_path : state.schoolFile,
+        upd_id : ''
+      }
+    })
 
     handleOpenDialog(...confirmData);
   }
@@ -226,14 +275,14 @@ const MemberMod_admin = () => {
 
   const defaultValidation = () =>{
     setValidation({
-      name:       {error:false,helperText:""},
-      position:   {error:false,helperText:""},
-      email:      {error:false,helperText:""},
-      address1:   {error:false,helperText:""},
-      address2:   {error:false,helperText:""},
-      entry:      {error:false,helperText:""},
-      sch_car:    {error:false,helperText:""},
-      postcode:{error:false,helperText:""}
+      name:           {error:false,helperText:""},
+      position:       {error:false,helperText:""},
+      email:          {error:false,helperText:""},
+      address_1:      {error:false,helperText:""},
+      address_2:      {error:false,helperText:""},
+      entry_date:     {error:false,helperText:""},
+      school_career:  {error:false,helperText:""},
+      zip_code:       {error:false,helperText:""}
     })
   }
 
@@ -255,304 +304,357 @@ const MemberMod_admin = () => {
 	const handleCloseDialog = (result) => {
     setDialog({title:'', content:'', onOff:false, isConfirm:false});
     if(result){
-      return location.href="/#/member/";
+      axios({
+        url: '/intranet/member/memberupd/',
+        method: 'post',
+        data:infoState.memberData,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8'
+        },
+      }).then(response => {
+        console.log("memberResult : " + JSON.stringify(response));
+        location.href = '/#/member/';
+      }).catch(e => {
+        console.log(e);
+      });
     }else{
       return;
     }
   }
   
-  const uploadImgFile = (event,pathProfile) => {
+ const uploadProfileImg = (event,pathProfile) => {
     uploadFile(event,pathProfile);
     setState({
       ...state,
-      preFile:pathProfile + event.target.files[0].name
+      profile : event.target.files[0].name
+    })
+
+    setInfoState({
+      memberData : {
+      ...infoState.memberData,
+      photo_path : event.target.files[0].name
+      }
+    })
+  }
+
+  const uploadCertImg = (event,pathItcert) => {
+    uploadFile(event,pathItcert);
+
+    setState({
+      ...state,
+      certFile : event.target.files[0].name
+    })
+
+    setInfoState({
+      memberData : {
+        ...infoState.memberData,
+        certfile_job_path : event.target.files[0].name
+      }
+    })
+  }
+
+  const uploadSchoolImg = (event,pathSchoolcert) => {
+    uploadFile(event,pathSchoolcert);
+
+    setState({
+      ...state,
+      schoolFile : event.target.files[0].name
+    })
+
+    setInfoState({
+      memberData : {
+        ...infoState.memberData,
+        certfile_school_path : event.target.files[0].name
+      }
     })
   }
 
   const getCarDate = (date) => {
     setDateState({
-      car_date : Moment(date).format('YYYY-MM-DD')
+      ...dateState,
+      career_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getEntry = (date) => {
     setDateState({
-      entry : Moment(date).format('YYYY-MM-DD')
+      ...dateState,
+      entry_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getMarDate = (date) => {
     setDateState({
-      car_date : Moment(date).format('YYYY-MM-DD')
+      ...dateState,
+      marriage_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getBirth = (date) => {
     setDateState({
-      car_date : Moment(date).format('YYYY-MM-DD')
+      ...dateState,
+      birth_date : Moment(date).format('YYYY-MM-DD')
     })
-	}
+  }
 
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
-			<Card>
-				<CardContent>
-					사원상세_관리자
-				</CardContent>
-        <div className={classes.root}>
-          <Grid container spacing={3} style={{
-            backgroundColor:'lightgrey',
-            height:'auto'
-          }}>
-            <Grid item xs={12} sm={4} style={{
-              height:'100%'
+			{(row != null) && (
+        <Card>
+          <CardContent>
+            사원상세_관리자
+          </CardContent>
+          <div className={classes.root}>
+            <Grid container spacing={3} style={{
+              backgroundColor:'lightgrey',
+              height:'auto'
             }}>
-              <Card>
-                <CardContent style={{
-                  height:'100%'
-                }}>
-                  <div style={{textAlign:'-webkit-center'}}>
-                    <Avatar src={row.photo_path != undefined ? pathProfile + row.photo_path : ""} className={classes.large} />
-                  </div>
-                  <div style={{textAlign:'center'}}>
-                    <Typography>
-                      {row.id}
-                    </Typography>
-                    <div className={classes.textfield}>
-                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadImgFile(event,pathProfile)}/>
-                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadFile(event,pathItcert)}/>
-                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadFile(event,pathSchoolcert)}/>
-                      <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
-                                                프로필 업로드
-                      </Button>
-                      <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
-                        <input type="hidden" value="test.jpg"/> 
-                                                프로필 다운로드
-                      </Button>
+              <Grid item xs={12} sm={4} style={{
+                height:'100%'
+              }}>
+                <Card>
+                  <CardContent style={{
+                    height:'100%'
+                  }}>
+                    <div style={{textAlign:'-webkit-center'}}>
+                      <Avatar src={row.photo_path != undefined ? pathProfile + row.photo_path : ""} className={classes.large} />
                     </div>
-                    <div className={classes.textfield}>
-                      <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileItcert").click()}>
-                                                자격증 업로드
-                      </Button>
-                      <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
-                        <input type="hidden" value="test.txt"/> 
-                                                자격증 다운로드
-                      </Button>
-                    </div>
-                    <div className={classes.textfield}>
-                      <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileSchoolcert").click()}>
-                                                증명서 업로드
-                      </Button>
-                      <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
-                        <input type="hidden" value="test.txt"/> 
-                                                증명서 다운로드
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={8}>
-              <Card>
-                <CardContent>
-                    <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField size="small" id="name"  autoComplete="off" onClick={defaultValidation} error={validation.name.error} helperText={validation.name.helperText} defaultValue={row.name} label="이름" variant="outlined" />
-                      <TextField style={{width:'20%'}}
-                        id="position"
-                        select
-                        label="직급"
-                        variant="outlined"
-                        defaultValue={row.position}
-                        size="small" 
-                        error={validation.position.error}
-                        helperText={validation.position.helperText}
-                        onClick={defaultValidation} 
-                      >
-                        {positions.map(option => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            value="checkedB"
-                            color="primary"
-                            defaultChecked={row.manager_yn}
-                            id="manager_yn"
-                          />
-                        }
-                        label="관리자"
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            value="checkedB"
-                            color="primary"
-                            defaultChecked={row.approval_yn}
-                            id="approval_yn"
-                          />
-                        }
-                        label="1차결제자"
-                      />
-                    </div>
-                    <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField autoComplete="off" size="small" style={{width:'34%'}} id="email"  onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} defaultValue={row.email} label="이메일" variant="outlined" />
-                      <TextField autoComplete="off" size="small" style={{width:'34%'}} id="phone" defaultValue={phoneFormatter(row.phone)} label="휴대전화" variant="outlined" />
-                    </div>
-                    <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField autoComplete="off" size="small" style={{width:'34%'}} id="address1"  onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} defaultValue={row.address1} label="기본주소" variant="outlined" InputProps={{
-                        readOnly: true,
-                      }}/>
-                      <TextField autoComplete="off" size="small" style={{width:'34%'}} id="postcode"  onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} defaultValue={row.postcode} label="우편번호" variant="outlined" InputProps={{
-                        readOnly: true,
-                      }}/>
-                      <Button variant="contained" color="primary" onClick={() => findAddress("address1","postcode")}>
-                                              주소찾기
-                      </Button>
-                      <TextField autoComplete="off" size="small" style={{width:'70%'}} onClick={defaultValidation} error={validation.address2.error} helperText={validation.address2.helperText} id="address2" defaultValue={row.address2} label="상세주소" variant="outlined"/>
-                    </div>
-                    <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField style={{width:'20%'}}
-                        id="cert_yn"
-                        label="자격증 유무"
-                        variant="outlined"
-                        select
-                        defaultValue={row.cert_yn}
-                        size="small" 
-                      >
-                        {certYn.map(option => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                      <TextField autoComplete="off" size="small" style={{width:'20%'}} id="sch_mjr" defaultValue={row.sch_mjr} label="학교/학과" variant="outlined" />
-                      <TextField style={{width:'20%'}}
-                        id="sch_car"
-                        label="최종학력"
-                        select
-                        variant="outlined"
-                        defaultValue={row.sch_car}
-                        size="small" 
-                        error={validation.sch_car.error}
-                        helperText={validation.sch_car.helperText}
-                        onClick={defaultValidation} 
-                      >
-                        {schCareer.map(option => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    </div>
-                    <div className={classes.textfield} style={{width:'auto'}}>
-                      <div style={{width:'17%', display:'inline-flex'}} >
-                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-                            <Grid container justify="space-around">
-                              <DatePicker
-                                label="경력시작일"
-                                locale='ko'
-                                margin="dense"
-                                id="car_date"
-                                views={["year", "month", "date"]}
-                                format="yyyy-MM-dd"
-                                value={dateState.car_date}
-                                onChange={getCarDate}
-                                inputVariant="outlined"
-                                readOnly={false}
-                                fullWidth
-                              />
-                            </Grid>
-                          </MuiPickersUtilsProvider>
-                        </div>
-                        <div style={{width:'17%', display:'inline-flex'}} >
-                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-                            <Grid container justify="space-around">
-                              <DatePicker
-                                label="결혼기념일"
-                                locale='ko'
-                                margin="dense"
-                                id="mar_date"
-                                views={["year", "month", "date"]}
-                                format="yyyy-MM-dd"
-                                value={dateState.mar_date}
-                                onChange={getMarDate}
-                                inputVariant="outlined"
-                                readOnly={false}
-                                fullWidth
-                              />
-                            </Grid>
-                          </MuiPickersUtilsProvider>
-                        </div>
-                        <div style={{width:'17%', display:'inline-flex'}} >
-                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-                            <Grid container justify="space-around">
-                              <DatePicker
-                                label="입사일"
-                                locale='ko'
-                                margin="dense"
-                                id="entry"
-                                views={["year", "month", "date"]}
-                                format="yyyy-MM-dd"
-                                value={dateState.entry}
-                                onChange={getEntry}
-                                inputVariant="outlined"
-                                readOnly={false}
-                                fullWidth
-                              />
-                            </Grid>
-                          </MuiPickersUtilsProvider>
-                        </div>
-                        <div style={{width:'17%', display:'inline-flex'}} >
-                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-                            <Grid container justify="space-around">
-                              <DatePicker
-                                label="생일"
-                                locale='ko'
-                                margin="dense"
-                                id="birth"
-                                views={["year", "month", "date"]}
-                                format="yyyy-MM-dd"
-                                value={dateState.birth}
-                                onChange={getBirth}
-                                inputVariant="outlined"
-                                readOnly={false}
-                                fullWidth
-                              />
-                            </Grid>
-                          </MuiPickersUtilsProvider>
-                        </div>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            value="checkedB"
-                            color="primary"
-                            id="moon_cal"
-                            defaultChecked={row.moon_cal}
-                          />
-                        }
-                        label="음력"
-                      />
-                    </div>
-                    <div className={classes.textfield}>
-                      <Button variant="contained" color="primary" onClick={setLocalstorage}>
-                                                저장하기
-                      </Button>
-                      <RouterLink button="true" to="/member/" className={classes.router_link}>
-                        <Button variant="contained" color="primary">
-                                                  뒤로가기
+                    <div style={{textAlign:'center'}}>
+                      <Typography>
+                        {row.member_no}
+                      </Typography>
+                      <div className={classes.textfield}>
+                        <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile)}/>
+                        <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert)}/>
+                        <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert)}/>
+                        <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
+                                                  프로필 업로드
                         </Button>
-                      </RouterLink>
-                      <Button variant="contained" color="primary">
-                                                비밀번호 초기화
-                      </Button>
+                        <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
+                          <input type="hidden" value={infoState.memberData.photo_path}/> 
+                                                  프로필 다운로드
+                        </Button>
+                      </div>
+                      <div className={classes.textfield}>
+                        <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileItcert").click()}>
+                                                  자격증 업로드
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
+                          <input type="hidden" value={infoState.memberData.certFile}/> 
+                                                  자격증 다운로드
+                        </Button>
+                      </div>
+                      <div className={classes.textfield}>
+                        <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileSchoolcert").click()}>
+                                                  증명서 업로드
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
+                          <input type="hidden" value={infoState.memberData.schoolFile}/> 
+                                                  증명서 다운로드
+                        </Button>
+                      </div>
                     </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={8}>
+                <Card>
+                  <CardContent>
+                      <div className={classes.textfield} style={{width:'auto'}}>
+                        <TextField size="small" id="name"  autoComplete="off" onClick={defaultValidation} error={validation.name.error} helperText={validation.name.helperText} onChange={isValidEmail} defaultValue={row.name} label="이름" variant="outlined" />
+                        <TextField style={{width:'20%'}}
+                          id="position"
+                          select
+                          label="직급"
+                          variant="outlined"
+                          defaultValue={row.position}
+                          size="small" 
+                          error={validation.position.error}
+                          helperText={validation.position.helperText}
+                          onClick={defaultValidation} 
+                        >
+                          {codeState.positionCode != null && codeState.positionCode.map(option => (
+                            <MenuItem key={option.CODE_ID} value={option.CODE_ID}>
+                              {option.CODE_NAME}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              value="checkedB"
+                              color="primary"
+                              defaultChecked={row.manager_yn}
+                              id="manager_yn"
+                            />
+                          }
+                          label="관리자"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              value="checkedB"
+                              color="primary"
+                              defaultChecked={row.approval_yn}
+                              id="approval_yn"
+                            />
+                          }
+                          label="1차결제자"
+                        />
+                      </div>
+                      <div className={classes.textfield} style={{width:'auto'}}>
+                        <TextField autoComplete="off" size="small" style={{width:'34%'}} id="email"  onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} defaultValue={row.email} label="이메일" variant="outlined" />
+                        <TextField autoComplete="off" size="small" style={{width:'34%'}} id="phone_num" defaultValue={phoneFormatter(row.phone_num)} label="휴대전화" variant="outlined" />
+                      </div>
+                      <div className={classes.textfield} style={{width:'auto'}}>
+                        <TextField autoComplete="off" size="small" style={{width:'34%'}} id="address_1"  onClick={defaultValidation}  error={validation.address_1.error} helperText={validation.address_1.helperText} defaultValue={row.address_1} label="기본주소" variant="outlined" InputProps={{
+                          readOnly: true,
+                        }}/>
+                        <TextField autoComplete="off" size="small" style={{width:'34%'}} id="zip_code"  onClick={defaultValidation}  error={validation.zip_code.error} helperText={validation.zip_code.helperText} defaultValue={row.zip_code} label="우편번호" variant="outlined" InputProps={{
+                          readOnly: true,
+                        }}/>
+                        <Button variant="contained" color="primary" onClick={() => findAddress("address_1","zip_code")}>
+                                                주소찾기
+                        </Button>
+                        <TextField autoComplete="off" size="small" style={{width:'70%'}} id="address_2" onClick={defaultValidation} error={validation.address_2.error} helperText={validation.address_2.helperText}  defaultValue={row.address_2} label="상세주소" variant="outlined"/>
+                      </div>
+                      <div className={classes.textfield} style={{width:'auto'}}>
+                        <TextField style={{width:'20%'}}
+                          id="cert_yn"
+                          label="자격증 유무"
+                          variant="outlined"
+                          select
+                          defaultValue={row.cert_yn}
+                          size="small" 
+                        >
+                          {certYn.map(option => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                        <TextField autoComplete="off" size="small" style={{width:'20%'}} id="school_major" defaultValue={row.school_major} label="학교/학과" variant="outlined" />
+                        <TextField style={{width:'20%'}}
+                          id="school_career"
+                          label="최종학력"
+                          select
+                          variant="outlined"
+                          defaultValue={row.school_career}
+                          size="small" 
+                          error={validation.school_career.error}
+                          helperText={validation.school_career.helperText}
+                          onClick={defaultValidation} 
+                        >
+                          {codeState.graduationCode != null && codeState.graduationCode.map(option => (
+                            <MenuItem key={option.CODE_ID} value={option.CODE_ID}>
+                              {option.CODE_NAME}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      </div>
+                      <div className={classes.textfield} style={{width:'auto'}}>
+                        <div style={{width:'17%', display:'inline-flex'}} >
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                              <Grid container justify="space-around">
+                                <DatePicker
+                                  label="경력시작일"
+                                  locale='ko'
+                                  margin="dense"
+                                  id="career_date"
+                                  views={["year", "month", "date"]}
+                                  format="yyyy-MM-dd"
+                                  value={dateState.career_date}
+                                  onChange={getCarDate}
+                                  inputVariant="outlined"
+                                />
+                              </Grid>
+                            </MuiPickersUtilsProvider>
+                          </div>
+                          <div style={{width:'17%', display:'inline-flex'}} >
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                              <Grid container justify="space-around">
+                                <DatePicker
+                                  label="결혼기념일"
+                                  locale='ko'
+                                  margin="dense"
+                                  id="marriage_date"
+                                  views={["year", "month", "date"]}
+                                  format="yyyy-MM-dd"
+                                  value={dateState.marriage_date}
+                                  onChange={getMarDate}
+                                  inputVariant="outlined"
+                                />
+                              </Grid>
+                            </MuiPickersUtilsProvider>
+                          </div>
+                          <div style={{width:'17%', display:'inline-flex'}} >
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                              <Grid container justify="space-around">
+                                <DatePicker
+                                  label="입사일"
+                                  locale='ko'
+                                  margin="dense"
+                                  id="entry_date"
+                                  views={["year", "month", "date"]}
+                                  format="yyyy-MM-dd"
+                                  value={dateState.entry_date}
+                                  onChange={getEntry}
+                                  inputVariant="outlined"
+                                  readOnly={false}
+                                  fullWidth
+                                />
+                              </Grid>
+                            </MuiPickersUtilsProvider>
+                          </div>
+                          <div style={{width:'17%', display:'inline-flex'}} >
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+                              <Grid container justify="space-around">
+                                <DatePicker
+                                  label="생일"
+                                  locale='ko'
+                                  margin="dense"
+                                  id="birth_date"
+                                  views={["year", "month", "date"]}
+                                  format="yyyy-MM-dd"
+                                  value={dateState.birth_date}
+                                  onChange={getBirth}
+                                  inputVariant="outlined"
+                                  readOnly={false}
+                                  fullWidth
+                                />
+                              </Grid>
+                            </MuiPickersUtilsProvider>
+                          </div>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              value="checkedB"
+                              color="primary"
+                              id="mooncal_yn"
+                              defaultChecked={row.mooncal_yn}
+                            />
+                          }
+                          label="음력"
+                        />
+                      </div>
+                      <div className={classes.textfield}>
+                        <Button variant="contained" color="primary" onClick={saveMemberData}>
+                                                  저장하기
+                        </Button>
+                        <RouterLink button="true" to="/member/" className={classes.router_link}>
+                          <Button variant="contained" color="primary">
+                                                    뒤로가기
+                          </Button>
+                        </RouterLink>
+                        <Button variant="contained" color="primary">
+                                                  비밀번호 초기화
+                        </Button>
+                      </div>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
-          </Grid>
-        </div>
-			</Card>
+          </div>
+        </Card>
+      )}
 		</div>
 	);
 }
