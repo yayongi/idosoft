@@ -70,13 +70,13 @@ export default function App() {
 						</MainLayout>
 					} />
 					{/* 사원관리 수정 - 관리자 */}
-					<Route exact path='/member/membermod/admin' render={(props) =>
+					<Route exact path='/member/membermod/admin/:member_no' render={(props) =>
 						<MainLayout routeProps={props}>
 							<MemberMod_admin routeProps={props} />
 						</MainLayout>
 					} />
 					{/* 사원관리 수정 - 사용자 */}
-					<Route exact path='/member/membermod/user' render={(props) =>
+					<Route exact path='/member/membermod/user/:member_no' render={(props) =>
 						<MainLayout routeProps={props}>
 							<MemberMod_user routeProps={props} />
 						</MainLayout>
