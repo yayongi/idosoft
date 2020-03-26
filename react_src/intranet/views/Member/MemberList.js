@@ -24,7 +24,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
 
 import CommonDialog from '../../js/CommonDialog';
-import {tableList} from './data/data';
 import ContentModal from "./component/ContentModal";
 import FilterModal from "./component/FilterModal";
 import axios from 'axios';
@@ -71,8 +70,10 @@ const useStyles = makeStyles(theme =>({
 	}
 }));
 
-const MemberList = () => {
+const MemberList = (props) => {
 	const classes = useStyles();
+
+	const { routeProps } = props;
 	
 	const [selected, setSelected] = React.useState([]);
 
@@ -344,6 +345,18 @@ const MemberList = () => {
 		setOpenSnackBar(false);
 	};
 
+	// 상세화면 이돋하기
+	const goDetail = (member_no,manager_yn) => {
+		let url = "";
+		if(manager_yn == 1){
+			url = "/member/membermod/admin/";
+		}else{
+			url = "/member/membermod/user/";
+		}
+
+		routeProps.history.push(url + member_no);
+	}
+
 	return (
 		<div>
 			<ContentModal props={openModal} closeModal={handleCloseModal}/>
@@ -483,11 +496,9 @@ const MemberList = () => {
 											{row.cert_yn == 1? '유':'무'}
 										</TableCell>
 										<TableCell align="center">
-											<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod/admin":"/member/membermod/user"} className={`${classes.router_link} ${classes.button_tool}`} >
-												<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
-													수정
-												</Button>
-											</RouterLink>
+											<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
+												수정
+											</Button>
 											<RouterLink button="true" to="/project/history" className={classes.router_link}>
 												<Button variant="contained" color="primary">
 													개인이력
@@ -529,7 +540,7 @@ const MemberList = () => {
 											</TableCell>
 											<TableCell align="center">
 												<RouterLink button="true" to={state.manager_yn == true ? "/member/membermod/admin":"/member/membermod/user"} className={`${classes.router_link} ${classes.button_tool} `} >
-													<Button variant="contained" color="primary" onClick={() => setLocalstorage(row)}>
+													<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
 														수정
 													</Button>
 												</RouterLink>

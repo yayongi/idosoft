@@ -66,11 +66,15 @@ public class MemberController {
 	}
 	
 	// 사원정보 불러오기
-	@RequestMapping(value="/member/memberreg/", method=RequestMethod.POST)
+	@RequestMapping(value="/member/membersel/", method=RequestMethod.POST)
 	@ResponseBody
-	public MemberVO getMemberInfo(Model model, @RequestBody String member_no,HttpServletRequest request){
+	public HashMap<String, Object> getMemberInfo(Model model, @RequestBody MemberVO memberVo,HttpServletRequest request){
 		try {
-			return memberService.selectMember(member_no);
+			HashMap<String, Object> tempMap = new HashMap<String, Object>();
+			tempMap.put("memberData",memberService.selectMember(memberVo.getMember_no()));
+			tempMap.put("graduationCode", memberService.getCodeInfo("CD0001"));
+			
+			return tempMap;
 		}catch(Exception e) {
 			e.printStackTrace();
 			return null;
@@ -78,9 +82,12 @@ public class MemberController {
 	}
 	
 	// 사원정보 수정
-	@RequestMapping(value="/member/memberupd", method=RequestMethod.POST)
+	@RequestMapping(value="/member/memberupd/", method=RequestMethod.POST)
 	@ResponseBody
 	public boolean updMemberInfo(Model model, @RequestBody MemberVO memberVo,HttpServletRequest request){
+		
+		logger.debug("memberVo : " + memberVo.getZip_code());
+		
 		try {
 			memberService.updateMember(memberVo);
 			return true;

@@ -23,9 +23,9 @@ export function findAddress(component1,component2){
 //작성자 : 강성우
 export function dateFormatter(param){
 	if(param.length == 8){
-		return `${param.substring(0,4)}.${param.substring(4,6)}.${param.substring(6,8)}`
+		return `${param.substring(0,4)}-${param.substring(4,6)}-${param.substring(6,8)}`
 	}else if(param.length == 6){
-		return `${param.substring(0,4)}.${param.substring(4,6)}`
+		return `${param.substring(0,4)}-${param.substring(4,6)}`
 	}
 }
 

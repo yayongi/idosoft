@@ -72,6 +72,7 @@ const MemberReg = (props) => {
       position : '',
       address_1 : '',
       address_2 : '',
+      zip_code:'',
       phone_num : '',
       entry_date : '',
       birth_date : '',
@@ -94,11 +95,11 @@ const MemberReg = (props) => {
     name:       {error:false,helperText:""},
     position:   {error:false,helperText:""},
     email:      {error:false,helperText:""},
-    address1:   {error:false,helperText:""},
-    address2:   {error:false,helperText:""},
-    entry:      {error:false,helperText:""},
-    sch_car:    {error:false,helperText:""},
-    postcode:   {error:false,helperText:""}
+    address_1:   {error:false,helperText:""},
+    address_2:   {error:false,helperText:""},
+    entry_date:      {error:false,helperText:""},
+    school_career:    {error:false,helperText:""},
+    zip_code:   {error:false,helperText:""}
   })
 
   const [codeState, setCodeState] = React.useState({
@@ -131,10 +132,10 @@ const MemberReg = (props) => {
   },[])
 
   const [dateState, setDateState] = React.useState({
-    car_date : null,
-    entry : null,
-    mar_date : null,
-    birth : null
+    career_date : null,
+    entry_date : null,
+    marriage_date : null,
+    birth_date : null
   });	
 
   const setValidationLevel = () => {
@@ -175,10 +176,10 @@ const MemberReg = (props) => {
     }
 
     //기본주소 Validation
-    if(document.getElementById("address1").value === "" || document.getElementById("address1").value === null){
+    if(document.getElementById("address_1").value === "" || document.getElementById("address_1").value === null){
       setValidation({
         ...validation,
-        address1:{
+        address_1:{
           error:true,
           helperText:"기본주소를 입력해주세요."
         },
@@ -186,10 +187,10 @@ const MemberReg = (props) => {
       return;
     }
     //상세주소 Validation
-    if(document.getElementById("address2").value === "" || document.getElementById("address2").value === null){
+    if(document.getElementById("address_2").value === "" || document.getElementById("address_2").value === null){
       setValidation({
         ...validation,
-        address2:{
+        address_2:{
           error:true,
           helperText:"상세주소를 입력해주세요."
         },
@@ -198,10 +199,10 @@ const MemberReg = (props) => {
     }
 
     //입사일 Validation
-    if(document.getElementById("entry").value === "" || document.getElementById("entry").value === null){
+    if(document.getElementById("entry_date").value === "" || document.getElementById("entry_date").value === null){
       setValidation({
         ...validation,
-        entry:{
+        entry_date:{
           error:true,
           helperText:"입사일을 선택해주세요."
         },
@@ -210,10 +211,10 @@ const MemberReg = (props) => {
     }
 
     //우편번호 Validation
-    if(document.getElementById("postcode").value === "" || document.getElementById("postcode").value === null){
+    if(document.getElementById("zip_code").value === "" || document.getElementById("zip_code").value === null){
       setValidation({
         ...validation,
-        entry:{
+        zip_code:{
           error:true,
           helperText:"우편번호을 입력해주세요."
         },
@@ -222,10 +223,10 @@ const MemberReg = (props) => {
     }
 
       //최종학력 Validation
-      if(document.getElementById("sch_car").nextSibling.value == "" || document.getElementById("sch_car").nextSibling.value == null){
+      if(document.getElementById("school_career").nextSibling.value == "" || document.getElementById("school_career").nextSibling.value == null){
         setValidation({
           ...validation,
-          sch_car:{
+          school_career:{
             error:true,
             helperText:"최종학력을 선택해 주세요."
           }
@@ -237,22 +238,22 @@ const MemberReg = (props) => {
         ...infoState,
         name : document.getElementById("name").value,
         position : document.getElementById("position").nextSibling.value,
-        address_1 : document.getElementById("address1").value,
-        address_2 : document.getElementById("address2").value,
-        phone_num : document.getElementById("phone").value,
-        entry_date : document.getElementById("entry").value.replace(/\-/gi,""),
-        birth_date : document.getElementById("birth").value.replace(/\-/gi,""),
-        school_major : document.getElementById("sch_mjr").value,
+        address_1 : document.getElementById("address_1").value,
+        address_2 : document.getElementById("address_2").value,
+        zip_code : document.getElementById("zip_code").value,
+        phone_num : document.getElementById("phone_num").value,
+        entry_date : document.getElementById("entry_date").value.replace(/\-/gi,""),
+        birth_date : document.getElementById("birth_date").value.replace(/\-/gi,""),
+        school_major : document.getElementById("school_major").value,
         cert_yn : document.getElementById("cert_yn").nextSibling.value,
         email : document.getElementById("email").value,
-        manager_yn : document.getElementById("manager_yn").checked ? 0:1,
-        school_career : document.getElementById("sch_car").nextSibling.value,
-        marriage_date : document.getElementById("mar_date").value.replace(/\-/gi,""),
-        approval_yn : document.getElementById("approval_yn").checked ? 0:1,
-        mooncal_yn : document.getElementById("moon_cal").checked ? 0:1,
-        career_date : document.getElementById("car_date").value.replace(/\-/gi,""),
+        manager_yn : document.getElementById("manager_yn").checked ? 1:0,
+        school_career : document.getElementById("school_career").nextSibling.value,
+        marriage_date : document.getElementById("marriage_date").value.replace(/\-/gi,""),
+        approval_yn : document.getElementById("approval_yn").checked ? 1:0,
+        mooncal_yn : document.getElementById("moon_cal").checked ? 1:0,
+        career_date : document.getElementById("career_date").value.replace(/\-/gi,""),
       })
-    //localStorage.setItem('savedData', JSON.stringify(getData));
 
     handleOpenDialog(...confirmData);
   }
@@ -273,11 +274,11 @@ const MemberReg = (props) => {
       name:       {error:false,helperText:""},
       position:   {error:false,helperText:""},
       email:      {error:false,helperText:""},
-      address1:   {error:false,helperText:""},
-      address2:   {error:false,helperText:""},
-      entry:      {error:false,helperText:""},
-      sch_car:    {error:false,helperText:""},
-      postcode:{error:false,helperText:""}
+      address_1:   {error:false,helperText:""},
+      address_2:   {error:false,helperText:""},
+      entry_date:      {error:false,helperText:""},
+      school_career:    {error:false,helperText:""},
+      zip_code:   {error:false,helperText:""}
     })
   }
 
@@ -308,6 +309,7 @@ const MemberReg = (props) => {
           position : infoState.position,
           address_1 : infoState.address_1,
           address_2 : infoState.address_2,
+          zip_code : infoState.zip_code,
           phone_num : infoState.phone_num,
           entry_date : infoState.entry_date,
           birth_date : infoState.birth_date,
@@ -371,22 +373,22 @@ const MemberReg = (props) => {
 
   const getCarDate = (date) => {
     setDateState({
-      car_date : Moment(date).format('YYYY-MM-DD')
+      career_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getEntry = (date) => {
     setDateState({
-      entry : Moment(date).format('YYYY-MM-DD')
+      entry_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getMarDate = (date) => {
     setDateState({
-      mar_date : Moment(date).format('YYYY-MM-DD')
+      marriage_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getBirth = (date) => {
     setDateState({
-      birth : Moment(date).format('YYYY-MM-DD')
+      birth_date : Moment(date).format('YYYY-MM-DD')
     })
 	}
   
@@ -496,27 +498,27 @@ const MemberReg = (props) => {
                       <TextField autoComplete="off" style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <TextField autoComplete="off" style={{width:'34%'}} id="phone" size="small" label="휴대전화" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField  autoComplete="off" style={{width:'34%'}} id="address1" size="small" label="기본주소" variant="outlined" onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} placeholder="" InputLabelProps={{
+                      <TextField  autoComplete="off" style={{width:'34%'}} id="address_1" size="small" label="기본주소" variant="outlined" onClick={defaultValidation}  error={validation.address_1.error} helperText={validation.address_1.helperText} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}          
                       InputProps={{
                         readOnly: true,
                       }}/>
-                      <TextField  autoComplete="off" style={{width:'34%'}} id="postcode" size="small" label="우편번호" variant="outlined" onClick={defaultValidation}  error={validation.address1.error} helperText={validation.address1.helperText} placeholder="" InputLabelProps={{
+                      <TextField  autoComplete="off" style={{width:'34%'}} id="zip_code" size="small" label="우편번호" variant="outlined" onClick={defaultValidation}  error={validation.zip_code.error} helperText={validation.zip_code.helperText} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}          
                       InputProps={{
                         readOnly: true,
                       }}/>
-                      <TextField autoComplete="off" style={{width:'70%'}} id="address2" size="small" label="상세주소" variant="outlined" onClick={defaultValidation} error={validation.address2.error} helperText={validation.address2.helperText} placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" style={{width:'70%'}} id="address_2" size="small" label="상세주소" variant="outlined" onClick={defaultValidation} error={validation.address_2.error} helperText={validation.address_2.helperText} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <Button variant="contained" color="primary" onClick={() => findAddress("address1","postcode")}>
+                      <Button variant="contained" color="primary" onClick={() => findAddress("address_1","zip_code")}>
                                               주소찾기
                       </Button>
                     </div>
@@ -536,17 +538,17 @@ const MemberReg = (props) => {
                           ))}
                         </TextField>
                         
-                      <TextField autoComplete="off" size="small" id="sch_mjr" style={{width:'20%'}} label="학교/학과" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" size="small" id="school_major" style={{width:'20%'}} label="학교/학과" variant="outlined" placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
                       <TextField style={{width:'20%'}}
-                        id="sch_car"
+                        id="school_career"
                         select
                         label="최종학력"
                         variant="outlined"
                         size="small" 
-                        error={validation.sch_car.error}
-                        helperText={validation.sch_car.helperText}
+                        error={validation.school_career.error}
+                        helperText={validation.school_career.helperText}
                         onClick={defaultValidation} 
                       >
                         {codeState.graduationCode.map((option,index) => (
@@ -564,10 +566,10 @@ const MemberReg = (props) => {
                                 label="경력시작일"
                                 locale='ko'
                                 margin="dense"
-                                id="car_date"
+                                id="career_date"
                                 views={["year", "month", "date"]}
                                 format="yyyy-MM-dd"
-                                value={dateState.car_date}
+                                value={dateState.career_date}
                                 onChange={getCarDate}
                                 inputVariant="outlined"
                                 readOnly={false}
@@ -583,10 +585,10 @@ const MemberReg = (props) => {
                                 label="결혼기념일"
                                 locale='ko'
                                 margin="dense"
-                                id="mar_date"
+                                id="marriage_date"
                                 views={["year", "month", "date"]}
                                 format="yyyy-MM-dd"
-                                value={dateState.mar_date}
+                                value={dateState.marriage_date}
                                 onChange={getMarDate}
                                 inputVariant="outlined"
                                 readOnly={false}
@@ -602,10 +604,10 @@ const MemberReg = (props) => {
                                 label="입사일"
                                 locale='ko'
                                 margin="dense"
-                                id="entry"
+                                id="entry_date"
                                 views={["year", "month", "date"]}
                                 format="yyyy-MM-dd"
-                                value={dateState.entry}
+                                value={dateState.entry_date}
                                 onChange={getEntry}
                                 inputVariant="outlined"
                                 readOnly={false}
@@ -621,10 +623,10 @@ const MemberReg = (props) => {
                                 label="생일"
                                 locale='ko'
                                 margin="dense"
-                                id="birth"
+                                id="birth_date"
                                 views={["year", "month", "date"]}
                                 format="yyyy-MM-dd"
-                                value={dateState.birth}
+                                value={dateState.birth_date}
                                 onChange={getBirth}
                                 inputVariant="outlined"
                                 readOnly={false}
@@ -645,7 +647,7 @@ const MemberReg = (props) => {
                       />
                     </div>
                     <div className={classes.textfield}>
-                      <Button variant="contained" color="primary" onClick={setValidationLevel}>
+                      <Button variant="contained" color="primary" onClick={() => setValidationLevel()}>
                               저장하기
                       </Button>
                       <RouterLink button="true" to="/member/" className={classes.router_link}>

@@ -74,7 +74,7 @@ const MemberMod_admin = () => {
       address2:   {error:false,helperText:""},
       entry:      {error:false,helperText:""},
       sch_car:    {error:false,helperText:""},
-      postcode:{error:false,helperText:""}
+      postcode:   {error:false,helperText:""}
   })
 
   //임시파일 불러오기
