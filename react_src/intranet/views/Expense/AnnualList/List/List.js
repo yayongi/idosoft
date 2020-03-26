@@ -2,7 +2,6 @@ import React, { Fragment, useEffect } from 'react';
 import Filter from './component/Filter'
 import Body from './component/Body'
 import Paper from '@material-ui/core/Paper';
-import { AnnualStorage } from 'views/Expense/data';
 
 import Axios from 'axios';
 import { processErrCode, isEmpty } from '../../../../js/util'
@@ -17,7 +16,7 @@ export default function  List(props) {
 	});
 	const [rows, setRows] = React.useState([]);
 
-	const [paging, setPaging] = React.useState({});
+	const [paging, setPaging] = React.useState({listCount : 0});
 	useEffect(() => {
 		console.log("call useEffect");
 
@@ -35,9 +34,9 @@ export default function  List(props) {
 			console.log(JSON.stringify(response.data));
 			setRows(JSON.parse(response.data.list));
 			setPaging(JSON.parse(response.data.result));
-
+			
 		}).catch(e => {
-			//processErrCode(e);
+			processErrCode(e);
 			console.log(e);
 		});
 		

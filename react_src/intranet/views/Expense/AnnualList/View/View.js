@@ -30,7 +30,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
 
-import { processErrCode } from "../../../../js/util";
+import { processErrCode, getUrlParams } from "../../../../js/util";
 
 import axios from 'axios';
 
@@ -39,10 +39,9 @@ import {
   DatePicker,
 } from '@material-ui/pickers';
 
-import { AnnualStorage, getStepInfo } from 'views/Expense/data';
+import { getStepInfo } from 'views/Expense/data';
 import PreviewFileUpload from 'common/PreviewFileUpload';
 import Axios from 'axios';
-
 
 const useStyles = makeStyles(theme => ({
 	table: {
@@ -81,8 +80,8 @@ const useStyles = makeStyles(theme => ({
 const emptyData = {
 	seq: "",
 	name: "",
-	expenseType: "0",
-	expenseTypeText: "야간경비",
+	expenseType: "ET0001",
+	expenseTypeText: "야식비",
 	payDate: Moment(new Date()).format('YYYY-MM-DD'),
 	status: "-1",
 	statusText: "진행",
@@ -100,20 +99,18 @@ export default function  View(props) {
 	const {routeProps, screenType } = props;
 	const {history, location, match} = routeProps;
 
-	let dataList = JSON.parse(AnnualStorage.getItem("ANNUAL_LIST"));		// 데이터
-	let data = JSON.parse(AnnualStorage.getItem("ANNUAL_VIEW"));		// 목록에서 선택한 데이터
-	if(screenType == 'new') {
-		data = emptyData
-	}
+	//let dataList = JSON.parse(AnnualStorage.getItem("ANNUAL_LIST"));		// 데이터
+	let data = emptyData;
+
 	const [expenseTypes, setExpenseTypes] = React.useState([]);
 
 	// state : 진행 상태
 	const [activeStep, setActiveStep] = React.useState(1);
 
 	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
-	const [dataState, setDataState] = React.useState(data);	// state : 수정을 위한 데이터 관리
+	const [dataState, setDataState] = React.useState(emptyData);	// state : 수정을 위한 데이터 관리
 
-	const isReadOnly = (data.status != undefined && data.status != '-1' && data.status != '0' && data.status != '3');				// 신규, 진행, 반려가 아니면 수정이 안되도록 설정
+	const isReadOnly = (data.status != undefined && data.status != '-1' && data.status != 'SS0000' && data.status != 'SS00003');				// 신규, 진행, 반려가 아니면 수정이 안되도록 설정
 
 	const classes = useStyles();
 	
@@ -143,6 +140,9 @@ export default function  View(props) {
 
 	// 결제일 변경 시, 임시로 값 저장
 	const handleChangePayDate = date => {
+
+		console.log(`date : ${date}`);
+
 		setDataState({
 			...dataState,
 			payDate: Moment(date).format('YYYYMMDD')
@@ -153,11 +153,18 @@ export default function  View(props) {
 	
 	React.useEffect(() => {		// render 완료 후, 호출
 		console.log("call useEffect");
+		console.log(JSON.stringify(match));
+
+		const params = match.params;
+
+		console.log(params.id);
+
 		Axios({
-			url: '/intranet/getType.exp',
+			url: '/intranet/getView.exp',
 			method: 'post',
 			data: {
-				value : ''
+				expense_no : params.id,
+				screenType : screenType,
 			},
 			headers: {
 				'Content-Type': 'application/json'
@@ -165,22 +172,21 @@ export default function  View(props) {
 		}).then(response => {
 			console.log(JSON.stringify(response.data));
 
-			const exPenseTypeList 	= JSON.parse(response.data.exPenseTypeList);
-			const payTypeList 		= response.data.payTypeList;
-
-			setDataState({
-				...dataState,
-				expenseType: exPenseTypeList[0].value,
-			});
-
+			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
+			const payTypeList 		= JSON.parse(response.data.payTypeList);
+			
 			setExpenseTypes(exPenseTypeList);
-
-		}).catch(e => {
+			setActiveStep(stepInfo.activeStep);
+			if(!screenType != 'new'){ // 스크린 타입이 NEW가 아닐 경우,
+				data = JSON.parse(response.data.result);
+				setFiles([{preview : data.filePath, name: data.filePath}]);
+				setDataState(data);
+			}
+		})
+		.catch(e => {
 			//processErrCode(e);
 			console.log(e);
 		});
-		
-		setActiveStep(stepInfo.activeStep);
 	}, []);
 
 	// 반려사유
@@ -275,19 +281,38 @@ export default function  View(props) {
 	// 글 삭제 후, 목록으로 이동
 	const handleClickRemove = () => {
 		console.log("call handleClickRemove");
-		const dataIdx = dataList.findIndex(item => item.seq === data.seq);
 		
-		if(dataIdx > -1) {
-			dataList = [
-				...dataList.slice(0, dataIdx),
-				...dataList.slice(dataIdx+1)
-			];
-			AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
-			
-			stateOpenEvent("삭제  완료되었습니다.");
+		const formData = new FormData();
 
-			//history.goBack();
+		console.log(`dataState.filePath : ${dataState.filePath} // files[0].filePath : ${files[0].filePath}`);
+
+		const params = match.params;
+
+		console.log(`params : ${JSON.stringify(params)}`)
+
+		if(dataState.filePath != files[0].preview){
+			formData.append('file',files[0]);
 		}
+
+		formData.append('prefilename',dataState.filePath);
+		formData.append('EXPENS_NO',params.id);
+
+		axios({
+			url: '/intranet/delete.exp',
+			method : 'post',
+			data : formData,
+			header : {
+				'enctype': 'multipart/form-data'
+			}
+			}).then(response => {
+				console.log(`${JSON.stringify(response)}`);
+				
+				stateOpenEvent("삭제  완료되었습니다.");
+			}).catch(e => {
+				processErrCode(e);
+				console.log(e);
+		});
+
 	}
 	// 수정처리
 	const handleClickModify =() => {
@@ -297,20 +322,44 @@ export default function  View(props) {
 			return;
 		}
 
-		const dataIdx = dataList.findIndex(item => item.seq === data.seq);
+		console.log("dataState : " + JSON.stringify(dataState));
+		
+		const formData = new FormData();
 
-		if(dataIdx > -1) {
-			dataList = [
-				...dataList.slice(0, dataIdx),
-				dataState,
-				...dataList.slice(dataIdx+1)
-			];
-			AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
-			AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(dataState));
-			
-			stateOpenEvent("수정 완료되었습니다.");
-			history.goBack();
+		console.log(`dataState.filePath : ${dataState.filePath} // files[0].filePath : ${files[0].filePath}`);
+
+		const params = match.params;
+
+		console.log(`params : ${JSON.stringify(params)}`)
+
+		if(dataState.filePath != files[0].preview){
+			formData.append('file',files[0]);
 		}
+
+		formData.append('prefilename',dataState.filePath);
+		formData.append('EXPENS_NO',params.id);
+		formData.append('EXPENS_TY_CODE',dataState.expenseType);
+		formData.append('USE_DATE',dataState.payDate);
+		formData.append('USE_AMOUNT',dataState.pay);
+		formData.append('USE_CN',dataState.memo); 
+
+		axios({
+			url: '/intranet/update.exp',
+			method : 'post',
+			data : formData,
+			header : {
+				'enctype': 'multipart/form-data'
+			}
+			}).then(response => {
+				console.log(`${JSON.stringify(response)}`);
+				
+				stateOpenEvent("수정 완료되었습니다.");
+				//history.goBack();
+			}).catch(e => {
+				processErrCode(e);
+				console.log(e);
+		});
+		
 	}
 	// 반려건, 다시 진행
 	const handleClickRetry = () => {
@@ -320,7 +369,7 @@ export default function  View(props) {
 			return;
 		}
 
-		const dataIdx = dataList.findIndex(item => item.seq === data.seq);
+		/* const dataIdx = dataList.findIndex(item => item.seq === data.seq);
 		data.status="0";
 		data.statusText="진행";
 		stepInfo = getStepInfo(data);
@@ -336,7 +385,7 @@ export default function  View(props) {
 			AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(data));
 			
 			stateOpenEvent("다시 결재 진행합니다.");
-		}
+		} */
 	}
 	return (
 		<>
@@ -386,24 +435,27 @@ export default function  View(props) {
 						<TableRow>
 							<TableCell align="left" component="th" scope="row" style={{minWidth: '100px'}}>경비유형</TableCell>
 							<TableCell align="left">
-								<TextField
-									id="expenseType"
-									name="expenseType"
-									select
-									margin="dense"
-									variant="outlined"
-									defaultValue="ET0001"
-									onChange={handleChange}
-									InputProps={{
-									 	 readOnly: isReadOnly,
-									}}
-									fullWidth>
-									{expenseTypes.map((option, idx) => (
-										<MenuItem key={option.value} value={option.value}>
-											{option.label}
-										</MenuItem>
-									))}
-								</TextField>
+								{expenseTypes.map((option, idx) => (
+									(dataState.expenseType == option.value) && 
+									<TextField
+										id="expenseType"
+										name="expenseType"
+										select
+										margin="dense"
+										variant="outlined"
+										defaultValue={option.value}
+										onChange={handleChange}
+										InputProps={{
+											readOnly: isReadOnly,
+										}}
+										fullWidth>
+										{expenseTypes.map((option, idx) => (
+											<MenuItem key={option.value} value={option.value}>
+												{option.label}
+											</MenuItem>
+										))}
+									</TextField>
+								))}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -419,7 +471,7 @@ export default function  View(props) {
 											views={["year", "month", "date"]}
 											format="yyyy-MM-dd" 
 											maxDate={new Date()}
-											value={new Date(Number(dataState.payDate.slice(0, 4)), Number(dataState.payDate.slice(5, 7))-1, Number(dataState.payDate.slice(8, 10)))}
+											value={dataState.payDate}
 											onChange={handleChangePayDate}
 											inputVariant="outlined"
 											readOnly={isReadOnly}
@@ -438,7 +490,7 @@ export default function  View(props) {
 									name="pay"
 									currencySymbol="￦"
 									minimumValue="0"
-									defaultValue={dataState.pay}
+									value={dataState.pay}
 									onChange={handleChange}
 									InputProps={{
 									 	 readOnly: isReadOnly,
@@ -486,7 +538,7 @@ export default function  View(props) {
 						목록
 					</Button>
 					{	
-						(data.status == '-1') &&
+						(dataState.status == '-1') &&
 						(
 							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickNew}>
 								등록
@@ -494,7 +546,7 @@ export default function  View(props) {
 						)
 					}
 					{	
-						(data.status == '0' || data.status == '3') &&
+						(dataState.status == 'SS0000' || dataState.status == 'SS00003') &&
 						(
 							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickModify}>
 								수정
@@ -502,7 +554,7 @@ export default function  View(props) {
 						)
 					}
 					{	
-						(data.status == '0' || data.status == '3') &&
+						(dataState.status == 'SS0000' || dataState.status == 'SS00003') &&
 						(
 							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickRemove}>
 								삭제
@@ -510,7 +562,7 @@ export default function  View(props) {
 						)
 					}
 					{	
-						(data.status == '3') &&
+						(dataState.status == 'SS00003') &&
 						(
 							<Button variant="contained" color="secondary" size="small"  className={classes.button} onClick={handleClickRetry}>
 								진행

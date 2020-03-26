@@ -26,6 +26,11 @@ public interface AnnalListDao {
 	 */
 	List<Map<String, Object>> getlist(Map<String, Object> data);
 	/**
+	 * 경비 번호로 데이터 출력
+	 * @return String
+	 */
+	Map<String, Object> getView(Map<String, Object> data);
+	/**
 	 * 소속 프로젝트 PM 번호 추출
 	 * @return String
 	 */
@@ -40,5 +45,21 @@ public interface AnnalListDao {
 	 * @return String
 	 */
 	public String getRepresentativeNo();
+	/**
+	 * 경비 등록 처리
+	 * @return boolean
+	 */
+	boolean insertExpense(Map<String, Object> data);
+	/**
+	 * 경비 수정 처리
+	 * @return boolean
+	 */
+	boolean updateExpense(Map<String, Object> data);
+	/**
+	 * 경비 삭제 처리
+	 * @return boolean
+	 */
+	boolean deleteExpense(Map<String, Object> data);
+	
 }
 

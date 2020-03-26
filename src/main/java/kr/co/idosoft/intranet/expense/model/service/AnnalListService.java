@@ -27,6 +27,11 @@ public interface AnnalListService {
 	 */
 	List<Map<String, Object>> getCode(Map<String, Object> data);
 	/**
+	 * 경비 번호로 데이터 요청
+	 * @return String
+	 */
+	Map<String, Object> getView(Map<String, Object> data);
+	/**
 	 * 1차결재자 조건에 맞는 사원번호 추출
 	 * @return String
 	 */
@@ -41,6 +46,16 @@ public interface AnnalListService {
 	 * @return boolean
 	 */
 	boolean insertExpense(Map<String, Object> data);
+	/**
+	 * 경비 수정
+	 * @return boolean
+	 */
+	boolean updateExpense(Map<String, Object> data);
+	/**
+	 * 경비 삭제
+	 * @return boolean
+	 */
+	boolean deleteExpense(Map<String, Object> data);
 	
 
 	
