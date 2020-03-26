@@ -22,7 +22,7 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import Axios from 'axios';
 
-import {processErrCode} from '../../../../../../js/util'
+import {processErrCode, isEmpty} from '../../../../../../js/util'
  
 import {
   MuiPickersUtilsProvider,
@@ -109,7 +109,6 @@ export default function  Filter(props) {
 	// 경비 신청 화면
 	const handleClickNew = () => {
 		console.log("call handleClickNew");
-		AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify([{}]));  // 세션 스토리지에 선택한 Row Data 저장
 		routeProps.history.push(`${routeProps.match.url}/new`);
 	}
 

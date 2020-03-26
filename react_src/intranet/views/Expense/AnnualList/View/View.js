@@ -30,7 +30,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
 
-import { processErrCode, getUrlParams } from "../../../../js/util";
+import { processErrCode, getUrlParams, isEmpty } from "../../../../js/util";
 
 import axios from 'axios';
 
@@ -108,7 +108,7 @@ export default function  View(props) {
 	const [activeStep, setActiveStep] = React.useState(1);
 
 	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
-	const [dataState, setDataState] = React.useState(emptyData);	// state : 수정을 위한 데이터 관리
+	const [dataState, setDataState] = React.useState({});	// state : 수정을 위한 데이터 관리
 
 	const isReadOnly = (data.status != undefined && data.status != '-1' && data.status != 'SS0000' && data.status != 'SS00003');				// 신규, 진행, 반려가 아니면 수정이 안되도록 설정
 
@@ -177,10 +177,12 @@ export default function  View(props) {
 			
 			setExpenseTypes(exPenseTypeList);
 			setActiveStep(stepInfo.activeStep);
-			if(!screenType != 'new'){ // 스크린 타입이 NEW가 아닐 경우,
+			if(screenType != 'new'){ // 스크린 타입이 NEW가 아닐 경우,
 				data = JSON.parse(response.data.result);
 				setFiles([{preview : data.filePath, name: data.filePath}]);
 				setDataState(data);
+			} else {
+				setDataState(emptyData);
 			}
 		})
 		.catch(e => {
@@ -389,6 +391,8 @@ export default function  View(props) {
 	}
 	return (
 		<>
+			{!isEmpty(dataState) &&
+			<>
 			<div className={classes.root}>
 				<Stepper activeStep={activeStep}>
 					{stepInfo.steps.map(row => (
@@ -588,6 +592,8 @@ export default function  View(props) {
 				</Button>
 				</DialogActions>
 			</Dialog>
+		</>
+		}
 		</>
 	);
 }
