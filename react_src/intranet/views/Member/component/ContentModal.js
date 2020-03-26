@@ -85,12 +85,18 @@ const ContentModal = ({props, closeModal}) => {
     closeModal(false);
   };
 
-  const setLocalstorage = (datum) => {
-		//기존 스토리지에 있는 데이터 삭제.
-		localStorage.removeItem('savedData');
-		//수정 페이지로 이동할 때 필요한 데이터 함께 이동 
-		localStorage.setItem('savedData', JSON.stringify(datum));
-  }
+  // 상세화면 이돋하기
+	const goDetail = (member_no,manager_yn) => {
+    const {routeProps} = props;
+		let url = "";
+		if(manager_yn == 1){
+			url = "/member/membermod/admin/";
+		}else{
+			url = "/member/membermod/user/";
+		}
+
+		routeProps.history.push(url + member_no);
+	}
 
   return (
     <div>
@@ -146,11 +152,9 @@ const ContentModal = ({props, closeModal}) => {
         </DialogContent>
         <DialogActions>
           {props.buttonName !== "" && (
-            <RouterLink button="true" to={props.manager_yn? "/member/membermod/admin":"/member/membermod/user"}>
-              <Button autoFocus color="primary" onClick={() => setLocalstorage(props.datum)}>
-                {props.buttonName}
-              </Button>
-            </RouterLink>
+          <Button autoFocus color="primary" onClick={() => goDetail(props.member_no,props.manager_yn)}>
+            {props.buttonName}
+          </Button>
           )}
         </DialogActions>
       </Dialog>

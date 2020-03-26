@@ -11,7 +11,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
-function getTableFormData(codeInfo, rootCodeList) {
+function getTableFormData(codeInfo) {
   var rows = [];
   for (var i = 0; i < codeInfo.length; i++) {
     var upper_code = codeInfo[i].upper_code;
@@ -21,13 +21,6 @@ function getTableFormData(codeInfo, rootCodeList) {
       rows.push(codeInfo[i])
       continue;
     }
-
-    var upperRoot = rootCodeList.filter((info) => (
-      info["code_id"] === upper_code
-    ));
-
-    codeInfo[i]["upper_name"] = upperRoot.length > 0 ? upperRoot[0]["code_name"] : "-";
-    rows.push(codeInfo[i]);
   }
   return rows;
 }
@@ -47,95 +40,98 @@ const useStyles = makeStyles({
   },
 });
 
-function CodeInfoTable(props) {
-  const classes = useStyles();
-  const { codeInfo, rootCodeList, routeProps } = props;
-  const rows = getTableFormData(codeInfo, rootCodeList);
-
-  //console.log(rows);
-  // 상세페이지로 이동
+  function CodeInfoTable(props) {
+    const classes = useStyles();
+    const { codeInfo, routeProps } = props;
+    const rows = getTableFormData(codeInfo);
 
 
-  const columnsUp = [
-    { id: 'code_id', label: '코드ID', minWidth: 100, align: 'center' },
-    { id: 'code_level', label: 'Level', minWidth: 100, align: 'center' },
-    { id: 'code_name', label: '코드명', minWidth: 100, align: 'center' },
-    { id: 'upper_code', label: '상위코드', minWidth: 100, align: 'center' },
-    { id: 'upper_name', label: '코드유형', minWidth: 100, align: 'center' },
-  ];
-  const columnsDown = [
-    { id: 'code_id', label: '코드ID', minWidth: 100, align: 'center' },
-    { id: 'code_name', label: '코드명', minWidth: 100, align: 'center' },
-    { id: 'upper_name', label: '코드유형', minWidth: 100, align: 'center' },
-  ];
-  // Width에 따라 반응형으로 열이 없어
-  let columns = columnsUp;
-  if (isWidthUp('md', props.width)) {
-    columns = columnsUp;
-  } else {
-    columns = columnsDown;
-  }
+    console.log("code Info for codeInfoTable");
+    console.log(codeInfo);
+    //console.log(rows);
+    // 상세페이지로 이동
 
-  const handleClickDetailView = (event, row) => {
-    console.log("call handleClickDetailView");
 
-    var url = "/admin/modifyCode/view";
-    var queryString = jsonToQuery(row);
+    const columnsUp = [
+      { id: 'CODE_ID', label: '코드ID', minWidth: 100, align: 'center' },
+      { id: 'CODE_LEVEL', label: 'Level', minWidth: 100, align: 'center' },
+      { id: 'CODE_NAME', label: '코드명', minWidth: 100, align: 'center' },
+      { id: 'UPPER_CODE', label: '상위코드', minWidth: 100, align: 'center' },
+      { id: 'UPPER_NAME', label: '코드유형', minWidth: 100, align: 'center' },
+    ];
+    const columnsDown = [
+      { id: 'CODE_ID', label: '코드ID', minWidth: 100, align: 'center' },
+      { id: 'CODE_NAME', label: '코드명', minWidth: 100, align: 'center' },
+      { id: 'UPPER_NAME', label: '코드유형', minWidth: 100, align: 'center' },
+    ];
+    // Width에 따라 반응형으로 열이 없어
+    let columns = columnsUp;
+    if (isWidthUp('md', props.width)) {
+      columns = columnsUp;
+    } else {
+      columns = columnsDown;
+    }
 
-    //console.log("url : " + url);
-    //console.log("queryString : " + queryString);
+    const handleClickDetailView = (event, row) => {
+      console.log("call handleClickDetailView");
 
-    routeProps.history.push(url + queryString);
-  };
+      var url = "/admin/modifyCode/view";
+      var queryString = jsonToQuery(row);
 
-  return (
-    <Paper className={classes.root}>
-      <TableContainer className={classes.container}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map(column => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                  className={column.className}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map(row => {
-              return (
-                <TableRow hover
-                  role="checkbox"
-                  tabIndex={-1}
-                  key={row.code_id}
-                  onClick={() => handleClickDetailView(event, row)} // react router의 상세
-                >
-                  {columns.map(column => {
-                    var value = row[column.id];
-                    if (column.id === "upper_name") {
-                      if (row["code_level"] === "1") {
-                        value = "분류코드";
+      //console.log("url : " + url);
+      //console.log("queryString : " + queryString);
+
+      routeProps.history.push(url + queryString);
+    };
+
+    return (
+      <Paper className={classes.root}>
+        <TableContainer className={classes.container}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map(column => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{ minWidth: column.minWidth }}
+                    className={column.className}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row, idx) => {
+                return (
+                  <TableRow hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.code_id + "" + idx}
+                    onClick={() => handleClickDetailView(event, row)} // react router의 상세
+                  >
+                    {columns.map(column => {
+                      var value = row[column.id];
+                      if (column.id === "upper_name") {
+                        if (row["code_level"] === "1") {
+                          value = "분류코드";
+                        }
                       }
-                    }
-                    return (
-                      <TableCell key={row.code_id + column.id} align={column.align} className={column.className}>
-                        {value !== "" ? value : "-"}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
-  );
-}
+                      return (
+                        <TableCell key={row.code_id + column.id} align={column.align} className={column.className}>
+                          {value !== "" ? value : "-"}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    );
+  }
 
 export default withWidth()(CodeInfoTable);

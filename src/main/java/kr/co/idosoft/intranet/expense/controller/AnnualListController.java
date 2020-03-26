@@ -32,7 +32,7 @@ import kr.co.idosoft.common.util.JsonUtils;
 import kr.co.idosoft.common.util.PageInfo;
 import kr.co.idosoft.intranet.expense.model.service.AnnalListServiceImpl;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
-
+import kr.co.idosoft.common.util.commonUtil;
 /**
  * 
  * @author 유기환
@@ -45,6 +45,7 @@ public class AnnualListController {
 	
 	private static final String EXPENSE_TYPE = "CD0002"; // 경비유형 
 	private static final String PAYMENT_TYPE = "CD0003"; // 결재유형
+	
 	@Resource
 	AnnalListServiceImpl annalListService;
 	
@@ -65,12 +66,49 @@ public class AnnualListController {
 		
 		ModelAndView mv = new ModelAndView();
 		
+		Map<String, Object> data = new HashMap<>();
+		
 		// ModelAndView 초기값 셋팅
 		mv.setViewName("jsonView");
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
-		// 검색 조건 제외하고 개발중..
-		Map<String, Object> data = new HashMap<>();
+		
+		String name 			= (String)params.get("name");					// 이름
+		String expenseType 		= (String)params.get("expenseType");			// 경비 유형
+		String payStDt 			= (String)params.get("payStDt");				// 시작 날짜
+		String payEdDt 			= (String)params.get("payEdDt");				// 종료 날짜
+		String status 			= (String)params.get("status");					// 결재 상태
+		String memo 			= (String)params.get("memo");					// 내용
+		
+		LOG.debug("#####################################################################################");
+		LOG.debug("# SEARCH DATA ");
+		LOG.debug("# name 			: " + name);
+		LOG.debug("# expenseType 	: " + expenseType);
+		LOG.debug("# payStDt 		: " + payStDt);
+		LOG.debug("# payEdDt 		: " + payEdDt);
+		LOG.debug("# status 		: " + status);
+		LOG.debug("# memo 			: " + memo);
+		LOG.debug("#####################################################################################");
+		
+		// -1 전체로 들어왔을  경우, null로 변환
+		expenseType = !"-1".equals(expenseType) ? expenseType : null;
+		status 		= !"-1".equals(status) ? status : null;
+		
+		// 그해의 첫 날
+		payStDt = payStDt + "01";
+		
+		// 그달의 마지막 일 구하기
+		int lastDate = commonUtil.LastDateInMonth(payEdDt);
+		payEdDt = payEdDt + String.valueOf(lastDate);
+		
+		LOG.debug("# LastDateInMonth : " + lastDate);
+		
+		data.put("name", name);
+		data.put("expenseType", expenseType);
+		data.put("payStDt", payStDt);
+		data.put("payEdDt", payEdDt);
+		data.put("status", status);
+		data.put("memo", memo);
 		
 		HttpSession session = request.getSession();
 		
@@ -83,9 +121,9 @@ public class AnnualListController {
 		data.put("MEMBER_NO", mno);		// 사원번호
 		data.put("isAdmin", isAdmin);	// 관리자 여부
 		
-		Integer temp = Integer.parseInt((String) params.get("currentPage"));
+		Integer temp 		= Integer.parseInt((String) params.get("currentPage"));
 		int currentPage 	= temp == null ? 1 : temp;					// 현재 페이지 (default : 1)
-		temp = Integer.parseInt((String) params.get("limit"));
+		temp 				= Integer.parseInt((String) params.get("limit"));
 		int limit			= temp == null ? 10 : temp;; 				// 페이지 당 목록 개수
 		int listCount 		= annalListService.getlistCount(data);		// 전체 목록 개수
 		
@@ -104,11 +142,11 @@ public class AnnualListController {
 		}
 		LOG.debug("#################################################################################");
 		LOG.debug("# PAGE - INFO ");
-		LOG.debug("# currentPage : " + currentPage);
-		LOG.debug("# limit : " + limit);
-		LOG.debug("# listCount : " + listCount);
-		LOG.debug("# startPage : " + startPage);
-		LOG.debug("# endPage : " + endPage);
+		LOG.debug("# currentPage 	: " + currentPage);
+		LOG.debug("# limit 			: " + limit);
+		LOG.debug("# listCount 		: " + listCount);
+		LOG.debug("# startPage 		: " + startPage);
+		LOG.debug("# endPage 		: " + endPage);
 		LOG.debug("#################################################################################");
 		
 		PageInfo pi = new PageInfo(); // 페이지 정보
@@ -124,6 +162,8 @@ public class AnnualListController {
 		
 		LOG.debug("data : " + data);
 		
+		// 경비 총금액
+		String totalAmount = annalListService.getTotalAmount(data);
 		// 목록 조회
 		List<Map<String, Object>> list = annalListService.getlist(data);
 		
@@ -145,10 +185,12 @@ public class AnnualListController {
 		LOG.debug("# RETURN JSON ");
 		LOG.debug("# jsonArrayList : " + jsonArrayList);
 		LOG.debug("# jsonObjectData : " + jsonObjectData);
+		LOG.debug("# totalAmount : " + totalAmount);
 		LOG.debug("#################################################################################");
 		
 		mv.addObject("list", jsonArrayList);
 		mv.addObject("result", jsonObjectData);
+		mv.addObject("totalAmount", totalAmount);
 		
 		return mv;
 	}
@@ -282,6 +324,12 @@ public class AnnualListController {
 		
 		return mv;
 	}
+	/**
+	 * 경비 목록
+	 * @param mutipartRequest
+	 * @param request
+	 * @return ModelAndView
+	 */
 	
 	@RequestMapping(value="/getView.exp", method=RequestMethod.POST)
 	@ResponseBody
@@ -338,6 +386,53 @@ public class AnnualListController {
 			} 
 		}
 		
+		LOG.debug("# jsonArrayexPenseTypeList : " + jsonArrayexPenseTypeList);
+		LOG.debug("# jsonArraypayTypeList : 	" + jsonArraypayTypeList);
+		LOG.debug("#################################################################################");
+		
+		mv.addObject("expenseTypeList", jsonArrayexPenseTypeList);
+		mv.addObject("payTypeList", jsonArraypayTypeList);
+		
+		return mv;
+	}
+	
+	/**
+	 * 코드 조회
+	 * @param mutipartRequest
+	 * @param request
+	 * @return ModelAndView
+	 */
+	
+	@RequestMapping(value="/getCode.exp", method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getCode(HttpServletRequest request, @RequestBody Map<String, Object> params) {
+		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("/getCode.exp");
+		}
+		
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		
+		Map<String, Object> data = new HashMap<>();
+		
+		data.put("TYPE", EXPENSE_TYPE); // 경비 유형
+		List<Map<String, Object>> exPenseTypeList = annalListService.getCode(data);
+		
+		data.put("TYPE", PAYMENT_TYPE);	// 결재 유형 
+		List<Map<String, Object>> payTypeList = annalListService.getCode(data);
+		
+		String jsonArrayexPenseTypeList 	= null;
+		String jsonArraypayTypeList 		= null;
+		
+		jsonArrayexPenseTypeList 	= JsonUtils.getJsonStringFromList(exPenseTypeList); 	// JSONARRAY 변환
+		jsonArraypayTypeList 		= JsonUtils.getJsonStringFromList(payTypeList); 		// JSONARRAY 변환
+		
+		LOG.debug("#################################################################################");
+		LOG.debug("# RETURN JSON ");
 		LOG.debug("# jsonArrayexPenseTypeList : " + jsonArrayexPenseTypeList);
 		LOG.debug("# jsonArraypayTypeList : 	" + jsonArraypayTypeList);
 		LOG.debug("#################################################################################");
@@ -554,4 +649,5 @@ public class AnnualListController {
 		} 
 
 	}
-}
+	
+}	

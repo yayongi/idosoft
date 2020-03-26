@@ -27,9 +27,9 @@ public class fileController {
 
 	@RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
 	@ResponseBody
-	public void uploadFile(MultipartHttpServletRequest multiparthttpservletrequest) throws IOException {
+	public void uploadFile(MultipartHttpServletRequest multiparthttpservletrequest,HttpServletRequest request) throws IOException {
 		
-		String path = multiparthttpservletrequest.getSession().getServletContext().getRealPath("/")+"resources";
+		String path = request.getSession().getServletContext().getRealPath("/")+"resources";
 		
 		MultipartFile mf = multiparthttpservletrequest.getFile("file"); // jsp file name mapping
 
@@ -39,6 +39,8 @@ public class fileController {
 		String original = mf.getOriginalFilename(); // 업로드하는 파일 name
 
 		uploadPath = path+detailPath+original; // 파일 업로드 경로 + 파일 이름
+		
+		logger.debug("업로드 파일 경로 : " + uploadPath);
 		
 		File file = new File(uploadPath);
 
@@ -83,24 +85,26 @@ public class fileController {
 	@RequestMapping(value = "/fileDownload", method = RequestMethod.POST)
 	@ResponseBody
 	public void downloadFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String fileName = request.getParameter("filename"); 
-		String filePath = request.getParameter("path");
-		String fileFullPath = filePath + fileName;
 		
+		String path = request.getSession().getServletContext().getRealPath("/")+"resources";
 		try{
+		
+			String fileName = request.getParameter("filename"); 
+			//인터넷 익스플로러 구분
+			if(request.getHeader("user-agent").indexOf("MSIE") == -1) {
+				fileName = new String(fileName.getBytes("UTF-8"),"8859_1");
+			}else {
+				fileName = new String(fileName.getBytes("EUC-KR"),"8859_1");
+			}
+			String filePath = request.getParameter("path");
+			String fileFullPath = path + filePath + fileName;
+		
 			logger.debug("파일 경로 : " + fileFullPath);
 			
 			File file = new File(fileFullPath);
 			if(file.exists()) {
 				response.setContentType("application/octet-stream");
 				response.setHeader("Content-Transfer-Encoding", "binary"); 
-				//인터넷 익스플로러 구분
-				if(request.getHeader("user-agent").indexOf("MSIE") == -1) {
-					fileName = new String(fileName.getBytes("UTF-8"),"8859_1");
-				}else {
-					fileName = new String(fileName.getBytes("EUC-KR"),"8859_1");
-				}
-				
 				response.setHeader("content-disposition", "attachment;fileName=\""+fileName+"\";");
 				response.setHeader("filename", URLEncoder.encode(fileName, "UTF-8"));
 				

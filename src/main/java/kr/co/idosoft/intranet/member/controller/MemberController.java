@@ -72,8 +72,8 @@ public class MemberController {
 		try {
 			HashMap<String, Object> tempMap = new HashMap<String, Object>();
 			tempMap.put("memberData",memberService.selectMember(memberVo.getMember_no()));
+			tempMap.put("positionCode", memberService.getCodeInfo("CD0000"));
 			tempMap.put("graduationCode", memberService.getCodeInfo("CD0001"));
-			
 			return tempMap;
 		}catch(Exception e) {
 			e.printStackTrace();
