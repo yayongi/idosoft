@@ -1,5 +1,6 @@
 package kr.co.idosoft.common.util;
 
+import java.util.Calendar;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -26,5 +27,23 @@ public class commonUtil {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * 그해 그달의 마지막 일을 계산한다.
+	 *
+	 * @param String(예시 : 201601)
+	 * @return Boolean
+	 */
+	public static int LastDateInMonth(String date) { 
+		
+		int _year 	= Integer.parseInt(date.substring(0, 4));
+		int _month 	= Integer.parseInt(date.substring(4, 6));
+		Calendar tmpCal = Calendar.getInstance();
+		tmpCal.set(Calendar.YEAR, _year);
+		tmpCal.set(Calendar.MONTH, _month);
+		tmpCal.set(Calendar.DATE, 0);
+
+		return (tmpCal.get(Calendar.DATE));
 	}
 }

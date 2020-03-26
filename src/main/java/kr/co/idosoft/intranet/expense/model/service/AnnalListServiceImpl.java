@@ -91,5 +91,9 @@ public class AnnalListServiceImpl implements AnnalListService {
 	public boolean deleteExpense(Map<String, Object> data) {
 		return dao.deleteExpense(data);
 	}
+
+	public String getTotalAmount(Map<String, Object> data) {
+		return dao.getTotalAmount(data);
+	}
 	
 }

@@ -60,6 +60,11 @@ public interface AnnalListDao {
 	 * @return boolean
 	 */
 	boolean deleteExpense(Map<String, Object> data);
+	/**
+	 * 총금액 합계
+	 * @return boolean
+	 */
+	String getTotalAmount(Map<String, Object> data);
 	
 }
 

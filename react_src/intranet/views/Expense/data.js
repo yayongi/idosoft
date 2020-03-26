@@ -66,16 +66,16 @@ export function getStepInfo(row) {
 		]
 	}
 	
-	if(row.status == '0') {
+	if(row.status == 'SS0000') {
 		stepInfo.activeStep = 0; // activeStep 1
-		stepInfo.steps[0].label = '진행';
+		stepInfo.steps[0].label = row.statusText;
 		stepInfo.steps[0].isError = false;
-	} else if(row.status == '1') {
-		stepInfo.activeStep = 1;
-	} else if(row.status == '2') {
-		stepInfo.activeStep = 2;
-	} else if(row.status == '3') {
-		stepInfo.activeStep = 0;
+	} else if(row.status == 'SS0001') {
+		stepInfo.activeStep = row.statusText;
+	} else if(row.status == 'SS00002') {
+		stepInfo.activeStep = row.statusText;
+	} else if(row.status == 'SS00003') {
+		stepInfo.activeStep = row.statusText;
 		stepInfo.steps[0].label = '반려';
 		stepInfo.steps[0].isError = true;
 	}

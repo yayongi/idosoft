@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -8,7 +8,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
-import { AnnualStorage } from 'views/Expense/data';
 import {EnhancedTableHead, stableSort, getComparator} from 'common/EnhancedTableHead';
 
 import Axios from 'axios';
@@ -48,20 +47,30 @@ function Body(props) {
       setOrderBy(property);
     };
     // 데이터, Router 속성
-    const { rows, setRows, routeProps, paging, setPaging } = props;
-    // 페이징
-    const [ page, setPage ] = React.useState(0);                 // 초기페이지가 0부터 시작
-    const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
-    const [ holdUp, setHoldUp ] = React.useState(0);     // 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
+    const { rows, setRows, routeProps
+            , paging, setPaging, state
+            , holdUp, setHoldUp 
+            , page, setPage, rowsPerPage, setRowsPerPage} = props;
+    
+    
 
     const handleChangePage = (event, newPage) => {
       if(holdUp < newPage){ // 이미 가지고 있는 페이지를 다시 호출하는 것을 막기 위해 사용
+
+        console.log('state : ' + JSON.stringify(state));
+
         Axios({
           url: '/intranet/getAnnaualList.exp',
           method: 'post',
           data: {
             currentPage : String(Number(newPage)+1),
-            limit : String(rowsPerPage)
+            limit : String(rowsPerPage),
+            name: state.name,
+            expenseType: state.expenseType,
+            payStDt: state.payStDt,
+            payEdDt: state.payEdDt,
+            status: state.status,
+            memo: state.memo,
           },
           headers: {
             'Content-Type': 'application/json'
@@ -90,7 +99,13 @@ function Body(props) {
         method: 'post',
         data: {
           currentPage : '1',
-          limit : String(event.target.value)
+          limit : String(event.target.value),
+          name: state.name,
+          expenseType: state.expenseType,
+          payStDt: state.payStDt,
+          payEdDt: state.payEdDt,
+          status: state.status,
+          memo: state.memo,
         },
         headers: {
           'Content-Type': 'application/json'
