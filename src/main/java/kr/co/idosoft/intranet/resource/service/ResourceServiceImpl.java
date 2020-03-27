@@ -23,18 +23,22 @@ public class ResourceServiceImpl implements ResourceService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(ResourceServiceImpl.class);
 	
+	//자원등록
 	@Override
 	public void inputResource(ResourceVO resourceVO) {
 		resDao.insert(resourceVO);
 	}
-	
+	//자원수정
+	@Override
 	public int modifyResource(ResourceVO resourceVO) {
 		return resDao.update(resourceVO);
 	}
-	
+	//자원삭제
+	@Override
 	public int deleteResource(int res_no) {
 		return resDao.delete(res_no);
 	}
+	//자원선택 삭제
 	@Override
 	@Transactional
 	public void deleteResourceList(List<Integer> selectedResNo) {
@@ -42,21 +46,23 @@ public class ResourceServiceImpl implements ResourceService{
 			resDao.delete(i);
 		}
 	}
-	
+	//자원 조회
+	@Override
 	public ResourceVO findResource(int res_no) {
 		return resDao.select(res_no);
 	}
-	
+	//자원 리스트 조회
+	@Override
 	public List<ResourceVO> findResourceList(){
 		return resDao.selectList();
 	}
-
+	//코드정보 조회
 	@Override
 	public List<Object> getCode(String code_id) {
 //		return resDao.getCode(code_id);
 		return null;
 	}
-	
+	//코드명, 코드번호 및 멤버이름, 멤버번호 조회
 	@Override
 	@Transactional
 	public Map<String, List<Object>> getSelectType(Map<String, String> upper_codes) {

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="notice">
+	<parameterMap type="kr.co.idosoft.intranet.notice.vo.NoticeVO"  id="NoticeVO" />
+	<resultMap type="kr.co.idosoft.intranet.notice.vo.NoticeVO"  id="NoticeVO" />
+	
+	<!-- 공지사항 등록 -->
+	<insert id="insert" parameterMap="NoticeVO">
+		INSERT INTO TB_BOARD
+						(
+							BOARD_NO, 
+							BOARD_TYPE_CODE, 
+							TITLE, 
+							CONTENT, 
+							MAJOR_YN, 
+							MAJOR_PERIOD_DATE, 
+							REG_DATETIME, 
+							REG_ID
+						)
+		VALUES 
+						(
+							#{board_no},
+							#{board_type_code},
+							#{title},
+							#{content},
+							#{major_yn, jdbcType=TINYINT},
+							#{major_period_date, jdbcType=VARCHAR},
+							NOW(), 
+							#{reg_id}
+						)
+	</insert>
+	
+	<!-- 공지사항 수정 -->
+	<update id="update" parameterMap="NoticeVO">
+		UPDATE
+			TB_BOARD
+		SET
+			TITLE = #{title},
+			CONTENT = #{content},
+			MAJOR_YN = #{major_yn jdbcType=TINYINT},
+			MAJOR_PERIOD_DATE = #{major_period_date jdbcType=VARCHAR},
+			UPD_DATETIME = #{upd_datetime}
+		WHERE
+			BOARD_NO = #{board_no}
+	</update>
+	
+	<!--  공지사항 삭제 -->
+	<delete id="deleteInfo" parameterType="int">
+		DELETE FROM
+			TB_BOARD
+		WHERE
+			BOARD_NO = #{board_no}
+	</delete>
+	
+	<!-- 공지사항 조회  -->
+	<select id="selectInfo" resultMap="NoticeVO" parameterType="int">
+		SELECT	
+			*
+		FROM 
+			TB_BOARD
+		WHERE 
+			BOARD_NO = #{board_no}
+	</select>
+	
+	<!-- 공지사항 리스트 -->
+	<select id="selectList" resultMap="NoticeVO">
+		SELECT
+			*
+		FROM	
+			TB_BOARD
+		ORDER BY BOARD_NO DESC
+	</select>
+	
+</mapper>

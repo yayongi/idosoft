@@ -115,6 +115,9 @@ module.exports = {
             ]
         
         }, {
+            test:/(codemirror|toastui-editor)\.css$/i,
+            use: ['style-loader', 'css-loader']
+        }, {
             test:/\.(png|jpg)$/,
             use:  {
                 loader: 'file-loader',

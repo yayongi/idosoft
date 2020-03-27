@@ -148,7 +148,7 @@ function RegistGrid() {
 	const [validation , setValidation] = React.useState(initValidation);
 	const [dialog, setDialog] = React.useState({});
 	const [resultDialog, setResultDialog] = React.useState(false);
-	const [urlParams, setUrlParams] = React.useState(getUrlParams(location.href, 'id'))
+	const [urlParams, setUrlParams] = React.useState(getUrlParams(location.href, 'id'));
 
 	//셀렉트 박스 State
 	const [resSelectBoxData, setResSelectBoxData] = React.useState(initSelectBoxData);

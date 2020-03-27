@@ -15,14 +15,14 @@ export default function YearMonthPicker(props) {
   const [trigger, setTrigger] = React.useState(true);
   const handleDateChange = date => {
     setSelectedDate(date);
-    props.onChildChange(Moment(date).format('YYYY-MM-DD'));
+    props.onChildChange(Moment(date).format('YYYYMMDD'));
   };
 
   React.useEffect(()=>{
     function parse(str) {
       var y = str.substr(0, 4);
-      var m = str.substr(5, 2);
-      var d = str.substr(8, 2);
+      var m = str.substr(4, 2);
+      var d = str.substr(6, 2);
       return new Date(y,m-1,d);
     } 
     if(trigger && props.defaultValue!==null && props.defaultValue !== undefined && props.defaultValue !== ""){
