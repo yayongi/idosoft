@@ -32,14 +32,14 @@ const SelectType = ({label, resKey, props, onChildClick, defaultValue, validatio
   }, []);
 
   React.useEffect(()=>{
-    if(trigger && defaultValue!==undefined){
+    if(trigger && defaultValue!==undefined && defaultValue!==null && defaultValue!==""){
       setTrigger(false);
       setType(defaultValue);
+      console.log(defaultValue);
     }
   }, [defaultValue]);
 
   const handleChange = event => {
-    console.log(defaultValue);
     setType(event.target.value);
     onChildClick({key:resKey, value:event.target.value});
   };
@@ -61,7 +61,7 @@ const SelectType = ({label, resKey, props, onChildClick, defaultValue, validatio
           {
             props.map((row, idx) => (
               // <MenuItem value={`${props.dataKey}_${row.key}`} key={idx}>{row.value}</MenuItem>
-              <MenuItem value={row.key} key={idx}>{row.value}</MenuItem>
+              <MenuItem value={row.id} key={idx}>{row.label}</MenuItem>
             ))
           }
         </Select>
