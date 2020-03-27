@@ -67,20 +67,18 @@ const Notice = () => {
 		<React.Fragment>
 			<ContentModal props={openModal} closeModal={handleCloseModal}/>
 			<Title>
-				<ResponsiveContainer>
-					<Grid container spacing={2}>
-						<Grid item xs={12} xs={6} >
-							공지사항 
-						</Grid>
-						<Grid item xs={12} xs={6}  style={{textAlign:"right"}}>
-							<RouterLink button="true" to="/notice">
-								<AddIcon style={{verticalAlign:"center"}}/>
-							</RouterLink>
-						</Grid>
+				<Grid container spacing={2}>
+					<Grid item xs={12} xs={6} >
+						공지사항 
 					</Grid>
-				</ResponsiveContainer>
+					<Grid item xs={12} xs={6}  style={{textAlign:"right"}}>
+						<RouterLink button="true" to="/notice">
+							<AddIcon style={{verticalAlign:"center"}}/>
+						</RouterLink>
+					</Grid>
+				</Grid>
 			</Title>
-			<Table size="small">
+			<Table size="x-small">
 				<TableHead>
 					<TableRow>
 						<TableCell>제목</TableCell>

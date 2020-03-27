@@ -21,8 +21,8 @@ export const data = [
 ];
 
 export const data_result = [
-  {projectsite : "올원뱅크", number : 4},
-  {projectsite : "콕뱅크", number : 6},
-  {projectsite : "우리은행 모바일오피스", number : 2},
-  {projectsite : "미투입인원", number : 3}
+  {projectsite : "올원뱅크", 인원 : 4},
+  {projectsite : "콕뱅크", 인원 : 6},
+  {projectsite : "우리은행 모바일오피스", 인원 : 2},
+  {projectsite : "미투입인원", 인원 : 3}
 ]

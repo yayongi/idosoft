@@ -58,13 +58,13 @@ export default function Dashboard() {
 				</Grid>
 				{/* Notice*/}
 				<Grid item xs={12} md={6} lg={6}>
-					<Paper className={fixedHeightPaper}>
+					<Paper className={classes.paper}>
 						<Notice/>
 					</Paper>
 				</Grid>
 				{/* Date */}
 				<Grid item xs={12} md={6} lg={6}>
-					<Paper className={fixedHeightPaper}>
+					<Paper className={classes.paper}>
 						<Anniversary />
 					</Paper>
 				</Grid>

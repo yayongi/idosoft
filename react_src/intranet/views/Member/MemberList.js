@@ -237,7 +237,7 @@ const MemberList = (props) => {
 			temp = temp.filter(temp => temp.name == searchState.searchword);
 		}else if(searchState.category == 1){
 		//직급 검색
-			temp = temp.filter(temp => temp.position == positionUnFormatter(searchState.searchword));
+			temp = temp.filter(temp => temp.code_name == searchState.searchword);
 		}
 		
 		setState({

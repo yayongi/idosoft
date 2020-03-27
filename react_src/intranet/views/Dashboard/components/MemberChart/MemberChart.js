@@ -18,7 +18,7 @@ export default function MemberChart(){
 					<Tooltip wrapperStyle={{ width: 100, backgroundColor: '#ccc' }} />
 					
 					<CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-					<Bar dataKey="number" fill="#8884d8" barSize={30} />
+					<Bar dataKey="인원" fill="#8884d8" barSize={30} />
 				</BarChart>
 			</ResponsiveContainer>
 		</React.Fragment>
