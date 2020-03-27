@@ -20,6 +20,10 @@ import CommonDialog from '../../../js/CommonDialog';
 
 import Moment from "moment"
 
+import axios from 'axios';
+
+import ToastEditor from '../component/ToastEditor';
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -41,8 +45,29 @@ const useStyles = makeStyles(theme => ({
   textArea: {
     width: '100%',
     minHeight: '200px'
+  },
+  editor: {
+    width: '100%',
+    minHeight: '600px'
   }
 }));
+
+const getUrlParams = function (url, paramName) {
+    // 리턴값을 위한 변수 선언
+    var returnValue;
+
+    // get 파라미터 값을 가져올 수 있는 ? 를 기점으로 slice 한 후 split 으로 나눔
+    var parameters = (url.slice(url.indexOf('?') + 1, url.length)).split('&');
+
+    // 나누어진 값의 비교를 통해 paramName 으로 요청된 데이터의 값만 return
+    for (var i = 0; i < parameters.length; i++) {
+        var varName = parameters[i].split('=')[0];
+        if (varName.toUpperCase() == paramName.toUpperCase()) {
+            returnValue = parameters[i].split('=')[1];
+            return decodeURIComponent(returnValue);
+        }
+    }
+};
 
 export default function NoticeRegistLayout() {
   const classes = useStyles();
@@ -57,14 +82,20 @@ export default function NoticeRegistLayout() {
   const [dialog, setDialog] = React.useState({});
 	const [resultDialog, setResultDialog] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
+  const [urlParams, setUrlParams] = React.useState(getUrlParams(location.href, 'id'));
   const [noticeData, setNoticeData] = React.useState({
-    noticeNo : null,
-    title: '',
-    content:'',
-    regDatetime:'',
-    majorYn:false,
-    majorPeriodDate:'',
-    regId:'김준선'
+    // noticeNo : null,
+    // title: '',
+    // content:'',
+    // regDatetime:'',
+    // majorYn:false,
+    // majorPeriodDate:'',
+
+      board_no : null,
+      title: '',
+      content:'',
+      major_yn : false,
+      major_period_date:'',
   });
 
   //수정시 데이터 설정
@@ -72,19 +103,45 @@ export default function NoticeRegistLayout() {
     if(localStorage.getItem('noticeEditIndex') !== null){
       const obj = JSON.parse(localStorage.getItem('noticeTestData'));
       setNoticeData(obj.filter((item=>{
-        return item.noticeNo === Number(localStorage.getItem('noticeEditIndex'));
+        return item.board_no  === Number(localStorage.getItem('noticeEditIndex'));
       }))[0]);
     }
+
+    if(urlParams!==undefined){
+					axios({
+						url: '/intranet/notice/find',
+						method : 'post',
+						headers: {
+							'Content-Type': 'application/json;charset=UTF-8'
+						},
+						data : {
+							board_no : urlParams
+						},
+						}).then(response => {
+              //수정 데이터 설정
+              console.log(response);
+              const data = response.data;
+							setNoticeData( 
+                {...noticeData, ['board_no']: data.board_no, ['title']:data.title, ['content'] : data.content,
+                  ['major_yn'] : data.major_yn === 1 ? true : false, ['major_period_date'] : data.major_yn !== 0 ? data.major_period_date : ''
+                }
+               );
+						}).catch(e => {
+							console.log(e);
+					});
+		}
+
+
   }, []);
 
   React.useEffect(()=>{
     console.log(noticeData);
-    setChecked(noticeData.majorYn);
+    setChecked(noticeData.major_yn);
   }, [noticeData]);
 
   React.useEffect(()=>{
     if(checked){
-      setNoticeData({...noticeData, majorPeriodDate : Moment(new Date()).format('YYYY-MM-DD') } );
+      setNoticeData({...noticeData, major_period_date : Moment(new Date()).format('YYYYMMDD') } );
     }
   }, [checked])
 
@@ -92,14 +149,17 @@ export default function NoticeRegistLayout() {
 
   const handleChange = event => {
     setChecked(event.target.checked);
-    setNoticeData({...noticeData, majorYn:event.target.checked} );
+    setNoticeData({...noticeData, major_yn:event.target.checked} );
   };
   const handleInputChange = event => {
     setNoticeData({...noticeData, [event.target.name]:event.target.value});
     setValidation(initValidation);
   }
   const handleChildChange = date => {
-    setNoticeData({...noticeData, majorPeriodDate:date});
+    setNoticeData({...noticeData, major_period_date:date});
+  }
+  const handleEditorChange = data => {
+    setNoticeData({...noticeData, content:data});
   }
 
   // Dialog Open Handler
@@ -120,18 +180,33 @@ export default function NoticeRegistLayout() {
 	
 	const noticeDataRegist = () => {
     const localNoticeData = JSON.parse(localStorage.getItem('noticeTestData'));
-		if(noticeData.noticeNo === null){
+		if(noticeData.board_no  === null){
       //등록
-      if(localNoticeData.length !== 0){
-        noticeData.noticeNo = Number(localNoticeData[localNoticeData.length-1].noticeNo)+1;
-      }else{
-        noticeData.noticeNo = 1;
-      }
-			localNoticeData.push( {...noticeData, regDatetime:Moment(new Date()).format('YYYY-MM-DD') } );
-			localStorage.setItem('noticeTestData', JSON.stringify(localNoticeData) );
+      // if(localNoticeData.length !== 0){
+      //   noticeData.noticeNo = Number(localNoticeData[localNoticeData.length-1].noticeNo)+1;
+      // }else{
+      //   noticeData.noticeNo = 1;
+      // }
+			// localNoticeData.push( {...noticeData, regDatetime:Moment(new Date()).format('YYYY-MM-DD') } );
+      // localStorage.setItem('noticeTestData', JSON.stringify(localNoticeData) );
+      axios({
+				url: '/intranet/notice/register',
+				method : 'post',
+				headers: {
+					'Content-Type': 'application/json;charset=UTF-8'
+				},
+				data : {...noticeData, ['major_yn'] : (noticeData.major_yn===true?1:0)},
+				}).then(response => {
+					console.log(response);
+					console.log(JSON.stringify(response));
+					console.log(response.data);
+				}).catch(e => {
+					console.log(e);
+			});
+
 		}else{
 			//수정
-			const index = localNoticeData.findIndex(notice => notice.noticeNo === Number(noticeData.noticeNo));
+			const index = localNoticeData.findIndex(notice => notice.board_no  === Number(noticeData.board_no ));
 			const newlocalNoticeData = [...localNoticeData];
 			if(index !== undefined){
 				newlocalNoticeData.splice(index, 1, noticeData);
@@ -149,7 +224,7 @@ export default function NoticeRegistLayout() {
       return 1;
     }else if(noticeData.content.length === 0){
       return 2;
-    }else if(noticeData.majorYn && noticeData.majorPeriodDate === "Invalid date"){
+    }else if(noticeData.major_yn && noticeData.major_period_date === "Invalid date"){
       return 3;
     }else{
       return -1;
@@ -235,7 +310,7 @@ export default function NoticeRegistLayout() {
                   onChange={handleChange}
                   value=""
                   color="primary"
-                  checked={noticeData.majorYn}
+                  checked={noticeData.major_yn}
                 />
                 }
                 label="중요공지 여부"
@@ -245,19 +320,40 @@ export default function NoticeRegistLayout() {
               {
                 checked===false
                 ?(<div></div>)
-                :(<DatePicker defaultValue={noticeData.majorPeriodDate} onChildChange={handleChildChange}/>)
+                :(<DatePicker defaultValue={noticeData.major_period_date} onChildChange={handleChildChange}/>)
               }
             </Grid>
           </Grid>
 		  </div>
       </CardContent>
       <CardActions>
-        <TextareaAutosize name="content" onChange={handleInputChange} 
+        {/* <TextareaAutosize name="content" onChange={handleInputChange} 
                           value={noticeData.content} 
                           className={classes.textArea} aria-label="content" 
                           rowsMin={3} placeholder="내용을 입력하세요."
                           style={{borderColor:validation.content}}
-        />
+        /> */}
+        {/* <CKEditor
+            className={classes.editor}
+            editor={ ClassicEditor }
+            data="<p>Hello from CKEditor 5!</p>"
+            onInit={ editor => {
+                // You can store the "editor" and use when it is needed.
+                console.log( 'Editor is ready to use!', editor );
+            } }
+            onChange={ ( event, editor ) => {
+                const data = editor.getData();
+                console.log( { event, editor, data } );
+            } }
+            onBlur={ ( event, editor ) => {
+                console.log( 'Blur.', editor );
+            } }
+            onFocus={ ( event, editor ) => {
+                console.log( 'Focus.', editor );
+            } }
+        /> */}
+
+        <ToastEditor setData={setNoticeData} defaultValue={noticeData.content} onEditorChange={handleEditorChange}/>
       </CardActions>
     </Fragment>
   );

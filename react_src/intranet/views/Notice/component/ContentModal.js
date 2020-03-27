@@ -1,5 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -8,6 +9,12 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
+
+import Table from '@material-ui/core/Table';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+
 
 const styles = theme => ({
   root: {
@@ -21,6 +28,18 @@ const styles = theme => ({
     color: theme.palette.grey[500],
   },
 });
+
+const useStyles = makeStyles(theme => ({
+  root: {
+	  width:'100%',
+  },
+  tableRoot: {
+    width: '100%',
+  },
+  tableCell: {
+    borderBottom : '0px'
+  }
+}));
 
 const DialogTitle = withStyles(styles)(props => {
   const { children, classes, onClose, ...other } = props;
@@ -55,6 +74,8 @@ const DialogActions = withStyles(theme => ({
 const ContentModal = ({props, closeModal}) => {
   const [open, setOpen] = React.useState(false);
 
+  //클래스까지 설정
+  const classes = useStyles();
   // const handleClickOpen = () => {
   //   setOpen(true);
   // };
@@ -71,10 +92,23 @@ const ContentModal = ({props, closeModal}) => {
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={props.openModal}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
           {/* Modal title */}
-		      {props.title}
+          <Table className={classes.tableRoot} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell className={classes.tableCell}> {props.title}</TableCell>
+                <TableCell className={classes.tableCell}> {props.regId}</TableCell>
+                <TableCell className={classes.tableCell}> {props.regDatetime}</TableCell>
+              </TableRow>
+            </TableHead>
+          </Table>
+
+
         </DialogTitle>
         <DialogContent dividers>
-			    {props.content}
+          <div dangerouslySetInnerHTML={ {__html: props.content} } />
+			    {/* {props.content} */}
+
+
           {/* <Typography gutterBottom>
             Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
             in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.

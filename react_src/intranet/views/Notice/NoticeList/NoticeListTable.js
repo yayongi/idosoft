@@ -165,8 +165,8 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
 
   const isSelected = noticeNo => selected.indexOf(noticeNo) !== -1;
 
-   const openContentModal = (Title, Content) => {
-      return setOpenModal({title:Title, content:Content, openModal:true});
+   const openContentModal = (Title, Content, regId, regDatetime) => {
+      return setOpenModal({title:Title, content:Content, regId:regId, regDatetime:regDatetime, openModal:true});
   }
 
 
@@ -253,12 +253,18 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
                         />
                       </TableCell>
                       <TableCell align="center" component="th" id={labelId} scope="row" padding="none"
-                                  onClick={event => openContentModal(row.title, row.content)} >
-                        {row.majorYn && eval(nowDate <= dateStr(row.majorPeriodDate)) ? '[중요]' : row.noticeNo}
+                                  onClick={event => openContentModal(row.title, row.content, row.regId, row.regDatetime)} >
+                                {row.majorYn && eval(nowDate <= dateStr(row.majorPeriodDate)) ? '[중요]' : row.noticeNo}
                       </TableCell>
-                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content)}>{row.title}</TableCell>
-                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content)}>{row.regDatetime}</TableCell>
-                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content)}>{row.regId}</TableCell>
+                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.regId, row.regDatetime)}>
+                        {row.title}
+                      </TableCell>
+                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.regId, row.regDatetime)}>
+                        {row.regDatetime}
+                      </TableCell>
+                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.regId, row.regDatetime)}>
+                        {row.regId}
+                      </TableCell>
                       {/* 관리자의 경우 */}
                       <TableCell align="center" style={{maxWidth:'80px'}}>
                         <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.noticeNo)}>
