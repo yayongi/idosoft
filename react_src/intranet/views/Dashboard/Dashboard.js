@@ -7,8 +7,6 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link'
 
-import {getSessionMemberInfo} from '../../js/util';
-
 import {
 	MemberChart, Anniversary, Notice
 } from './components'
@@ -26,11 +24,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Copyright() {
-
-	/* useEffect(() => {		// render 완료 후, 호출
-		getSessionMemberInfo(); // 회원정보 세션을 세션스토리지에 저장
-	}, []); */
-
 	return (
 		<Typography variant="body2" color="textSecondary" align="center">
 			{'Copyright © '}

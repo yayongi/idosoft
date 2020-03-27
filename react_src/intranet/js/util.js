@@ -207,16 +207,18 @@ export function excelExport(json){
   //  로그인 회원정보 세션데이터 가져오기
   //  작성자 : 유기환
   export function getSessionMemberInfo(){
-    
     axios({
-    url: '/intranet/getSession',
-    method: 'get',
-    data: {}
+      url: '/intranet/getSession',
+      method: 'get',
+      data: {}
     }).then(response => {
       console.log('SESSION_DATA' + JSON.stringify(response.data.SESSION_DATA));
+      sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
+      location.href="/";
     }).catch(e => {
       processErrCode(e);
       console.log(e);
+      return null;
     });
   }
 

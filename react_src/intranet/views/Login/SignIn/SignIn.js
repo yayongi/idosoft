@@ -15,6 +15,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 
+import {getSessionMemberInfo} from '../../../js/util';
+
 // Server
 import axios from 'axios';
 
@@ -109,7 +111,8 @@ class SignIn extends Component {
 					if(resPassSign == 'true'){
 						location.href="/#/resPassword";
 					} else {
-						location.href="/";
+						//로그인 후 세션 등록
+						getSessionMemberInfo();
 					}
 				} else {
 					const errorArartOpen = this.errorArartOpen.bind(this);
