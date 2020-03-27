@@ -61,6 +61,7 @@ public class CodeController {
 		data.put("isAdmin", isAdmin);	// 관리자 여부
 		
 		List<Map<String, Object>> list = codeService.getlist();
+		int listCount = codeService.getlistCount();
 		
 		String jsonArrayList 	= null;
 		String jsonObjectData 	= null;
@@ -77,7 +78,7 @@ public class CodeController {
 		mv.addObject("list", jsonArrayList);
 		LOG.debug("JSON OBJECT 변환 실패 : " + list);
 		mv.addObject("result", jsonObjectData);
-		
+		mv.addObject("listCount", listCount);
 		return mv;
 	}
 	

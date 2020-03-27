@@ -20,4 +20,10 @@ public class CodeServiceImpl implements CodeService {
 		return dao.getlist();
 	}
 
+
+	@Override
+	public int getlistCount() {
+		return dao.getlistCount();
+	}
+
 }

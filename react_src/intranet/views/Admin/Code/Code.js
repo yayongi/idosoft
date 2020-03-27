@@ -41,7 +41,7 @@ export default function CodeView(props) {
   const classes = mainStyles();
   const [isShowLoadingBar, setShowLoadingBar] = React.useState(true);    //loading bar
   const [codeOriginInfo, setCodeOriginInfo] = React.useState([]);
-  const [codeInfo, setCodeInfo] = useState([], []);
+  const [codeInfo, setCodeInfo] = useState([]);
   
   const [condition, setCondition] = useState({
     searchType: "",
@@ -69,8 +69,6 @@ export default function CodeView(props) {
     }, []);
 
   const updateCondition = (conditions) => {
-    console.log("updateCondition");
-    console.log(conditions);
     
     let searchedInfo = [];
     var tempCodeInfo = [].concat(codeOriginInfo);
@@ -79,19 +77,19 @@ export default function CodeView(props) {
         searchedInfo = tempCodeInfo;
         break;
       case "1":
-        searchedInfo = tempCodeInfo.filter((info) => info.code_id === conditions.searchKeyword);
+        searchedInfo = tempCodeInfo.filter((info) => info.CODE_ID === conditions.searchKeyword);
         break;
       case "2":
-        searchedInfo = tempCodeInfo.filter((info) => info.code_name.includes(conditions.searchKeyword));
+        searchedInfo = tempCodeInfo.filter((info) => info.CODE_NAME.includes(conditions.searchKeyword));
         break;
       case "3":
-        searchedInfo = tempCodeInfo.filter((info) => info.code_level === conditions.searchKeyword);
+        searchedInfo = tempCodeInfo.filter((info) => info.CODE_LEVEL == conditions.searchKeyword);
         break;
       case "4":
-        searchedInfo = tempCodeInfo.filter((info) => info.upper_code === conditions.searchKeyword);
+        searchedInfo = tempCodeInfo.filter((info) => info.UPPER_CODE === conditions.searchKeyword);
         break;
       case "5":
-        searchedInfo = tempCodeInfo.filter((info) => info.upper_code === "");
+        searchedInfo = tempCodeInfo.filter((info) => info.UPPER_CODE === "");
         break;
       default:
         searchedInfo = tempCodeInfo;

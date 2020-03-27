@@ -56,7 +56,6 @@ export default function CodeSearchDiv(props) {
 	const classes = useToolbarStyles();
 	const {condition, updateCondition} = props;
 	const [open, setOpen] = React.useState(false);
-	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false);
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -121,28 +120,8 @@ export default function CodeSearchDiv(props) {
 		});
 	};
 
-
-	
-	//dummy add
-	const handleClickDummyAdd = () => {
-		console.log("startLoading");
-		setShowLoadingBar(true);
-		axios({
-			url: '/intranet/code',
-			method: 'post',
-			data: {}
-		}).then(response => {
-			setShowLoadingBar(false);
-			console.log('로그인 여부' + JSON.stringify(response));	
-		}).catch(e => {
-			setShowLoadingBar(false);
-		});
-
-	}
-
 	return (
 		<Fragment>
-			<LoadingBar open={isShowLoadingBar}/>
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">					
 					코드 관리
@@ -151,9 +130,6 @@ export default function CodeSearchDiv(props) {
 					<Hidden smDown>
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button}>
 							검색
-						</Button>
-						<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickDummyAdd}>
-							더미추가
 						</Button>
 						<RouterLink button="true" to="/admin/modifyCode/new">
 							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} >

@@ -23,4 +23,10 @@ public class CodeDaoImpl implements CodeDao {
 		
 		return (ArrayList)sqlTemplate.selectList("admin.getList");
 	}
+
+	@Override
+	public int getlistCount() {
+		// TODO Auto-generated method stub
+		return (int)sqlTemplate.selectOne("admin.getListCount");
+	}
 }

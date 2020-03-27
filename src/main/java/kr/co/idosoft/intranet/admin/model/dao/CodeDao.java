@@ -13,5 +13,6 @@ public interface CodeDao {
 	
 	
 	List<Map<String, Object>> getlist();
+	int getlistCount();
 }
 

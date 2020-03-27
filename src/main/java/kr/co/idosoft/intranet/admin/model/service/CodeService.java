@@ -5,4 +5,5 @@ import java.util.Map;
 
 public interface CodeService {
 	List<Map<String, Object>> getlist();
+	int getlistCount();
 }
