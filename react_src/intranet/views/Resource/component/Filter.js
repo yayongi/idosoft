@@ -31,6 +31,8 @@ import {
 } from '@material-ui/pickers';
 import { returnValue } from '../uitl/ResUtil';
 
+import axios from 'axios';
+
 
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
@@ -82,7 +84,7 @@ export default function  Filter(props) {
 	
 	const classes = useToolbarStyles();
 	const {
-		state, setState,setResData
+			resData, state, setState,setResData
 	} = props;
 	const [open, setOpen] = React.useState(false);
 	const [isDelete, setIsDelete] = React.useState(false);
@@ -125,12 +127,24 @@ export default function  Filter(props) {
 	//localStorage resData 선택요소 삭제 처리
 	const selectDelete = (result) => {
 		if(result){
-			console.log(props.selected);
-			const resData = JSON.parse(localStorage.resData);
+			axios({
+				url: '/intranet/resource/deletelist',
+				method : 'post',
+				headers: {
+					'Content-Type': 'application/json;charset=UTF-8'
+				},
+				data:{
+				res_no : props.selected
+				},
+				}).then(response => {
+					console.log(response);
+					console.log(JSON.stringify(response));
+				}).catch(e => {
+					console.log(e);
+			});
 			const upStreamData = resData.filter((row => {
-				return !props.selected.includes((row.resNo));
+				return !props.selected.includes((row.res_no));
 			}));
-			localStorage.setItem('resData',JSON.stringify(upStreamData));
 			setResData(upStreamData);
 		}
 		setIsDelete(false);
@@ -139,22 +153,14 @@ export default function  Filter(props) {
 
 	// Dialog 값 상위 컴포넌트의 state값으로 초기화
 	const initDialogState = {
-		holFder: "",
+		holder: "",
 		resType: '-1',
 		stDt: null,
 		edDt: null,
 	};
 
 	// 검색 버튼 클릭 전, 임시로 값 저장
-	const [dialogState, setDialogState] = React.useState(
-		// {
-		// holder: undefined,
-		// resType: '-1',
-		// stDt: null,
-		// edDt: null,
-		// }
-		initDialogState
-	);
+	const [dialogState, setDialogState] = React.useState(initDialogState);
 
 	// Dialog 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {

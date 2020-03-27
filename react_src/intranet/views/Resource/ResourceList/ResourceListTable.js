@@ -13,23 +13,41 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CreateIcon from '@material-ui/icons/Create';
 import { Link as RouterLink } from 'react-router-dom';
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+
+import axios from 'axios';
 
 import CommonDialog from '../../../js/CommonDialog';
 
-function createData(ResNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder) {
-    return { ResNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder };
-}
 const headCells = [
-  { id: 'resNo', label: '번호' },
-  { id: 'resCode', label: '자원종류' },
-  { id: 'modelNm', label: '모델명' },
-  { id: 'markCode', label: '제조사' },
-  { id: 'productMtn', label: '제조년월' },
-  { id: 'purchaseMtn', label: '구입년월' },
-  { id: 'displaySizeCode', label: '화면크기' },
-  { id: 'serialNo', label: '시리얼번호주소' },
-  { id: 'macAddr', label: 'Mac' },
+  { id: 'res_no', label: '번호' },
+  { id: 'res_code', label: '자원종류' },
+  { id: 'model_nm', label: '모델명' },
+  { id: 'mark_code', label: '제조사' },
+  { id: 'product_mtn', label: '제조년월' },
+  { id: 'purchase_mtn', label: '구입년월' },
+  { id: 'display_size_code', label: '화면크기' },
+  { id: 'serial_no', label: 'Serial번호' },
+  { id: 'mac_addr', label: 'Mac주소' },
   { id: 'holder', label: '보유자' },
+];
+const columnsUp = [
+      { id: 'res_no', label: '번호' },
+      { id: 'res_code', label: '자원종류' },
+      { id: 'model_nm', label: '모델명' },
+      { id: 'mark_code', label: '제조사' },
+      { id: 'product_mtn', label: '제조년월' },
+      { id: 'purchase_mtn', label: '구입년월' },
+      { id: 'display_size_code', label: '화면크기' },
+      { id: 'serial_no', label: 'Serial번호' },
+      { id: 'mac_addr', label: 'Mac주소' },
+      { id: 'holder', label: '보유자' },
+    ];
+
+const columnsDown = [
+      { id: 'res_no', label: '번호' },
+      { id: 'model_nm', label: '모델명' },
+      { id: 'holder', label: '보유자' },
 ];
 
 const useStyles = makeStyles(theme => ({
@@ -59,7 +77,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function ResourceListTable({resData, selectedResNo, setResData}) {
+function ResourceListTable({resData, selectedResNo, setResData}, props) {
   const classes = useStyles();
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
@@ -67,6 +85,14 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
   const [rows, setRows] = React.useState(resData);
   const [deleteRow, setDeleteRow] = React.useState(0);
   const [confirm, setConfirm] = React.useState({});
+
+  // Width에 따라 반응형으로 열이 보여지는 개수 조정
+  let columns = columnsUp;
+  // if(isWidthUp('md', props.width)) {
+  //   columns =columnsUp;
+  // } else {
+  //   columns =columnsDown;
+  // }
 
   useEffect(()=>{
     console.log(`selected : ${selected}`);
@@ -83,7 +109,7 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
 
   const handleSelectAllClick = event => {
     if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.resNo);
+      const newSelecteds = rows.map(n => n.res_no);
       setSelected(newSelecteds);
       return;
     }
@@ -120,8 +146,8 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
   };
 
   //개별 삭제 handler
-  const handleDeleteClick = (resNo) => {
-    setDeleteRow(resNo);
+  const handleDeleteClick = (res_no) => {
+    setDeleteRow(res_no);
     handleOpenConfirm('자원관리', '선택항목을 삭제하시겠습니까?', true);
   }
   // confirm Open Handler
@@ -138,21 +164,34 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
   //localStorage resData  삭제 처리
 	const resDelete = (result) => {
 		if(result){
-			const resData = JSON.parse(localStorage.resData);
-			const upStreamData = resData.filter((row) => {
-				return !(row.resNo === deleteRow);
+      axios({
+				url: '/intranet/resource/delete',
+				method : 'post',
+				headers: {
+					'Content-Type': 'application/json;charset=UTF-8'
+        },
+        data:{
+          res_no : deleteRow
+        },
+				}).then(response => {
+					console.log(response);
+					console.log(JSON.stringify(response));
+				}).catch(e => {
+					console.log(e);
 			});
-			localStorage.setItem('resData',JSON.stringify(upStreamData));
+			const upStreamData = resData.filter((row) => {
+				return !(row.res_no === deleteRow);
+			});
 			setResData(upStreamData);
 		}
 		return setDeleteRow(0);
 	}
 
-  const handleEditClick = (resNo) => {
-    localStorage.setItem('resEditIndex', resNo);
+  const handleEditClick = (res_no) => {
+    localStorage.setItem('resEditIndex', res_no);
   }
 
-  const isSelected = resNo => selected.indexOf(resNo) !== -1;
+  const isSelected = res_no => selected.indexOf(res_no) !== -1;
   // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   return (
@@ -179,15 +218,15 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
-                  <Checkbox
-                    indeterminate={selected.length > 0 && rows.length < selected.length}
-                    checked={rows.length === selected.length}
-                    onChange={handleSelectAllClick}
-                    inputProps={{ 'aria-label': 'select all desserts' }}
-                    color="primary"
-                  />
+                    <Checkbox
+                      indeterminate={selected.length > 0 && rows.length < selected.length}
+                      checked={rows.length === selected.length}
+                      onChange={handleSelectAllClick}
+                      inputProps={{ 'aria-label': 'select all desserts' }}
+                      color="primary"
+                    />
                 </TableCell>
-                {headCells.map(headCell => (
+                {columns.map(headCell => (
                   <TableCell
                     key={headCell.id}
                     align={'center'}
@@ -203,7 +242,7 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
             <TableBody>
               { rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.resNo);
+                  const isItemSelected = isSelected(row.res_no);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
@@ -212,37 +251,41 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      // key={row.resNo}
+                      // key={row.res_no}
                       key={`row${index}`}
                       // selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                          color="primary"
-                          onClick={event => handleClick(event, row.resNo)}
-                        />
+                          <Checkbox
+                            checked={isItemSelected}
+                            inputProps={{ 'aria-labelledby': labelId }}
+                            color="primary"
+                            onClick={event => handleClick(event, row.res_no)}
+                          />
                       </TableCell>
                       <TableCell align="center" component="th" id={labelId} scope="row" padding="none">
-                        {row.resNo}
+                        {row.res_no}
                       </TableCell>
-                      <TableCell align="center">{row.resCode}</TableCell>
-                      <TableCell align="center">{row.modelNm}</TableCell>
-                      <TableCell align="center">{row.markCode}</TableCell>
-                      <TableCell align="center">{row.productMtn}</TableCell>
-                      <TableCell align="center">{row.purchaseMtn}</TableCell>
-                      <TableCell align="center">{row.displaySizeCode}</TableCell>
-                      <TableCell align="center">{row.serialNo}</TableCell>
-                      <TableCell align="center">{row.macAddr}</TableCell>
+                      <TableCell align="center">{row.res_code}</TableCell>
+                      <TableCell align="center">{row.model_nm}</TableCell>
+                      <TableCell align="center">{row.mark_code}</TableCell>
+                      <TableCell align="center">
+                          {row.product_mtn !== undefined && row.product_mtn !== null ? row.product_mtn.substr(0,4)+'-'+row.product_mtn.substr(4,6) : "미설정"}
+                      </TableCell>
+                      <TableCell align="center">
+                          {row.purchase_mtn !== undefined && row.purchase_mtn !== null ? row.purchase_mtn.substr(0,4)+'-'+row.purchase_mtn.substr(4,6) : "미설정"}
+                      </TableCell>
+                      <TableCell align="center">{row.display_size_code}</TableCell>
+                      <TableCell align="center">{row.serial_no}</TableCell>
+                      <TableCell align="center">{row.mac_addr}</TableCell>
                       <TableCell align="center">{row.holder}</TableCell>
                       {/* 관리자의 경우 */}
                       <TableCell align="center">
-                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.resNo)}>
+                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.res_no)}>
                           <DeleteIcon fontSize="small" />
                         </IconButton>
-                        <RouterLink button="true" to="/resource/regist">
-                          <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.resNo)}>
+                        <RouterLink button="true" to={"/resource/regist/?id="+row.res_no}>
+                          <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.res_no)}>
                             <CreateIcon fontSize="small" />
                           </IconButton>
                         </RouterLink>
@@ -266,3 +309,4 @@ export default function ResourceListTable({resData, selectedResNo, setResData}) 
     </div>
   );
 }
+export default withWidth()(ResourceListTable);

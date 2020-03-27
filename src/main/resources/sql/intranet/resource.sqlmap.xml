@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="resource">
+	<parameterMap type="kr.co.idosoft.intranet.resource.vo.ResourceVO"  id="ResourceVO" />
+	<resultMap type="kr.co.idosoft.intranet.resource.vo.ResourceVO"  id="ResourceVO" />
+	
+	<!-- 자원 등록 -->
+	<insert id="insert" parameterMap="ResourceVO">
+		INSERT INTO TB_RESOURCE 
+				(RES_CODE, MODEL_NM, MARK_CODE, PRODUCT_MTN, PURCHASE_MTN, 
+					DISPLAY_SIZE_CODE, SERIAL_NO, MAC_ADDR, REG_DATETIME, REG_ID, HOLDER)
+		VALUES (#{res_code},#{model_nm},#{mark_code},#{product_mtn,jdbcType=VARCHAR},#{purchase_mtn,jdbcType=VARCHAR},
+					#{display_size_code},#{serial_no}, #{mac_addr,jdbcType=VARCHAR},NOW(),#{reg_id},#{holder})
+	</insert>
+	
+	<!-- 자원 수정 -->
+	<update id="update" parameterMap="ResourceVO">
+		UPDATE
+			TB_RESOURCE
+		SET
+			RES_CODE = #{res_code},
+			MODEL_NM = #{model_nm},
+			MARK_CODE = #{mark_code},
+			PRODUCT_MTN = #{product_mtn},
+			PURCHASE_MTN = #{purchase_mtn},
+			DISPLAY_SIZE_CODE = #{display_size_code},
+			SERIAL_NO = #{serial_no},
+			MAC_ADDR = #{mac_addr},
+			UPD_DATETIME = NOW(),
+			UPD_ID = #{upd_id},
+			HOLDER = #{holder},
+			NOTE = #{note},
+			TEMP_COLUM = #{temp_colum}
+		WHERE
+			RES_NO = #{res_no}
+	</update>
+	
+	<!--  자원 삭제 -->
+	<delete id="deleteInfo" parameterType="int">
+		DELETE FROM
+			TB_RESOURCE
+		WHERE
+			RES_NO = #{res_no}
+	</delete>
+	
+	<!-- 자원 정보  -->
+	<select id="selectInfo" resultMap="ResourceVO" parameterType="int">
+		SELECT	
+			*
+		FROM 
+			TB_RESOURCE
+		WHERE 
+			RES_NO = #{res_no}
+	</select>
+	
+	<!-- 자원 정보 리스트 -->
+	<select id="selectList" resultMap="ResourceVO">
+		SELECT
+			TB_RESOURCE.RES_NO, 
+			TB_RESOURCE.MODEL_NM, 
+			TB_RESOURCE.PRODUCT_MTN,
+			TB_RESOURCE.PURCHASE_MTN, 
+			TB_RESOURCE.SERIAL_NO, 
+			TB_RESOURCE.MAC_ADDR,
+			A.CODE_NAME AS RES_CODE,
+			B.CODE_NAME AS MARK_CODE,
+			C.CODE_NAME AS DISPLAY_SIZE_CODE,
+			D.NAME AS HOLDER
+		FROM	TB_RESOURCE
+			LEFT OUTER JOIN TB_CODE A ON TB_RESOURCE.RES_CODE = A.CODE_ID
+			LEFT OUTER JOIN TB_CODE B ON TB_RESOURCE.MARK_CODE = B.CODE_ID
+			LEFT OUTER JOIN TB_CODE C ON TB_RESOURCE.DISPLAY_SIZE_CODE = C.CODE_ID
+			LEFT OUTER JOIN TB_MEMBER D ON TB_RESOURCE.HOLDER = D.MEMBER_NO
+		ORDER BY TB_RESOURCE.RES_NO DESC
+	</select>
+	
+	<!-- 코드 정보 -->
+	<select id="getCode" resultType="HashMap">
+		SELECT 
+			CODE_ID AS id, CODE_NAME AS label
+		FROM 
+			TB_CODE
+		WHERE 
+			UPPER_CODE = #{code_id}
+	</select>
+	
+	<!-- 멤버리스트 -->
+	<select id="getHolders" resultType="HashMap">
+		SELECT
+			MEMBER_NO AS id, NAME AS label
+		FROM
+			TB_MEMBER
+	</select>
+</mapper>
