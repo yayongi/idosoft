@@ -33,7 +33,6 @@ const Notice = () => {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
 		}).then(response => {
-			console.log("result : " + JSON.stringify(response));
 			setState(response.data)
 ;		}).catch(e => {
 			console.log(e);

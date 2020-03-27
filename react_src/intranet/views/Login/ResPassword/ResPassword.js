@@ -131,7 +131,7 @@ class ResPassword extends Component {
 
 							errorArartOpen(errMessage);
 						} else {
-							location.href="/";
+							location.href="/signIn";
 						}
 						
 					}).catch(e => {

@@ -9,7 +9,6 @@ const Anniversary = () => {
 	
 	useEffect(() => {
 		const date = getLunarDate();
-		console.log("date : " + date);
 
 		axios({
 			url: '/intranet/member/getdate',
@@ -22,7 +21,6 @@ const Anniversary = () => {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
 		}).then(response => {
-			console.log("result : " + JSON.stringify(response));
 			setState(response.data)
 ;		}).catch(e => {
 			console.log(e);

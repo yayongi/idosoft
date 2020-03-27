@@ -353,10 +353,6 @@ export function getLunarDate() {
 		lm = (lm.length == 1)? "0"+lm : lm
 		ld = (td.length == 1)? "0"+td : td
 		
-		console.log("연도 : " + ly);
-		console.log("월 : " + lm);
-		console.log("일 : " + ld);
-		
         return input_day + "/" + String(ly) + String(lm) + String(ld);
 
 }
