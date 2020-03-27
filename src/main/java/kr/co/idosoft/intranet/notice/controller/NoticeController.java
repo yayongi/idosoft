@@ -121,4 +121,11 @@ public class NoticeController {
 		public NoticeVO findNoticeInfo(@RequestBody NoticeVO noticeVO) {
 			return noticeService.findNotice(noticeVO.getBoard_no());
 		}
+		
+		//대쉬보드용 리스트
+		@PostMapping("/dashboardList")
+		public List<NoticeVO> selectListDashboard() {
+			return noticeService.selectListDashboard();
+		}
+		
 }

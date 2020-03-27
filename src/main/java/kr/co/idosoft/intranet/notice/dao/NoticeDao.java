@@ -18,5 +18,7 @@ public interface NoticeDao {
 	NoticeVO select(int board_no);
 
 	List<NoticeVO> selectList();
+	// 대쉬보드용 리스트
+	List<NoticeVO> selectListDashboard();
 
 }

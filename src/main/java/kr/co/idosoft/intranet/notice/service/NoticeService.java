@@ -17,5 +17,8 @@ public interface NoticeService {
 	void deleteNoticeList(List<Integer> selectedNoticeNo);
 
 	NoticeVO findNotice(int board_no);
+	
+	//대쉬보드용 리스트
+	List<NoticeVO> selectListDashboard();
 
 }

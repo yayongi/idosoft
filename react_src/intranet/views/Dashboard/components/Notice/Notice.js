@@ -1,4 +1,5 @@
-import React from 'react';
+import React ,{ useEffect }from 'react';
+import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -20,7 +21,24 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function Notice() {
+const Notice = () => {
+
+	const [state, setState] =  React.useState(null);
+	
+	useEffect(() => {
+		axios({
+			url: '/intranet/notice/dashboardList',
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+		}).then(response => {
+			console.log("result : " + JSON.stringify(response));
+			setState(response.data)
+;		}).catch(e => {
+			console.log(e);
+		});
+	},[])
 
 	const [openModal, setOpenModal] = React.useState({
 		title:'', 
@@ -71,10 +89,10 @@ export default function Notice() {
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{data.map(datum => (
-						<TableRow key={datum.id} onClick={event => openContentModal(datum.title, datum.content)} style={{cursor : "pointer"}}>
+					{(state != null) && state.map(datum => (
+						<TableRow key={datum.board_no} onClick={event => openContentModal(datum.title, datum.content)} style={{cursor : "pointer"}}>
 							<TableCell>{datum.title}</TableCell>
-							<TableCell>{datum.date}</TableCell>
+							<TableCell>{datum.reg_datetime}</TableCell>
 							<TableCell>{datum.writer}</TableCell>
 						</TableRow>
 					))}
@@ -83,3 +101,5 @@ export default function Notice() {
 		</React.Fragment>
 	);
 }
+
+export default Notice;

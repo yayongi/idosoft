@@ -46,6 +46,12 @@ public class NoticeDaoImpl implements NoticeDao{
 		return list;
 	}
 	
+	//대쉬보드용 리스트
+	@Override
+	public List<NoticeVO> selectListDashboard() {
+		return sqlTemplate.selectList("selectListDashboard");
+	}
+	
 	
 	
 	

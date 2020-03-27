@@ -66,7 +66,7 @@ const ContentModal = ({props, closeModal}) => {
 		      {props.title}
         </DialogTitle>
         <DialogContent dividers>
-			    {props.content}
+          <div dangerouslySetInnerHTML={ {__html: props.content} } ></div>
         </DialogContent>
 
       </Dialog>

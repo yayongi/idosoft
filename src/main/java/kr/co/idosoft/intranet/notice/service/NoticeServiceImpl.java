@@ -52,4 +52,10 @@ public class NoticeServiceImpl implements NoticeService{
 //	public List<NoticeVO> findNoticeList(){
 //		return noticeDao.selectList();
 //	}
+	
+	// 대쉬보드용 리스트
+	@Override
+	public List<NoticeVO> selectListDashboard() {
+		return noticeDao.selectListDashboard();
+	}
 }

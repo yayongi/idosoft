@@ -72,4 +72,24 @@
 		ORDER BY BOARD_NO DESC
 	</select>
 	
+	<!-- 공지사항 대쉬보드용 리스트 -->
+	<select id="selectListDashboard" resultMap="NoticeVO">
+		<![CDATA[ 
+	   		SELECT 
+			   * 
+			FROM
+			(
+			   SELECT * FROM TB_BOARD WHERE MAJOR_PERIOD_DATE >= DATE_FORMAT(NOW(),'%Y%m%d') ORDER BY REG_DATETIME DESC LIMIT 10000
+			) A
+			UNION
+			SELECT 
+			   * 
+			FROM
+			(
+			   SELECT * FROM TB_BOARD WHERE (MAJOR_PERIOD_DATE < DATE_FORMAT(NOW(),'%Y%m%d')) OR (MAJOR_PERIOD_DATE = '') ORDER BY REG_DATETIME DESC LIMIT 10000
+			) B
+			LIMIT 4
+		 ]]>
+	</select>
+	
 </mapper>
