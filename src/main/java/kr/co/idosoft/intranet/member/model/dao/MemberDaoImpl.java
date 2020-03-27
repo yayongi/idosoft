@@ -53,4 +53,14 @@ public class MemberDaoImpl implements MemberDao {
 	public List<Object> getCodeInfo(String code_id) {
 		return sqlTemplate.selectList("getCodeInfo",code_id);
 	}
+
+	@Override
+	public List<String> getBirthDate(HashMap<String, String> date) {
+		return sqlTemplate.selectList("getBirthDate", date);
+	}
+
+	@Override
+	public List<String> getMarriageDate(String date) {
+		return sqlTemplate.selectList("getMarriageDate", date);
+	}
 }

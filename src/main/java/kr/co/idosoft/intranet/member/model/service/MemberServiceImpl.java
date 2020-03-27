@@ -52,6 +52,16 @@ public class MemberServiceImpl implements MemberService {
 	public List<Object> getCodeInfo(String code_id) {
 		return memberDao.getCodeInfo(code_id);
 	}
+
+	@Override
+	public List<String> getBirthDate(HashMap<String, String> date) {
+		return memberDao.getBirthDate(date);
+	}
+
+	@Override
+	public List<String> getMarriageDate(String date) {
+		return memberDao.getMarriageDate(date);
+	}
 	
 
 }

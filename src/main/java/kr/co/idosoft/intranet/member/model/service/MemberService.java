@@ -18,5 +18,9 @@ public interface MemberService {
 	// 사원 정보 삭제
 	public int deleteMember(List<String> member_no_list);
 	// 코드 정보 가져오기
-	public List<Object> getCodeInfo(String code_id); 
+	public List<Object> getCodeInfo(String code_id);
+	// 생일 가져오기
+	public List<String> getBirthDate(HashMap<String, String> date);
+	// 결혼기념일 가져오기
+	public List<String> getMarriageDate(String date);
 }

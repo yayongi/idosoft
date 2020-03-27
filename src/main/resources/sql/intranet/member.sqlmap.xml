@@ -143,4 +143,21 @@
 		FROM TB_CODE
 		WHERE UPPER_CODE = #{code_id}
 	</select>
+	
+	<!-- 생일 가져오기 -->
+	<select id="getBirthDate" parameterType="HashMap" resultType="HashMap">
+		SELECT 
+			NAME
+		FROM TB_MEMBER
+			WHERE (BIRTH_DATE = #{solarDate} AND MOONCAL_YN = 0)
+			OR (BIRTH_DATE = #{moonDate} AND MOONCAL_YN = 1) 
+	</select>
+	
+	<!-- 결혼기념일 가져오기 -->
+	<select id="getMarriageDate" parameterType="String" resultType="HashMap">
+		SELECT 
+			NAME
+		FROM TB_MEMBER
+			WHERE MARRIAGE_DATE =#{solarDate} 
+	</select>
 </mapper>

@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.member.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -118,6 +119,26 @@ public class MemberController {
 			HashMap<String, Object> tempMap = new HashMap<String, Object>();
 			tempMap.put("positionCode", memberService.getCodeInfo(code.get("position_code_id")));
 			tempMap.put("graduationCode", memberService.getCodeInfo(code.get("graduation_code_id")));
+			return tempMap;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	//요일 관련 기념일 가져오기
+	@RequestMapping(value="/member/getdate", method=RequestMethod.POST)
+	@ResponseBody
+	public HashMap<String, Object> getDate(Model model, @RequestBody HashMap<String, String> date, HttpServletRequest request){
+		try {
+			
+			HashMap<String, String> birthDate = new HashMap<String, String>();
+			birthDate.put("solarDate",date.get("solarDate"));
+			birthDate.put("moonDate",date.get("moonDate"));
+			
+			HashMap<String, Object> tempMap = new HashMap<String, Object>();
+			tempMap.put("birthDate", memberService.getBirthDate(birthDate));
+			tempMap.put("marriageDate", memberService.getMarriageDate(date.get("solarDate")));
 			return tempMap;
 		}catch(Exception e) {
 			e.printStackTrace();

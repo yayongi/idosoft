@@ -210,26 +210,29 @@ const MemberReg = (props) => {
 
       setInfoState({
         ...infoState,
-        name : document.getElementById("name").value,
-        position : document.getElementById("position").nextSibling.value,
-        address_1 : document.getElementById("address_1").value,
-        address_2 : document.getElementById("address_2").value,
-        zip_code : document.getElementById("zip_code").value,
-        phone_num : document.getElementById("phone_num").value,
-        entry_date : document.getElementById("entry_date").value.replace(/\-/gi,""),
-        birth_date : document.getElementById("birth_date").value.replace(/\-/gi,""),
-        school_major : document.getElementById("school_major").value,
-        cert_yn : document.getElementById("cert_yn").nextSibling.value,
-        email : document.getElementById("email").value,
-        manager_yn : document.getElementById("manager_yn").checked ? 1:0,
-        school_career : document.getElementById("school_career").nextSibling.value,
-        marriage_date : document.getElementById("marriage_date").value.replace(/\-/gi,""),
-        approval_yn : document.getElementById("approval_yn").checked ? 1:0,
-        mooncal_yn : document.getElementById("mooncal_yn").checked ? 1:0,
-        career_date : document.getElementById("career_date").value.replace(/\-/gi,""),
-        photo_path : state.profile,
-        certfile_job_path : state.certFile,
-        certfile_school_path : state.schoolFile,
+        memberData : {
+          member_no : document.getElementById("entry_date").value.replace(/\-/gi,""),
+          name : document.getElementById("name").value,
+          position : document.getElementById("position").nextSibling.value,
+          address_1 : document.getElementById("address_1").value,
+          address_2 : document.getElementById("address_2").value,
+          zip_code : document.getElementById("zip_code").value,
+          phone_num : document.getElementById("phone_num").value,
+          entry_date : document.getElementById("entry_date").value.replace(/\-/gi,""),
+          birth_date : document.getElementById("birth_date").value.replace(/\-/gi,""),
+          school_major : document.getElementById("school_major").value,
+          cert_yn : document.getElementById("cert_yn").nextSibling.value,
+          email : document.getElementById("email").value,
+          manager_yn : document.getElementById("manager_yn").checked ? 1:0,
+          school_career : document.getElementById("school_career").nextSibling.value,
+          marriage_date : document.getElementById("marriage_date").value.replace(/\-/gi,""),
+          approval_yn : document.getElementById("approval_yn").checked ? 1:0,
+          mooncal_yn : document.getElementById("mooncal_yn").checked ? 1:0,
+          career_date : document.getElementById("career_date").value.replace(/\-/gi,""),
+          photo_path : state.profile,
+          certfile_job_path : state.certFile,
+          certfile_school_path : state.schoolFile,
+        }
       })
 
     handleOpenDialog(...confirmData);
@@ -289,7 +292,7 @@ const MemberReg = (props) => {
 			}).catch(e => {
 				console.log(e);
 			});
-      return location.href="/#/member/";
+      //return location.href="/#/member/";
     }else{
       return;
     }
@@ -323,21 +326,25 @@ const MemberReg = (props) => {
 
   const getCarDate = (date) => {
     setDateState({
+      ...dateState,
       career_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getEntry = (date) => {
     setDateState({
+      ...dateState,
       entry_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getMarDate = (date) => {
     setDateState({
+      ...dateState,
       marriage_date : Moment(date).format('YYYY-MM-DD')
     })
   }
   const getBirth = (date) => {
     setDateState({
+      ...dateState,
       birth_date : Moment(date).format('YYYY-MM-DD')
     })
 	}

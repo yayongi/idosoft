@@ -8,7 +8,7 @@ function f_Number(str) {
         }
         return true;
 }
-function getLunarDate() {
+export function getLunarDate() {
         // 음력 데이터 (평달 - 작은달 :1,  큰달:2 )
         // (윤달이 있는 달 - 평달이 작고 윤달도 작으면 :3 , 평달이 작고 윤달이 크면 : 4)
         // (윤달이 있는 달 - 평달이 크고 윤달이 작으면 :5,  평달과 윤달이 모두 크면 : 6)
@@ -244,7 +244,7 @@ function getLunarDate() {
         // 양력을 음력으로 변환
         var ly, lm, ld;
         var sy, sm, sd;
-        var m1, m2, mm, i, j;
+        var m1, m2, mm, i, j,dt,yoon;
         dt = new Array(203);
         var k1, k2, td, td1, td2;
 
@@ -357,7 +357,7 @@ function getLunarDate() {
 		console.log("월 : " + lm);
 		console.log("일 : " + ld);
 		
-        return String(ly) + String(lm) + String(ld);
+        return input_day + "/" + String(ly) + String(lm) + String(ld);
 
 }
 function get_year(src) {
