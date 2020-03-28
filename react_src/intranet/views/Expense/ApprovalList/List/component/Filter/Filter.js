@@ -179,13 +179,12 @@ export default function  Filter(props) {
 	const [errMsg, setErrMsg]	= React.useState('');
 
 	const appHandleClickOpen = () => {
-
-		if(isEmpty(state.selected)){ // Object 비었을 경우 true
+		if(!isEmpty(state.selected) || !isEmpty(state.firSelected)){ // Object 비었을 경우 true
+			return setAppOpen(true);
+		} else{
 			setErrMsg('결재할 항목이 없습니다.');
 			return setErrOpen(true);
 		}
-
-		return setAppOpen(true);
 	};
 
 	const appHandleClickClose = (att) => {
@@ -196,49 +195,79 @@ export default function  Filter(props) {
 		}
 	};
 
-	// 결재처리
 	const handleClickApprove =() => {
 		
 		console.log("call handleClickApprove");
 
-		state.selected.map((data) => {
+		const firSelected = state.firSelected;
+		const selected = state.selected;
 
-			console.log('data' + JSON.stringify(data));
+		console.log(`selected : ${selected[0]}`);
+
+		Axios({
+			url: '/intranet/multiplexApproval.exp',
+			method: 'post',
+			data: {
+				firAppMembers : firSelected, // 경비 번호 
+				appMembers : selected, // 경비 번호
+			},
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		}).then(response => {
+			console.log(JSON.stringify(response.data));
 			
-			const dataIdx = dataList.findIndex(item => item.seq === data);
+			const isError = response.data.isError;
+			if(isError == "false"){
+				
+				const members = [...selected, ...firSelected];
+				let dataList = filterRows;
 
-			console.log('before dataList[dataIdx].status : ' +dataList[dataIdx].status);
+				console.log(members);
 
-			if(dataList[dataIdx].status == '0'){ // 진행 - 1차 결재 수행
-				dataList[dataIdx].status = "1";
-				dataList[dataIdx].statusText = "1차결재완료";
-				dataList[dataIdx].prevAuthDate = Moment().format('YYYY-MM-DD'); 
-			} else { // data.status == '1' // 1차결재완료 - 2차 결재 수행
-				dataList[dataIdx].status = "2";
-				dataList[dataIdx].statusText = "완료";
-				dataList[dataIdx].authDate = Moment().format('YYYY-MM-DD'); 
-			}
+				members.map((data) => {
 
-			console.log('after dataList[dataIdx].status : ' +dataList[dataIdx].status);
+					console.log('data' + JSON.stringify(data));
+					
+					const dataIdx = dataList.findIndex(item => item.seq === data);
 
-			if(dataIdx > -1) {
-				dataList = [
-					...dataList.slice(0, dataIdx),
-					dataList[dataIdx],
-					...dataList.slice(dataIdx+1)
-				];
+					console.log('before dataList[dataIdx].status : ' +dataList[dataIdx].status);
 
-				console.log('dataList' + JSON.stringify(dataList));
+					if(dataList[dataIdx].status == 'SS0000'){ // 진행 - 1차 결재 수행
+						dataList[dataIdx].status = "SS0001";
+						dataList[dataIdx].statusText = "1차결재완료";
+					} else { // data.status == '1' // 1차결재완료 - 2차 결재 수행
+						dataList[dataIdx].status = "SS0002";
+						dataList[dataIdx].statusText = "완료";
+					}
 
-			}
+					console.log('after dataList[dataIdx].status : ' +dataList[dataIdx].status);
 
-			return setState({
+					if(dataIdx > -1) {
+						dataList = [
+							...dataList.slice(0, dataIdx),
+							dataList[dataIdx],
+							...dataList.slice(dataIdx+1)
+						];
+
+						console.log('dataList' + JSON.stringify(dataList));
+
+					}
+				});
+				filterSetRows(dataList);
+
+				setState({
 				...state,
-				//selected :[]
-			});
+				selected :[]
+				});
+				
+				setAppOpen(false);
+			}
+		})
+		.catch(e => {
+			//processErrCode(e);
+			console.log(e);
 		});
-		
-		return setAppOpen(false);
 	}
 
 	// 검색 버튼 클릭 전, 임시로 값 저장

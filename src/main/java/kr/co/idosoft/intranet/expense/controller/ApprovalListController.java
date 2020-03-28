@@ -1,5 +1,7 @@
 package kr.co.idosoft.intranet.expense.controller;
 
+import java.io.Console;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -37,11 +40,14 @@ import kr.co.idosoft.intranet.login.vo.SessionVO;
 public class ApprovalListController {
 	private static final Logger LOG = LoggerFactory.getLogger(ApprovalListController.class);
 	
+	private static final String EXPENSE_TYPE = "CD0002"; // 경비유형 
+	private static final String PAYMENT_TYPE = "CD0003"; // 결재유형
+	
 	@Resource
 	ApprovalListServiceImpl approvalListService;
 	
 	/**
-	 * 경비관리 목록 
+	 * 경비결재목록 리스트 
 	 * @param request
 	 * @param params
 	 * @return ModelAndView
@@ -172,16 +178,19 @@ public class ApprovalListController {
 			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
 		}
 		
+		
 		LOG.debug("#################################################################################");
 		LOG.debug("# RETURN JSON ");
 		LOG.debug("# jsonArrayList : " + jsonArrayList);
 		LOG.debug("# jsonObjectData : " + jsonObjectData);
 		LOG.debug("# totalAmount : " + totalAmount);
+		LOG.debug("# isAdmin : " + isAdmin);
 		LOG.debug("#################################################################################");
 		
 		mv.addObject("list", jsonArrayList);
 		mv.addObject("result", jsonObjectData);
 		mv.addObject("totalAmount", totalAmount);
+		mv.addObject("isAdmin", isAdmin);
 		
 		return mv;
 	}
@@ -210,8 +219,13 @@ public class ApprovalListController {
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 
 		String isRequest	= (String)params.get("isRequest");	// 조건(1차결재 FIR_APP, 2차결재 APP, 반려 REG)
+		String expenseNo	= (String)params.get("expenseNo");	// 경비 번호
+		String rejReason	= (String)params.get("rejReason");	// 반려 사유
 		
 		data.put("isRequest", isRequest);
+		data.put("EXPENS_NO", expenseNo);
+		data.put("RETURN_CN", rejReason);
+		
 		HttpSession session = request.getSession();
 		
 		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
@@ -224,11 +238,149 @@ public class ApprovalListController {
 		data.put("isAdmin", isAdmin);	// 관리자 여부
 		
 		if(!approvalListService.updateApproval(data)) {
-			mv.addObject("isError", "ture");
+			mv.addObject("isError", "true");
 			mv.addObject("errorMessage", "해당 직원은 결재 권한이 없습니다.");
 		}
 		
 		data.clear();
+		
+		return mv;
+	}
+	
+	/**
+	 * 경비결재 처리 
+	 * @param request
+	 * @param params
+	 * @return ModelAndView
+	 */
+	
+	@RequestMapping(value="/multiplexApproval.exp", method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView multiplexApproval(HttpServletRequest request, @RequestBody Map<String, Object> params) {
+		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("/multiplexApproval.exp");
+		}
+		
+		ModelAndView mv = new ModelAndView();
+		
+		Map<String, Object> data = new HashMap<>();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+
+		ArrayList<Integer> firAppMembers 	= (ArrayList<Integer>) params.get("firAppMembers"); 
+		ArrayList<Integer> appMembers 		= (ArrayList<Integer>) params.get("appMembers");
+		
+		LOG.debug("# firAppMembers 	: " + firAppMembers.size());
+		LOG.debug("# appMembers 	: " + appMembers.size());
+		
+		data.put("firAppMembers", firAppMembers.size() > 0 ? firAppMembers : null); 
+		data.put("appMembers", appMembers.size() > 0 ? appMembers : null);
+		
+		HttpSession session = request.getSession();
+		
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		
+		// 세션 VO에 세션 값 저장
+		String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
+		
+		data.put("MEMBER_NO", mno);		// 사원번호
+		data.put("isAdmin", isAdmin);	// 관리자 여부
+		
+		if(!approvalListService.multiplexApproval(data)) {
+			mv.addObject("isError", "true");
+			mv.addObject("errorMessage", "해당 직원은 결재 권한이 없습니다.");
+		}
+		
+		data.clear();
+		
+		return mv;
+	}
+	
+	/**
+	 * 경비 목록
+	 * @param mutipartRequest
+	 * @param request
+	 * @return ModelAndView
+	 */
+	
+	@RequestMapping(value="/getAppView.exp", method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getView(HttpServletRequest request, @RequestBody Map<String, Object> params) {
+		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("/getAppView.exp");
+		}
+		
+		String expense_no = (String)params.get("expense_no");
+		String screenType = (String)params.get("screenType");
+		
+		LOG.debug("###################################################################################");
+		LOG.debug("# expense_no : " + expense_no);
+		LOG.debug("###################################################################################");
+		
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");				// 비어있는 경우,
+		
+		Map<String, Object> data = new HashMap<>();
+		
+		data.put("TYPE", EXPENSE_TYPE); // 경비 유형
+		List<Map<String, Object>> exPenseTypeList = approvalListService.getCode(data);
+		
+		data.put("TYPE", PAYMENT_TYPE);	// 결재 유형 
+		List<Map<String, Object>> payTypeList = approvalListService.getCode(data);
+		
+		data.remove("TYPE"); // TYPE 값을 지워준다.
+		
+		data.put("EXPENS_NO", expense_no);
+		
+		Map<String, Object> view = approvalListService.getView(data);
+		
+		ObjectMapper mapper = new ObjectMapper();
+
+		String jsonArrayexPenseTypeList 	= null;
+		String jsonArraypayTypeList 		= null;
+		
+		jsonArrayexPenseTypeList 	= JsonUtils.getJsonStringFromList(exPenseTypeList); 	// JSONARRAY 변환
+		jsonArraypayTypeList 		= JsonUtils.getJsonStringFromList(payTypeList); 		// JSONARRAY 변환
+		
+		mv.addObject("expenseTypeList", jsonArrayexPenseTypeList);
+		mv.addObject("payTypeList", jsonArraypayTypeList);
+		
+		LOG.debug("#################################################################################");
+		LOG.debug("# RETURN JSON ");
+		LOG.debug("# jsonArrayexPenseTypeList : " + jsonArrayexPenseTypeList);
+		LOG.debug("# jsonArraypayTypeList : 	" + jsonArraypayTypeList);
+		
+		HttpSession session = request.getSession();
+		
+		String isAdmin = (String) session.getAttribute("IS_ADMIN");				// 관리자 여부
+		mv.addObject("isAdmin", isAdmin);
+		
+		if(!"new".equals(screenType)) { // 등록화면이 아닐 경우,
+			
+			if(view == null) {
+				mv.addObject("isNoN", "true");				// 비어있는 경우,
+				return mv;
+			}
+			
+			String jsonViewObject = null;
+			try {
+				jsonViewObject = mapper.writeValueAsString(view); // JSONOBJECT 변환
+				LOG.debug("# jsonViewObject : 			" + jsonViewObject);
+				mv.addObject("result", jsonViewObject);
+			} catch (JsonProcessingException e) {
+				LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
+			} 
+		}
+		LOG.debug("#################################################################################");
 		
 		return mv;
 	}

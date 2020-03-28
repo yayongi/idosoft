@@ -55,6 +55,16 @@ public interface ApprovalListDao {
 	 * @return boolean
 	 */
 	boolean updateApproval(Map<String, Object> data);
+	/**
+	 * 다중 2차 결재 처리
+	 * @return boolean
+	 */
+	boolean multiplexApproval(Map<String, Object> data);
+	/**
+	 * 다중 1차 결재 처리
+	 * @return boolean
+	 */
+	boolean multiplexFirApproval(Map<String, Object> data);
 	
 }
 

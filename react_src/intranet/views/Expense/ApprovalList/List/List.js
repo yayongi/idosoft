@@ -15,6 +15,8 @@ export default function  List(props) {
 		payEdDt: Moment().format('YYYYMM'),
 		status: "-1",
 		memo: "",
+		firSelected : [],
+		selected : [],
 	});
 
 	const [rows, setRows] = React.useState([]);
@@ -25,7 +27,8 @@ export default function  List(props) {
 	// 페이징
     const [ page, setPage ] = React.useState(0);                 // 초기페이지가 0부터 시작
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
-	
+	const [isAdmin, setIsAdmin] = React.useState("0");
+
 	useEffect(() => {
 		console.log("call useEffect");
 
@@ -46,6 +49,7 @@ export default function  List(props) {
 
 			const isNoN = response.data.isNoN;
 			if(isNoN == "false"){
+				setIsAdmin(response.data.isAdmin);
 				setRows(JSON.parse(response.data.list));
 				setPaging(JSON.parse(response.data.result));
 				setTotalAmount(response.data.totalAmount);
@@ -79,12 +83,14 @@ export default function  List(props) {
 						<Body 
 							rows={rows} 
 							state={state}
+							setState={setState}
 							setRows={setRows}
 							routeProps={props.routeProps} 
 							paging={paging} setPaging={setPaging} 
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							page={page} setPage={setPage}
 							rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
+							isAdmin={isAdmin} setIsAdmin={setIsAdmin}
 						/>
 					</Paper>
 				</>
