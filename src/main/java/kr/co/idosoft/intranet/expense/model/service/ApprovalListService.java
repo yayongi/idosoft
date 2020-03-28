@@ -51,6 +51,11 @@ public interface ApprovalListService {
 	 * @return boolean
 	 */
 	boolean updateApproval(Map<String, Object> data);
+	/**
+	 * 다중 결재 처리
+	 * @return boolean
+	 */
+	boolean multiplexApproval(Map<String, Object> data);
 
 	
 }

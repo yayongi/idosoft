@@ -39,6 +39,10 @@ function Body(props) {
       { id: 'payDate', label: '결제일', minWidth: 100, align: 'center', paddingLeft : 50 },
     ];
 
+    const loginSession = sessionStorage.getItem("loginSession"); // 세션 정보
+
+   
+
     // 정렬
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
@@ -49,9 +53,10 @@ function Body(props) {
     };
     // 데이터, Router 속성
     const { rows, setRows, routeProps
-            , paging, setPaging, state
+            , paging, setPaging, state, setState
             , holdUp, setHoldUp 
-            , page, setPage, rowsPerPage, setRowsPerPage} = props;
+            , page, setPage, rowsPerPage, setRowsPerPage
+            , isAdmin, setIsAdmin} = props;
 
     const handleChangePage = (event, newPage) => {
       if(holdUp < newPage){ // 이미 가지고 있는 페이지를 다시 호출하는 것을 막기 위해 사용
@@ -59,7 +64,7 @@ function Body(props) {
         console.log('state : ' + JSON.stringify(state));
 
         Axios({
-          url: '/intranet/getAnnaualList.exp',
+          url: '/intranet/getApprovalList.exp',
           method: 'post',
           data: {
             currentPage : String(Number(newPage)+1),
@@ -80,6 +85,9 @@ function Body(props) {
           
           const result = JSON.parse(response.data.result);
 
+          console.log(`isAdmin : ${response.data.isAdmin}`);
+
+          setIsAdmin(response.data.isAdmin);
           setRowsPerPage(Number(result.limit));
           setPage(Number(result.currentPage)-1);
           setHoldUp(Number(result.currentPage)-1);
@@ -95,7 +103,7 @@ function Body(props) {
 
     const handleChangeRowsPerPage = event => {
       Axios({
-        url: '/intranet/getAnnaualList.exp',
+        url: '/intranet/getApprovalList.exp',
         method: 'post',
         data: {
           currentPage : '1',
@@ -117,6 +125,7 @@ function Body(props) {
         
         const result = JSON.parse(response.data.result);
         
+        setIsAdmin(response.data.isAdmin);
         setRowsPerPage(Number(result.limit));
         setPage(Number(result.currentPage)-1);
         setHoldUp(Number(result.currentPage)-1);
@@ -133,9 +142,17 @@ function Body(props) {
     };
     
     // 선택 항목 배열
-    const handleSelectClick = (e, seq) => {
+    const handleSelectClick = (e, seq, status) => {
+      
+      let selecteds = [];
 
-      let selecteds = [...state.selected];
+      console.log(`status : ${status}`)
+
+      if(status ==='SS0000'){
+        selecteds = [...state.firSelected];
+      } else { // status === 'SS0001'
+        selecteds = [...state.selected];
+      }
       
       if (e.target.checked) {
         selecteds.push(seq);
@@ -144,12 +161,49 @@ function Body(props) {
         selecteds.splice(idx, 1);
       }
 
-      return setState({
-        ...state,
-        selected : selecteds
-      });
+      if(status ==='SS0000'){
+        setState({
+          ...state,
+          firSelected : selecteds
+        });
+      } else { // status === 'SS0001'
+        setState({
+          ...state,
+          selected : selecteds
+        });
+      }
     };
     
+    // 버튼 여부  활성화
+    const giveAuthorization = (status, prevAuthPersonNO, authPersonNO) => {
+      let isAuth = false;
+      const mno = loginSession.MEMBER_NO;
+
+      console.log(`giveAuthorization :: dataState.status : ${status}`);
+      console.log(`giveAuthorization :: isAdmin : ${isAdmin}`);
+      switch (status) {
+      case 'SS0000':
+        if(mno == prevAuthPersonNO || isAdmin == "1"){ 
+          isAuth = true;
+        } else {
+          isAuth = false;
+        }
+        break;
+      case 'SS0001':
+        if(mno == authPersonNO || isAdmin == "1"){  
+          isAuth = true;
+        } else {
+          isAuth = false;
+        }
+        break;
+      default:
+        isAuth = false;
+        break;
+      }
+
+      return isAuth;
+    };
+  
     // Width에 따라 반응형으로 열이 보여지는 개수 조정
     let columns = columnsUp;
     if(isWidthUp('md', props.width)) {
@@ -194,13 +248,14 @@ function Body(props) {
                   > 
                       <TableCell padding="checkbox">
                         {
-                        (row.status ==='SS0000'|| row.status === 'SS0001') && 
+                          giveAuthorization(row.status, row.prevAuthPersonNO, row.authPersonNO) &&
                           <>
                             <Checkbox 
                               inputProps={{ 'aria-labelledby': labelId }}
-                              onChange={(e) => handleSelectClick(e, row.seq)}
+                              onChange={(e) => handleSelectClick(e, row.seq, row.status)}
                             />
-                          </>}
+                          </>
+                        }
                       </TableCell>
                       {columns.map(column => {
                         const value = row[column.id];

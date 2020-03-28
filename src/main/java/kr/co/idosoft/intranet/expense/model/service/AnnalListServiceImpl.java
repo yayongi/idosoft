@@ -119,5 +119,13 @@ public class AnnalListServiceImpl implements AnnalListService {
 	public String getTotalAmount(Map<String, Object> data) {
 		return dao.getTotalAmount(data);
 	}
+	/**
+	 * 경비 진행 처리
+	 * @return boolean
+	 */
+	@Override
+	public boolean Proceed(Map<String, Object> data) {
+		return dao.Proceed(data);
+	}
 	
 }

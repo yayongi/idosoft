@@ -136,8 +136,44 @@
 		WHERE UPPER_CODE = #{TYPE}
 		ORDER BY CODE_ID ASC
 	</select>
-	<!-- 경비관리/결재목록 -->
-	<select id="getView" parameterType="hashmap"
+	<!-- 경비관리목록-->
+	<select id="getAnnView" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT A.EXPENS_NO seq
+		, A.MEMBER_NO mno
+		, B.NAME name
+		, B.PHONE_NUM phone
+		, B.EMAIL email
+		, A.EXPENS_TY_CODE expenseType
+		, C.CODE_NAME expenseTypeText
+		, A.USE_CN memo
+		, A.SANCTN_STTUS_CODE status
+		, D.CODE_NAME statusText
+		, A.USE_AMOUNT pay
+		, A.USE_DATE payDate
+		, A.RETURN_CN rejectMemo
+		, A.FIR_SANCTENER_MEMBER_NO prevAuthPersonNO
+		, A.SANCTNER_MEMBER_NO authPersonNO
+		, E.NAME prevAuthPerson
+		, F.NAME authPerson
+		, A.FIR_SANCTN_DATETIME prevAuthDate
+		, A.SCD_SANCTN_DATETIME authDate
+		, A.EXPENS_ATCHMNF_ID filePath
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		LEFT JOIN TB_CODE C
+		ON A.EXPENS_TY_CODE = C.CODE_ID
+		LEFT JOIN TB_CODE D
+		ON A.SANCTN_STTUS_CODE = D.CODE_ID
+		LEFT JOIN TB_MEMBER E
+		ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
+		LEFT JOIN TB_MEMBER F
+		ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
+		WHERE A.EXPENS_NO = #{EXPENS_NO}
+	</select>
+	<!-- 경비결재목록 -->
+	<select id="getAppView" parameterType="hashmap"
 		resultType="hashmap">
 		SELECT A.EXPENS_NO seq
 		, B.NAME name
@@ -170,7 +206,17 @@
 		ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
 		LEFT JOIN TB_MEMBER F
 		ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
-		WHERE A.EXPENS_NO = #{EXPENS_NO}
+		<where>
+			AND A.EXPENS_NO = #{EXPENS_NO}
+			<if test="isAdmin != 1">
+				<if test="MEMBER_NO != null">
+					AND (
+						A.FIR_SANCTENER_MEMBER_NO=#{MEMBER_NO} 
+						OR A.SANCTNER_MEMBER_NO=#{MEMBER_NO}
+					)
+				</if>
+			</if>
+		</where>
 	</select>
 	<!-- 경비 삭제 -->
 	<delete id="deleteExpense" parameterType="hashmap">
@@ -220,13 +266,14 @@
 			<!-- 반려 처리 -->
 			<if test="isRequest == 'REG'">
 			SANCTN_STTUS_CODE='SS0003',
-			FIR_SANCTN_DATETIME='',
-			SCD_SANCTN_DATETIME='',
+			FIR_SANCTN_DATETIME=NULL,
+			SCD_SANCTN_DATETIME=NULL,
+			RETURN_CN=#{RETURN_CN}
 			</if>
 		</set>
 		<where>
 				AND EXPENS_NO = #{EXPENS_NO}
-			<if test="isAdmin != null">
+			<if test="isAdmin != 1">
 				<if test="isRequest == 'FIR_APP'">
 					AND FIR_SANCTENER_MEMBER_NO = #{MEMBER_NO}
 				</if>
@@ -245,7 +292,6 @@
 		</where>
 	</update>
 	
-	<!-- READY -->
 	<!-- 경비결재목록리스트 -->
 	<select id="getApprovalList" parameterType="hashmap" resultType="hashmap">
 		SELECT A.EXPENS_NO seq
@@ -257,6 +303,8 @@
 		, A.USE_AMOUNT pay
 		, A.USE_DATE payDate
 		, A.RETURN_CN rejectMemo
+		, A.FIR_SANCTENER_MEMBER_NO prevAuthPersonNO
+		, A.SANCTNER_MEMBER_NO authPersonNO
 		, E.NAME prevAuthPerson
 		, F.NAME authPerson
 		, A.FIR_SANCTN_DATETIME prevAuthDate
@@ -325,6 +373,7 @@
 				AND A.USE_CN LIKE '%' + #{memo} + '%'
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND SANCTN_STTUS_CODE = 'SS0002'
 		</where>
 	</select>
 	<!-- 경비관리목록 총 개수 -->
@@ -358,4 +407,53 @@
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 		</where>
 	</select>
+	
+	<!-- 경비 진행 -->
+	<update id="Proceed" parameterType="hashmap">
+		UPDATE TB_EXPENSE
+		<set>
+			<if test="EXPENS_TY_CODE != null">EXPENS_TY_CODE=#{EXPENS_TY_CODE},</if>
+			<if test="USE_DATE != null">USE_DATE=#{USE_DATE},</if>
+			<if test="USE_AMOUNT != null">USE_AMOUNT=#{USE_AMOUNT},</if>
+			<if test="UPD_DATETIME != null">UPD_DATETIME=NOW(),</if>
+			<if test="USE_CN != null">USE_CN=#{USE_CN},</if>
+			<if test="EXPENS_ATCHMNF_ID != null">EXPENS_ATCHMNF_ID=#{EXPENS_ATCHMNF_ID},</if>
+			SANCTN_STTUS_CODE='SS0000',
+			RETURN_CN=''
+		</set>
+		WHERE EXPENS_NO = #{EXPENS_NO}
+	</update>
+	
+	<!-- 다중 결재처리 -->
+	<update id="multiplexApproval" parameterType="hashmap">
+		UPDATE TB_EXPENSE
+		<set>
+			<!-- 1차결재자 결재 처리 -->
+			<if test="isRequest == 'FIR_APP'"> 
+			SANCTN_STTUS_CODE='SS0001',
+			FIR_SANCTN_DATETIME=NOW(),
+			</if>
+			<!-- 2차결재자 결재 처리 -->
+			<if test="isRequest == 'APP'">
+			SANCTN_STTUS_CODE='SS0002',
+			SCD_SANCTN_DATETIME=NOW(),
+			</if>
+		</set>
+		<where>
+			AND EXPENS_NO IN
+			<foreach item="item" index="index" collection="noList" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+			<if test="isAdmin != 1">
+				<if test="isRequest == 'FIR_APP'">
+					AND FIR_SANCTENER_MEMBER_NO = #{MEMBER_NO}
+				</if>
+				<if test="isRequest == 'APP'">
+					AND SANCTNER_MEMBER_NO = #{MEMBER_NO}
+				</if>
+			</if>
+		</where>
+	</update>
+	
 </mapper>
