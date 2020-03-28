@@ -61,6 +61,7 @@
 		SELECT A.EXPENS_NO seq
 		, C.CODE_NAME expenseTypeText
 		, A.USE_CN memo
+		, A.SANCTN_STTUS_CODE status
 		, D.CODE_NAME statusText
 		, B.NAME register
 		, A.USE_AMOUNT pay
@@ -135,10 +136,13 @@
 		WHERE UPPER_CODE = #{TYPE}
 		ORDER BY CODE_ID ASC
 	</select>
-	<!-- 경비관리목록 -->
+	<!-- 경비관리/결재목록 -->
 	<select id="getView" parameterType="hashmap"
 		resultType="hashmap">
 		SELECT A.EXPENS_NO seq
+		, B.NAME name
+		, B.PHONE_NUM phone
+		, B.EMAIL email
 		, A.EXPENS_TY_CODE expenseType
 		, C.CODE_NAME expenseTypeText
 		, A.USE_CN memo
@@ -148,6 +152,8 @@
 		, A.USE_AMOUNT pay
 		, A.USE_DATE payDate
 		, A.RETURN_CN rejectMemo
+		, A.FIR_SANCTENER_MEMBER_NO prevAuthPersonNO
+		, A.SANCTNER_MEMBER_NO authPersonNO
 		, E.NAME prevAuthPerson
 		, F.NAME authPerson
 		, A.FIR_SANCTN_DATETIME prevAuthDate
@@ -181,6 +187,161 @@
 		<where>
 			<if test="isAdmin != 1">
 				AND A.MEMBER_NO = #{MEMBER_NO}
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE '%' + #{name} + '%'
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE '%' + #{memo} + '%'
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+		</where>
+	</select>
+	<!-- 결재처리 -->
+	<update id="updateProcessApproval" parameterType="hashmap">
+		UPDATE TB_EXPENSE
+		<set>
+			<!-- 1차결재자 결재 처리 -->
+			<if test="isRequest == 'FIR_APP'"> 
+			SANCTN_STTUS_CODE='SS0001',
+			FIR_SANCTN_DATETIME=NOW(),
+			</if>
+			<!-- 2차결재자 결재 처리 -->
+			<if test="isRequest == 'APP'">
+			SANCTN_STTUS_CODE='SS0002',
+			SCD_SANCTN_DATETIME=NOW(),
+			</if>
+			<!-- 반려 처리 -->
+			<if test="isRequest == 'REG'">
+			SANCTN_STTUS_CODE='SS0003',
+			FIR_SANCTN_DATETIME='',
+			SCD_SANCTN_DATETIME='',
+			</if>
+		</set>
+		<where>
+				AND EXPENS_NO = #{EXPENS_NO}
+			<if test="isAdmin != null">
+				<if test="isRequest == 'FIR_APP'">
+					AND FIR_SANCTENER_MEMBER_NO = #{MEMBER_NO}
+				</if>
+				<if test="isRequest == 'APP'">
+					AND SANCTNER_MEMBER_NO = #{MEMBER_NO}
+				</if>
+				<if test="isRequest == 'REG'">
+					AND 
+					(
+						FIR_SANCTENER_MEMBER_NO = #{MEMBER_NO} OR
+						SANCTNER_MEMBER_NO = #{MEMBER_NO} 
+						
+					) 
+				</if>
+			</if>
+		</where>
+	</update>
+	
+	<!-- READY -->
+	<!-- 경비결재목록리스트 -->
+	<select id="getApprovalList" parameterType="hashmap" resultType="hashmap">
+		SELECT A.EXPENS_NO seq
+		, C.CODE_NAME expenseTypeText
+		, A.USE_CN memo
+		, A.SANCTN_STTUS_CODE status
+		, D.CODE_NAME statusText
+		, B.NAME register
+		, A.USE_AMOUNT pay
+		, A.USE_DATE payDate
+		, A.RETURN_CN rejectMemo
+		, E.NAME prevAuthPerson
+		, F.NAME authPerson
+		, A.FIR_SANCTN_DATETIME prevAuthDate
+		, A.SCD_SANCTN_DATETIME authDate
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		LEFT JOIN TB_CODE C
+		ON A.EXPENS_TY_CODE = C.CODE_ID
+		LEFT JOIN TB_CODE D
+		ON A.SANCTN_STTUS_CODE = D.CODE_ID
+		LEFT JOIN TB_MEMBER E
+		ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
+		LEFT JOIN TB_MEMBER F
+		ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				<if test="MEMBER_NO != null">
+					AND (
+						A.FIR_SANCTENER_MEMBER_NO=#{MEMBER_NO} 
+						OR A.SANCTNER_MEMBER_NO=#{MEMBER_NO}
+					)
+				</if>
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE '%' + #{name} + '%'
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE '%' + #{memo} + '%'
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+		</where>
+		ORDER BY A.EXPENS_NO DESC
+	</select>
+	<!-- 경비 총금액 -->
+	<select id="getAppTotalAmount" parameterType="hashmap" resultType="_int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				<if test="MEMBER_NO != null">
+					AND (
+						A.FIR_SANCTENER_MEMBER_NO=#{MEMBER_NO} 
+						OR A.SANCTNER_MEMBER_NO=#{MEMBER_NO}
+					)
+				</if>
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE '%' + #{name} + '%'
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE '%' + #{memo} + '%'
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+		</where>
+	</select>
+	<!-- 경비관리목록 총 개수 -->
+	<select id="getAppAnnalListCount" parameterType="hashmap"
+		resultType="_int">
+		SELECT COUNT(*)
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				<if test="MEMBER_NO != null">
+					AND (
+						A.FIR_SANCTENER_MEMBER_NO=#{MEMBER_NO} 
+						OR A.SANCTNER_MEMBER_NO=#{MEMBER_NO}
+					)
+				</if>
 			</if>
 			<if test="name != null and name !=''">
 				AND B.NAME LIKE '%' + #{name} + '%'

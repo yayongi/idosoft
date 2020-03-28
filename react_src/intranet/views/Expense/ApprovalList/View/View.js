@@ -27,10 +27,14 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import Axios from 'axios';
+
 import Moment from "moment";
 Moment.locale('ko'); // 한국 시간
 
-import { AnnualStorage, expenseTypes, getStepInfo } from 'views/Expense/data';
+import {processErrCode, phoneFormatter, isEmpty} from "../../../../js/util"; 
+
+import { getStepInfo } from 'views/Expense/data';
 
 const useStyles = makeStyles(theme => ({
 	table: {
@@ -80,9 +84,44 @@ export default function  View(props) {
 
 	const {routeProps } = props;
 	const {history, location, match} = routeProps;
+	const [expenseTypes, setExpenseTypes] = React.useState([]);
 
-	let dataList = JSON.parse(AnnualStorage.getItem("ANNUAL_LIST"));		// 데이터
-	let data = JSON.parse(AnnualStorage.getItem("ANNUAL_VIEW"));		// 목록에서 선택한 데이터
+	let data = {};		// 목록에서 선택한 데이터
+
+	React.useEffect(() => {		// render 완료 후, 호출
+		console.log("call useEffect");
+		console.log(JSON.stringify(match));
+
+		const params = match.params;
+
+		console.log(params.id);
+
+		Axios({
+			url: '/intranet/getView.exp',
+			method: 'post',
+			data: {
+				expense_no : params.id,
+			},
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		}).then(response => {
+			console.log(JSON.stringify(response.data));
+
+			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
+			const payTypeList 		= JSON.parse(response.data.payTypeList);
+			
+			setExpenseTypes(exPenseTypeList);
+			setActiveStep(stepInfo.activeStep);
+
+			data = JSON.parse(response.data.result);
+			setDataState(data);
+		})
+		.catch(e => {
+			processErrCode(e);
+			console.log(e);
+		});
+	}, []);
 
 	const [appOpen, setAppOpen] = React.useState(false);
 	const [rejOpen, setRejOpen] = React.useState(false);
@@ -116,7 +155,7 @@ export default function  View(props) {
 	
 	let stepInfo = getStepInfo(data);	// Re-Rendering 시점에는 호출 되지 않음.
 	
-	React.useEffect(() => {		// render 완료 후, 호출
+	React.useEffect(() => {				// render 완료 후, 호출
 		console.log("call useEffect");
 		
 		setActiveStep(stepInfo.activeStep);
@@ -126,7 +165,57 @@ export default function  View(props) {
 	const handleClickApprove =() => {
 
 		console.log("call handleClickApprove");
-		const dataIdx = dataList.findIndex(item => item.seq === data.seq);
+		
+		let isRequest = "";
+
+		if(dataState.status == 'SS0000'){
+			isRequest = "FIR_APP";
+		} else {
+			isRequest = "APP";
+		}
+
+		Axios({
+			url: '/intranet/getApprovalList.exp',
+			method: 'post',
+			data: {
+				isRequest : isRequest, // 1차결재  : FIR_APP 2차결재  : APP 반려 : REG
+			},
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		}).then(response => {
+			console.log(JSON.stringify(response.data));
+
+			if(false){
+				if(dataState.status == 'SS0000'){
+					setDataState({
+						...dataState,
+						status : 'SS0001',
+						statusText : '1차결재완료',
+						prevAuthDate : Moment().format('YYYY-MM-DD'),
+					})
+				} else { // dataState.status == 'SS0001' 2차 결재
+					setDataState({
+						...dataState,
+						status : 'SS0002',
+						statusText : '완료',
+						prevAuthDate : Moment().format('YYYY-MM-DD'),
+					})
+				}
+			}
+
+			stepInfo = getStepInfo(data);
+
+			setActiveStep(stepInfo.activeStep);
+
+			setAppOpen(false);
+		})
+		.catch(e => {
+			processErrCode(e);
+			console.log(e);
+		});
+		
+		/* const dataIdx = dataList.findIndex(item => item.seq === data.seq);
 		if(data.status == '0'){ // 진행 - 1차 결재 수행
 			data.status = "1";
 			data.statusText = "1차결재완료";
@@ -135,24 +224,20 @@ export default function  View(props) {
 			data.status = "2";
 			data.statusText = "완료";
 			data.authDate = Moment().format('YYYY-MM-DD'); 
-		}
-		stepInfo = getStepInfo(data);
+		} */
 
-		setActiveStep(stepInfo.activeStep)
-
-		if(dataIdx > -1) {
+	/* 	if(dataIdx > -1) {
 			dataList = [
 				...dataList.slice(0, dataIdx),
 				data,
 				...dataList.slice(dataIdx+1)
 			];
-			AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
-			AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(data));
+			//AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
+			//AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(data));
 			// history.goBack();
 			setDataState(data);
 		}
-		
-		return setAppOpen(false);
+	 */	
 	}
 
 	// 이미지 영역 인쇄
@@ -164,12 +249,14 @@ export default function  View(props) {
 		let innerHtml = container[0].innerHTML
 		let popupWindow = window.open("", "_blank", "width=700,height=800");
 		
-		popupWindow.document.write("<!DOCTYPE html>"+
-		"<html>"+
-			"<head>"+
-			"</head>"+
-			"<body>"+innerHtml+"</body>"+
-		"</html>")
+		popupWindow.document.write(
+			"<!DOCTYPE html>"+
+			"<html>"+
+				"<head>"+
+				"</head>"+
+				"<body>"+innerHtml+"</body>"+
+			"</html>"
+		)
 	
 		popupWindow.document.close()
 		popupWindow.focus()
@@ -198,8 +285,8 @@ export default function  View(props) {
 				data,
 				...dataList.slice(dataIdx+1)
 			];
-			AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
-			AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(data));
+			//AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
+			//AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(data));
 			// history.goBack();
 		}
 
@@ -211,251 +298,257 @@ export default function  View(props) {
 	}
 
 	return (
-		<>
-			<div className={classes.root} style={{marginBottom:'10px'}}>
-				<Stepper activeStep={activeStep}>
-					{stepInfo.steps.map(row => (
-						<Step key={row.label}>
-							<StepLabel error={row.isError}>{row.label}</StepLabel>
-						</Step>
-					))}
-				</Stepper>
-			</div>
-			<Divider/>
-
-			<TableContainer component={Paper} style={{marginBottom:'10px'}}>
-				<Table aria-label="simple table">
-					<TableHead>
-						<TableRow>
-							<TableCell align="left" colSpan="2">
-								<Typography className={classes.title} color="inherit" variant="h6">					
-									등록자 정보
-								</Typography>
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row" style={{width: '120px'}}>등록자</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="register"
-									name="register"
-									margin="dense"
-									defaultValue={dataState.register}
-									InputProps={{
-									 	 readOnly: true,
-									}}
-									variant="outlined"
-									
-								/>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">연락처</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="tel"
-									name="tel"
-									margin="dense"
-									defaultValue="연락처"
-									variant="outlined"
-									InputProps={{
-										readOnly: true,
-									}}
-								/>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">이메일</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="email"
-									name="email"
-									margin="dense"
-									defaultValue="이메일"
-									variant="outlined"
-									InputProps={{
-										readOnly: true,
-									}}
-								/>
-							</TableCell>
-						</TableRow>
-					</TableBody>
-				</Table>
-			</TableContainer>
-			<Divider/>
-			<TableContainer component={Paper} style={{marginBottom:'10px'}}>
-				<Table aria-label="simple table">
-					<TableHead>
-						<TableRow>
-							<TableCell align="left" colSpan="2">
-								<Typography className={classes.title} color="inherit" variant="h6" >
-									경비 정보
-								</Typography>
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row" style={{width: '120px'}}>경비유형</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="expenseType"
-									name="expenseType"
-									select
-									margin="dense"
-									variant="outlined"
-									value={dataState.expenseType}
-									InputProps={{
-									 	 readOnly: true,
-									}}
-								>
-									{expenseTypes.map((option, idx) => (
-										idx != 0 && 
-										<MenuItem key={option.value} value={option.value}>
-											{option.label}
-										</MenuItem>
-									))}
-								</TextField>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">결제일</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="regDate"
-									name="regDate"
-									margin="dense"
-									defaultValue={dataState.payDate}
-									InputProps={{
-									 	 readOnly: true,
-									}}
-									variant="outlined"
-								/>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">금액</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="pay"
-									name="pay"
-									margin="dense"
-									defaultValue={dataState.pay}
-									InputProps={{
-									 	 readOnly: true,
-									}}
-									variant="outlined"
-								/>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">내용</TableCell>
-							<TableCell align="left">
-								<TextField
-									id="memo"
-									name="memo"
-									rows="5"
-									defaultValue={dataState.memo}
-									variant="outlined"
-									InputProps={{
-									 	 readOnly: true,
-									}}
-									multiline
-									fullWidth
-								/>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">영수증</TableCell>
-							<TableCell align="left">
-								<Card className={classes.root}>
-									<CardContent>
-										<div name="image">
-											<img
-												src="http://cafefiles.naver.net/20091123_20/ippoom2_1258970814632O7W2g_jpg/i8mqtlp05mmg18_n00489_ippoom2.jpg"
-												title="image"
-												id="image"
-											/>
-										</div>
-									</CardContent>
-									<CardActions>
-										<Button size="small" onClick={printImageArea}>인쇄</Button>
-									</CardActions>
-									</Card>
-							</TableCell>
-						</TableRow>
-					</TableBody>
-				</Table>
-			</TableContainer>
-			<Divider/>
-			<TableContainer component={Paper} style={{marginBottom:'10px'}}>
-				<Table aria-label="simple table">
-					<TableHead>
-						<TableRow>
-							<TableCell align="left" colSpan="2">
-								<Typography className={classes.title} color="inherit" variant="h6">					
-									결재 정보
-								</Typography>
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						<TableRow>
-							<TableCell align="left" component="th" scope="row">결재란</TableCell>
-							<TableCell align="left">
-								<TableContainer component={Paper} style={{marginBottom:'10px', width:300, Align:'center'}}>
-									<Table aria-label="simple table">
-										<TableBody>
-											<TableRow>
-												<TableCell align="center">1차 결재자<br/>({dataState.prevAuthPerson})</TableCell>
-												<TableCell align="center">2차 결재자<br/>({dataState.authPerson})</TableCell>
-											</TableRow>
-											<TableRow>
-												<TableCell align="center">
-													{dataState.prevAuthDate}
-													<br/>
-												</TableCell>
-												<TableCell align="center">
-													{dataState.authDate}
-													<br/>
-												</TableCell>
-											</TableRow>
-										</TableBody>
-									</Table>
-								</TableContainer>
-							</TableCell>
-						</TableRow>
-					</TableBody>
-				</Table>
-			</TableContainer>
-			<Toolbar>
-				<Typography className={classes.title} color="secondary" variant="subtitle2">					
-				</Typography>
-				<div>
-					<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => history.goBack()}>
-						목록
-					</Button>
-					{	
-						// 진행상태와 (1차 결재자 or 2차 결재자) 여부에 따라 조건 분기 처리 필요
-						(data.status == '0' || data.status == '1') &&
-						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => handleClickOpen('app')}>
-								결재
-							</Button>
-						)
-					}
-					{	
-						(data.status == '0') &&
-						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => handleClickOpen('rej')}>
-								반려
-							</Button>
-						)
-					}
+		<>	
+			{!isEmpty(dataState) &&
+			<>
+				<div className={classes.root} style={{marginBottom:'10px'}}>
+					<Stepper activeStep={activeStep}>
+						{stepInfo.steps.map(row => (
+							<Step key={row.label}>
+								<StepLabel error={row.isError}>{row.label}</StepLabel>
+							</Step>
+						))}
+					</Stepper>
 				</div>
-			</Toolbar>
+				<Divider/>
+
+				<TableContainer component={Paper} style={{marginBottom:'10px'}}>
+					<Table aria-label="simple table">
+						<TableHead>
+							<TableRow>
+								<TableCell align="left" colSpan="2">
+									<Typography className={classes.title} color="inherit" variant="h6">					
+										등록자 정보
+									</Typography>
+								</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row" style={{width: '120px'}}>등록자</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="register"
+										name="register"
+										margin="dense"
+										value={dataState.name}
+										InputProps={{
+											readOnly: true,
+										}}
+										variant="outlined"
+										
+									/>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">연락처</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="tel"
+										name="tel"
+										margin="dense"
+										value={phoneFormatter(dataState.phone)}
+										variant="outlined"
+										InputProps={{
+											readOnly: true,
+										}}
+									/>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">이메일</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="email"
+										name="email"
+										margin="dense"
+										value={dataState.email}
+										variant="outlined"
+										InputProps={{
+											readOnly: true,
+										}}
+									/>
+								</TableCell>
+							</TableRow>
+						</TableBody>
+					</Table>
+				</TableContainer>
+				<Divider/>
+				<TableContainer component={Paper} style={{marginBottom:'10px'}}>
+					<Table aria-label="simple table">
+						<TableHead>
+							<TableRow>
+								<TableCell align="left" colSpan="2">
+									<Typography className={classes.title} color="inherit" variant="h6" >
+										경비 정보
+									</Typography>
+								</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row" style={{width: '120px'}}>경비유형</TableCell>
+								<TableCell align="left">
+									{expenseTypes.map((option, idx) => (
+										(dataState.expenseType == option.value) && 
+										<TextField
+											id="expenseType"
+											name="expenseType"
+											select
+											margin="dense"
+											variant="outlined"
+											value={option.value}
+											InputProps={{
+												readOnly: true,
+											}}
+										>
+											{expenseTypes.map((option, idx) => (
+												<MenuItem key={option.value} value={option.value}>
+													{option.label}
+												</MenuItem>
+											))}
+										</TextField>
+									))}
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">결제일</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="regDate"
+										name="regDate"
+										margin="dense"
+										value={dataState.payDate}
+										InputProps={{
+											readOnly: true,
+										}}
+										variant="outlined"
+									/>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">금액</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="pay"
+										name="pay"
+										margin="dense"
+										value={dataState.pay}
+										InputProps={{
+											readOnly: true,
+										}}
+										variant="outlined"
+									/>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">내용</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="memo"
+										name="memo"
+										rows="5"
+										value={dataState.memo}
+										variant="outlined"
+										InputProps={{
+											readOnly: true,
+										}}
+										multiline
+										fullWidth
+									/>
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">영수증</TableCell>
+								<TableCell align="left">
+									<Card className={classes.root}>
+										<CardContent>
+											<div name="image">
+												<img
+													src={dataState.filePath}
+													title="image"
+													id="image"
+												/>
+											</div>
+										</CardContent>
+										<CardActions>
+											<Button size="small" onClick={printImageArea}>인쇄</Button>
+										</CardActions>
+										</Card>
+								</TableCell>
+							</TableRow>
+						</TableBody>
+					</Table>
+				</TableContainer>
+				<Divider/>
+				<TableContainer component={Paper} style={{marginBottom:'10px'}}>
+					<Table aria-label="simple table">
+						<TableHead>
+							<TableRow>
+								<TableCell align="left" colSpan="2">
+									<Typography className={classes.title} color="inherit" variant="h6">					
+										결재 정보
+									</Typography>
+								</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">결재란</TableCell>
+								<TableCell align="left">
+									<TableContainer component={Paper} style={{marginBottom:'10px', width:300, Align:'center'}}>
+										<Table aria-label="simple table">
+											<TableBody>
+												<TableRow>
+													<TableCell align="center">1차 결재자<br/>({dataState.prevAuthPerson})</TableCell>
+													<TableCell align="center">2차 결재자<br/>({dataState.authPerson})</TableCell>
+												</TableRow>
+												<TableRow>
+													<TableCell align="center">
+														{dataState.prevAuthDate}
+														<br/>
+													</TableCell>
+													<TableCell align="center">
+														{dataState.authDate}
+														<br/>
+													</TableCell>
+												</TableRow>
+											</TableBody>
+										</Table>
+									</TableContainer>
+								</TableCell>
+							</TableRow>
+						</TableBody>
+					</Table>
+				</TableContainer>
+				<Toolbar>
+					<Typography className={classes.title} color="secondary" variant="subtitle2">					
+					</Typography>
+					<div>
+						<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => history.goBack()}>
+							목록
+						</Button>
+						{	
+							// 진행상태와 (1차 결재자 or 2차 결재자) 여부에 따라 조건 분기 처리 필요
+							(dataState.status == 'SS0000' || dataState.status == 'SS0001') &&
+							(
+								<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => handleClickOpen('app')}>
+									결재
+								</Button>
+							)
+						}
+						{	
+							(dataState.status == 'SS0000' || dataState.status == 'SS0001') &&
+							(
+								<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => handleClickOpen('rej')}>
+									반려
+								</Button>
+							)
+						}
+					</div>
+				</Toolbar>
+			</>
+			}
 			<div>
 				<Dialog open={rejOpen} onClose={() => handleClose('rej')} aria-labelledby="form-dialog-title">
 					<DialogTitle id="form-dialog-title">반려 사유</DialogTitle>

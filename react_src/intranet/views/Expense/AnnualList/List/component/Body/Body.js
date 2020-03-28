@@ -51,8 +51,6 @@ function Body(props) {
             , paging, setPaging, state
             , holdUp, setHoldUp 
             , page, setPage, rowsPerPage, setRowsPerPage} = props;
-    
-    
 
     const handleChangePage = (event, newPage) => {
       if(holdUp < newPage){ // 이미 가지고 있는 페이지를 다시 호출하는 것을 막기 위해 사용
@@ -93,6 +91,7 @@ function Body(props) {
         setPage(newPage);
       }
     };
+
     const handleChangeRowsPerPage = event => {
       Axios({
         url: '/intranet/getAnnaualList.exp',

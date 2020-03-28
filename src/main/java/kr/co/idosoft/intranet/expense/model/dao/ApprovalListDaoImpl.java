@@ -16,14 +16,14 @@ import org.springframework.stereotype.Repository;
  * 
  * @author 유기환
  * @since 2020.03.09
- * @content AnnualList DAO interface
+ * @content ApprovalList DAO interface
  */
 @Repository
-public class AnnalListDaoImpl implements AnnalListDao {
+public class ApprovalListDaoImpl implements ApprovalListDao {
 	@Autowired
 	private SqlSessionTemplate sqlTemplate;
 
-	private static final Logger LOG = LoggerFactory.getLogger(AnnalListDaoImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ApprovalListDaoImpl.class);
 
 	/**
 	 * 경비관리목록 총개수
@@ -33,7 +33,7 @@ public class AnnalListDaoImpl implements AnnalListDao {
 
 	@Override
 	public int getListCount(Map<String, Object> data) {
-		return (int) sqlTemplate.selectOne("expense.getAnnalListCount", data);
+		return (int) sqlTemplate.selectOne("expense.getAppAnnalListCount", data);
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class AnnalListDaoImpl implements AnnalListDao {
 		((int)data.get("currentPage") - 1) * (int)data.get("limit"); 
 		RowBounds rowBounds = new RowBounds(offset, (int)data.get("limit"));
 
-		return (ArrayList)sqlTemplate.selectList("expense.getAnnalList", data, rowBounds); 
+		return (ArrayList)sqlTemplate.selectList("expense.getApprovalList", data, rowBounds); 
 		/* Pageing 처리 END */ 
 	}
 	/**
@@ -97,62 +97,29 @@ public class AnnalListDaoImpl implements AnnalListDao {
 	public String getFirSancternerMno() {
 		return (String) sqlTemplate.selectOne("expense.getFirSancternerMno");
 	}
-	/**
-	 * 경비 등록 처리
-	 * 
-	 * @return boolean
-	 */
-	@Override
-	public boolean insertExpense(Map<String, Object> data) {
-
-		Integer result = sqlTemplate.update("expense.insertExpense", data);
-
-		if (result > 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	/**
-	 * 경비 수정 처리
-	 * 
-	 * @return boolean
-	 */
-	@Override
-	public boolean updateExpense(Map<String, Object> data) {
-		Integer result = sqlTemplate.update("expense.updateExpense", data);
-
-		if (result > 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	/**
-	 * 경비 삭제 처리
-	 * 
-	 * @return boolean
-	 */
-	@Override
-	public boolean deleteExpense(Map<String, Object> data) {
-		Integer result = sqlTemplate.delete("expense.deleteExpense", data);
-
-		if (result > 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
+	/*
 	 * 총금액 합계
 	 * 
-	 * @return String
+	 * @return boolean
 	 */
 	@Override
 	public String getTotalAmount(Map<String, Object> data) {
 		
-		return String.valueOf((int)sqlTemplate.selectOne("expense.getTotalAmount", data));
+		return String.valueOf((int)sqlTemplate.selectOne("expense.getAppTotalAmount", data));
 	}
-	
+	/**
+	 * 결재 처리
+	 * 
+	 * @return boolean
+	 */
+	@Override
+	public boolean updateApproval(Map<String, Object> data) {
+		Integer result = sqlTemplate.delete("expense.updateProcessApproval", data);
+
+		if (result > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

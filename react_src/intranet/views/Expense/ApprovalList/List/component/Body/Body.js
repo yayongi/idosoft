@@ -9,9 +9,10 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import { columnsUp, checkColumnsDown } from './data';
-import { AnnualStorage } from 'views/Expense/data'
 import {EnhancedTableHead, stableSort, getComparator} from 'common/EnhancedTableHead';
 import Checkbox from '@material-ui/core/Checkbox';
+
+import Axios from 'axios';
 
 const useStyles = makeStyles({
   root: {
@@ -20,11 +21,24 @@ const useStyles = makeStyles({
   },
 });
 
-
-
-
 function Body(props) {
-    const classes = useStyles();
+  const classes = useStyles();
+
+    const columnsUp = [
+      { id: 'seq', label: '번호', minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'expenseTypeText', label: '경비유형', minWidth: 100, align: 'center', paddingLeft : 50 },
+      { id: 'memo', label: '내용', minWidth: 100, align: 'center', paddingLeft : 50 },
+      { id: 'statusText', label: '진행상태', minWidth: 100, align: 'center', paddingLeft : 50 },
+      { id: 'register', label: '등록자', minWidth: 100, align: 'center', paddingLeft : 50 },
+      { id: 'payDate', label: '결제일', minWidth: 100, align: 'center', paddingLeft : 50 },
+    ];
+
+    const columnsDown = [
+      { id: 'expenseTypeText', label: '경비유형', minWidth: 100, align: 'center', paddingLeft : 50 },
+      { id: 'statusText', label: '진행상태', minWidth: 100, align: 'center', paddingLeft : 50 },
+      { id: 'payDate', label: '결제일', minWidth: 100, align: 'center', paddingLeft : 50 },
+    ];
+
     // 정렬
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
@@ -34,23 +48,87 @@ function Body(props) {
       setOrderBy(property);
     };
     // 데이터, Router 속성
-    const { rows, routeProps, state, setState } = props;
-    // 페이징
-    const [ page, setPage ] = React.useState(0);
-    const [ rowsPerPage, setRowsPerPage ] = React.useState(10);
+    const { rows, setRows, routeProps
+            , paging, setPaging, state
+            , holdUp, setHoldUp 
+            , page, setPage, rowsPerPage, setRowsPerPage} = props;
 
     const handleChangePage = (event, newPage) => {
-      setPage(newPage);
+      if(holdUp < newPage){ // 이미 가지고 있는 페이지를 다시 호출하는 것을 막기 위해 사용
+
+        console.log('state : ' + JSON.stringify(state));
+
+        Axios({
+          url: '/intranet/getAnnaualList.exp',
+          method: 'post',
+          data: {
+            currentPage : String(Number(newPage)+1),
+            limit : String(rowsPerPage),
+            name: state.name,
+            expenseType: state.expenseType,
+            payStDt: state.payStDt,
+            payEdDt: state.payEdDt,
+            status: state.status,
+            memo: state.memo,
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then(response => {
+          console.log(JSON.stringify(response.data));
+          setRows(rows.concat(JSON.parse(response.data.list))); // JSONARRAY 이어 붙이기
+          
+          const result = JSON.parse(response.data.result);
+
+          setRowsPerPage(Number(result.limit));
+          setPage(Number(result.currentPage)-1);
+          setHoldUp(Number(result.currentPage)-1);
+        }).catch(e => {
+          //processErrCode(e);
+          console.log(e);
+        });
+      } else {
+        setRowsPerPage(rowsPerPage);
+        setPage(newPage);
+      }
     };
+
     const handleChangeRowsPerPage = event => {
-      setRowsPerPage(+event.target.value);
-      setPage(0);
+      Axios({
+        url: '/intranet/getAnnaualList.exp',
+        method: 'post',
+        data: {
+          currentPage : '1',
+          limit : String(event.target.value),
+          name: state.name,
+          expenseType: state.expenseType,
+          payStDt: state.payStDt,
+          payEdDt: state.payEdDt,
+          status: state.status,
+          memo: state.memo,
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(response => {
+        console.log(JSON.stringify(response.data));
+        setRows(JSON.parse(response.data.list));
+        setPaging(JSON.parse(response.data.result));
+        
+        const result = JSON.parse(response.data.result);
+        
+        setRowsPerPage(Number(result.limit));
+        setPage(Number(result.currentPage)-1);
+        setHoldUp(Number(result.currentPage)-1);
+      }).catch(e => {
+        //processErrCode(e);
+        console.log(e);
+      });
     };
 
     // 상세페이지로 이동
     const handleClickView = (event, row) => {
       console.log("call handleClickView");      
-      AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(row));  // 세션 스토리지에 선택한 Row Data 저장
       routeProps.history.push(`${routeProps.match.url}/view/${row.seq}`);
     };
     
@@ -86,7 +164,7 @@ function Body(props) {
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={rows.length}
+            count={paging.listCount}
             rowsPerPage={rowsPerPage}
             page={page}
             onChangePage={handleChangePage}
@@ -116,7 +194,7 @@ function Body(props) {
                   > 
                       <TableCell padding="checkbox">
                         {
-                        (row.status ==='0'|| row.status === '1') && 
+                        (row.status ==='SS0000'|| row.status === 'SS0001') && 
                           <>
                             <Checkbox 
                               inputProps={{ 'aria-labelledby': labelId }}
@@ -145,7 +223,7 @@ function Body(props) {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          count={paging.listCount}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
