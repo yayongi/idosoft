@@ -43,9 +43,15 @@ public class ProjectDaoImpl implements ProjectDao {
 	}
 
 	@Override
-	public List<Map<String, Object>> selectList() {
+	public List<Map<String, Object>> selectList(HashMap<String, Object> condition) {
 		// TODO Auto-generated method stub
-		return (ArrayList)sqlTemplate.selectList("project.selectList");
+		return (ArrayList)sqlTemplate.selectList("project.selectList", condition);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectAllList() {
+		// TODO Auto-generated method stub
+		return (ArrayList)sqlTemplate.selectList("project.selectAllList");
 	}
 
 	

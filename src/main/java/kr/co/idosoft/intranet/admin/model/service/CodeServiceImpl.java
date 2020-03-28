@@ -14,6 +14,25 @@ public class CodeServiceImpl implements CodeService {
 
 	@Resource CodeDaoImpl dao;
 	
+	@Override
+	public void insert(Map<String, Object> insert) {
+		// TODO Auto-generated method stub
+		dao.insert(insert);
+	}
+
+
+	@Override
+	public void update(Map<String, Object> update) {
+		// TODO Auto-generated method stub
+		dao.update(update);
+	}
+
+
+	@Override
+	public void deleteInfo(int code_id) {
+		// TODO Auto-generated method stub
+		dao.deleteInfo(code_id);
+	}
 	
 	@Override
 	public List<Map<String, Object>> getlist() {
@@ -25,5 +44,4 @@ public class CodeServiceImpl implements CodeService {
 	public int getlistCount() {
 		return dao.getlistCount();
 	}
-
 }

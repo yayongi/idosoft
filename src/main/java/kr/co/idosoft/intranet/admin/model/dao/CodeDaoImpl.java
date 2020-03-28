@@ -29,4 +29,22 @@ public class CodeDaoImpl implements CodeDao {
 		// TODO Auto-generated method stub
 		return (int)sqlTemplate.selectOne("admin.getListCount");
 	}
+
+	@Override
+	public void insert(Map<String, Object> insert) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(Map<String, Object> update) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteInfo(int code_id) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -22,19 +22,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kr.co.idosoft.common.util.JsonUtils;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
-import kr.co.idosoft.intranet.project.model.service.HistoryServiceImpl;
+import kr.co.idosoft.intranet.project.model.service.ProjectServiceImpl;
 
 @Controller
-public class HistoryController {
+public class ProjectController {
+	private static final Logger LOG = LoggerFactory.getLogger(ProjectController.class);
 	
-private static final Logger LOG = LoggerFactory.getLogger(HistoryController.class);
-	
-	@Resource HistoryServiceImpl historyService;
+	@Resource ProjectServiceImpl projectService;
 	
 	
-	@RequestMapping(value="/allHistory",method=RequestMethod.POST)
+	@RequestMapping(value="/allProject",method=RequestMethod.POST)
 	@ResponseBody
-	public ModelAndView allHistory(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+	public ModelAndView allProject(HttpServletRequest request, @RequestBody Map<String, Object> params ){
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/resister.exp");
@@ -61,7 +60,7 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		data.put("MEMBER_NO", mno);		// 사원번호
 		data.put("isAdmin", isAdmin);	// 관리자 여부
 		
-		List<Map<String, Object>> list = historyService.selectList();
+		List<Map<String, Object>> list = projectService.selectAllList();
 		
 		String jsonArrayList 	= null;
 		String jsonObjectData 	= null;
@@ -80,5 +79,4 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		mv.addObject("result", jsonObjectData);
 		return mv;
 	}
-
 }

@@ -11,13 +11,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
-function jsonToQuery(obj) {
-  return ('?' +
-    Object.keys(obj).map(function (key) {
-      return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
-    }).join('&'));
-}
-
 
 const useStyles = makeStyles({
   root: {
@@ -28,7 +21,7 @@ const useStyles = makeStyles({
 
 function ProjectInfo(props) {
   const classes = useStyles();
-  const { projectInfo, routeProps } = props;
+  const { projectInfo } = props;
   const rows = projectInfo;
 
   console.log(rows);
