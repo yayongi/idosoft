@@ -174,8 +174,6 @@ export default function  Filter(props) {
 			processErrCode(e);
 			console.log(e);
 		});
-
-		
 	}
 
 	

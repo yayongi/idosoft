@@ -10,20 +10,20 @@ import java.util.Map;
  * @content AnnualList Service interface
  */
 
-public interface AnnalListService {
+public interface ApprovalListService {
 	/**
 	 * 결재관리 목록 총 개수
-	 * @return String
+	 * @return int
 	 */
 	int getlistCount(Map<String, Object> data);
 	/**
 	 * 결재관리 목록
-	 * @return int
+	 * @return List<Map<String, Object>
 	 */
 	List<Map<String, Object>> getlist(Map<String, Object> data);
 	/**
 	 * 코드 목록
-	 * @return String
+	 * @return List<Map<String, Object>>
 	 */
 	List<Map<String, Object>> getCode(Map<String, Object> data);
 	/**
@@ -42,24 +42,15 @@ public interface AnnalListService {
 	 */
 	public String getRepresentativeNo();
 	/**
-	 * 경비 등록
-	 * @return boolean
-	 */
-	boolean insertExpense(Map<String, Object> data);
-	/**
-	 * 경비 수정
-	 * @return boolean
-	 */
-	boolean updateExpense(Map<String, Object> data);
-	/**
-	 * 경비 삭제
-	 * @return boolean
-	 */
-	boolean deleteExpense(Map<String, Object> data);
-	/**
-	 * 경비 총합계
+	 * 총금액 합계
 	 * @return String
 	 */
 	String getTotalAmount(Map<String, Object> data);
+	/**
+	 * 결재 처리
+	 * @return boolean
+	 */
+	boolean updateApproval(Map<String, Object> data);
+
 	
 }

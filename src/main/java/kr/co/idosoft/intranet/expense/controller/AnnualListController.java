@@ -541,9 +541,9 @@ public class AnnualListController {
 		data.put("MEMBER_NO", mno);	// 사원번호
 		String EXPENS_NO		= mutipartRequest.getParameter("EXPENS_NO");		// 경비번호
 		String EXPENS_TY_CODE 	= mutipartRequest.getParameter("EXPENS_TY_CODE");	// 경비유형
-		String USE_DATE 		= mutipartRequest.getParameter("USE_DATE");			// 결재금액
-		String USE_AMOUNT 		= mutipartRequest.getParameter("USE_AMOUNT");		// 결재금액
-		String USE_CN 			= mutipartRequest.getParameter("USE_CN");			// 결재내용
+		String USE_DATE 		= mutipartRequest.getParameter("USE_DATE");			// 결제날짜
+		String USE_AMOUNT 		= mutipartRequest.getParameter("USE_AMOUNT");		// 결제금액
+		String USE_CN 			= mutipartRequest.getParameter("USE_CN");			// 결제내용
 		
 		LOG.debug("############################################################################");
 		LOG.debug("# EXPENS_NO : " + EXPENS_NO);
@@ -555,9 +555,9 @@ public class AnnualListController {
 		
 		data.put("EXPENS_NO", EXPENS_NO);					// 경비유형
 		data.put("EXPENS_TY_CODE", EXPENS_TY_CODE);				// 경비유형
-		data.put("USE_DATE", USE_DATE);							// 결재금액
-		data.put("USE_AMOUNT", Integer.parseInt(USE_AMOUNT));	// 결재금액
-		data.put("USE_CN", USE_CN);								// 결재내용
+		data.put("USE_DATE", USE_DATE);							// 결제금액
+		data.put("USE_AMOUNT", Integer.parseInt(USE_AMOUNT));	// 결제금액
+		data.put("USE_CN", USE_CN);								// 결제내용
 		
 		if(!annalListService.updateExpense(data)) {
 			mv.addObject("isError", "false");

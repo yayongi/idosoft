@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import kr.co.idosoft.intranet.expense.model.dao.AnnalListDaoImpl;
+import kr.co.idosoft.intranet.expense.model.dao.ApprovalListDaoImpl;
 
 /**
  * 
@@ -17,10 +18,11 @@ import kr.co.idosoft.intranet.expense.model.dao.AnnalListDaoImpl;
  */
 
 @Service
-public class AnnalListServiceImpl implements AnnalListService {
+public class ApprovalListServiceImpl implements ApprovalListService {
 
 	@Resource
-	AnnalListDaoImpl dao;
+	ApprovalListDaoImpl dao;
+	
 	/**
 	 * 1차결재자 조건에 맞는 사원번호 추출
 	 * @return String
@@ -45,6 +47,7 @@ public class AnnalListServiceImpl implements AnnalListService {
 		}
 		
 	}
+	
 	/**
 	 * 직급인 대표인 사원 번호 추출
 	 * @return String
@@ -54,15 +57,7 @@ public class AnnalListServiceImpl implements AnnalListService {
 		return dao.getRepresentativeNo();
 	}
 	/**
-	 * 경비 등록
-	 * @return boolean
-	 */
-	@Override
-	public boolean insertExpense(Map<String, Object> data) {
-		return dao.insertExpense(data);
-	}
-	/**
-	 * 결재관리 목록 총 개수
+	 * 직급인 대표인 사원 번호 추출
 	 * @return String
 	 */
 	@Override
@@ -70,8 +65,8 @@ public class AnnalListServiceImpl implements AnnalListService {
 		return dao.getListCount(data);
 	}
 	/**
-	 * 결재관리 목록
-	 * @return int
+	 * 직급인 대표인 사원 번호 추출
+	 * @return String
 	 */
 	@Override
 	public List<Map<String, Object>> getlist(Map<String, Object> data) {
@@ -79,7 +74,7 @@ public class AnnalListServiceImpl implements AnnalListService {
 	}
 	/**
 	 * 코드 목록
-	 * @return String
+	 * @return List<Map<String, Object>>
 	 */
 	@Override
 	public List<Map<String, Object>> getCode(Map<String, Object> data) {
@@ -88,36 +83,28 @@ public class AnnalListServiceImpl implements AnnalListService {
 		return dao.getCode(data);
 	}
 	/**
-	 * 경비 번호로 데이터 요청
-	 * @return String
+	 * 경비 결재 목록
+	 * @return Map<String, Object>
 	 */
 	@Override
 	public Map<String, Object> getView(Map<String, Object> data) {
 		return dao.getView(data);
 	}
 	/**
-	 * 경비 수정
-	 * @return boolean
-	 */
-	@Override
-	public boolean updateExpense(Map<String, Object> data) {
-		return dao.updateExpense(data);
-	}
-	/**
-	 * 경비 삭제
-	 * @return boolean
-	 */
-	@Override
-	public boolean deleteExpense(Map<String, Object> data) {
-		return dao.deleteExpense(data);
-	}
-	/**
-	 * 경비 총합계
+	 * 금액 총합계
 	 * @return String
 	 */
 	@Override
 	public String getTotalAmount(Map<String, Object> data) {
 		return dao.getTotalAmount(data);
+	}
+	/**
+	 * 결재 처리
+	 * @return boolean
+	 */
+	@Override
+	public boolean updateApproval(Map<String, Object> data) {
+		return dao.updateApproval(data);
 	}
 	
 }

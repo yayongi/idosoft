@@ -20,10 +20,11 @@ export default function  List(props) {
 	const [rows, setRows] = React.useState([]);
 	const [totalAmount, setTotalAmount] = React.useState(0);
 	const [paging, setPaging] = React.useState({listCount : 0});
-	const [ holdUp, setHoldUp ] = React.useState(0);     // 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
+	const [ holdUp, setHoldUp ] = React.useState(0);					// 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
 	const [firstRender, setFirstRender ] = React.useState(false);
+	
 	// 페이징
-    const [ page, setPage ] = React.useState(0);                 // 초기페이지가 0부터 시작
+	const [ page, setPage ] = React.useState(0);						// 초기페이지가 0부터 시작
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
 	
 	useEffect(() => {
@@ -43,10 +44,16 @@ export default function  List(props) {
 			},
 		}).then(response => {
 			console.log(JSON.stringify(response.data));
-			setRows(JSON.parse(response.data.list));
-			setPaging(JSON.parse(response.data.result));
-			setTotalAmount(response.data.totalAmount);
-			setFirstRender(true);
+			const isNoN = response.data.isNoN;
+
+			if(isNoN == "false"){
+				setRows(JSON.parse(response.data.list));
+				setPaging(JSON.parse(response.data.result));
+				setTotalAmount(response.data.totalAmount);
+				setFirstRender(true);
+			} else {
+				// 빈화면 처리
+			}
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);

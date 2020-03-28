@@ -9,7 +9,7 @@ import java.util.Map;
  * @since 2020.03.09
  * @content AnnualList DAO
  */
-public interface AnnalListDao {
+public interface ApprovalListDao {
 	/**
 	 * 경비관리 목록 총 개수
 	 * @return String
@@ -46,25 +46,15 @@ public interface AnnalListDao {
 	 */
 	public String getRepresentativeNo();
 	/**
-	 * 경비 등록 처리
-	 * @return boolean
-	 */
-	boolean insertExpense(Map<String, Object> data);
-	/**
-	 * 경비 수정 처리
-	 * @return boolean
-	 */
-	boolean updateExpense(Map<String, Object> data);
-	/**
-	 * 경비 삭제 처리
-	 * @return boolean
-	 */
-	boolean deleteExpense(Map<String, Object> data);
-	/**
 	 * 총금액 합계
 	 * @return String
 	 */
 	String getTotalAmount(Map<String, Object> data);
+	/**
+	 * 결재 처리
+	 * @return boolean
+	 */
+	boolean updateApproval(Map<String, Object> data);
 	
 }
 
