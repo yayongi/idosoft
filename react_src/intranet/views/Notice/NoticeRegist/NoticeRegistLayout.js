@@ -22,7 +22,13 @@ import Moment from "moment"
 
 import axios from 'axios';
 
-import ToastEditor from '../component/ToastEditor';
+import CKEditor from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
+import '../css/ck_editor.sass';
+
+import Editor from '../component/Editor';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,8 +52,11 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     minHeight: '200px'
   },
-  editor: {
+  editorRoot: {
     width: '100%',
+    // minHeight: '600px'
+  },
+  editor:{
     minHeight: '600px'
   }
 }));
@@ -78,60 +87,54 @@ export default function NoticeRegistLayout() {
     content : '#808080'
   };
 
+  const initNoticeData = {
+      board_no : null,
+      title: '',
+      content: null,
+      major_yn : false,
+      major_period_date:''
+      // noticeNo : null,
+      // title: '',
+      // content:'',
+      // regDatetime:'',
+      // majorYn:false,
+      // majorPeriodDate:'',
+  }
+
+  const editorRef = React.useRef();
+
   const [validation, setValidation] = React.useState(initValidation);
   const [dialog, setDialog] = React.useState({});
 	const [resultDialog, setResultDialog] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
   const [urlParams, setUrlParams] = React.useState(getUrlParams(location.href, 'id'));
-  const [noticeData, setNoticeData] = React.useState({
-    // noticeNo : null,
-    // title: '',
-    // content:'',
-    // regDatetime:'',
-    // majorYn:false,
-    // majorPeriodDate:'',
-
-      board_no : null,
-      title: '',
-      content:'',
-      major_yn : false,
-      major_period_date:'',
-  });
+  const [noticeData, setNoticeData] = React.useState(initNoticeData);
 
   //수정시 데이터 설정
   React.useEffect(()=>{
-    if(localStorage.getItem('noticeEditIndex') !== null){
-      const obj = JSON.parse(localStorage.getItem('noticeTestData'));
-      setNoticeData(obj.filter((item=>{
-        return item.board_no  === Number(localStorage.getItem('noticeEditIndex'));
-      }))[0]);
-    }
-
     if(urlParams!==undefined){
-					axios({
-						url: '/intranet/notice/find',
-						method : 'post',
-						headers: {
-							'Content-Type': 'application/json;charset=UTF-8'
-						},
-						data : {
-							board_no : urlParams
-						},
-						}).then(response => {
-              //수정 데이터 설정
-              console.log(response);
-              const data = response.data;
-							setNoticeData( 
-                {...noticeData, ['board_no']: data.board_no, ['title']:data.title, ['content'] : data.content,
-                  ['major_yn'] : data.major_yn === 1 ? true : false, ['major_period_date'] : data.major_yn !== 0 ? data.major_period_date : ''
-                }
-               );
-						}).catch(e => {
-							console.log(e);
-					});
+        axios({
+          url: '/intranet/notice/find',
+          method : 'post',
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          data : {
+            board_no : urlParams
+          },
+          }).then(response => {
+            //수정 데이터 설정
+            console.log(response);
+            const data = response.data;
+            setNoticeData( 
+              {...noticeData, ['board_no']: data.board_no, ['title']:data.title, ['content'] : data.content,
+                ['major_yn'] : data.major_yn === 1 ? true : false, ['major_period_date'] : data.major_yn !== 0 ? data.major_period_date : ''
+              }
+              );
+          }).catch(e => {
+            console.log(e);
+        });
 		}
-
-
   }, []);
 
   React.useEffect(()=>{
@@ -145,8 +148,6 @@ export default function NoticeRegistLayout() {
     }
   }, [checked])
 
-
-
   const handleChange = event => {
     setChecked(event.target.checked);
     setNoticeData({...noticeData, major_yn:event.target.checked} );
@@ -159,6 +160,7 @@ export default function NoticeRegistLayout() {
     setNoticeData({...noticeData, major_period_date:date});
   }
   const handleEditorChange = data => {
+    console.log(data);
     setNoticeData({...noticeData, content:data});
   }
 
@@ -179,16 +181,8 @@ export default function NoticeRegistLayout() {
 	}
 	
 	const noticeDataRegist = () => {
-    const localNoticeData = JSON.parse(localStorage.getItem('noticeTestData'));
-		if(noticeData.board_no  === null){
-      //등록
-      // if(localNoticeData.length !== 0){
-      //   noticeData.noticeNo = Number(localNoticeData[localNoticeData.length-1].noticeNo)+1;
-      // }else{
-      //   noticeData.noticeNo = 1;
-      // }
-			// localNoticeData.push( {...noticeData, regDatetime:Moment(new Date()).format('YYYY-MM-DD') } );
-      // localStorage.setItem('noticeTestData', JSON.stringify(localNoticeData) );
+		if(urlParams===undefined){
+      console.log(editorRef.current);
       axios({
 				url: '/intranet/notice/register',
 				method : 'post',
@@ -198,31 +192,34 @@ export default function NoticeRegistLayout() {
 				data : {...noticeData, ['major_yn'] : (noticeData.major_yn===true?1:0)},
 				}).then(response => {
 					console.log(response);
-					console.log(JSON.stringify(response));
 					console.log(response.data);
 				}).catch(e => {
 					console.log(e);
 			});
-
 		}else{
 			//수정
-			const index = localNoticeData.findIndex(notice => notice.board_no  === Number(noticeData.board_no ));
-			const newlocalNoticeData = [...localNoticeData];
-			if(index !== undefined){
-				newlocalNoticeData.splice(index, 1, noticeData);
-				localStorage.setItem('noticeTestData', JSON.stringify(newlocalNoticeData));
-			}
-			
-			localStorage.removeItem('noticeEditIndex');
+			axios({
+				url: '/intranet/notice/modify',
+				method : 'post',
+				headers: {
+					'Content-Type': 'application/json;charset=UTF-8'
+				},
+				data : {...noticeData, ['major_yn'] : (noticeData.major_yn===true?1:0)},
+				}).then(response => {
+					console.log(response);
+					console.log(response.data);
+				}).catch(e => {
+					console.log(e);
+			});
 		}
-
 		return location.href="/#/notice";
   }
   
   const validationCheck = (noticeData) => {
+
     if(noticeData.title.length === 0 ){
       return 1;
-    }else if(noticeData.content.length === 0){
+    }else if(noticeData.content.length === 0 || noticeData.content === null){
       return 2;
     }else if(noticeData.major_yn && noticeData.major_period_date === "Invalid date"){
       return 3;
@@ -248,7 +245,7 @@ export default function NoticeRegistLayout() {
         handleOpenDialog('공지사항', '중요공지 기간을 선택해주세요.');
         break;
       default:
-        handleOpenDialog('공지사항', localStorage.getItem('noticeEditIndex')===null?'등록하시겠습니까?':'수정하시겠습니까?', true);
+        handleOpenDialog('공지사항', urlParams===undefined?'등록하시겠습니까?':'수정하시겠습니까?', true);
     }
 	}
 
@@ -257,11 +254,9 @@ export default function NoticeRegistLayout() {
 	//localStorage 사용시에만 있으면 되는 함수
 	const handleHistoryBack = (event) => {
 		event.preventdefault;
-		localStorage.removeItem('noticeEditIndex');
-	}
+  }
 
   return (
-    // <Card className={classes.root} variant="outlined">
     <Fragment>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
       <CardContent>
@@ -277,7 +272,7 @@ export default function NoticeRegistLayout() {
                   </Button>
                 </RouterLink>
                 <Button className={classes.btn} variant="contained" color="primary" onClick={handleButtonClick}>
-                  {localStorage.getItem('noticeEditIndex') === null
+                  {urlParams===undefined
 							      ?"등록":"수정"
 						      }
                 </Button>
@@ -327,33 +322,7 @@ export default function NoticeRegistLayout() {
 		  </div>
       </CardContent>
       <CardActions>
-        {/* <TextareaAutosize name="content" onChange={handleInputChange} 
-                          value={noticeData.content} 
-                          className={classes.textArea} aria-label="content" 
-                          rowsMin={3} placeholder="내용을 입력하세요."
-                          style={{borderColor:validation.content}}
-        /> */}
-        {/* <CKEditor
-            className={classes.editor}
-            editor={ ClassicEditor }
-            data="<p>Hello from CKEditor 5!</p>"
-            onInit={ editor => {
-                // You can store the "editor" and use when it is needed.
-                console.log( 'Editor is ready to use!', editor );
-            } }
-            onChange={ ( event, editor ) => {
-                const data = editor.getData();
-                console.log( { event, editor, data } );
-            } }
-            onBlur={ ( event, editor ) => {
-                console.log( 'Blur.', editor );
-            } }
-            onFocus={ ( event, editor ) => {
-                console.log( 'Focus.', editor );
-            } }
-        /> */}
-
-        <ToastEditor setData={setNoticeData} defaultValue={noticeData.content} onEditorChange={handleEditorChange}/>
+        <Editor defaultValue={noticeData.content} onChildChange={handleEditorChange}/>
       </CardActions>
     </Fragment>
   );

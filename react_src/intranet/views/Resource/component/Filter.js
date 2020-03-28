@@ -29,7 +29,8 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-import { returnValue } from '../uitl/ResUtil';
+
+import {excelExport} from '../../../js/util';
 
 import axios from 'axios';
 
@@ -95,8 +96,9 @@ export default function  Filter(props) {
 	const handleClose = () => {
 		setOpen(false);
 	};
-	const excelExport = () => {
-		alert("엑셀 내보내기");
+	const handleExcelClick = () => {
+		excelExport(resData);
+		// alert("엑셀 내보내기");
 	}
 
 
@@ -134,7 +136,7 @@ export default function  Filter(props) {
 					'Content-Type': 'application/json;charset=UTF-8'
 				},
 				data:{
-				res_no : props.selected
+					res_no : props.selected
 				},
 				}).then(response => {
 					console.log(response);
@@ -215,7 +217,7 @@ export default function  Filter(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button}>
 							검색
 						</Button>
-						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={excelExport} className={classes.button}>
+						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={handleExcelClick} className={classes.button}>
 							엑셀 내보내기
 						</Button>
 						<RouterLink button="true" to="/resource/regist">
@@ -231,7 +233,7 @@ export default function  Filter(props) {
 						<IconButton color="primary" onClick={handleClickOpen} className={classes.button}>
 							<FilterListIcon />
 						</IconButton>
-						<IconButton color="primary" onClick={excelExport} className={classes.button}>
+						<IconButton color="primary" onClick={handleExcelClick} className={classes.button}>
 							<SaveIcon />
 						</IconButton>
 						<RouterLink button="true" to="/resource/regist">

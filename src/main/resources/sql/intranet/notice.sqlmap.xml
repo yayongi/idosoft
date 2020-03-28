@@ -26,7 +26,7 @@
 							#{content},
 							#{major_yn, jdbcType=TINYINT},
 							#{major_period_date, jdbcType=VARCHAR},
-							NOW(), 
+							#{reg_datetime}, 
 							#{reg_id}
 						)
 	</insert>
@@ -38,9 +38,10 @@
 		SET
 			TITLE = #{title},
 			CONTENT = #{content},
-			MAJOR_YN = #{major_yn jdbcType=TINYINT},
-			MAJOR_PERIOD_DATE = #{major_period_date jdbcType=VARCHAR},
-			UPD_DATETIME = #{upd_datetime}
+			MAJOR_YN = #{major_yn, jdbcType=TINYINT},
+			MAJOR_PERIOD_DATE = #{major_period_date, jdbcType=VARCHAR},
+			UPD_DATETIME = #{upd_datetime},
+			UPD_ID = #{upd_id}
 		WHERE
 			BOARD_NO = #{board_no}
 	</update>
@@ -65,11 +66,47 @@
 	
 	<!-- 공지사항 리스트 -->
 	<select id="selectList" resultMap="NoticeVO">
-		SELECT
-			*
-		FROM	
-			TB_BOARD
-		ORDER BY BOARD_NO DESC
+	<![CDATA[ 
+		SELECT * FROM
+		(
+			   SELECT 
+					TB_BOARD.BOARD_NO,
+					TB_BOARD.TITLE,
+					TB_BOARD.CONTENT,
+					TB_BOARD.MAJOR_YN,
+					TB_BOARD.MAJOR_PERIOD_DATE,
+					DATE_FORMAT(TB_BOARD.REG_DATETIME, '%Y-%m-%d') AS REG_DATETIME,
+					TB_BOARD.REG_ID,
+					TB_MEMBER.NAME AS WRITER
+				FROM 
+					TB_BOARD 
+					INNER JOIN TB_MEMBER ON TB_BOARD.REG_ID = TB_MEMBER.MEMBER_NO
+				WHERE 
+					MAJOR_PERIOD_DATE >= DATE_FORMAT(NOW(),'%Y%m%d') 
+				ORDER BY BOARD_NO DESC 
+				LIMIT 10000
+		) A
+		UNION
+		SELECT * FROM
+		(
+				SELECT 
+					TB_BOARD.BOARD_NO,
+					TB_BOARD.TITLE,
+					TB_BOARD.CONTENT,
+					TB_BOARD.MAJOR_YN,
+					TB_BOARD.MAJOR_PERIOD_DATE,
+					DATE_FORMAT(TB_BOARD.REG_DATETIME, '%Y-%m-%d') AS REG_DATETIME,
+					TB_BOARD.REG_ID,
+					TB_MEMBER.NAME AS WRITER
+				FROM 
+					TB_BOARD 
+					INNER JOIN TB_MEMBER ON TB_BOARD.REG_ID = TB_MEMBER.MEMBER_NO
+				WHERE 
+					(MAJOR_PERIOD_DATE < DATE_FORMAT(NOW(),'%Y%m%d')) OR (MAJOR_PERIOD_DATE = '')
+				ORDER BY BOARD_NO DESC 
+				LIMIT 10000
+		) B
+	]]>
 	</select>
 	
 	<!-- 공지사항 대쉬보드용 리스트 -->

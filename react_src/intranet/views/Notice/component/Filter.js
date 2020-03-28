@@ -24,6 +24,8 @@ import Moment from "moment";
 
 import CommonDialog from '../../../js/CommonDialog';
 
+import axios from 'axios';
+
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -80,7 +82,7 @@ export default function  Filter(props) {
 	
 	const classes = useToolbarStyles();
 	const {
-		state, setState,setNoticeData
+		noticeData, state, setState,setNoticeData
 	} = props;
 	const [open, setOpen] = React.useState(false);
 	const [isDelete, setIsDelete] = React.useState(false);
@@ -120,11 +122,26 @@ export default function  Filter(props) {
 	const selectDelete = (result) => {
 		if(result){
 			console.log(props.selected);
-			const noticeData = JSON.parse(localStorage.noticeTestData);
+
+			axios({
+				url: '/intranet/notice/deletelist',
+				method : 'post',
+				headers: {
+					'Content-Type': 'application/json;charset=UTF-8'
+				},
+				data:{
+					board_no : props.selected
+				},
+				}).then(response => {
+					console.log(response);
+					console.log(JSON.stringify(response));
+				}).catch(e => {
+					console.log(e);
+			});
+
 			const upStreamData = noticeData.filter((row => {
-				return !props.selected.includes((row.noticeNo));
+				return !props.selected.includes((row.board_no));
 			}));
-			localStorage.setItem('noticeTestData',JSON.stringify(upStreamData));
 			setNoticeData(upStreamData);
 		}
 		setIsDelete(false);

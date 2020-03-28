@@ -1,5 +1,7 @@
 package kr.co.idosoft.intranet.notice.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,11 +24,19 @@ public class NoticeServiceImpl implements NoticeService{
 	//공지등록
 	@Override
 	public void inputNotice(NoticeVO noticeVO) {
+		Date date = new Date();
+		SimpleDateFormat dateTime = new SimpleDateFormat("y-MM-dd hh:mm:ss");
+		noticeVO.setReg_datetime(dateTime.format(date));
+		
 		noticeDao.insert(noticeVO);
 	}
 	//공지수정
 	@Override
 	public int modifyNotice(NoticeVO noticeVO) {
+		Date date = new Date();
+		SimpleDateFormat dateTime = new SimpleDateFormat("y-MM-dd hh:mm:ss");
+		noticeVO.setUpd_datetime(dateTime.format(date));
+		
 		return noticeDao.update(noticeVO);
 	}
 	//공지삭제
@@ -47,11 +57,11 @@ public class NoticeServiceImpl implements NoticeService{
 	public NoticeVO findNotice(int board_no) {
 		return noticeDao.select(board_no);
 	}
-//	//공지 리스트 조회
-//	@Override
-//	public List<NoticeVO> findNoticeList(){
-//		return noticeDao.selectList();
-//	}
+	//공지 리스트 조회
+	@Override
+	public List<NoticeVO> findNoticeList(){
+		return noticeDao.selectList();
+	}
 	
 	// 대쉬보드용 리스트
 	@Override
