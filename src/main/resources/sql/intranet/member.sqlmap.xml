@@ -162,10 +162,20 @@
 	</select>
 	
 	<!-- 이메일 중복 검사 -->
-	<select id="checkemail" parameterType="String" resultType="Integer">
+	<select id="checkemail" parameterMap="MemberVO" resultType="Integer">
 		SELECT 
 			COUNT(*)
 		FROM TB_MEMBER
-			WHERE EMAIL = #{email} 
+			WHERE EMAIL = #{email}
+			AND MEMBER_NO != #{member_no} 
+	</select>
+	
+	<!-- 같은연도 사번 검색 -->
+	<select id="findMemberNo" parameterType="String" resultType="String">
+		SELECT
+			MAX(MEMBER_NO)
+		FROM
+			TB_MEMBER
+		WHERE MEMBER_NO LIKE CONCAT(#{member_no}, '%')
 	</select>
 </mapper>

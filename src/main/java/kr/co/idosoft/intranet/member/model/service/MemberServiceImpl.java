@@ -64,8 +64,13 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public int checkemail(String email) {
-		return memberDao.checkemail(email);
+	public int checkemail(MemberVO memberInfo) {
+		return memberDao.checkemail(memberInfo);
+	}
+
+	@Override
+	public String findMemberNo(String member_no) {
+		return memberDao.findMemberNo(member_no);
 	}
 	
 

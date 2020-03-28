@@ -65,7 +65,12 @@ public class MemberDaoImpl implements MemberDao {
 	}
 
 	@Override
-	public int checkemail(String email) {
-		return sqlTemplate.selectOne("checkemail", email);
+	public int checkemail(MemberVO memberInfo) {
+		return sqlTemplate.selectOne("checkemail", memberInfo);
+	}
+
+	@Override
+	public String findMemberNo(String member_no) {
+		return sqlTemplate.selectOne("findMemberNo", member_no);
 	}
 }

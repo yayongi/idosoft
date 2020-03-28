@@ -20,7 +20,7 @@ import ko from "date-fns/locale/ko";
 import Toolbar from '@material-ui/core/Toolbar';
 import Moment from "moment";
 import axios from 'axios';
-import { findAddress,positions,certYn,schCareer,emailValidation,uploadFile,downloadFile } from '../../js/util'
+import { findAddress,positions,certYn,schCareer,emailValidation,uploadFile,downloadFile,isValidNum } from '../../js/util'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -228,7 +228,6 @@ const MemberReg = (props) => {
           setInfoState({
             ...infoState,
             memberData : {
-              member_no : document.getElementById("entry_date").value.replace(/\-/gi,""),
               name : document.getElementById("name").value,
               position : document.getElementById("position").nextSibling.value,
               address_1 : document.getElementById("address_1").value,
@@ -318,7 +317,7 @@ const MemberReg = (props) => {
         }).catch(e => {
           console.log(e);
         });
-        //return location.href="/#/member/";
+        return location.href="/#/member/";
       }else{
         return;
       }
@@ -374,8 +373,10 @@ const MemberReg = (props) => {
       ...dateState,
       birth_date : Moment(date).format('YYYY-MM-DD')
     })
-	}
+  }
   
+  
+
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
@@ -480,10 +481,10 @@ const MemberReg = (props) => {
                       />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField autoComplete="off" style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onBlur={isValidEmail} placeholder="" InputLabelProps={{
                         shrink: true,
                       }}/>
-                      <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" variant="outlined" placeholder="" InputLabelProps={{
+                      <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" variant="outlined" placeholder="" onKeyUp={isValidNum} InputLabelProps={{
                         shrink: true,
                       }}/>
                     </div>

@@ -21,7 +21,7 @@ import ko from "date-fns/locale/ko";
 import Toolbar from '@material-ui/core/Toolbar';
 import Moment from "moment";
 import axios from 'axios';
-import {findAddress,dateFormatter, phoneFormatter,unFormatter,certYn,emailValidation,uploadFile,downloadFile } from '../../js/util';
+import {findAddress,dateFormatter, phoneFormatter,unFormatter,certYn,emailValidation,uploadFile,downloadFile,isValidNum } from '../../js/util';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -144,6 +144,7 @@ const MemberMod_admin = (props) => {
       url: '/intranet/member/checkemail',
       method: 'post',
       data : {
+        member_no : row.member_no,
         email : document.getElementById("email").value
       },
       headers: {
@@ -529,7 +530,7 @@ const MemberMod_admin = (props) => {
                       </div>
                       <div className={classes.textfield} style={{width:'auto'}}>
                         <TextField autoComplete="off" size="small" style={{width:'34%'}} id="email"  onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} defaultValue={row.email} label="이메일" variant="outlined" />
-                        <TextField autoComplete="off" size="small" style={{width:'34%'}} id="phone_num" defaultValue={phoneFormatter(row.phone_num)} label="휴대전화" variant="outlined" />
+                        <TextField autoComplete="off" size="small" style={{width:'34%'}} id="phone_num" defaultValue={phoneFormatter(row.phone_num)} onKeyUp={isValidNum} label="휴대전화" variant="outlined" />
                       </div>
                       <div className={classes.textfield} style={{width:'auto'}}>
                         <TextField autoComplete="off" size="small" style={{width:'34%'}} id="address_1"  onClick={defaultValidation}  error={validation.address_1.error} helperText={validation.address_1.helperText} defaultValue={row.address_1} label="기본주소" variant="outlined" InputProps={{

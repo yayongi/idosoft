@@ -104,6 +104,16 @@ export function dataCalculator(param){
   // }
 }
 
+// 전화번호 자릿수 
+export function isValidNum(){
+    var regexp = /[0-9]{11}/g;  
+    document.getElementById("phone_num").value = unFormatter(document.getElementById("phone_num").value).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") 
+    if (regexp.test(unFormatter(document.getElementById("phone_num").value))) {   
+      document.getElementById("phone_num").value = unFormatter(document.getElementById("phone_num").value).substring(0,11).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+    return false;   
+  }  
+}
+
 // 파일 업로드
 export function uploadFile(event,path){
   const formData = new FormData();

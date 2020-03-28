@@ -23,5 +23,7 @@ public interface MemberDao {
 	// 결혼기념일 가져오기
 	public List<String> getMarriageDate(String date);
 	// 이메일 중복검사
-	public int checkemail(String email);
+	public int checkemail(MemberVO memberInfo);
+	// 사번연도 검색
+	public String findMemberNo(String member_no);
 }

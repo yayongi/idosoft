@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.co.idosoft.common.util.SHAPasswordEncoder;
+import kr.co.idosoft.common.util.StringUtils;
 import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.member.model.service.MemberService;
 import kr.co.idosoft.intranet.member.vo.MemberVO;
@@ -54,6 +55,16 @@ public class MemberController {
 		String path = request.getSession().getServletContext().getRealPath("/")+"resources";
 				
 		try {
+			String member_no = "";
+			try {
+				member_no = memberService.findMemberNo(memberVo.getEntry_date());
+				memberVo.setMember_no(Integer.toString(Integer.parseInt(member_no)+1));
+			}catch(Exception e) {
+				memberVo.setMember_no(memberVo.getEntry_date() + "01");
+			}
+			logger.debug("test1 : " + member_no );
+			//logger.debug("test2 : " + Integer.toString(Integer.parseInt(member_no)+1) );
+			
 			SHAPasswordEncoder shaPasswordEncoder = new SHAPasswordEncoder(512); // SHA512
 			shaPasswordEncoder.setEncodeHashAsBase64(true);
 			
@@ -91,9 +102,6 @@ public class MemberController {
 	@RequestMapping(value="/member/memberupd/", method=RequestMethod.POST)
 	@ResponseBody
 	public boolean updMemberInfo(Model model, @RequestBody MemberVO memberVo,HttpServletRequest request){
-		
-		logger.debug("memberVo : " + memberVo.getZip_code());
-		
 		try {
 			memberService.updateMember(memberVo);
 			return true;
@@ -152,14 +160,14 @@ public class MemberController {
 	}
 	
 	//중복 이메일 중복 확인
-		@RequestMapping(value="/member/checkemail", method=RequestMethod.POST)
-		@ResponseBody
-		public int checkemail(Model model, @RequestBody MemberVO memberVo, HttpServletRequest request){
-			try {
-				return memberService.checkemail(memberVo.getEmail());
-			}catch(Exception e) {
-				e.printStackTrace();
-				return 100;
-			}
+	@RequestMapping(value="/member/checkemail", method=RequestMethod.POST)
+	@ResponseBody
+	public int checkemail(Model model, @RequestBody MemberVO memberVo, HttpServletRequest request){
+		try {
+			return memberService.checkemail(memberVo);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return 100;
 		}
+	}
 }

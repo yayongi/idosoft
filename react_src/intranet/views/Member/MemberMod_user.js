@@ -21,7 +21,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Moment from "moment";
 import axios from 'axios';
 import CommonDialog from '../../js/CommonDialog';
-import {findAddress,dateFormatter, phoneFormatter, positionFormatter,schCareer,unFormatter,certYn,uploadFile,downloadFile,dataCalculator,emailValidation } from '../../js/util';
+import {findAddress,dateFormatter, phoneFormatter, positionFormatter,schCareer,unFormatter,certYn,uploadFile,downloadFile,dataCalculator,emailValidation,isValidNum } from '../../js/util';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -477,7 +477,7 @@ const MemberMod_user = (props) => {
                       </Button>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" defaultValue={phoneFormatter(row.phone_num)} variant="outlined" />
+                      <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" onKeyUp={isValidNum} defaultValue={phoneFormatter(row.phone_num)} variant="outlined" />
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField style={{width:'25%'}}

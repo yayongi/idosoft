@@ -225,6 +225,53 @@ const MemberList = (props) => {
 		setOpenSnackBar(true);
 	}
 
+	//사원삭제
+	const removeData = () => {
+		// 사원 정보 삭제
+		axios({
+			url: '/intranet/member/memberdel',
+			method: 'post',
+			data : selected,
+			headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+		}).then(response => {
+			console.log("positionResult : " + JSON.stringify(response));
+			//
+			//체크박스로 선택된 직원 아이디로 선택적으로 필터링
+			let temp_1 = state.showMemberList;
+			for(let i=0;i<selected.length;i++){
+				if(temp_1.member_no !== String(selected[i])){
+					temp_1.ret_date = "99999999";
+				}
+			}
+
+			let temp_2 = state.hiddenMemberList;
+			for(let i=0;i<selected.length;i++){
+				temp_2 = temp_2.filter(temp_2 => temp_2.member_no !== String(selected[i]));
+			}
+
+			setSelected([]);
+
+			let temp;
+
+			if(state.showAllValue == 0){
+				temp = temp_2
+			}else{
+				temp = temp_1
+			}
+
+			setState({
+				...state,
+				memberList : temp,
+				showMemberList : temp_1,
+				hiddenMemberList: temp_2,
+			});
+		}).catch(e => {
+			console.log(e);
+		});
+	}
+
 
 	const handleChangePage = (event, newPage) => {
       setPage(newPage);
@@ -324,13 +371,23 @@ const MemberList = (props) => {
 	// 상세화면 이돋하기
 	const goDetail = (member_no,manager_yn) => {
 		let url = "";
-		if(manager_yn == 1){
+		if(manager_yn == true){
 			url = "/member/membermod/admin/";
 		}else{
 			url = "/member/membermod/user/";
 		}
 
 		routeProps.history.push(url + member_no);
+	}
+
+	// 맴버 엑셀 내보내기
+	const memberExcelExport = () =>{
+		let temp = state.memberList;
+		for(let i=0;i<selected.length;i++){
+			temp = temp.filter(temp => temp.member_no == String(selected[i]));
+		}
+
+		excelExport(temp);
 	}
 
 	return (
@@ -368,7 +425,7 @@ const MemberList = (props) => {
 									<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button_tool}>
 										검색
 									</Button>
-									<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={() => excelExport(state.memberList)} className={classes.button_tool}>
+									<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={() => memberExcelExport(state.memberList)} className={classes.button_tool}>
 										엑셀 내보내기
 									</Button>
 									{state.manager_yn && (
@@ -393,7 +450,7 @@ const MemberList = (props) => {
 									<IconButton color="primary" onClick={handleClickOpen} className={classes.button_tool}>
 										<FilterListIcon />
 									</IconButton>
-									<IconButton color="primary" onClick={excelExport} className={classes.button_tool}>
+									<IconButton color="primary" onClick={() => memberExcelExport(state.memberList)} className={classes.button_tool}>
 										<SaveIcon />
 									</IconButton>
 									{state.manager_yn && (
@@ -474,7 +531,7 @@ const MemberList = (props) => {
 													{row.cert_yn == 1? '유':'무'}
 												</TableCell>
 												<TableCell align="center">
-													<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
+													<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,state.manager_yn)}>
 														수정
 													</Button>
 													<RouterLink button="true" to="/project/history" className={classes.router_link}>
