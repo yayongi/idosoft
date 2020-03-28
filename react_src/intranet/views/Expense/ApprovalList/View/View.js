@@ -34,8 +34,6 @@ Moment.locale('ko'); // 한국 시간
 
 import {processErrCode, phoneFormatter, isEmpty} from "../../../../js/util"; 
 
-import { getStepInfo } from 'views/Expense/data';
-
 const useStyles = makeStyles(theme => ({
 	table: {
 		minWidth: 650,
@@ -86,18 +84,66 @@ export default function  View(props) {
 	const {history, location, match} = routeProps;
 	const [expenseTypes, setExpenseTypes] = React.useState([]);
 
-	let data = {};		// 목록에서 선택한 데이터
+	// 진행 상태 관리
+	const [activeStep, setActiveStep] = React.useState(1);
 
-	React.useEffect(() => {		// render 완료 후, 호출
+	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
+	const [dataState, setDataState] = React.useState(data);	// state : 수정을 위한 데이터 관리
+	const [isAdmin, setIsAdmin] = React.useState("0");
+	const classes = useStyles();
+	
+	// step 처리 
+
+	const getStepInfo = (row) => {
+		
+		let stepInfo = {
+			activeStep : 0,
+			steps : [
+				{label: '진행', isError: false},
+				{label: '1차결재완료', isError: false},
+				{label: '완료', isError: false},
+			]
+		}
+		
+		if(isEmpty(row)){
+			return stepInfo;
+		}
+
+		console.log(`row.status : ${row.status}`);
+		console.log(`row.statusText : ${row.statusText}`);
+		if(row.status == 'SS0001') {
+			stepInfo.activeStep = 2;
+		} else if(row.status == 'SS0002') {
+			stepInfo.activeStep = 3;
+		} else if(row.status == 'SS0003') {
+			stepInfo.activeStep = 0;
+			stepInfo.steps[0].label = '반려';
+			stepInfo.steps[0].isError = true;
+		} else { // 'SS0000' else
+		stepInfo.activeStep = 1; // activeStep 1
+		stepInfo.steps[0].label = '진행';
+		stepInfo.steps[0].isError = false;
+		}
+		
+		return stepInfo;
+	}
+	
+	let stepInfo 	= getStepInfo(dataState);	
+
+	let data 		= {}; // 목록에서 선택한 데이터
+	
+	const loginSession = sessionStorage.getItem("loginSession");
+
+	React.useEffect(() => { // render 완료 후, 호출
 		console.log("call useEffect");
 		console.log(JSON.stringify(match));
-
+		console.log(`loginSession : ${loginSession}`);
 		const params = match.params;
 
 		console.log(params.id);
 
 		Axios({
-			url: '/intranet/getView.exp',
+			url: '/intranet/getAppView.exp',
 			method: 'post',
 			data: {
 				expense_no : params.id,
@@ -110,18 +156,57 @@ export default function  View(props) {
 
 			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
 			const payTypeList 		= JSON.parse(response.data.payTypeList);
-			
+
 			setExpenseTypes(exPenseTypeList);
 			setActiveStep(stepInfo.activeStep);
+			setIsAdmin(response.data.isAdmin);
+			const isNoN = response.data.isNoN;
 
-			data = JSON.parse(response.data.result);
-			setDataState(data);
+			if(isNoN == "false"){
+				data = JSON.parse(response.data.result);
+				setDataState(data);
+				stepInfo = getStepInfo(data);
+				setActiveStep(stepInfo.activeStep);
+			} else {
+				alert("접근 권한이 없는 직원입니다.", history.back());
+			}
+			
 		})
 		.catch(e => {
 			processErrCode(e);
 			console.log(e);
 		});
 	}, []);
+
+	// 버튼 여부  활성화
+	const giveAuthorization = () => {
+		let isAuth = false;
+		const mno = loginSession.MEMBER_NO;
+
+		console.log(`giveAuthorization :: dataState.status : ${dataState.status}`);
+		console.log(`giveAuthorization :: isAdmin : ${isAdmin}`);
+		switch (dataState.status) {
+		case 'SS0000':
+			if(mno == dataState.prevAuthPersonNO || isAdmin == "1"){
+				isAuth = true;
+			} else {
+				isAuth = false;
+			}
+			break;
+		case 'SS0001':
+			if(mno == dataState.authPersonNO || isAdmin == "1"){  
+				isAuth = true;
+			} else {
+				isAuth = false;
+			}
+			break;
+		default:
+			isAuth = false;
+			break;
+		}
+
+		return isAuth;
+	};
 
 	const [appOpen, setAppOpen] = React.useState(false);
 	const [rejOpen, setRejOpen] = React.useState(false);
@@ -145,22 +230,6 @@ export default function  View(props) {
 		}
 	};
 
-	// 진행 상태 관리
-	const [activeStep, setActiveStep] = React.useState(1);
-
-	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
-	const [dataState, setDataState] = React.useState(data);	// state : 수정을 위한 데이터 관리
-
-	const classes = useStyles();
-	
-	let stepInfo = getStepInfo(data);	// Re-Rendering 시점에는 호출 되지 않음.
-	
-	React.useEffect(() => {				// render 완료 후, 호출
-		console.log("call useEffect");
-		
-		setActiveStep(stepInfo.activeStep);
-	}, []);
-
 	// 결재처리
 	const handleClickApprove =() => {
 
@@ -174,10 +243,14 @@ export default function  View(props) {
 			isRequest = "APP";
 		}
 
+		const params = match.params;
+
+
 		Axios({
-			url: '/intranet/getApprovalList.exp',
+			url: '/intranet/processApproval.exp',
 			method: 'post',
 			data: {
+				expenseNo : params.id, // 경비 번호
 				isRequest : isRequest, // 1차결재  : FIR_APP 2차결재  : APP 반려 : REG
 			},
 			headers: {
@@ -185,8 +258,9 @@ export default function  View(props) {
 			},
 		}).then(response => {
 			console.log(JSON.stringify(response.data));
-
-			if(false){
+			
+			const isError = response.data.isError;
+			if(isError == "false"){
 				if(dataState.status == 'SS0000'){
 					setDataState({
 						...dataState,
@@ -199,12 +273,12 @@ export default function  View(props) {
 						...dataState,
 						status : 'SS0002',
 						statusText : '완료',
-						prevAuthDate : Moment().format('YYYY-MM-DD'),
+						authDate : Moment().format('YYYY-MM-DD'),
 					})
 				}
 			}
 
-			stepInfo = getStepInfo(data);
+			stepInfo = getStepInfo(dataState);
 
 			setActiveStep(stepInfo.activeStep);
 
@@ -214,30 +288,6 @@ export default function  View(props) {
 			processErrCode(e);
 			console.log(e);
 		});
-		
-		/* const dataIdx = dataList.findIndex(item => item.seq === data.seq);
-		if(data.status == '0'){ // 진행 - 1차 결재 수행
-			data.status = "1";
-			data.statusText = "1차결재완료";
-			data.prevAuthDate = Moment().format('YYYY-MM-DD'); 
-		} else { // data.status == '1' // 1차결재완료 - 2차 결재 수행
-			data.status = "2";
-			data.statusText = "완료";
-			data.authDate = Moment().format('YYYY-MM-DD'); 
-		} */
-
-	/* 	if(dataIdx > -1) {
-			dataList = [
-				...dataList.slice(0, dataIdx),
-				data,
-				...dataList.slice(dataIdx+1)
-			];
-			//AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
-			//AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(data));
-			// history.goBack();
-			setDataState(data);
-		}
-	 */	
 	}
 
 	// 이미지 영역 인쇄
@@ -271,26 +321,45 @@ export default function  View(props) {
 	// 반려 처리
 	const handleClickReject = () => {
 		console.log("call handleClickReject");
-		const dataIdx = dataList.findIndex(item => item.seq === data.seq);
-		data.status="3";
-		data.statusText="반려";
-		data.rejectMemo=rejReason; // 반려사유 등록
 
-		stepInfo = getStepInfo(data);
-		setActiveStep(stepInfo.activeStep);
+		let isRequest = "REG";
 
-		if(dataIdx > -1) {
-			dataList = [
-				...dataList.slice(0, dataIdx),
-				data,
-				...dataList.slice(dataIdx+1)
-			];
-			//AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
-			//AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(data));
-			// history.goBack();
-		}
+		const params = match.params;
 
-		return setRejOpen(false);
+		Axios({
+			url: '/intranet/processApproval.exp',
+			method: 'post',
+			data: {
+				expenseNo : params.id, // 경비 번호
+				isRequest : isRequest, // 1차결재  : FIR_APP 2차결재  : APP 반려 : REG
+				rejReason : rejReason, // 반려 사유
+			},
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		}).then(response => {
+			console.log(JSON.stringify(response.data));
+			
+			const isError = response.data.isError;
+			if(isError == "false"){
+				setDataState({
+					...dataState,
+					status : 'SS0003',
+					statusText : '반려',
+					prevAuthDate : '',
+					authDate : '',
+				})
+			}
+
+			stepInfo = getStepInfo(dataState);
+			setActiveStep(stepInfo.activeStep);
+
+			setRejOpen(false);
+		})
+		.catch(e => {
+			processErrCode(e);
+			console.log(e);
+		});
 	}
 
 	const txtChangeHandle = (e) => {
@@ -303,11 +372,13 @@ export default function  View(props) {
 			<>
 				<div className={classes.root} style={{marginBottom:'10px'}}>
 					<Stepper activeStep={activeStep}>
-						{stepInfo.steps.map(row => (
+					{!isEmpty(stepInfo) &&
+						stepInfo.steps.map(row => (
 							<Step key={row.label}>
 								<StepLabel error={row.isError}>{row.label}</StepLabel>
 							</Step>
-						))}
+						))
+					}
 					</Stepper>
 				</div>
 				<Divider/>
@@ -505,11 +576,11 @@ export default function  View(props) {
 												</TableRow>
 												<TableRow>
 													<TableCell align="center">
-														{dataState.prevAuthDate}
+														{!isEmpty(dataState.prevAuthDate) && Moment(dataState.prevAuthDate).format('YYYY-MM-DD')}
 														<br/>
 													</TableCell>
 													<TableCell align="center">
-														{dataState.authDate}
+														{!isEmpty(dataState.authDate) && Moment(dataState.authDate).format('YYYY-MM-DD')}
 														<br/>
 													</TableCell>
 												</TableRow>
@@ -530,7 +601,7 @@ export default function  View(props) {
 						</Button>
 						{	
 							// 진행상태와 (1차 결재자 or 2차 결재자) 여부에 따라 조건 분기 처리 필요
-							(dataState.status == 'SS0000' || dataState.status == 'SS0001') &&
+							(giveAuthorization()) &&
 							(
 								<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => handleClickOpen('app')}>
 									결재
@@ -538,7 +609,7 @@ export default function  View(props) {
 							)
 						}
 						{	
-							(dataState.status == 'SS0000' || dataState.status == 'SS0001') &&
+							(giveAuthorization()) &&
 							(
 								<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => handleClickOpen('rej')}>
 									반려

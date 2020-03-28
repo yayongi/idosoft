@@ -106,5 +106,35 @@ public class ApprovalListServiceImpl implements ApprovalListService {
 	public boolean updateApproval(Map<String, Object> data) {
 		return dao.updateApproval(data);
 	}
-	
+	/**
+	 * 다중 결재 처리
+	 * @return boolean
+	 */
+	@Override
+	public boolean multiplexApproval(Map<String, Object> data) {
+		
+		// 2차결재
+		boolean result = false;
+		
+		if(data.get("appMembers") != null) {
+			data.put("noList", data.get("appMembers"));
+			data.put("isRequest", "APP");
+			result = dao.multiplexApproval(data);
+		}
+		
+		// 1차결재
+		boolean firResult = false;
+		
+		if(data.get("firAppMembers") != null) {
+			data.put("noList", data.get("firAppMembers"));
+			data.put("isRequest", "FIR_APP");
+			firResult = dao.multiplexFirApproval(data);
+		} 
+		
+		if(result || firResult) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

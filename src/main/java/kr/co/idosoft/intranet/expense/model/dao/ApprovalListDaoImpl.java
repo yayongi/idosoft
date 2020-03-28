@@ -68,7 +68,7 @@ public class ApprovalListDaoImpl implements ApprovalListDao {
 	 */
 	@Override
 	public Map<String, Object> getView(Map<String, Object> data) {
-		return sqlTemplate.selectOne("expense.getView", data);
+		return sqlTemplate.selectOne("expense.getAppView", data);
 	}
 	/**
 	 * 직급인 대표인 사원 번호 추출
@@ -114,7 +114,38 @@ public class ApprovalListDaoImpl implements ApprovalListDao {
 	 */
 	@Override
 	public boolean updateApproval(Map<String, Object> data) {
-		Integer result = sqlTemplate.delete("expense.updateProcessApproval", data);
+		Integer result = sqlTemplate.update("expense.updateProcessApproval", data);
+
+		if (result > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	/**
+	 * 다중 2차 결재
+	 * 
+	 * @return boolean
+	 */
+	@Override
+	public boolean multiplexApproval(Map<String, Object> data) {
+		
+		Integer result = sqlTemplate.update("expense.multiplexApproval", data); 
+
+		if (result > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	/**
+	 * 다중 1차 결재
+	 * 
+	 * @return boolean
+	 */
+	@Override
+	public boolean multiplexFirApproval(Map<String, Object> data) {
+		Integer result = sqlTemplate.update("expense.multiplexApproval", data);
 
 		if (result > 0) {
 			return true;

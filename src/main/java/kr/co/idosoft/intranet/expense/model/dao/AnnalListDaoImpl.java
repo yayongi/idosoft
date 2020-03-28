@@ -68,7 +68,7 @@ public class AnnalListDaoImpl implements AnnalListDao {
 	 */
 	@Override
 	public Map<String, Object> getView(Map<String, Object> data) {
-		return sqlTemplate.selectOne("expense.getView", data);
+		return sqlTemplate.selectOne("expense.getAnnView", data);
 	}
 	/**
 	 * 직급인 대표인 사원 번호 추출
@@ -153,6 +153,21 @@ public class AnnalListDaoImpl implements AnnalListDao {
 	public String getTotalAmount(Map<String, Object> data) {
 		
 		return String.valueOf((int)sqlTemplate.selectOne("expense.getTotalAmount", data));
+	}
+	/**
+	 * 경비 진행
+	 * 
+	 * @return boolean
+	 */
+	@Override
+	public boolean Proceed(Map<String, Object> data) {
+		Integer result = sqlTemplate.update("expense.Proceed", data);
+
+		if (result > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

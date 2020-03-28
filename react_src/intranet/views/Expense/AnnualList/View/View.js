@@ -39,7 +39,6 @@ import {
   DatePicker,
 } from '@material-ui/pickers';
 
-import { getStepInfo } from 'views/Expense/data';
 import PreviewFileUpload from 'common/PreviewFileUpload';
 import Axios from 'axios';
 
@@ -114,6 +113,43 @@ export default function  View(props) {
 
 	const classes = useStyles();
 	
+	const loginSession = sessionStorage.getItem("loginSession");
+	// step 처리 
+	const getStepInfo = (row) => {
+		let stepInfo = {
+			activeStep : 0,
+			steps : [
+				{label: '진행', isError: false},
+				{label: '1차결재완료', isError: false},
+				{label: '완료', isError: false},
+			]
+		}
+		
+		if(isEmpty(row)){
+			return stepInfo;
+		}
+
+		console.log(`row.status : ${row.status}`);
+		console.log(`row.statusText : ${row.statusText}`);
+		if(row.status == 'SS0001') {
+			stepInfo.activeStep = 2;
+		} else if(row.status == 'SS0002') {
+			stepInfo.activeStep = 3;
+		} else if(row.status == 'SS0003') {
+			stepInfo.activeStep = 0;
+			stepInfo.steps[0].label = '반려';
+			stepInfo.steps[0].isError = true;
+		} else { // 'SS0000' else
+			stepInfo.activeStep = 1; // activeStep 1
+			stepInfo.steps[0].label = '진행';
+			stepInfo.steps[0].isError = false;
+		}
+
+		return stepInfo;
+	}
+
+	let stepInfo 	= getStepInfo(dataState);	
+
 	// 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {
 		
@@ -148,8 +184,6 @@ export default function  View(props) {
 			payDate: Moment(date).format('YYYYMMDD')
 		});
 	}
-
-	let stepInfo = getStepInfo(data);	// Re-Rendering 시점에는 호출 되지 않음.
 	
 	React.useEffect(() => {		// render 완료 후, 호출
 		console.log("call useEffect");
@@ -160,7 +194,7 @@ export default function  View(props) {
 		console.log(params.id);
 
 		Axios({
-			url: '/intranet/getView.exp',
+			url: '/intranet/getAnnView.exp',
 			method: 'post',
 			data: {
 				expense_no : params.id,
@@ -178,9 +212,20 @@ export default function  View(props) {
 			setExpenseTypes(exPenseTypeList);
 			setActiveStep(stepInfo.activeStep);
 			if(screenType != 'new'){ // 스크린 타입이 NEW가 아닐 경우,
+
+				const isNoN = response.data.isNoN;
+				
 				data = JSON.parse(response.data.result);
+
+				if(response.data.isAdmin != '1'){ // 관리자는 접근 가능
+					if(data.mno != loginSession.MEMBER_NO){ // 로그인 세션의 사번과 경비 정보에 등록된 사번을 비교한다.
+						return alert("권한이 없는 직원입니다.", history.goBack());
+					}
+				}
+
 				setFiles([{preview : data.filePath, name: data.filePath}]);
 				setDataState(data);
+				
 			} else {
 				setDataState(emptyData);
 			}
@@ -371,23 +416,44 @@ export default function  View(props) {
 			return;
 		}
 
-		/* const dataIdx = dataList.findIndex(item => item.seq === data.seq);
-		data.status="0";
-		data.statusText="진행";
-		stepInfo = getStepInfo(data);
-		setActiveStep(stepInfo.activeStep);
+		console.log("dataState : " + JSON.stringify(dataState));
+		
+		const formData = new FormData();
 
-		if(dataIdx > -1) {
-			dataList = [
-				...dataList.slice(0, dataIdx),
-				data,
-				...dataList.slice(dataIdx+1)
-			];
-			AnnualStorage.setItem("ANNUAL_LIST", JSON.stringify(dataList));
-			AnnualStorage.setItem("ANNUAL_VIEW", JSON.stringify(data));
-			
-			stateOpenEvent("다시 결재 진행합니다.");
-		} */
+		console.log(`dataState.filePath : ${dataState.filePath} // files[0].filePath : ${files[0].filePath}`);
+
+		const params = match.params;
+
+		console.log(`params : ${JSON.stringify(params)}`)
+
+		if(dataState.filePath != files[0].preview){
+			formData.append('file',files[0]);
+		}
+
+		formData.append('prefilename',dataState.filePath);
+		formData.append('EXPENS_NO',params.id);
+		formData.append('EXPENS_TY_CODE',dataState.expenseType);
+		formData.append('USE_DATE',dataState.payDate);
+		formData.append('USE_AMOUNT',dataState.pay);
+		formData.append('USE_CN',dataState.memo); 
+
+		axios({
+			url: '/intranet/Proceed.exp',
+			method : 'post',
+			data : formData,
+			header : {
+				'enctype': 'multipart/form-data'
+			}
+			}).then(response => {
+				console.log(`${JSON.stringify(response)}`);
+				
+				stateOpenEvent("다시 결재 진행합니다.");
+				//history.goBack();
+			}).catch(e => {
+				processErrCode(e);
+				console.log(e);
+		});
+		
 	}
 	return (
 		<>
@@ -395,11 +461,14 @@ export default function  View(props) {
 			<>
 			<div className={classes.root}>
 				<Stepper activeStep={activeStep}>
-					{stepInfo.steps.map(row => (
-						<Step key={row.label}>
-							<StepLabel error={row.isError}>{row.label}</StepLabel>
-						</Step>
-					))}
+					{
+						!isEmpty(stepInfo) &&
+						stepInfo.steps.map(row => (
+							<Step key={row.label}>
+								<StepLabel error={row.isError}>{row.label}</StepLabel>
+							</Step>
+						))
+					}
 				</Stepper>
 			</div>
 			<Divider/>
@@ -412,7 +481,7 @@ export default function  View(props) {
 									<Typography className={classes.title} color="inherit" variant="h6">					
 										경비 정보
 										{	
-											(data.status == '3') &&
+											(dataState.status == 'SS0003') &&
 											<>
 												<Button variant="contained" color="secondary" className={classes.button} size="small"  onClick={heandleClickRejectMemo}>
 													반려사유
@@ -550,7 +619,7 @@ export default function  View(props) {
 						)
 					}
 					{	
-						(dataState.status == 'SS0000' || dataState.status == 'SS00003') &&
+						(dataState.status == 'SS0000' || dataState.status == 'SS0003') &&
 						(
 							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickModify}>
 								수정
@@ -558,7 +627,7 @@ export default function  View(props) {
 						)
 					}
 					{	
-						(dataState.status == 'SS0000' || dataState.status == 'SS00003') &&
+						(dataState.status == 'SS0000' || dataState.status == 'SS0003') &&
 						(
 							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickRemove}>
 								삭제
@@ -566,7 +635,7 @@ export default function  View(props) {
 						)
 					}
 					{	
-						(dataState.status == 'SS00003') &&
+						(dataState.status == 'SS0003') &&
 						(
 							<Button variant="contained" color="secondary" size="small"  className={classes.button} onClick={handleClickRetry}>
 								진행

@@ -331,7 +331,7 @@ public class AnnualListController {
 	 * @return ModelAndView
 	 */
 	
-	@RequestMapping(value="/getView.exp", method=RequestMethod.POST)
+	@RequestMapping(value="/getAnnView.exp", method=RequestMethod.POST)
 	@ResponseBody
 	public ModelAndView getView(HttpServletRequest request, @RequestBody Map<String, Object> params) {
 		
@@ -372,11 +372,27 @@ public class AnnualListController {
 		jsonArrayexPenseTypeList 	= JsonUtils.getJsonStringFromList(exPenseTypeList); 	// JSONARRAY 변환
 		jsonArraypayTypeList 		= JsonUtils.getJsonStringFromList(payTypeList); 		// JSONARRAY 변환
 		
+		mv.addObject("expenseTypeList", jsonArrayexPenseTypeList);
+		mv.addObject("payTypeList", jsonArraypayTypeList);
+		
+		HttpSession session = request.getSession();
+		
+		String isAdmin = (String) session.getAttribute("IS_ADMIN");				// 관리자 여부
+		mv.addObject("isAdmin", isAdmin);
+		
 		LOG.debug("#################################################################################");
 		LOG.debug("# RETURN JSON ");
-		
+		LOG.debug("# jsonArrayexPenseTypeList : " + jsonArrayexPenseTypeList);
+		LOG.debug("# jsonArraypayTypeList : 	" + jsonArraypayTypeList);
+		LOG.debug("# isAdmin : 	" + isAdmin);
 		if(!"new".equals(screenType)) { // 등록화면이 아닐 경우,
-			String jsonViewObject 				= null;
+			
+			if(view == null) {
+				mv.addObject("isNoN", "true");				// 비어있는 경우,
+				return mv;
+			}
+			
+			String jsonViewObject = null;
 			try {
 				jsonViewObject = mapper.writeValueAsString(view); // JSONOBJECT 변환
 				LOG.debug("# jsonViewObject : 			" + jsonViewObject);
@@ -386,12 +402,7 @@ public class AnnualListController {
 			} 
 		}
 		
-		LOG.debug("# jsonArrayexPenseTypeList : " + jsonArrayexPenseTypeList);
-		LOG.debug("# jsonArraypayTypeList : 	" + jsonArraypayTypeList);
 		LOG.debug("#################################################################################");
-		
-		mv.addObject("expenseTypeList", jsonArrayexPenseTypeList);
-		mv.addObject("payTypeList", jsonArraypayTypeList);
 		
 		return mv;
 	}
@@ -458,7 +469,7 @@ public class AnnualListController {
 		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
 		
 		if(LOG.isDebugEnabled()) {
-			LOG.debug("/resister.exp // path : " + path);
+			LOG.debug("/update.exp // path : " + path);
 		}
 		
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -584,7 +595,7 @@ public class AnnualListController {
 		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
 		
 		if(LOG.isDebugEnabled()) {
-			LOG.debug("/resister.exp // path : " + path);
+			LOG.debug("/delete.exp // path : " + path);
 		}
 		
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -634,6 +645,129 @@ public class AnnualListController {
 		return mv;
 	}
 	
+	/**
+	 * 경비 진행
+	 * @param mutipartRequest
+	 * @param request
+	 * @return ModelAndView
+	 */
+	
+	@RequestMapping(value="/Proceed.exp", method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView Proceed(MultipartHttpServletRequest mutipartRequest
+										, HttpServletRequest request) {
+		
+		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
+		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("/Proceed.exp // path : " + path);
+		}
+		
+		Map<String, Object> data = new HashMap<String, Object>();
+		
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");
+		
+		MultipartFile mf = mutipartRequest.getFile("file"); // jsp file name mapping
+		
+		if(!(mf == null)) {
+			/* 파일업로드 처리 START */
+			// 겹치는 파일 이름 중복을 피하기 위해 시간을 이용해서 파일 이름에 추가
+			Date date = new Date();
+			
+			SimpleDateFormat dayformat = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
+			SimpleDateFormat hourformat = new SimpleDateFormat("hhmmss", Locale.KOREA);
+			String day = dayformat.format(date);
+			String hour = hourformat.format(date);
+			String fileName = "expense_" + day + "_" + hour;         
+			
+			//수정 처리할 때, 이용
+			String preFileName = mutipartRequest.getParameter("prefilename"); // 기종 파일 명
+			String originalName = mf.getOriginalFilename(); 					// 업로드하는 파일 name
+			
+			// 확장자 가져오기
+			int pos = originalName.lastIndexOf( "." );
+			String ext = originalName.substring( pos + 1 );
+			
+			String newFileName = fileName + "." + ext;
+			
+			LOG.debug("# newFileName : " + newFileName); 
+
+			String uploadPath = path+newFileName; // 파일 업로드 경로 + 파일 이름
+			LOG.debug("# uploadPath : " + uploadPath);
+			
+			File file = new File(uploadPath);
+
+			try {
+				if(!file.exists()) {
+					file.mkdirs();
+				}
+				mf.transferTo(file); // 파일을 위에 지정 경로로 업로드
+				
+				//수정 처리할 때 이용
+				//기존 파일 삭제 로직
+				
+				if(!"".equals(preFileName) || preFileName != null) {
+					deleteFile(preFileName); 
+				}
+				
+			} catch (IllegalStateException e) {
+				LOG.debug(" IllegalStateException : " + e.getMessage());
+				
+				mv.addObject("isError", "true");
+				mv.addObject("errMessage","File Upload Error");
+				return mv;
+			} catch (IOException e) {
+				LOG.debug(" IOException : " + e.getMessage());
+				
+				mv.addObject("isError", "true");
+				mv.addObject("errMessage","File Upload Error");
+				return mv;
+			}
+			
+			data.put("EXPENS_ATCHMNF_ID", uploadPath);
+			/* 파일업로드 처리 EMD */
+		}
+		
+		
+		HttpSession session = request.getSession();
+		// 세션 VO에 세션 값 저장
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");
+		String mno = sessionVo.getMEMBER_NO();						// 사원번호
+		
+		data.put("MEMBER_NO", mno);	// 사원번호
+		String EXPENS_NO		= mutipartRequest.getParameter("EXPENS_NO");		// 경비번호
+		String EXPENS_TY_CODE 	= mutipartRequest.getParameter("EXPENS_TY_CODE");	// 경비유형
+		String USE_DATE 		= mutipartRequest.getParameter("USE_DATE");			// 결제날짜
+		String USE_AMOUNT 		= mutipartRequest.getParameter("USE_AMOUNT");		// 결제금액
+		String USE_CN 			= mutipartRequest.getParameter("USE_CN");			// 결제내용
+		
+		LOG.debug("############################################################################");
+		LOG.debug("# EXPENS_NO : " + EXPENS_NO);
+		LOG.debug("# EXPENS_TY_CODE : " + EXPENS_TY_CODE);
+		LOG.debug("# USE_DATE : " + USE_DATE);
+		LOG.debug("# USE_AMOUNT : " + USE_AMOUNT);
+		LOG.debug("# USE_CN : " + USE_CN);
+		LOG.debug("############################################################################");
+		
+		data.put("EXPENS_NO", EXPENS_NO);					// 경비유형
+		data.put("EXPENS_TY_CODE", EXPENS_TY_CODE);				// 경비유형
+		data.put("USE_DATE", USE_DATE);							// 결제금액
+		data.put("USE_AMOUNT", Integer.parseInt(USE_AMOUNT));	// 결제금액
+		data.put("USE_CN", USE_CN);								// 결제내용
+		
+		if(!annalListService.Proceed(data)) {
+			mv.addObject("isError", "false");
+			mv.addObject("errMessage","결제수정 실패 다시시도하세요.");
+		}
+		
+		data.clear();
+		
+		return mv;
+	}
 	// 파일 삭제 메소드
 	public static void deleteFile(String filePath) {
 
