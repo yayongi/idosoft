@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
 export function LoadingBar(props){
   console.log("loading bar start : ");
   console.log(props);
-  const {open} = props;
+  const {openLoading} = props;
   const classes = useStyles();
   const rootRef = React.useRef(null);
 
@@ -36,7 +36,7 @@ export function LoadingBar(props){
         disablePortal
         disableEnforceFocus
         disableAutoFocus
-        open={open}
+        open={openLoading}
         aria-labelledby="server-modal-title"
         aria-describedby="server-modal-description"
         className={classes.modal}

@@ -12,17 +12,22 @@ import TableRow from '@material-ui/core/TableRow';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 function getTableFormData(codeInfo) {
-  var rows = [];
-  for (var i = 0; i < codeInfo.length; i++) {
-    var upper_code = codeInfo[i].upper_code;
+  if(codeInfo){
+    var rows = [];
+    for (var i = 0; i < codeInfo.length; i++) {
+      var upper_code = codeInfo[i].upper_code;
 
-    if (!upper_code) {
-      //codeInfo[i]["upper_name"] = "분류코드";
-      rows.push(codeInfo[i])
-      continue;
+      if (!upper_code) {
+        //codeInfo[i]["upper_name"] = "분류코드";
+        rows.push(codeInfo[i])
+        continue;
+      }
     }
+    return rows;
+  }else{
+    return [];
   }
-  return rows;
+
 }
 
 function jsonToQuery(obj) {
@@ -75,13 +80,13 @@ const useStyles = makeStyles({
     const handleClickDetailView = (event, row) => {
       console.log("call handleClickDetailView");
 
-      var url = "/admin/modifyCode/view";
+      /* var url = "/admin/modifyCode/view";
       var queryString = jsonToQuery(row);
 
       //console.log("url : " + url);
       //console.log("queryString : " + queryString);
 
-      routeProps.history.push(url + queryString);
+      routeProps.history.push(url + queryString); */
     };
 
     return (

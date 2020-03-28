@@ -2,22 +2,54 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="admin">
-	<!-- 
-		datetime 형식을 가져올 때는 date_format으로 변환 후, alias를 잡아줘야 된다.
-	 -->
+	<!-- 프로젝트 등록 -->
+	<insert id="insert" parameterType="hashmap">
+		INSERT INTO TB_CODE 
+			(CODE_ID, CODE_NAME, CODE_LEVEL, UPPER_CODE, CODE_DC, REG_DATETIME, UPD_DATETIME, REG_ID, UPD_ID, NOTE, TEMP_COLUM)		
+		VALUES 
+			(#{code_id}, #{code_name}, #{code_level}, #{upper_code}, #{code_dc}, DATE_FORMAT(NOW(),'%Y%m%d'), "", #{reg_id}, "", "", "")
+	</insert>
+	
+	<!-- 프로젝트 수정 -->
+	<update id="update" parameterType="hashmap">
+		UPDATE
+			TB_CODE
+		SET
+			CODE_ID = #{code_id}
+			, CODE_NAME = #{code_name}
+			, CODE_LEVEL = #{code_level}
+			, UPPER_CODE = #{upper_code}
+			, CODE_DC = #{code_dc}
+			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
+			, UPD_ID = #{upd_id}
+			, NOTE = #{note}
+			, TEMP_COLUM = #{temp_colum}
+		WHERE
+			CODE_ID = #{code_id}
+s	</update>
+	
+	<!--  프로젝트 삭제 -->
+	<delete id="deleteInfo" parameterType="int">
+		DELETE FROM
+			TB_CODE
+		WHERE
+			CODE_ID = #{code_id}
+	</delete>
+
 	<select id="getList" resultType="hashmap">
-		SELECT A.CODE_ID
-		, A.CODE_NAME
-		, A.CODE_LEVEL
-		, A.UPPER_CODE
-		, A.CODE_DC
-		, A.REG_DATETIME
-		, A.UPD_DATETIME
-		, A.REG_ID
-		, A.UPD_ID
-		, A.NOTE
-		, A.TEMP_COLUM
-		, B.CODE_NAME AS UPPER_NAME
+		SELECT 
+			IFNULL(A.CODE_ID, "") AS CODE_ID
+		, IFNULL(A.CODE_NAME, "") AS CODE_NAME
+		, IFNULL(A.CODE_LEVEL, "") AS CODE_LEVEL
+		, IFNULL(A.UPPER_CODE, "") AS UPPER_CODE
+		, IFNULL(A.CODE_DC, "") AS CODE_DC
+		, IFNULL(A.REG_DATETIME, "") AS REG_DATETIME
+		, IFNULL(A.UPD_DATETIME, "") AS UPD_DATETIME
+		, IFNULL(A.REG_ID, "") AS REG_ID
+		, IFNULL(A.UPD_ID, "") AS UPD_ID
+		, IFNULL(A.NOTE, "") AS NOTE
+		, IFNULL(A.TEMP_COLUM, "") AS TEMP_COLUM
+		, IFNULL(B.CODE_NAME, "") AS UPPER_NAME
 		FROM TB_CODE AS A 
 			LEFT JOIN TB_CODE AS B
 		ON A.UPPER_CODE = B.CODE_ID

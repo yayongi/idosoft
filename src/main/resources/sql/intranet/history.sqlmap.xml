@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="history">
+	<!-- 프로젝트 등록 -->
+	<insert id="insert" parameterType="hashmap">
+		INSERT INTO TB_MEM_HIST 
+			(MEMBER_NO, PROJECT_NO, PROJECT_NM, INSTT_CODE, INSTT_NM, INPT_BGNDE, INPT_ENDDE,
+			ROLE_CODE, CHRG_JOB, USE_LANG, REG_DATETIME, UPD_DATETIME, REG_ID,
+			UPD_ID, NOTE, TEMP_COLUM)		
+		VALUES 
+			(#{member_no}, #{project_no}, #{project_nm}, #{instt_code}, #{instt_nm}, #{inpt_bgnde}, #{inpt_endde}, #{role_code}, #{chgr_job}, #{use_lang}
+			, DATE_FORMAT(NOW(),'%Y%m%d'), "", #{reg_id}, "", "", "")
+	</insert>
+	
+	<!-- 프로젝트 수정 -->
+	<update id="update" parameterType="hashmap">
+		UPDATE
+			TB_MEM_HIST
+		SET
+			MEMBER_NO = #{member_no}
+			, PROJECT_NO = #{project_no}
+			, PROJECT_NM = #{project_nm}
+			, INSTT_CODE = #{instt_code}
+			, INSTT_NM = #{instt_nm}
+			, INPT_BGNDE = #{inpt_bgnde}
+			, INPT_ENDDE = #{inpt_endde}
+			, ROLE_CODE = #{role_code}
+			, CHRG_JOB = #{chrg_job}
+			, USE_LANG = #{use_lang}
+			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
+			, UPD_ID = #{upd_id}
+		WHERE
+			MEM_HIST_NO = #{mem_hist_no}
+	</update>
+	
+	<!--  프로젝트 삭제 -->
+	<delete id="deleteInfo" parameterType="int">
+		DELETE FROM
+			TB_MEM_HIST
+		WHERE
+			MEM_HIST_NO = #{mem_hist_no}
+	</delete>
+	
+	<!-- 프로젝트 상세 조회  -->
+	<select id="selectInfo" resultType="hashmap" parameterType="int">
+		SELECT	
+			*
+		FROM 
+			TB_MEM_HIST
+		WHERE 
+			MEM_HIST_NO = #{mem_hist_no}
+	</select>
+	
+	<!-- 프로젝트 전체 리스트 -->
+	<select id="selectList" resultType="hashmap">
+		SELECT
+			A.MEM_HIST_NO
+			, A.MEMBER_NO
+			, A.PROJECT_NO
+			, A.PROJECT_NM
+			, A.INSTT_CODE
+			, A.INSTT_NM
+			, A.INPT_BGNDE
+			, A.INPT_ENDDE
+			, A.ROLE_CODE
+			, A.CHRG_JOB
+			, A.USE_LANG
+			, A.REG_DATETIME
+			, A.UPD_DATETIME
+			, A.REG_ID
+			, A.UPD_ID
+			, A.NOTE
+			, A.TEPM_COLUM
+			, B.NAME AS MEMBER_NAME
+			, C.CODE_NAME AS ROLE_NAME
+		FROM TB_MEM_HIST AS A
+			LEFT JOIN TB_MEMBER AS B ON TB_MEMBER.MEMBER_NO = A.MEMBER_NO
+			LEFT JOIN TB_CODE AS C ON TB_CODE.CODE_ID = A.ROLE_CODE
+		ORDER BY MEM_HIST_NO
+	</select>
+</mapper>

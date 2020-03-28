@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project">
+	<!-- 프로젝트 등록 -->
+	<insert id="insert" parameterType="hashmap">
+		INSERT INTO TB_PROJECT 
+			(PROJECT_NM, INSTT_CODE, BGNDE, ENDDE, PM, TRANSPORT_CT, REG_DATETIME,
+				UPD_DATETIME, REG_ID, UPD_ID, NOTE, TEMP_COLUM)		
+		VALUES 
+			(#{project_nm}, #{instt_code}, #{bgnde}, #{endde}, #{pm}, #{transport_ct}, DATE_FORMAT(NOW(),'%Y%m%d'),
+				"", #{reg_id}, "", "", "")
+	</insert>
+	
+	<!-- 프로젝트 수정 -->
+	<update id="update" parameterType="hashmap">
+		UPDATE
+			TB_PROJECT
+		SET
+			PROJECT_NM = #{project_nm}
+			, INSTT_CODE = #{instt_code}
+			, BGNDE = #{bgnde}
+			, ENDDE = #{endde}
+			, PM = #{pm}
+			, TRANSPORT_CT = #{transport_ct}
+			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
+			, UPD_ID = #{upd_id}
+		WHERE
+			PROJECT_NO = #{project_no}
+	</update>
+	
+	<!--  프로젝트 삭제 -->
+	<delete id="deleteInfo" parameterType="int">
+		DELETE FROM
+			TB_PROJECT
+		WHERE
+			PROJECT_NO = #{project_no}
+	</delete>
+	
+	<!-- 프로젝트 상세 조회  -->
+	<select id="selectInfo" resultType="hashMap" parameterType="int">
+		SELECT	
+			A.PRJECT_NO
+			, A.PROJECT_NM
+			, A.INSTT_CODE
+			, A.BGNDE
+			, A.ENDDE
+			, A.PM
+			, B.NAME AS PM_NAME
+			, A.TRANSPORT_CT
+			, A.REG_DATETIME
+			, A.UPD_DATETIME
+			, A.REG_ID
+			, A.UPD_ID
+			, C.CODE_NAME AS INSTT_NAME
+		FROM TB_PROJECT AS A
+			LEFT JOIN TB_MEMBER AS B ON TB_MEMBER.MEMBER_NO = A.PM
+			LEFT JOIN TB_CODE AS C ON TB_CODE.CODE_ID = A.INSTT_CODE
+		WHERE 
+			PROJECT_NO = #{project_no}
+	</select>
+	
+	<!-- 프로젝트 전체 리스트 -->
+	<select id="selectList" resultType="hashMap">
+		SELECT
+			PRJECT_NO
+			, PROJECT_NM
+			, INSTT_CODE
+			, BGNDE
+			, ENDDE
+			, PM
+			, TRANSPORT_CT
+			, REG_DATETIME
+			, UPD_DATETIME
+			, REG_ID
+			, UPD_ID
+			, NOTE
+			, TEMP_COLUM
+		FROM	TB_PROJECT
+		ORDER BY PROJECT_NO
+	</select>
+</mapper>

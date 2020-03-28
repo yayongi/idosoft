@@ -81,7 +81,7 @@ const useStyles = makeStyles({
 function nestedRendered(item) {
   if(item.subTrees) {
     return  (
-      <StyledTreeItem key={item.code_id} nodeId={item.code_id} label={item.code_name}>
+      <StyledTreeItem key={item.CODE_ID} nodeId={item.CODE_ID} label={item.CODE_NAME}>
         {
           item.subTrees.map((item) => (nestedRendered(item)))
         }
@@ -89,25 +89,109 @@ function nestedRendered(item) {
     )
   } else {
     return (
-      <StyledTreeItem key={item.code_id} nodeId={item.code_id} label={item.code_name} />
+      <StyledTreeItem key={item.CODE_ID} nodeId={item.CODE_ID} label={item.CODE_NAME} />
     )
+  }
+}
+
+//selected node id List
+function getSelectedNodeId(codeInfo, codeOriginInfo){
+  if(!codeInfo || !codeOriginInfo){
+    return [];
+  }
+
+  if(codeInfo.length == codeOriginInfo.length){
+    return [];
+  }
+
+  var selectedList = [];
+  for(var i=0; i < codeInfo.length; i++){
+    selectedList.push(codeInfo[i]["CODE_ID"]);
+  }
+  return selectedList;
+}
+
+
+//expanded node id list
+function getExpandedNodeId(codeInfo, codeOriginInfo){
+  var expandedNodeIdList = [""];
+  if(!codeInfo || !codeOriginInfo){
+    return expandedNodeIdList;
+  }
+
+  if(codeInfo.length == codeOriginInfo.length){
+    return expandedNodeIdList;
+  }
+
+  for(let i=0; i<codeInfo.length; i++) {
+    const codeInfoRow= codeInfo[i];
+    //expandedNodeIdList.push(codeInfoRow.CODE_ID);
+    if(codeInfoRow.CODE_LEVEL == "1"){
+      continue;
+    }else{
+      getUpperCodeList(codeInfoRow, codeOriginInfo, expandedNodeIdList);  // 상위코드 정보 추가
+    }
+
+  }
+
+  return expandedNodeIdList;
+} 
+
+/*
+  상위 코드 조회
+*/
+function getUpperCodeList(codeIdRow, originInfo, expandedNodeIdList) {
+  if(expandedNodeIdList.findIndex((item, index) => item == codeIdRow.UPPER_CODE) == -1){
+    expandedNodeIdList.push(codeIdRow.UPPER_CODE);
+    if(codeIdRow.CODE_LEVEL != "1"){
+      for(var i=0; i < originInfo.length; i++){
+        if(codeIdRow.UPPER_CODE == originInfo[i]["CODE_ID"]){
+          getUpperCodeList(originInfo[i], originInfo, expandedNodeIdList);
+        }
+      }
+    }
   }
 }
 
 export default function CodeTreeView(props) {
   const classes = useStyles();
-  const rebuildSortedData = props.rebuildSortedData;
+  const {codeOriginInfo, codeInfo, rebuildSortedData, updateSelectedNodeId} = props;
+  const [selectedNodeId, setSelected] = useState([]);
+  const [expandedNodeId, setExpanded] = useState([]);
+  console.log("codeTreeView codeInfo : ");
+  console.log(codeInfo);
+
+  console.log("codeTreeView expandedNodeId : ");
+  console.log(expandedNodeId);
+
+  useEffect(() => {
+    setSelected(getSelectedNodeId(codeInfo, codeOriginInfo));
+    setExpanded(getExpandedNodeId(codeInfo, codeOriginInfo));
+  }, ["", codeInfo])
+
+  const handleNodeSelect = (event, nodeid) => {
+    setSelected(nodeid);
+    updateSelectedNodeId(nodeid);
+  }
+
+  const handleNodeToggle = (event, nodeid) => {
+    setExpanded(nodeid);
+  }
+
 
   return (
     <TreeView
         className={classes.root}
-        defaultExpanded={['']}
         defaultCollapseIcon={<MinusSquare />}
         defaultExpandIcon={<PlusSquare />}
         defaultEndIcon={<CloseSquare />}
+        selected={selectedNodeId}
+        expanded={expandedNodeId}
+        onNodeToggle={(event, nodeid) => (handleNodeToggle(event, nodeid))}
+        onNodeSelect={(event, nodeid) => (handleNodeSelect(event, nodeid))}
       >
         {
-          rebuildSortedData.map((item) => (nestedRendered(item)))
+          rebuildSortedData && rebuildSortedData.map((item) => (nestedRendered(item)))
         }
     </TreeView>
   )

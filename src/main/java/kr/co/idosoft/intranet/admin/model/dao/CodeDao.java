@@ -10,8 +10,9 @@ import java.util.Map;
  * @content Code DAO
  */
 public interface CodeDao {
-	
-	
+	void insert(Map<String, Object> insert);
+	void update(Map<String, Object> update);
+	void deleteInfo(int code_id);
 	List<Map<String, Object>> getlist();
 	int getlistCount();
 }
