@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	fixedHeight: {
 		height: 240,
-	},
+	}
 }));
 
 function Copyright() {

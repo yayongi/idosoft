@@ -63,4 +63,9 @@ public class MemberDaoImpl implements MemberDao {
 	public List<String> getMarriageDate(String date) {
 		return sqlTemplate.selectList("getMarriageDate", date);
 	}
+
+	@Override
+	public int checkemail(String email) {
+		return sqlTemplate.selectOne("checkemail", email);
+	}
 }

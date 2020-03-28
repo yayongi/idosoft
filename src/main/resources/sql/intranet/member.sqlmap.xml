@@ -9,8 +9,9 @@
 	<select id="selectMemberList" resultMap="MemberVO">
 		SELECT 
 			*,
-			B.CODE_NAME 
+			B.CODE_NAME
 		FROM TB_MEMBER A
+		
 		INNER JOIN TB_CODE B
 		WHERE A.POSITION = B.CODE_ID
 	</select>
@@ -97,7 +98,6 @@
 	<update id="updateMemberInfo" parameterMap="MemberVO">
 		UPDATE TB_MEMBER 
 		SET 
-			MEMBER_NO = #{member_no},                      
 			EMAIL = #{email},
 			NAME = #{name},
 			POSITION = #{position},
@@ -159,5 +159,13 @@
 			NAME
 		FROM TB_MEMBER
 			WHERE MARRIAGE_DATE =#{solarDate} 
+	</select>
+	
+	<!-- 이메일 중복 검사 -->
+	<select id="checkemail" parameterType="String" resultType="Integer">
+		SELECT 
+			COUNT(*)
+		FROM TB_MEMBER
+			WHERE EMAIL = #{email} 
 	</select>
 </mapper>

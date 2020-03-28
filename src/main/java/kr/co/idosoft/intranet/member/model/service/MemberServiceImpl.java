@@ -62,6 +62,11 @@ public class MemberServiceImpl implements MemberService {
 	public List<String> getMarriageDate(String date) {
 		return memberDao.getMarriageDate(date);
 	}
+
+	@Override
+	public int checkemail(String email) {
+		return memberDao.checkemail(email);
+	}
 	
 
 }

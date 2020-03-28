@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.co.idosoft.common.util.SHAPasswordEncoder;
+import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.member.model.service.MemberService;
 import kr.co.idosoft.intranet.member.vo.MemberVO;
 
@@ -32,9 +34,12 @@ public class MemberController {
 	// 사원리스트 불러오기
 	@RequestMapping(value="/member/memberlist", method=RequestMethod.POST)
 	@ResponseBody
-	public List<Object> getMemberList(Model model, HttpServletRequest request){
+	public HashMap<String, Object> getMemberList(Model model, HttpServletRequest request,HttpSession session){
 		try {
-			return memberService.selectMemberList();
+			HashMap<String, Object> tempMap = new HashMap<String, Object>();
+			tempMap.put("memberData", memberService.selectMemberList());
+			tempMap.put("isAdmin", commonUtil.isAdmin(session));
+			return tempMap;
 		}catch(Exception e) {
 			e.printStackTrace();
 			return null;
@@ -145,4 +150,16 @@ public class MemberController {
 			return null;
 		}
 	}
+	
+	//중복 이메일 중복 확인
+		@RequestMapping(value="/member/checkemail", method=RequestMethod.POST)
+		@ResponseBody
+		public int checkemail(Model model, @RequestBody MemberVO memberVo, HttpServletRequest request){
+			try {
+				return memberService.checkemail(memberVo.getEmail());
+			}catch(Exception e) {
+				e.printStackTrace();
+				return 100;
+			}
+		}
 }
