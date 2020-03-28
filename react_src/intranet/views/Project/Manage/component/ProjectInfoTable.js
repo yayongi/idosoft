@@ -51,15 +51,6 @@ function ProjectInfo(props) {
   }
 
   const handleClickDetailView = (event, row) => {
-    console.log("call handleClickDetailView");
-
-    var url = "/project/manage/view";
-    var queryString = jsonToQuery(row);
-
-    //console.log("url : " + url);
-    //console.log("queryString : " + queryString);
-
-    routeProps.history.push(url + queryString);
   };
 
   return (

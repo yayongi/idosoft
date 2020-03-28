@@ -18,49 +18,16 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 
+import { LoadingBar } from '../../../Admin/component/utils';
+
+import axios from 'axios';
+
 import {
   MuiPickersUtilsProvider,
   DatePicker,
 } from '@material-ui/pickers';
 
 import { Link as RouterLink } from 'react-router-dom';
-import { getSiteInfoDB, getMemberInfoDB, getProjMemberInfoDB  } from '../../data';
-
-function initData(location) {
-	console.log("initData");
-
-	var urlSplitList = location.pathname.split("/");
-	var currentLastPath = urlSplitList[urlSplitList.length - 1];
-
-	var data = {};
-	data["screenType"] = currentLastPath == "new" ? "new" : "modify";
-	data["project_nm"] = "";
-	data["instt_code"] = "";
-	data["insttList"] = getSiteInfoDB();
-	data["bgnde"] = Moment(new Date()).format('YYYY-MM-DD');
-	data["endde"] = Moment((new Date()).setFullYear(new Date().getFullYear() + 1)).format('YYYY-MM-DD');
-	data["transport_ct"] = "";
-	data["pm"] = "";
-	data["memberList"] = getMemberInfoDB();
-
-
-	var query = location.search;
-	if (query) {
-		query.replace("?", "").split("&").map((param => {
-			var kValue = param.split("=")[0];
-			var vValue = decodeURIComponent(param.split("=")[1]);
-			return data[kValue] = vValue;
-		}));
-	}
-	return data;
-}
-
-function jsonToQuery(obj) {
-	return ('?' +
-		Object.keys(obj).map(function (key) {
-			return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
-		}).join('&'));
-}
 
 
 const useStyles = makeStyles(theme => ({
@@ -103,19 +70,31 @@ const useStyles = makeStyles(theme => ({
 	전역 변수는 호출 안됨.
 */
 export default function ProjectInfoForm(props) {
-	console.log("call ProjectInfoForm Area");
-
 	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
-	const { match, location, history } = props.routeProps.routeProps;
-	const [dataState, setDataState] = React.useState(initData(location));	// state : 수정을 위한 데이터 관리
+	const { location, history } = props.routeProps.routeProps;
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true, []);    //loading bar
+	const [dataState, setDataState] = React.useState([]);	// state : 수정을 위한 데이터 관리
+	const [instt_list, setInstt] = React.useState([], []);
+	const [member_list, setMember] = React.useState([], []);
 	const classes = useStyles();
+
+	useEffect(() => {
+		axios({
+			url: '/intranet/projectInfo',
+			method: 'post',
+			data: {"code_id":""}
+		}).then(response => {
+			console.log("response : ");
+			console.log(response);
+			setShowLoadingBar(false);
+		}).catch(e => {
+			console.log(e);
+			setShowLoadingBar(false);
+		});
+	}, []);
 
 	// 필드 값 변경 시, 임시로 값 저장
 	const handleChange = event => {
-		/** 임시 Code*/
-		console.log(event.target.value);
-		/** 임시 Code*/
-
 		if(event.target.name == 'transport_ct') {	// 결제금액 특수문자 제거
 			event.target.value = event.target.value.replace(/[^0-9]/g, '');
 		}
@@ -140,130 +119,20 @@ export default function ProjectInfoForm(props) {
 	}
 
 	const handleClickAddProject = () => {
-		//project data
-		var projectData = JSON.parse(localStorage.getItem("resProjData"));
-		var project_no  = projectData.length+1;
-		var project_nm  = dataState.project_nm;
-		var instt_code  = dataState.instt_code;
-		var bgnde  = dataState.bgnde;
-		var endde  = dataState.endde;
-		var pm  = dataState.pm;
-		var transport_ct  = dataState.transport_ct;
-		var reg_datetime  = "20200321";
-		var upd_datetime  = "";
-		var reg_id  = dataState.pm;
-		var upd_id  = "";
-		var note  = "";
-		var temp_colum  = "";
-
-		projectData.push(
-			{
-				"project_no" :  project_no,
-				"project_nm" : project_nm,
-				"instt_code" : instt_code,
-				"bgnde" : bgnde.replace(/[^0-9]/g, ''),
-				"endde" : endde.replace(/[^0-9]/g, ''),
-				"pm" : pm,
-				"transport_ct" : transport_ct,
-				"reg_datetime" : reg_datetime.replace(/[^0-9]/g, ''),
-				"upd_datetime" : upd_datetime.replace(/[^0-9]/g, ''),
-				"reg_id" : reg_id,
-				"upd_id" : upd_id,
-				"note" : note,
-				"temp_colum" : temp_colum
-			}
-		)
-
-		projectData.sort((a, b) => {
-			return parseInt(b.bgnde) - parseInt(a.bgnde);
-		});
-		localStorage.setItem('resProjData', JSON.stringify(projectData));
-
-
-		//history
-		var histData = getProjMemberInfoDB();
-		var member_no  = pm;
-		var project_no  = project_no;
-		var inpt_bgnde  = dataState.bgnde;
-		var inpt_endde  = dataState.endde;
-		var role_code   = "RL0000";
-		var chrg_job	= "pm";
-		var reg_datetime  = "20200321";
-		var upd_datetime  = "";
-		var reg_id  = dataState.pm;
-		var upd_id  = "";
-		var note  = "";
-		var temp_colum  = "";
-
-		histData.push(
-			{
-				"member_no" :  member_no,
-				"project_no" : project_no,
-				"inpt_bgnde" : inpt_bgnde.replace(/[^0-9]/g, ''),
-				"inpt_endde" : inpt_endde.replace(/[^0-9]/g, ''),
-				"role_code" : role_code,
-				"chrg_job" : chrg_job,
-				"reg_datetime" : reg_datetime,
-				"upd_datetime" : upd_datetime,
-				"reg_id" : reg_id,
-				"upd_id" : upd_id,
-				"note" : note,
-				"temp_colum" : temp_colum
-			}
-		)
-		localStorage.setItem('resProjMem', JSON.stringify(histData));
-
 		alert("등록 되었습니다.");
 		history.goBack();
 	}
 
 	const handleClickRemoveProject = () => {
-		var resProjData = JSON.parse(localStorage.getItem("resProjData"));
-
-		var idx = -1;
-		resProjData.filter((projData, index) => {
-			if(projData.project_no == dataState.project_no){
-				idx = index;
-				return projData;
-			}
-		});
-
-		if(idx > -1){
-			resProjData.splice(idx, 1);
-			localStorage.setItem("resProjData", JSON.stringify(resProjData));
-			alert("삭제되었습니다.");
-		}else{
-			alert("삭제 중 오류가 발생했습니다.");
-		}
 		history.goBack();
 	}
 
 	const handleClickUpdateProject = () => {
-		console.log("handleClickModifyCode");
-		var resProjData = JSON.parse(localStorage.getItem("resProjData"));
-		var idx = -1;
-		resProjData.filter((projData, index) => {
-			if(projData.project_no == dataState.project_no){
-				idx = index;
-				return resProjData;
-			}
-		});
-
-		resProjData[idx]["project_nm"] 	= dataState.project_nm;
-		resProjData[idx]["instt_code"] 	= dataState.instt_code;
-		resProjData[idx]["bgnde"] 	= dataState.bgnde.replace(/[^0-9]/g, '');
-		resProjData[idx]["endde"] 	= dataState.endde.replace(/[^0-9]/g, '');
-		resProjData[idx]["transport_ct"] 	= dataState.transport_ct.replace(/[^0-9]/g, '');
-		resProjData[idx]["pm"] 	= dataState.pm;
-		localStorage.setItem("resProjData", JSON.stringify(resProjData));
-		
 		alert("수정되었습니다.");
 		history.goBack();
 	}
 
 	const handleClickProjectMemberAdd = (dataState) => {
-		console.log("handleClickProjectMemberAdd");
-		console.log(dataState);
 	}
 
 	const handleClickCancle = () => {
@@ -272,6 +141,7 @@ export default function ProjectInfoForm(props) {
 
 	return (
 			<>
+			<LoadingBar openLoading={isShowLoadingBar}/>
 			<div className={classes.root}>
 				<TableContainer component={Paper}>
 					<Table aria-label="simple table">
@@ -280,44 +150,15 @@ export default function ProjectInfoForm(props) {
 								<TableCell align="left" colSpan="2">
 									<Toolbar>
 										<Typography className={classes.title} color="inherit" variant="h6">
-											{dataState.screenType == "new" ? "프로젝트 등록" : "프로젝트 수정"}
+											프로젝트 등록
 										</Typography>
 										<div>
 											<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickCancle}>
 												취소
 											</Button>
-											{
-												dataState.screenType == "new" &&
-												(
-													<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickAddProject}>
-														등록
-													</Button>
-												)
-											}
-											{
-												dataState.screenType == "modify" &&
-												(
-													<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickUpdateProject}>
-														수정
-													</Button>
-												)
-											}
-											{
-												dataState.screenType == "modify" &&
-												(
-													<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickRemoveProject}>
-														삭제
-													</Button>
-												)
-											}
-											{
-												dataState.screenType == "modify" &&
-												(
-													<Button variant="contained" color="primary" size="small" className={classes.button} onClick={() => handleClickProjectMemberAdd(dataState)}>
-														투입인원추가
-													</Button>
-												)
-											}
+											<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickAddProject}>
+												등록
+											</Button>
 										</div>
 									</Toolbar>
 								</TableCell>
@@ -351,11 +192,6 @@ export default function ProjectInfoForm(props) {
 										value={dataState.instt_code}
 										fullWidth
 										select>
-										{dataState.insttList.map((tmp) => (
-											<MenuItem key={tmp.instt_code} value={tmp.instt_code} name={tmp.instt_name}>
-												{tmp.instt_name}
-											</MenuItem>
-										))}
 									</TextField>
 								</TableCell>
 							</TableRow>
@@ -372,7 +208,7 @@ export default function ProjectInfoForm(props) {
 												views={["year", "month", "date"]}
 												format="yyyy-MM-dd"
 												minDate={new Date()}
-												value={new Date(Number(dataState.bgnde.slice(0, 4)), Number(dataState.bgnde.slice(5, 7)) - 1, Number(dataState.bgnde.slice(8, 10)))}
+												value={new Date()}
 												onChange={handleChangeBgnDate}
 												inputVariant="outlined"
 												readOnly={false}
@@ -396,7 +232,7 @@ export default function ProjectInfoForm(props) {
 												views={["year", "month", "date"]}
 												format="yyyy-MM-dd"
 												maxDate={dataState.endde}
-												value={new Date(Number(dataState.endde.slice(0, 4)), Number(dataState.endde.slice(5, 7)) - 1, Number(dataState.endde.slice(8, 10)))}
+												value={new Date()}
 												onChange={handleChangeEndDate}
 												inputVariant="outlined"
 												readOnly={false}
@@ -434,11 +270,6 @@ export default function ProjectInfoForm(props) {
 										value={dataState.pm}
 										fullWidth
 										select>
-										{dataState.memberList.map((mem) => (
-											<MenuItem key={mem.member_id} value={mem.member_id}>
-												{mem.member_name + " " + mem.rank}
-											</MenuItem>
-										))}
 									</TextField>
 								</TableCell>
 							</TableRow>

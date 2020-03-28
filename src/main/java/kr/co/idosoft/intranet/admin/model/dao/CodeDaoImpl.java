@@ -33,18 +33,24 @@ public class CodeDaoImpl implements CodeDao {
 	@Override
 	public void insert(Map<String, Object> insert) {
 		// TODO Auto-generated method stub
-		
+		sqlTemplate.insert("admin.insert", insert);
 	}
 
 	@Override
 	public void update(Map<String, Object> update) {
 		// TODO Auto-generated method stub
-		
+		sqlTemplate.update("admin.update", update);
 	}
 
 	@Override
-	public void deleteInfo(int code_id) {
+	public void deleteInfo(String code_id) {
 		// TODO Auto-generated method stub
-		
+		sqlTemplate.delete("admin.deleteInfo", code_id);
+	}
+
+	@Override
+	public List<Map<String, Object>> getLowCodeList(String code_id) {
+		// TODO Auto-generated method stub
+		return (ArrayList)sqlTemplate.selectList("admin.getLowCodeList", code_id);
 	}
 }

@@ -12,8 +12,9 @@ import java.util.Map;
 public interface CodeDao {
 	void insert(Map<String, Object> insert);
 	void update(Map<String, Object> update);
-	void deleteInfo(int code_id);
+	void deleteInfo(String code_id);
 	List<Map<String, Object>> getlist();
 	int getlistCount();
+	List<Map<String, Object>> getLowCodeList(String code_id);
 }
 

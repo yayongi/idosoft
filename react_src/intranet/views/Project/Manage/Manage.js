@@ -6,68 +6,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import ProjectSearchDiv from './component/ProjectSearchDiv';
 import ProjectInfoTable from './component/ProjectInfoTable';
 import ProjectGraph from './component/ProjectGraph';
+import { LoadingBar } from '../../Admin/component/utils';
 
-/*
-    개발 소스 db 연결 시 변경 및 수정 필요
-*/
-  function getProjectData(){
-    if(!localStorage.getItem("resProjData")){
-      const sortedProjInfo = getProjectInfoDB();
-      sortedProjInfo.sort((a, b) => {
-        return parseInt(b.bgnde) - parseInt(a.bgnde);
-    });
-
-    localStorage.setItem('resProjData', JSON.stringify(sortedProjInfo));
-      return sortedProjInfo;
-    }
-    return JSON.parse(localStorage.getItem("resProjData"));
-  }
-
-  function makeProjectInfo(){
-    var mainProjectInfo = getProjectData();
-    var memberInfo = getMemberInfoDB();
-    var siteInfo = getSiteInfoDB();
-    var projectInfo = [];
-
-    for(var i=0; i < mainProjectInfo.length; i++){
-      var tempJSON = mainProjectInfo[i];
-      var instt_code = mainProjectInfo[i]["instt_code"];
-      var member_id  = mainProjectInfo[i]["pm"];
-      var site_name = siteInfo.filter((info) => {
-        return info.instt_code == instt_code;
-      });
-
-      if(site_name.length > 0){
-        site_name = site_name[0]["instt_name"];
-      }
-
-      var pm_name = memberInfo.filter((info) => {
-        return info.member_id == member_id;
-      });
-
-      if(pm_name.length > 0){
-        pm_name = pm_name[0]["member_name"];
-      }
-
-
-      tempJSON["instt_name"]  = site_name;
-      tempJSON["pm_name"] = pm_name;
-      tempJSON["year"] = mainProjectInfo[i]["bgnde"].slice(0, 4) + " 년";
-      tempJSON["term"] = mainProjectInfo[i]["bgnde"] + " ~ " + mainProjectInfo[i]["endde"];
-      tempJSON["printMoney"] = (parseInt(mainProjectInfo[i]["transport_ct"])).toLocaleString() + " 원"; 
-      projectInfo.push(tempJSON);
-    }
-
-    return projectInfo;
-
-
-  }
-
-/*
-    개발 소스 db 연결 시 변경 및 수정 필요
-*/
-
-
+import axios from 'axios';
 
 const mainStyles = makeStyles(theme => ({
   paper: {
@@ -89,14 +30,29 @@ export default function ManageView(props) {
   console.log("ManageView");
   console.log(props);
   const classes = mainStyles();
-
-  const [projectOriginInfo, setProjectOriginInfo] = useState(makeProjectInfo());
-  const [projectInfo, setProjectInfo] = useState(projectOriginInfo);
+  const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
+  const [projectOriginInfo, setProjectOriginInfo] = useState([]);
+  const [projectInfo, setProjectInfo] = useState([]);
   const [condition, setCondition] = useState({
     searchType: 		[],
     searchDetailType:  "",
     searchDetailTypes: []
   });
+
+  useEffect(() => {
+    axios({
+      url: '/intranet/allProject',
+      method: 'post',
+      data: {}
+    }).then(response => {
+      setProjectOriginInfo(JSON.parse(response.data.list));
+      setProjectInfo(JSON.parse(response.data.list));
+      setShowLoadingBar(false);
+    }).catch(e => {
+      console.log(e);
+      setShowLoadingBar(false);
+    });
+  }, []);
 
 
   const updateCondition = (conditions) => {
@@ -126,11 +82,12 @@ export default function ManageView(props) {
 
   return (
     <>
+      <LoadingBar openLoading={isShowLoadingBar}/>
       <ProjectSearchDiv  condition={condition} updateCondition={updateCondition}/>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Paper className={classes.paper}>
-            <ProjectGraph projectInfo={projectInfo} />
+            {/* <ProjectGraph projectInfo={projectInfo} /> */}
           </Paper>
         </Grid>
         <Grid item xs={12}>

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,10 +35,44 @@ public class CodeController {
 	@RequestMapping(value="/allCode",method=RequestMethod.POST)
 	@ResponseBody
 	public ModelAndView allCode(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		LOG.debug("allCode Start");
 		
-		if(LOG.isDebugEnabled()) {
-			LOG.debug("/resister.exp");
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		List<Map<String, Object>> list = codeService.getlist();
+		int listCount = codeService.getlistCount();
+		
+		String jsonArrayList 	= null;
+		String jsonObjectData 	= null;
+		
+		try {
+			jsonArrayList = JsonUtils.getJsonStringFromList(list); 	// JSONARRAY 변환
+			//jsonObjectData = mapper.writeValueAsString(data); 		// JSONOBJECT 변환
+		} catch (Exception e) {
+			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
 		}
+		
+		
+		mv.addObject("list", jsonArrayList);
+		mv.addObject("list_count", listCount);
+		LOG.debug("JSON OBJECT 변환 실패 : " + list);
+		mv.addObject("result", jsonObjectData);
+		return mv;
+	}
+	
+	@RequestMapping(value="/addNewCode",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView addNewCode(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		LOG.debug("addNewCode Start");
+		for (String key : params.keySet()) {
+	        LOG.debug("key : " + key);
+	        LOG.debug("value : " + params.get(key));
+	    }
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -47,38 +82,26 @@ public class CodeController {
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
 		
 		// 검색 조건 제외하고 개발중..
-		Map<String, Object> data = new HashMap<>();
+		
+		String jsonArrayList 	= null;
+		String jsonObjectData 	= null;
 		
 		HttpSession session = request.getSession();
 		
 		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
 		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		params.put("REG_ID", mno);		//등록자 사번 추가
 		
-		// 세션 VO에 세션 값 저장
-		String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
-
-		data.put("MEMBER_NO", mno);		// 사원번호
-		data.put("isAdmin", isAdmin);	// 관리자 여부
-		
-		List<Map<String, Object>> list = codeService.getlist();
-		int listCount = codeService.getlistCount();
-		
-		String jsonArrayList 	= null;
-		String jsonObjectData 	= null;
-		
-		ObjectMapper mapper = new ObjectMapper();
+		boolean result = true;
 		try {
-			jsonArrayList = JsonUtils.getJsonStringFromList(list); 	// JSONARRAY 변환
-			jsonObjectData = mapper.writeValueAsString(data); 		// JSONOBJECT 변환
-		} catch (JsonProcessingException e) {
-			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
+			codeService.insert(params);
+		}catch(Exception e) {
+			result = false;
 		}
 		
-		
-		mv.addObject("list", jsonArrayList);
-		LOG.debug("JSON OBJECT 변환 실패 : " + list);
+		mv.addObject("isSuccess", result);
 		mv.addObject("result", jsonObjectData);
-		mv.addObject("listCount", listCount);
+		
 		return mv;
 	}
 	

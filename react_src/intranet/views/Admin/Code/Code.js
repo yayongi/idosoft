@@ -170,7 +170,6 @@ export default function CodeView(props) {
       default:
         searchedInfo = codeOriginInfo;
         break;
-      
     }
     setCondition(conditions);
     setCodeInfo(searchedInfo);
@@ -205,7 +204,7 @@ export default function CodeView(props) {
         <Grid item xs={6} sm={6}>
           <Paper className={classes.paper}>
             {isShowTotalInfoTable && <CodeInfoTable codeInfo={codeInfo} rebuildSortedData={rebuildSortedData} routeProps={props.routeProps}/>}
-            {!isShowTotalInfoTable && <CodeInfo detailCodeInfo={detailCodeInfo}></CodeInfo>}
+            {!isShowTotalInfoTable && <CodeInfo detailCodeInfo={detailCodeInfo}  setShowTotalInfoTable={setShowTotalInfoTable}></CodeInfo>}
           </Paper>
         </Grid>
       </Grid>

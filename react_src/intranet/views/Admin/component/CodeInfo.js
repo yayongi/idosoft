@@ -13,6 +13,10 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { Link as RouterLink } from 'react-router-dom';
 
+import { LoadingBar } from '../../Admin/component/utils';
+
+import axios from 'axios';
+
 const useStyles = makeStyles(theme => ({
 	table: {
 		minWidth: 650,
@@ -55,16 +59,57 @@ const useStyles = makeStyles(theme => ({
 export default function CodeInfo(props) {
 	console.log("call CodeInfo Area");
 	const classes = useStyles();
-
-	const {detailCodeInfo} = props;
-	const { screenType } = detailCodeInfo.length > 0 ? "modify" : "new";
+	const {setShowTotalInfoTable} = props;
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false, []);    //loading bar
+	const [dataState, setDataState] = React.useState(
+		{
+			UPPER_CODE:"",
+			UPPER_NAME:"",
+			CODE_ID:"",
+			CODE_NAME:"",
+			CODE_DC:""
+		}
+	);	// state : 수정을 위한 데이터 관리
 
 	//하위코드 등록 시 화면이 그려진 후 dataState(등록할 코드의 상위 코드 정보)를 한번 더 변경시켜준다.
 	useEffect(() => {
 		
 	});
 
+	const validationCheck = () => {
+		return false;
+	}
+
+	// 필드 값 변경 시, 임시로 값 저장
+	const handleChange = event => {
+		setDataState({
+			...dataState,
+			[event.target.name]: event.target.value
+		});
+	};
+
 	const handleClickAddCode = () => {
+		setShowLoadingBar(true);
+		if(validationCheck()){
+			return;	
+		}
+
+		var sendData = dataState;
+		var upper_code = sendData.UPPER_CODE;
+		if(!upper_code){
+			sendData["CODE_LEVEL"] = 1;
+		}
+		axios({
+			url: '/intranet/addNewCode',
+			method: 'post',
+			data: sendData
+		}).then(response => {
+			console.log(response);
+			setShowLoadingBar(false);
+		}).catch(e => {
+			console.log(e);
+			setShowLoadingBar(false);
+		});
 	};
 
 	const handleClickModifyCode = () => {
@@ -78,6 +123,7 @@ export default function CodeInfo(props) {
 
 	return (
 		<>
+			<LoadingBar openLoading={isShowLoadingBar}/>
 			<div className={classes.root}>
 			</div>
 			<TableContainer component={Paper}>
@@ -87,10 +133,12 @@ export default function CodeInfo(props) {
 							<TableCell align="left" component="th" scope="row" style={{width: '120px'}}>상위코드 ID</TableCell>
 							<TableCell align="left">
 								<TextField
-									id="upper_code"
-									name="upper_code"
+									id="UPPER_CODE"
+									name="UPPER_CODE"
 									margin="dense"
 									variant="outlined"
+									value={dataState.UPPER_CODE}
+									onChange={handleChange}
 									InputProps={{
 									 	 readOnly: true,
 									}}
@@ -106,10 +154,12 @@ export default function CodeInfo(props) {
 							<TableCell align="left" component="th" scope="row">상위코드 명</TableCell>
 							<TableCell align="left">
 								<TextField
-									id="upper_name"
-									name="upper_name"
+									id="UPPER_NAME"
+									name="UPPER_NAME"
 									margin="dense"
 									variant="outlined"
+									value={dataState.UPPER_NAME}
+									onChange={handleChange}
 									InputProps={{
 									 	readOnly: true,
 									}}
@@ -124,10 +174,12 @@ export default function CodeInfo(props) {
 							<TableCell align="left" component="th" scope="row">코드ID</TableCell>
 							<TableCell align="left">
 								<TextField
-									id="code_id"
-									name="code_id"
+									id="CODE_ID"
+									name="CODE_ID"
 									margin="dense"
 									variant="outlined"
+									value={dataState.CODE_ID}
+									onChange={handleChange}
 									fullWidth
 								/>
 							</TableCell>
@@ -136,10 +188,12 @@ export default function CodeInfo(props) {
 							<TableCell align="left" component="th" scope="row">코드명</TableCell>
 							<TableCell align="left" >
 								<TextField
-									id="code_name"
-									name="code_name"
+									id="CODE_NAME"
+									name="CODE_NAME"
 									margin="dense"
 									variant="outlined"
+									value={dataState.CODE_NAME}
+									onChange={handleChange}
 									fullWidth
 								/>
 							</TableCell>
@@ -148,10 +202,12 @@ export default function CodeInfo(props) {
 							<TableCell align="left" component="th" scope="row">코드 설명</TableCell>
 							<TableCell align="left">
 								<TextField
-									id="code_dc"
-									name="code_dc"
+									id="CODE_DC"
+									name="CODE_DC"
 									rows="5"
 									variant="outlined"
+									value={dataState.CODE_DC}
+									onChange={handleChange}
 									multiline
 									fullWidth
 								/>
@@ -161,11 +217,11 @@ export default function CodeInfo(props) {
 				</Table>
 			</TableContainer>
 			<Toolbar>
-				<Typography className={classes.title} color="secondary" variant="subtitle2">					
+				<Typography className={classes.title} color="secondary" variant="subtitle2">
 				</Typography>
 				<div>
 					<RouterLink button="true" to="/admin/code">
-						<Button variant="contained" color="primary" size="small"  className={classes.button}>
+						<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => (setShowTotalInfoTable(true))}>
 							목록
 						</Button>
 					</RouterLink>
@@ -173,20 +229,6 @@ export default function CodeInfo(props) {
 						(
 							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickAddCode}>
 								추가
-							</Button>
-						)
-					}
-					{ screenType == "modify" && 
-						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickModifyCode}>
-								수정
-							</Button>
-						)
-					}
-					{screenType == "modify" &&
-						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickRemoveCode}>
-								삭제
 							</Button>
 						)
 					}

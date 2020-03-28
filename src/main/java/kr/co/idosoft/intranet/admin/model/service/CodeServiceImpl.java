@@ -29,7 +29,7 @@ public class CodeServiceImpl implements CodeService {
 
 
 	@Override
-	public void deleteInfo(int code_id) {
+	public void deleteInfo(String code_id) {
 		// TODO Auto-generated method stub
 		dao.deleteInfo(code_id);
 	}
@@ -43,5 +43,12 @@ public class CodeServiceImpl implements CodeService {
 	@Override
 	public int getlistCount() {
 		return dao.getlistCount();
+	}
+
+
+	@Override
+	public List<Map<String, Object>> getLowCodeList(String code_id) {
+		// TODO Auto-generated method stub
+		return dao.getLowCodeList(code_id);
 	}
 }
