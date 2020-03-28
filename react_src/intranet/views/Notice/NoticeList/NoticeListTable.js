@@ -20,14 +20,13 @@ import ContentModal from '../component/ContentModal';
 
 import Moment from "moment"
 
-function createData(noticeNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder) {
-    return { noticeNo, ResType, ModelName, Production, ProductYm, PurchaseYm, DisplaySize, SerialNo, MacAddr, Holder };
-}
+import axios from 'axios';
+
 const headCells = [
-  { id: 'noticeNo', label: '번호' },
+  { id: 'board_no', label: '번호' },
   { id: 'title', label: '제목' },
-  { id: 'regDatetime', label: '작성일' },
-  { id: 'regId', label: '작성자' },
+  { id: 'reg_datetime', label: '작성일' },
+  { id: 'writer', label: '작성자' },
 ];
 
 const useStyles = makeStyles(theme => ({
@@ -57,12 +56,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function NoticeListTable({resData, selectedNoticeNo, setNoticeData}) {
+export default function NoticeListTable({noticeData, selectedNoticeNo, setNoticeData}) {
   const classes = useStyles();
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [rows, setRows] = React.useState(resData);
+  const [rows, setRows] = React.useState(noticeData);
 
   const [deleteRow, setDeleteRow] = React.useState(0);
   const [confirm, setConfirm] = React.useState({});
@@ -75,9 +74,9 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
 
   useEffect(()=>{
     // console.log(resData);
-    setRows(resData);
+    setRows(noticeData);
     setSelected([]);
-  },[resData]);
+  },[noticeData]);
 
   useEffect(()=>{
     localStorage.removeItem('noticeEditIndex');
@@ -85,7 +84,7 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
 
   const handleSelectAllClick = event => {
     if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.noticeNo);
+      const newSelecteds = rows.map(n => n.board_no);
       setSelected(newSelecteds);
       return;
     }
@@ -122,17 +121,8 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
   };
 
   //개별 삭제 handler
-  const handleDeleteClick = (noticeNo) => {
-    // const index = rows.findIndex(res => res.noticeNo === noticeNo);
-    // const newRows = [...rows];
-
-    // if(index !== undefined){
-    //   newRows.splice(index, 1);
-    //   localStorage.setItem('noticeTestData', JSON.stringify(newRows));
-    // }
-    // setRows(newRows);
-
-    setDeleteRow(noticeNo);
+  const handleDeleteClick = (board_no) => {
+    setDeleteRow(board_no);
     handleOpenConfirm('공지사항', '선택항목을 삭제하시겠습니까?', true);
   }
   // confirm Open Handler
@@ -148,25 +138,39 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
   //localStorage resData  삭제 처리
 	const noticeDelete = (result) => {
 		if(result){
-			const noticeData = JSON.parse(localStorage.noticeTestData);
-			const upStreamData = noticeData.filter((row) => {
-				return !(row.noticeNo === deleteRow);
+      axios({
+				url: '/intranet/notice/delete',
+				method : 'post',
+				headers: {
+					'Content-Type': 'application/json;charset=UTF-8'
+        },
+        data:{
+          board_no : deleteRow
+        },
+				}).then(response => {
+					console.log(response);
+					console.log(JSON.stringify(response));
+				}).catch(e => {
+					console.log(e);
 			});
-			localStorage.setItem('noticeTestData',JSON.stringify(upStreamData));
+
+			const upStreamData = noticeData.filter((row) => {
+				return !(row.board_no === deleteRow);
+			});
 			setNoticeData(upStreamData);
 		}
 		return setDeleteRow(0);
 	}
 
 
-  const handleEditClick = (noticeNo) => {
-    localStorage.setItem('noticeEditIndex', noticeNo);
+  const handleEditClick = (board_no) => {
+    localStorage.setItem('noticeEditIndex', board_no);
   }
 
-  const isSelected = noticeNo => selected.indexOf(noticeNo) !== -1;
+  const isSelected = board_no => selected.indexOf(board_no) !== -1;
 
-   const openContentModal = (Title, Content, regId, regDatetime) => {
-      return setOpenModal({title:Title, content:Content, regId:regId, regDatetime:regDatetime, openModal:true});
+   const openContentModal = (title, Content, writer, reg_datetime) => {
+      return setOpenModal({title:title, content:Content, writer:writer, reg_datetime:reg_datetime, openModal:true});
   }
 
 
@@ -231,7 +235,7 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
             <TableBody>
               { rows.length!==0 &&rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.noticeNo);
+                  const isItemSelected = isSelected(row.board_no);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
@@ -240,7 +244,7 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      // key={row.noticeNo}
+                      // key={row.board_no}
                       key={`row${index}`}
                       // selected={isItemSelected}
                     >
@@ -249,29 +253,29 @@ export default function NoticeListTable({resData, selectedNoticeNo, setNoticeDat
                           checked={isItemSelected}
                           inputProps={{ 'aria-labelledby': labelId }}
                           color="primary"
-                          onClick={event => handleClick(event, row.noticeNo)}
+                          onClick={event => handleClick(event, row.board_no)}
                         />
                       </TableCell>
                       <TableCell align="center" component="th" id={labelId} scope="row" padding="none"
-                                  onClick={event => openContentModal(row.title, row.content, row.regId, row.regDatetime)} >
-                                {row.majorYn && eval(nowDate <= dateStr(row.majorPeriodDate)) ? '[중요]' : row.noticeNo}
+                                  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)} >
+                                {row.major_yn && eval(nowDate <= row.major_period_date) ? '[중요]' : row.board_no}
                       </TableCell>
-                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.regId, row.regDatetime)}>
+                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
                         {row.title}
                       </TableCell>
-                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.regId, row.regDatetime)}>
-                        {row.regDatetime}
+                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
+                        {row.reg_datetime}
                       </TableCell>
-                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.regId, row.regDatetime)}>
-                        {row.regId}
+                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
+                        {row.writer}
                       </TableCell>
                       {/* 관리자의 경우 */}
                       <TableCell align="center" style={{maxWidth:'80px'}}>
-                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.noticeNo)}>
+                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.board_no)}>
                           <DeleteIcon fontSize="small" />
                         </IconButton>
-                        <RouterLink button="true" to="/notice/regist">
-                          <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.noticeNo)}>
+                        <RouterLink button="true" to={"/notice/regist/?id="+row.board_no}>
+                          <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.board_no)}>
                             <CreateIcon fontSize="small" />
                           </IconButton>
                         </RouterLink>

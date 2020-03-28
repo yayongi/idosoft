@@ -178,7 +178,8 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
 					console.log(JSON.stringify(response));
 				}).catch(e => {
 					console.log(e);
-			});
+      });
+      
 			const upStreamData = resData.filter((row) => {
 				return !(row.res_no === deleteRow);
 			});
@@ -220,7 +221,7 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
                 <TableCell padding="checkbox">
                     <Checkbox
                       indeterminate={selected.length > 0 && rows.length < selected.length}
-                      checked={rows.length === selected.length}
+                      checked={rows.length === selected.length && rows.length !== 0}
                       onChange={handleSelectAllClick}
                       inputProps={{ 'aria-label': 'select all desserts' }}
                       color="primary"
@@ -240,7 +241,7 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              { rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              {rows.length > 0 && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.res_no);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -270,10 +271,10 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
                       <TableCell align="center">{row.model_nm}</TableCell>
                       <TableCell align="center">{row.mark_code}</TableCell>
                       <TableCell align="center">
-                          {row.product_mtn !== undefined && row.product_mtn !== null ? row.product_mtn.substr(0,4)+'-'+row.product_mtn.substr(4,6) : "미설정"}
+                          {row.product_mtn !== undefined && row.product_mtn !== null ? row.product_mtn : "미설정"}
                       </TableCell>
                       <TableCell align="center">
-                          {row.purchase_mtn !== undefined && row.purchase_mtn !== null ? row.purchase_mtn.substr(0,4)+'-'+row.purchase_mtn.substr(4,6) : "미설정"}
+                          {row.purchase_mtn !== undefined && row.purchase_mtn !== null ? row.purchase_mtn : "미설정"}
                       </TableCell>
                       <TableCell align="center">{row.display_size_code}</TableCell>
                       <TableCell align="center">{row.serial_no}</TableCell>

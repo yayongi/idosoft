@@ -8,23 +8,6 @@ import { useStaticState } from '@material-ui/pickers';
 
 import axios from 'axios';
 
-const resTypeData= [ {key:'a1', value:"모니터"}, {key:'a2', value:"노트북"}, {key:'a3', value:"테스트폰"} ];
-const resProductData= [ {key:'b1', value:"삼성"}, {key:'b2', value:"엘지"}, {key: 'b3', value:"애플"} ];
-const resDisplaySizeData= [{key:'c0', value:"화면사이즈미설정"}, {key:'c1', value:"18인치"}, {key:'c2', value:"21인치"}, {key: 'c3', value:"24인치"}, {key: 'c4', value:"28인치"} ];
-const resHolderData= 
-							[ 
-								{key:'d1', value:"최문걸"}, 
-								{key:'d2', value:"조현철"}, 
-								{key: 'd3', value:"이인성"}, 
-								{key: 'd4', value:"신우인"},
-								{key: 'd5', value: "오경섭"},
-								{key: 'd6', value: "송원회"},
-								{key: 'd7', value: "강성우"},
-								{key: 'd8', value: "유기환"},
-								{key: 'd9', value: "김준선"}
-							];						
-
-
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
@@ -42,7 +25,7 @@ const ResourceList = () => {
 		edDt: null,
 	}
 	const [state, setState] = React.useState(initState);
-	const [resData, setResData] = useState([{}]);
+	const [resData, setResData] = useState([]);
 	const [selected, setSelected] = useState([]);
 	const [isAdmin, setIsAdmin] = useState(false);
 	

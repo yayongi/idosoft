@@ -21,4 +21,6 @@ public interface NoticeService {
 	//대쉬보드용 리스트
 	List<NoticeVO> selectListDashboard();
 
+	List<NoticeVO> findNoticeList();
+
 }

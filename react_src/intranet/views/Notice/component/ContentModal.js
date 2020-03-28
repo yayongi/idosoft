@@ -15,6 +15,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
+import Viewer from '../../../common/Viewer/Viewer';
+// import Viewer from './Viewer';
+
 
 const styles = theme => ({
   root: {
@@ -96,8 +99,8 @@ const ContentModal = ({props, closeModal}) => {
             <TableHead>
               <TableRow>
                 <TableCell className={classes.tableCell}> {props.title}</TableCell>
-                <TableCell className={classes.tableCell}> {props.regId}</TableCell>
-                <TableCell className={classes.tableCell}> {props.regDatetime}</TableCell>
+                <TableCell className={classes.tableCell}> {props.writer}</TableCell>
+                <TableCell className={classes.tableCell}> {props.reg_datetime}</TableCell>
               </TableRow>
             </TableHead>
           </Table>
@@ -105,23 +108,8 @@ const ContentModal = ({props, closeModal}) => {
 
         </DialogTitle>
         <DialogContent dividers>
-          <div dangerouslySetInnerHTML={ {__html: props.content} } />
-			    {/* {props.content} */}
-
-
-          {/* <Typography gutterBottom>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-            in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-          </Typography>
-          <Typography gutterBottom>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-            lacus vel augue laoreet rutrum faucibus dolor auctor.
-          </Typography>
-          <Typography gutterBottom>
-            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
-            scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
-            auctor fringilla.
-          </Typography> */}
+          {/* <div dangerouslySetInnerHTML={ {__html: props.content} } /> */}
+          <Viewer defaultValue={props.content}/>
         </DialogContent>
         {/* <DialogActions>
           <Button autoFocus onClick={handleClose} color="primary">
