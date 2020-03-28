@@ -22,4 +22,6 @@ public interface MemberDao {
 	public List<String> getBirthDate(HashMap<String, String> date);
 	// 결혼기념일 가져오기
 	public List<String> getMarriageDate(String date);
+	// 이메일 중복검사
+	public int checkemail(String email);
 }

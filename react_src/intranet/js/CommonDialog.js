@@ -8,8 +8,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 const CommonDialog = ({props, closeCommonDialog}) => {
 
-	const handleClose = (result) => {
-		closeCommonDialog(result);
+	const handleClose = (title,result) => {
+		closeCommonDialog(title,result);
 	};
 
 	return (
@@ -29,11 +29,11 @@ const CommonDialog = ({props, closeCommonDialog}) => {
 			<DialogActions>
 				{props.isConfirm===undefined?false:props.isConfirm
 					&&
-					(<Button onClick={()=>handleClose(false)} color="primary">
+					(<Button onClick={()=>handleClose(props.title,false)} color="primary">
 						취소
 					</Button>)
 				}
-				<Button onClick={()=>handleClose(true)} color="primary" autoFocus>
+				<Button onClick={()=>handleClose(props.title,true)} color="primary" autoFocus>
 					확인
 				</Button>
 			</DialogActions>

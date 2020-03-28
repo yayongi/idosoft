@@ -22,6 +22,7 @@ import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import Typography from '@material-ui/core/Typography';
 import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
+import Paper from '@material-ui/core/Paper';
 
 import CommonDialog from '../../js/CommonDialog';
 import ContentModal from "./component/ContentModal";
@@ -128,53 +129,24 @@ const MemberList = (props) => {
 		}).then(response => {
 			console.log("positionResult : " + JSON.stringify(response));
 
-			if(state.showAll == true && response.data != null){
-				let temp = response.data;
+			if(state.showAll == true && response.data.memberData != null){
+				let temp = response.data.memberData;
 				temp = temp.filter(temp => temp.ret_date === null);
 
 				// 사원리스트
 				setState({
 					...state,
-					showMemberList : response.data,
+					showMemberList : response.data.memberData,
 					hiddenMemberList: temp,
 					memberList : temp,
-					showAll:false
+					showAll:false,
+					manager_yn:response.data.isAdmin==1?true:false
 				});
 			}
 		}).catch(e => {
 			console.log(e);
 		});
 	},[])
-	
-	//사원삭제
-	const removeData = () => {
-		// 사원 정보 삭제
-		axios({
-			url: '/intranet/member/memberdel',
-			method: 'post',
-			data : selected,
-			headers: {
-				'Content-Type': 'application/json;charset=UTF-8'
-			},
-		}).then(response => {
-			console.log("positionResult : " + JSON.stringify(response));
-			//
-			//체크박스로 선택된 직원 아이디로 선택적으로 필터링
-			let temp = state.memberList;
-			for(let i=0;i<selected.length;i++){
-				temp = temp.filter(temp => temp.member_no !== String(selected[i]));
-			}
-
-			setSelected([]);
-
-			setState({
-				...state,
-				memberList : temp
-			});
-		}).catch(e => {
-			console.log(e);
-		});
-	}
 
 	const openContentModal = (datum) => {
 		return setOpenModal({
@@ -368,210 +340,215 @@ const MemberList = (props) => {
 			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 
 			<Snackbar
-				anchorOrigin={{
-					vertical: 'top',
-					horizontal: 'center',
-				}}
-				onClose={snackBarClose}
-				open={openSnackBar}
-				autoHideDuration={6000}
-				message={searchState.category === 0 ? "이름 : "+searchState.searchword:"직급 : "+searchState.searchword}
-				action={
-					<React.Fragment>
-						<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
-							<CloseIcon fontSize="small" />
-						</IconButton>
-					</React.Fragment>
-				}
+			anchorOrigin={{
+				vertical: 'top',
+				horizontal: 'center',
+			}}
+			onClose={snackBarClose}
+			open={openSnackBar}
+			autoHideDuration={6000}
+			message={searchState.category === 0 ? "이름 : "+searchState.searchword:"직급 : "+searchState.searchword}
+			action={
+				<React.Fragment>
+					<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
+						<CloseIcon fontSize="small" />
+					</IconButton>
+				</React.Fragment>
+			}
 			/>
 
-			<Card>
-				<Toolbar className={classes.root_tool}>
-					<Typography className={classes.title} variant="h6" style={{minWidth:"85px"}} >
-						사원관리
-					</Typography>
-					<div className={classes.container}>
-						<Hidden smDown>
-							<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button_tool}>
-								검색
-							</Button>
-							<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={() => excelExport(state.memberList)} className={classes.button_tool}>
-								엑셀 내보내기
-							</Button>
-							{state.manager_yn && (
-								<RouterLink button="true" to="/member/memberreg" className={classes.router_link}>
-									<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />}>
-										직원정보등록
+				{state.memberList !=null && (
+					<Card>
+						<Toolbar className={classes.root_tool}>
+							<Typography className={classes.title} variant="h6" style={{minWidth:"85px"}} >
+								사원관리
+							</Typography>
+							<div className={classes.container}>
+								<Hidden smDown>
+									<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button_tool}>
+										검색
 									</Button>
-								</RouterLink>
-							)}
-							{state.manager_yn && (
-								<Button variant="contained" color="primary" size="small" startIcon={<AssignmentIndIcon />} onClick={() => showAll(state.showAllValue)} style={{marginLeft:"10px"}}>
-									<a id="bLabel">모든직원보이기</a>
-								</Button>
-							)}
-							{state.manager_yn && (
-								<Button variant="contained" color="secondary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"10px"}}>
-									직원정보삭제
-								</Button>
-							)}
-						</Hidden>
-						<Hidden mdUp>
-							<IconButton color="primary" onClick={handleClickOpen} className={classes.button_tool}>
-								<FilterListIcon />
-							</IconButton>
-							<IconButton color="primary" onClick={excelExport} className={classes.button_tool}>
-								<SaveIcon />
-							</IconButton>
-							{state.manager_yn && (
-								<RouterLink button="true" to="/member/memberreg" className={`${classes.router_link} ${classes.button_tool}`}>
-									<IconButton color="primary">
-										<AddIcon />
-									</IconButton>
-								</RouterLink>
-							)}
-							{state.manager_yn && (
-								<IconButton color="secondary" onClick={() => handleOpenDialog(...confirmData)}>
-									<RemoveIcon />
-								</IconButton>
-							)}
-							{state.manager_yn && (
-								<IconButton color="primary" onClick={showAll} className={classes.button_tool} onClick={() => showAll(state.showAllValue)}>
-									<AssignmentIndIcon />
-								</IconButton>
-							)}
-						</Hidden>
-					</div>
-				</Toolbar>
-				{state.memberList !=null && (
-					<TablePagination
-						rowsPerPageOptions={[10, 25, 100]}
-						component="div"
-						count={state.memberList.length}
-						rowsPerPage={rowsPerPage}
-						page={page}
-						onChangePage={handleChangePage}
-						onChangeRowsPerPage={handleChangeRowsPerPage}
-					/>
-				)}
-				<TableContainer>
-					<Toolbar>
-						<Hidden smDown>
-							<Table className={classes.tableWeb} stickyHeader aria-label="simple table">
-								<TableHead>
-									<TableRow>	
-										<TableCell padding="checkbox">
-											<Checkbox 
-												onChange={onSelectAllClick}
-											></Checkbox>
-										</TableCell>
-										<TableCell align="center">이름</TableCell>
-										<TableCell align="center">직급</TableCell>
-										<TableCell align="center">주소</TableCell>
-										<TableCell align="center">휴대전화</TableCell>
-										<TableCell align="center">경력</TableCell>
-										<TableCell align="center">입사일</TableCell>
-										<TableCell align="center">자격증</TableCell>
-										<TableCell align="center"></TableCell>
-									</TableRow>
-								</TableHead>
-								<TableBody>
-								{state.memberList !=null && state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-									<TableRow key={row.member_no} hover style={(row.ret_date != null)? {backgroundColor:"lightgrey"}:{}}>
-										<TableCell padding="checkbox">
-											<Checkbox
-												checked={(selected.indexOf(row.member_no) !== -1)? true : false}
-												onChange={() => selectedItem(event,row.member_no)}
-												key = {row.member_no}
-											/>
-										</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
-											{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
-											{row.name}
-										</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{row.code_name}</TableCell>
-										<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
-											{row.address_1} {row.address_2}
-											</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{phoneFormatter(row.phone_num)}</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{dataCalculator(row.career_date)} </TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{dateFormatter(row.entry_date)}</TableCell>
-										<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
-											{row.cert_yn == 1? '유':'무'}
-										</TableCell>
-										<TableCell align="center">
-											<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
-												수정
+									<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={() => excelExport(state.memberList)} className={classes.button_tool}>
+										엑셀 내보내기
+									</Button>
+									{state.manager_yn && (
+										<RouterLink button="true" to="/member/memberreg" className={classes.router_link}>
+											<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />}>
+												직원정보등록
 											</Button>
-											<RouterLink button="true" to="/project/history" className={classes.router_link}>
-												<Button variant="contained" color="primary">
-													개인이력
-												</Button>
-											</RouterLink>
-										</TableCell>
-									</TableRow>
-								))}
-								</TableBody>
-							</Table>
-						</Hidden>
-						<Hidden mdUp>
-							<Table className={classes.tableApp} stickyHeader aria-label="simple table">
-								<TableHead>
-									<TableRow>	
-										<TableCell padding="checkbox">
-											<Checkbox 
-												onChange={onSelectAllClick}
-											></Checkbox>
-										</TableCell> 
-										<TableCell align="center">이름</TableCell>
-										<TableCell align="center"></TableCell>
-									</TableRow>
-								</TableHead>
-								<TableBody>
-								{state.memberList !=null &&
-									state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-										<TableRow key={row.member_no} hover style={(row.ret_date != null)?  {backgroundColor:"lightgrey"}:{}}>
-											<TableCell padding="checkbox">
-												<Checkbox
-													checked={(selected.indexOf(row.member_no) !== -1)? true : false}
-													onChange={() => selectedItem(event,row.member_no)}
-													key = {row.member_no}
-												/>
-											</TableCell>
-											<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
-												{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
-												{row.name}
-											</TableCell>
-											<TableCell align="center">
-												<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
-													수정
-												</Button>
-												<RouterLink button="true" to="/project/history" className={classes.router_link}>
-													<Button variant="contained" color="primary">
-														이력
+										</RouterLink>
+									)}
+									{state.manager_yn && (
+										<Button variant="contained" color="primary" size="small" startIcon={<AssignmentIndIcon />} onClick={() => showAll(state.showAllValue)} style={{marginLeft:"10px"}}>
+											<a id="bLabel">모든직원보이기</a>
+										</Button>
+									)}
+									{state.manager_yn && (
+										<Button variant="contained" color="secondary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"10px"}}>
+											직원정보삭제
+										</Button>
+									)}
+								</Hidden>
+								<Hidden mdUp>
+									<IconButton color="primary" onClick={handleClickOpen} className={classes.button_tool}>
+										<FilterListIcon />
+									</IconButton>
+									<IconButton color="primary" onClick={excelExport} className={classes.button_tool}>
+										<SaveIcon />
+									</IconButton>
+									{state.manager_yn && (
+										<RouterLink button="true" to="/member/memberreg" className={`${classes.router_link} ${classes.button_tool}`}>
+											<IconButton color="primary">
+												<AddIcon />
+											</IconButton>
+										</RouterLink>
+									)}
+									{state.manager_yn && (
+										<IconButton color="secondary" onClick={() => handleOpenDialog(...confirmData)}>
+											<RemoveIcon />
+										</IconButton>
+									)}
+									{state.manager_yn && (
+										<IconButton color="primary" onClick={showAll} className={classes.button_tool} onClick={() => showAll(state.showAllValue)}>
+											<AssignmentIndIcon />
+										</IconButton>
+									)}
+								</Hidden>
+							</div>
+						</Toolbar>
+						{(state.memberList.length != 0) && (
+							<TablePagination
+								rowsPerPageOptions={[10, 25, 100]}
+								component="div"
+								count={state.memberList.length}
+								rowsPerPage={rowsPerPage}
+								page={page}
+								onChangePage={handleChangePage}
+								onChangeRowsPerPage={handleChangeRowsPerPage}
+							/>
+						)}
+						<TableContainer>
+							<Toolbar>
+								<Hidden smDown>
+									{(state.memberList.length != 0) ? (
+										<Table className={classes.tableWeb} stickyHeader aria-label="simple table">
+										<TableHead>
+											<TableRow>	
+												<TableCell padding="checkbox">
+													<Checkbox 
+														onChange={onSelectAllClick}
+													></Checkbox>
+												</TableCell>
+												<TableCell align="center">이름</TableCell>
+												<TableCell align="center">직급</TableCell>
+												<TableCell align="center">주소</TableCell>
+												<TableCell align="center">휴대전화</TableCell>
+												<TableCell align="center">경력</TableCell>
+												<TableCell align="center">입사일</TableCell>
+												<TableCell align="center">자격증</TableCell>
+												<TableCell align="center"></TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+										{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+											<TableRow key={row.member_no} hover style={(row.ret_date != null)? {backgroundColor:"lightgrey"}:{}}>
+												<TableCell padding="checkbox">
+													<Checkbox
+														checked={(selected.indexOf(row.member_no) !== -1)? true : false}
+														onChange={() => selectedItem(event,row.member_no)}
+														key = {row.member_no}
+													/>
+												</TableCell>
+												<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
+													{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
+													{row.name}
+												</TableCell>
+												<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{row.code_name}</TableCell>
+												<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
+													{row.address_1} {row.address_2}
+													</TableCell>
+												<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{phoneFormatter(row.phone_num)}</TableCell>
+												<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{dataCalculator(row.career_date)} </TableCell>
+												<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{dateFormatter(row.entry_date)}</TableCell>
+												<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
+													{row.cert_yn == 1? '유':'무'}
+												</TableCell>
+												<TableCell align="center">
+													<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
+														수정
 													</Button>
-												</RouterLink>
-											</TableCell>
-										</TableRow>
-									))
-								}
-								</TableBody>
-							</Table>				
-						</Hidden>
-					</Toolbar>
-				</TableContainer>
-				{state.memberList !=null && (
-					<TablePagination
-						rowsPerPageOptions={[10, 25, 100]}
-						component="div"
-						count={state.memberList.length}
-						rowsPerPage={rowsPerPage}
-						page={page}
-						onChangePage={handleChangePage}
-						onChangeRowsPerPage={handleChangeRowsPerPage}
-					/>
+													<RouterLink button="true" to="/project/history" className={classes.router_link}>
+														<Button variant="contained" color="primary">
+															개인이력
+														</Button>
+													</RouterLink>
+												</TableCell>
+											</TableRow>
+										))}
+										</TableBody>
+									</Table>
+									) : (<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} ><h3 style={{paddingTop:"100px"}}> 현재 직원 목록이 없습니다.</h3></Paper>)}
+								</Hidden>
+								<Hidden mdUp>
+									{(state.memberList.length != 0) ?
+									(<Table className={classes.tableApp} stickyHeader aria-label="simple table">
+										<TableHead>
+											<TableRow>	
+												<TableCell padding="checkbox">
+													<Checkbox 
+														onChange={onSelectAllClick}
+													></Checkbox>
+												</TableCell> 
+												<TableCell align="center">이름</TableCell>
+												<TableCell align="center"></TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+										{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+												<TableRow key={row.member_no} hover style={(row.ret_date != null)?  {backgroundColor:"lightgrey"}:{}}>
+													<TableCell padding="checkbox">
+														<Checkbox
+															checked={(selected.indexOf(row.member_no) !== -1)? true : false}
+															onChange={() => selectedItem(event,row.member_no)}
+															key = {row.member_no}
+														/>
+													</TableCell>
+													<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
+														{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
+														{row.name}
+													</TableCell>
+													<TableCell align="center">
+														<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
+															수정
+														</Button>
+														<RouterLink button="true" to="/project/history" className={classes.router_link}>
+															<Button variant="contained" color="primary">
+																이력
+															</Button>
+														</RouterLink>
+													</TableCell>
+												</TableRow>
+											))
+										}
+										</TableBody>
+									</Table>
+									) : (<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} ><h3 style={{paddingTop:"100px"}}> 현재 직원 목록이 없습니다.</h3></Paper>)}				
+								</Hidden>
+							</Toolbar>
+						</TableContainer>
+						{(state.memberList.length != 0) && (
+							<TablePagination
+								rowsPerPageOptions={[10, 25, 100]}
+								component="div"
+								count={state.memberList.length}
+								rowsPerPage={rowsPerPage}
+								page={page}
+								onChangePage={handleChangePage}
+								onChangeRowsPerPage={handleChangeRowsPerPage}
+							/>
+						)}
+					</Card>
 				)}
-			</Card>
 		</div>
 	);
 }
