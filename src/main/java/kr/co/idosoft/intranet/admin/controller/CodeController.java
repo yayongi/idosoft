@@ -105,5 +105,83 @@ public class CodeController {
 		return mv;
 	}
 	
+	@RequestMapping(value="/deleteCode",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView deleteCode(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		LOG.debug("addNewCode Start");
+		for (String key : params.keySet()) {
+	        System.out.print("key : " + key);
+	        System.out.print("value : " + params.get(key));
+	    }
+		
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		// 검색 조건 제외하고 개발중..
+		
+		String jsonArrayList 	= null;
+		String jsonObjectData 	= null;
+		
+		HttpSession session = request.getSession();
+		
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		params.put("REG_ID", mno);		//등록자 사번 추가
+		
+		boolean result = true;
+		try {
+			codeService.deleteInfo((String)params.get("CODE_ID"));
+		}catch(Exception e) {
+			result = false;
+		}
+		
+		mv.addObject("isSuccess", result);
+		mv.addObject("result", jsonObjectData);
+		
+		return mv;
+	}
 	
+	@RequestMapping(value="/updateCode",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView updateCode(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		LOG.debug("updateCode Start");
+		for (String key : params.keySet()) {
+	        System.out.print("key : " + key);
+	        System.out.print("value : " + params.get(key));
+	    }
+		
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		// 검색 조건 제외하고 개발중..
+		
+		String jsonArrayList 	= null;
+		String jsonObjectData 	= null;
+		
+		HttpSession session = request.getSession();
+		
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		params.put("UPD_ID", mno);		//등록자 사번 추가
+		
+		boolean result = true;
+		try {
+			codeService.update(params);
+		}catch(Exception e) {
+			result = false;
+		}
+		
+		mv.addObject("isSuccess", result);
+		mv.addObject("result", jsonObjectData);
+		
+		return mv;
+	}
 }

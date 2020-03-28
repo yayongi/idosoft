@@ -25,15 +25,15 @@
 			, NOTE = #{NOTE}
 			, TEMP_COLUM = #{TEMP_COLUM}
 		WHERE
-			CODE_ID = #{CODE_ID}
-s	</update>
+			CODE_ID like #{CODE_ID}
+	</update>
 	
 	<!--  프로젝트 삭제 -->
-	<delete id="deleteInfo" parameterType="int">
+	<delete id="deleteInfo" parameterType="String">
 		DELETE FROM
 			TB_CODE
 		WHERE
-			CODE_ID = #{CODE_ID}
+			CODE_ID like #{CODE_ID}
 	</delete>
 
 	<select id="getList" resultType="hashmap">

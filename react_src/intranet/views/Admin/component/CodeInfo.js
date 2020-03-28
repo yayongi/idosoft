@@ -59,22 +59,56 @@ const useStyles = makeStyles(theme => ({
 export default function CodeInfo(props) {
 	console.log("call CodeInfo Area");
 	const classes = useStyles();
-	const {setShowTotalInfoTable} = props;
+	const {detailCodeInfo, setShowTotalInfoTable, getOrigin} = props;
+	const [isModify, setModify] = React.useState(false);
+	const [isAddBtnClicked, setIsAddBtn] = React.useState(false, []);
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false, []);    //loading bar
 	const [dataState, setDataState] = React.useState(
 		{
-			UPPER_CODE:"",
-			UPPER_NAME:"",
-			CODE_ID:"",
-			CODE_NAME:"",
-			CODE_DC:""
+			CODE_ID: ""
+			,CODE_LEVEL: "1"
+			,UPPER_CODE: ""
+			,UPD_ID: ""
+			,TEMP_COLUM: ""
+			,UPPER_NAME: ""
+			,CODE_NAME: ""
+			,NOTE: ""
+			,REG_DATETIME: ""
+			,UPD_DATETIME: ""
+			,REG_ID: ""
+			,CODE_DC: ""
 		}
 	);	// state : 수정을 위한 데이터 관리
 
 	//하위코드 등록 시 화면이 그려진 후 dataState(등록할 코드의 상위 코드 정보)를 한번 더 변경시켜준다.
 	useEffect(() => {
-		
-	});
+		console.log("detailCodeInfo : ");
+		console.log(detailCodeInfo);
+		if(detailCodeInfo && detailCodeInfo.length != 0){
+			setDataState(detailCodeInfo);
+			setModify(true);
+		}else{
+			setModify(false);
+			setDataState(
+			{
+				CODE_ID: ""
+				,CODE_LEVEL: "1"
+				,UPPER_CODE: ""
+				,UPD_ID: ""
+				,TEMP_COLUM: ""
+				,UPPER_NAME: ""
+				,CODE_NAME: ""
+				,NOTE: ""
+				,REG_DATETIME: ""
+				,UPD_DATETIME: ""
+				,REG_ID: ""
+				,CODE_DC: ""
+			});
+
+
+
+		}
+	}, [detailCodeInfo]);
 
 	const validationCheck = () => {
 		return false;
@@ -105,6 +139,8 @@ export default function CodeInfo(props) {
 			data: sendData
 		}).then(response => {
 			console.log(response);
+			getOrigin();
+			setShowTotalInfoTable(true);
 			setShowLoadingBar(false);
 		}).catch(e => {
 			console.log(e);
@@ -113,12 +149,69 @@ export default function CodeInfo(props) {
 	};
 
 	const handleClickModifyCode = () => {
+		if(dataState.CODE_NAME == ""){
+			alert("코드명을 입력해주세요");
+			return;
+		}
+		setShowLoadingBar(true);
+		axios({
+			url: '/intranet/updateCode',
+			method: 'post',
+			data: dataState
+		}).then(response => {
+			console.log(response);
+			alert("수정했습니다.");
+			getOrigin();
+			setShowTotalInfoTable(true);
+			setShowLoadingBar(false);
+		}).catch(e => {
+			console.log(e);
+			setShowLoadingBar(false);
+		});
 	}
 
 	const handleClickRemoveCode = () => {
+		if(detailCodeInfo.subTrees){
+			alert("하위코드가 존재하여 삭제가 불가능합니다. " + detailCodeInfo.subTrees[0]["CODE_ID"]);
+			return;
+		}
+		setShowLoadingBar(true);
+		axios({
+			url: '/intranet/deleteCode',
+			method: 'post',
+			data: {"CODE_ID": detailCodeInfo["CODE_ID"]}
+		}).then(response => {
+			console.log(response);
+			alert("삭제했습니다.");
+			getOrigin();
+			setShowTotalInfoTable(true);
+			setShowLoadingBar(false);
+		}).catch(e => {
+			console.log(e);
+			setShowLoadingBar(false);
+		});
+
+
 	}
 
 	const handleClickLowerCode = () => {
+		setModify(false);
+		setDataState({
+			CODE_ID: ""
+			,CODE_LEVEL: dataState.CODE_LEVEL+1
+			,UPPER_CODE: dataState.CODE_ID
+			,UPD_ID: ""
+			,TEMP_COLUM: ""
+			,UPPER_NAME: dataState.CODE_NAME
+			,CODE_NAME: ""
+			,NOTE: ""
+			,REG_DATETIME: ""
+			,UPD_DATETIME: ""
+			,REG_ID: ""
+			,CODE_DC: ""
+		});
+
+
 	}
 
 	return (
@@ -180,6 +273,12 @@ export default function CodeInfo(props) {
 									variant="outlined"
 									value={dataState.CODE_ID}
 									onChange={handleChange}
+									InputProps={{
+									 	readOnly: isModify,
+									}}
+									style={{
+										background: isModify ? 'gray' : ''
+									}}
 									fullWidth
 								/>
 							</TableCell>
@@ -225,10 +324,31 @@ export default function CodeInfo(props) {
 							목록
 						</Button>
 					</RouterLink>
-					{
+					{	!isModify && 
 						(
 							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickAddCode}>
 								추가
+							</Button>
+						)
+					}
+					{	isModify && 
+						(
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickRemoveCode}>
+								삭제
+							</Button>
+						)
+					}
+					{	isModify && 
+						(
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickModifyCode}>
+								수정
+							</Button>
+						)
+					}
+					{	isModify && 
+						(
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickLowerCode}>
+								하위코드추가
 							</Button>
 						)
 					}

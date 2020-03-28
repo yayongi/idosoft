@@ -30,14 +30,6 @@ function getTableFormData(codeInfo) {
 
 }
 
-function jsonToQuery(obj) {
-  return ('?' +
-    Object.keys(obj).map(function (key) {
-      return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
-    }).join('&'));
-}
-
-
 const useStyles = makeStyles({
   root: {
     width: '100%',
@@ -47,7 +39,7 @@ const useStyles = makeStyles({
 
   function CodeInfoTable(props) {
     const classes = useStyles();
-    const { codeInfo, routeProps } = props;
+    const { codeInfo, routeProps, updateSelectedNodeId } = props;
     const rows = getTableFormData(codeInfo);
 
 
@@ -78,7 +70,7 @@ const useStyles = makeStyles({
     }
 
     const handleClickDetailView = (event, row) => {
-      console.log("call handleClickDetailView");
+      updateSelectedNodeId(row.CODE_ID);
     };
 
     return (

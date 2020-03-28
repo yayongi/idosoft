@@ -109,7 +109,7 @@ const mainStyles = makeStyles(theme => ({
 export default function CodeView(props) {
   const classes = mainStyles();
   const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
-  const [codeOriginInfo, setCodeOriginInfo] = useState();
+  const [codeOriginInfo, setCodeOriginInfo] = useState([], []);
   const [rebuildSortedData, setRebuildSortedData] = useState();
 
   const [detailCodeInfo, setDetailCodeInfo] = useState();
@@ -124,7 +124,7 @@ export default function CodeView(props) {
   });
   const [codeInfo, setCodeInfo] = useState();
 
-  useEffect(() => {
+  const getOrigin = () => {
     axios({
       url: '/intranet/allCode',
       method: 'post',
@@ -134,8 +134,8 @@ export default function CodeView(props) {
       result.sort((a, b) => {
         return parseInt(a.CODE_LEVEL) - parseInt(b.CODE_LEVEL);
       });
-      setCodeInfo(result);
       setCodeOriginInfo(result);
+      setCodeInfo(result);
       setShowLoadingBar(false);
       setRebuildSortedData(getRebuildSortedData(result));
 
@@ -143,6 +143,9 @@ export default function CodeView(props) {
       console.log(e);
       setShowLoadingBar(false);
     });
+  }
+  useEffect(() => {
+    getOrigin();
   }, []);
 
 
@@ -182,7 +185,12 @@ export default function CodeView(props) {
   };
 
   const updateSelectedNodeId = (nodeid) => {
-    setDetailCodeInfo(codeOriginInfo.filter((info) => info.CODE_ID == nodeid));
+    var filterList = codeOriginInfo.filter((info) => info.CODE_ID == nodeid);
+
+    if(typeof(filterList) == "object" && filterList.length>0){
+      setDetailCodeInfo(filterList[0]);
+    }
+
     setShowTotalInfoTable(false);
   }
 
@@ -203,8 +211,8 @@ export default function CodeView(props) {
         </Grid>
         <Grid item xs={6} sm={6}>
           <Paper className={classes.paper}>
-            {isShowTotalInfoTable && <CodeInfoTable codeInfo={codeInfo} rebuildSortedData={rebuildSortedData} routeProps={props.routeProps}/>}
-            {!isShowTotalInfoTable && <CodeInfo detailCodeInfo={detailCodeInfo}  setShowTotalInfoTable={setShowTotalInfoTable}></CodeInfo>}
+            {isShowTotalInfoTable && <CodeInfoTable codeInfo={codeInfo} rebuildSortedData={rebuildSortedData} routeProps={props.routeProps} updateSelectedNodeId={updateSelectedNodeId}/>}
+            {!isShowTotalInfoTable && <CodeInfo detailCodeInfo={detailCodeInfo}  setShowTotalInfoTable={setShowTotalInfoTable} getOrigin={getOrigin}></CodeInfo>}
           </Paper>
         </Grid>
       </Grid>
