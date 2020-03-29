@@ -22,7 +22,21 @@ const useStyles = makeStyles({
 function ProjectInfo(props) {
   const classes = useStyles();
   const { projectInfo } = props;
-  const rows = projectInfo;
+  
+
+  const makeTableFormInfo = () => {
+    var result = [].concat(projectInfo);
+    for(var i=0; i < result.length; i++){
+      result[i]["YEAR"] = result[i]["BGNDE"].slice(0,4);
+      result[i]["TERM"] = result[i]["BGNDE"] + " ~ " + result[i]["ENDDE"];
+    }
+    return result;
+  }
+
+  const rows = makeTableFormInfo();
+
+
+  
 
   console.log(rows);
 
@@ -31,16 +45,16 @@ function ProjectInfo(props) {
 
   //연도, 프로젝트명, 기관,  프로젝트 기간, PM, 교통비
   const columnsUp = [
-    { id: 'year', label: '연도', minWidth: 100, align: 'center' },
-    { id: 'project_nm', label: '프로젝트명', minWidth: 100, align: 'center' },
-    { id: 'instt_name', label: '기관', minWidth: 100, align: 'center' },
-    { id: 'term', label: '프로젝트 기간', minWidth: 100, align: 'center' },
-    { id: 'pm_name', label: 'PM', minWidth: 100, align: 'center' },
-    { id: 'transport_ct', label: '교통비', minWidth: 100, align: 'center' },
+    { id: 'YEAR', label: '연도', minWidth: 100, align: 'center' },
+    { id: 'PROJECT_NM', label: '프로젝트명', minWidth: 100, align: 'center' },
+    { id: 'INSTT_NAME', label: '기관', minWidth: 100, align: 'center' },
+    { id: 'TERM', label: '프로젝트 기간', minWidth: 100, align: 'center' },
+    { id: 'PM_NAME', label: 'PM', minWidth: 100, align: 'center' },
+    { id: 'TRANSPORT_CT', label: '교통비', minWidth: 100, align: 'center' },
   ];
   const columnsDown = [
-    { id: 'year', label: '연도', minWidth: 100, align: 'center' },
-    { id: 'project_nm', label: '프로젝트명', minWidth: 100, align: 'center' },
+    { id: 'YEAR', label: '연도', minWidth: 100, align: 'center' },
+    { id: 'PROJECT_NM', label: '프로젝트명', minWidth: 100, align: 'center' },
   ];
   // Width에 따라 반응형으로 열이 없어
   let columns = columnsUp;
@@ -82,11 +96,11 @@ function ProjectInfo(props) {
                 >
                   {columns.map((column, idx) => {
                     var value = row[column.id];
-                    if(column.id === "transport_ct"){
-                      value = row["printMoney"];
+                    if(column.id === "TRANSPORT_CT"){
+                      value = row["TRANSPORT_CT"].toLocaleString();
                     }
                     return (
-                      <TableCell key={row.project_no + idx} align={column.align} className={column.className}>
+                      <TableCell key={row.PROJECT_NO + idx} align={column.align} className={column.className}>
                         {value !== "" ? value : "-"}
                       </TableCell>
                     );

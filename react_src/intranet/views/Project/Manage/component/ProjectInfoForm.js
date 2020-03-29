@@ -70,22 +70,31 @@ const useStyles = makeStyles(theme => ({
 	전역 변수는 호출 안됨.
 */
 export default function ProjectInfoForm(props) {
+	const classes = useStyles();
 	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
 	const { location, history } = props.routeProps.routeProps;
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true, []);    //loading bar
-	const [dataState, setDataState] = React.useState([]);	// state : 수정을 위한 데이터 관리
 	const [instt_list, setInstt] = React.useState([], []);
 	const [member_list, setMember] = React.useState([], []);
-	const classes = useStyles();
-
+	const [dataState, setDataState] = React.useState({
+		PROJECT_NM : "",
+		INSTT_CODE : "",
+		BGNDE : Moment(new Date()).format('YYYY-MM-DD'),
+		ENDDE : Moment(new Date()).format('YYYY-MM-DD'),
+		TRANSPORT_CT : "",
+		PM : "",
+	});	// state : 수정을 위한 데이터 관리
 	useEffect(() => {
 		axios({
 			url: '/intranet/projectInfo',
 			method: 'post',
-			data: {"code_id":""}
+			data: {"CODE_ID":"CD0008"}
 		}).then(response => {
 			console.log("response : ");
-			console.log(response);
+			console.log(response.data.code_list);
+			console.log(response.data.member_list);
+			setInstt(response.data.code_list);
+			setMember(response.data.member_list);
 			setShowLoadingBar(false);
 		}).catch(e => {
 			console.log(e);
@@ -95,7 +104,7 @@ export default function ProjectInfoForm(props) {
 
 	// 필드 값 변경 시, 임시로 값 저장
 	const handleChange = event => {
-		if(event.target.name == 'transport_ct') {	// 결제금액 특수문자 제거
+		if(event.target.name == 'TRANSPORT_CT') {	// 결제금액 특수문자 제거
 			event.target.value = event.target.value.replace(/[^0-9]/g, '');
 		}
 		setDataState({
@@ -107,20 +116,32 @@ export default function ProjectInfoForm(props) {
 	const handleChangeBgnDate = (date) => {
 		setDataState({
 			...dataState,
-			bgnde: Moment(date).format('YYYY-MM-DD')
+			BGNDE: Moment(date).format('YYYY-MM-DD')
 		});
 	}
 
 	const handleChangeEndDate = (date) => {
 		setDataState({
 			...dataState,
-			endde: Moment(date).format('YYYY-MM-DD')
+			ENDDE: Moment(date).format('YYYY-MM-DD')
 		});
 	}
 
 	const handleClickAddProject = () => {
-		alert("등록 되었습니다.");
-		history.goBack();
+		setShowLoadingBar(true);
+
+		axios({
+			url: '/intranet/insertProject',
+			method: 'post',
+			data: dataState
+		}).then(response => {
+			alert("등록 되었습니다.");
+			setShowLoadingBar(false);
+		}).catch(e => {
+			console.log(e);
+			setShowLoadingBar(false);
+		});
+		//history.goBack();
 	}
 
 	const handleClickRemoveProject = () => {
@@ -169,11 +190,11 @@ export default function ProjectInfoForm(props) {
 								<TableCell align="left" component="th" scope="row" style={{ width: '120px' }}>프로젝트명</TableCell>
 								<TableCell align="left">
 									<TextField
-										id="project_nm"
-										name="project_nm"
+										id="PROJECT_NM"
+										name="PROJECT_NM"
 										margin="dense"
 										variant="outlined"
-										defaultValue={dataState.project_nm}
+										defaultValue={dataState.PROJECT_NM}
 										onChange={handleChange}
 										fullWidth
 									>
@@ -184,14 +205,19 @@ export default function ProjectInfoForm(props) {
 								<TableCell align="left" component="th" scope="row">발주처</TableCell>
 								<TableCell align="left">
 									<TextField
-										id="instt_code"
-										name="instt_code"
+										id="INSTT_CODE"
+										name="INSTT_CODE"
 										margin="dense"
 										variant="outlined"
 										onChange={handleChange}
-										value={dataState.instt_code}
+										value={dataState.INSTT_CODE}
 										fullWidth
 										select>
+										{instt_list.map(info => (
+											<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
+												{info.CODE_NAME}
+											</MenuItem>
+										))}
 									</TextField>
 								</TableCell>
 							</TableRow>
@@ -203,12 +229,12 @@ export default function ProjectInfoForm(props) {
 											<DatePicker
 												locale='ko'
 												margin="dense"
-												id="bgnde"
-												name="bgnde"
+												id="BGNDE"
+												name="BGNDE"
 												views={["year", "month", "date"]}
 												format="yyyy-MM-dd"
-												minDate={new Date()}
-												value={new Date()}
+												/* minDate={new Date()} */
+												value={dataState.BGNDE}
 												onChange={handleChangeBgnDate}
 												inputVariant="outlined"
 												readOnly={false}
@@ -227,12 +253,12 @@ export default function ProjectInfoForm(props) {
 											<DatePicker
 												locale='ko'
 												margin="dense"
-												id="endde"
-												name="endde"
+												id="ENDDE"
+												name="ENDDE"
 												views={["year", "month", "date"]}
 												format="yyyy-MM-dd"
-												maxDate={dataState.endde}
-												value={new Date()}
+												/* maxDate={dataState.ENDDE} */
+												value={dataState.ENDDE}
 												onChange={handleChangeEndDate}
 												inputVariant="outlined"
 												readOnly={false}
@@ -246,14 +272,13 @@ export default function ProjectInfoForm(props) {
 								<TableCell align="left" component="th" scope="row">교통비</TableCell>
 								<TableCell align="left">
 									<CurrencyTextField
-										id="transport_ct"
-										name="transport_ct"
+										id="TRANSPORT_CT"
+										name="TRANSPORT_CT"
 										variant="outlined"
 										currencySymbol="￦"
 										minimumValue="0"
 										decimalPlaces={0}
-										defaultValue={dataState.pay}
-										defaultValue={dataState.transport_ct}
+										defaultValue={dataState.TRANSPORT_CT}
 										onChange={handleChange}
 										fullWidth
 									/>
@@ -263,13 +288,18 @@ export default function ProjectInfoForm(props) {
 								<TableCell align="left" component="th" scope="row">PM</TableCell>
 								<TableCell align="left">
 									<TextField
-										id="pm"
-										name="pm"
+										id="PM"
+										name="PM"
 										variant="outlined"
 										onChange={handleChange}
-										value={dataState.pm}
+										value={dataState.PM}
 										fullWidth
 										select>
+										{member_list.map(info => (
+											<MenuItem key={info.member_no} value={info.member_no}>
+												{info.name}
+											</MenuItem>
+										))}
 									</TextField>
 								</TableCell>
 							</TableRow>

@@ -31,7 +31,7 @@ export default function ManageView(props) {
   console.log(props);
   const classes = mainStyles();
   const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
-  const [projectOriginInfo, setProjectOriginInfo] = useState([]);
+  const [projectOriginInfo, setProjectOriginInfo] = useState([], []);
   const [projectInfo, setProjectInfo] = useState([]);
   const [condition, setCondition] = useState({
     searchType: 		[],
@@ -45,8 +45,9 @@ export default function ManageView(props) {
       method: 'post',
       data: {}
     }).then(response => {
-      var result = JSON.parse(response.data.list);
-      result = !result ? [] : result;
+      var result = response.data.project_list;
+      console.log("result : ");
+      console.log(result);
       setProjectOriginInfo(result);
       setProjectInfo(result);
       setShowLoadingBar(false);

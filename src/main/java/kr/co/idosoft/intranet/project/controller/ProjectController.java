@@ -48,16 +48,15 @@ public class ProjectController {
 		// 검색 조건 제외하고 개발중..
 		Map<String, Object> data = new HashMap<>();
 		
-		//List<Map<String, Object>> list = historyService.selectList();
+		List<Map<String, Object>> project_list = projectService.selectAllList();
 		
 		String jsonArrayList 	= null;
 		String jsonObjectData 	= null;
 		
-		//jsonArrayList = JsonUtils.getJsonStringFromList(); 	// JSONARRAY 변환
+		List<Map<String, Object>> code_list = codetService.getLowCodeList((String) params.get("CODE_ID"));
 		
-		mv.addObject("list", jsonArrayList);
-		mv.addObject("result", jsonObjectData);
-		
+		mv.addObject("project_list", project_list);
+		mv.addObject("code_list", code_list);
 		return mv;
 	}
 	
@@ -79,13 +78,45 @@ public class ProjectController {
 		//List<Map<String, Object>> list = historyService.selectList();
 		
 		String jsonArrayList 	= null;
-		String jsonObjectData 	= null;
+		//String jsonObjectData 	= null;
 		
-		//jsonArrayList = JsonUtils.getJsonStringFromList(); 	// JSONARRAY 변환
 		
-		mv.addObject("list", jsonArrayList);
-		mv.addObject("result", jsonObjectData);
+		List<Map<String, Object>> code_list = codetService.getLowCodeList((String) params.get("CODE_ID"));
+		//jsonArrayList = JsonUtils.getJsonStringFromList(code_list); 	// JSONARRAY 변환
 		
+		List<Object> member_list = memberService.selectMemberList();
+		
+		mv.addObject("code_list", code_list);
+		mv.addObject("member_list", member_list);
+		
+		return mv;
+	}
+	
+	@RequestMapping(value="/insertProject",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView insertProject(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		HttpSession session = request.getSession();
+		
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		params.put("REG_ID", mno);		//등록자 사번 추가
+		params.put("BGNDE", ((String)params.get("BGNDE")).replace("-", ""));
+		params.put("ENDDE", ((String)params.get("ENDDE")).replace("-", ""));
+		
+		boolean result = true;
+		try {
+			
+			projectService.insert((HashMap<String, Object>)params);
+		}catch(Exception e) {
+			result = false;
+		}
 		return mv;
 	}
 }
