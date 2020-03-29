@@ -6,6 +6,7 @@ import Axios from 'axios';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import { processErrCode, isEmpty } from '../../../../js/util'
+import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
 
 export default function  List(props) {
 	const [state, setState] = React.useState({
@@ -28,10 +29,11 @@ export default function  List(props) {
     const [ page, setPage ] = React.useState(0);                 // 초기페이지가 0부터 시작
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
 	const [isAdmin, setIsAdmin] = React.useState("0");
-
+	// 로딩바
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false);    //loading bar
 	useEffect(() => {
 		console.log("call useEffect");
-
+		setShowLoadingBar(true);
 		Axios({
 			url: '/intranet/getApprovalList.exp',
 			method: 'post',
@@ -57,9 +59,12 @@ export default function  List(props) {
 			} else {
 				alert("결재 권한이 없는 직원입니다.", history.back());
 			}
+
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 		
 	}, []);
@@ -68,6 +73,7 @@ export default function  List(props) {
 		<Fragment>
 				{firstRender &&
 				<>
+					<LoadingBar openLoading={isShowLoadingBar}/>
 					<Fragment>
 						<Filter 
 							filterRows={rows} filterSetRows={setRows}
