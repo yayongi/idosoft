@@ -113,7 +113,7 @@ export default function  View(props) {
 
 	const classes = useStyles();
 	
-	const loginSession = sessionStorage.getItem("loginSession");
+	const loginSession = JSON.parse(sessionStorage.getItem("loginSession"));
 	// step 처리 
 	const getStepInfo = (row) => {
 		let stepInfo = {
@@ -218,7 +218,7 @@ export default function  View(props) {
 				data = JSON.parse(response.data.result);
 
 				if(response.data.isAdmin != '1'){ // 관리자는 접근 가능
-					if(data.mno != loginSession.MEMBER_NO){ // 로그인 세션의 사번과 경비 정보에 등록된 사번을 비교한다.
+					if(data.mno != loginSession.member_NO){ // 로그인 세션의 사번과 경비 정보에 등록된 사번을 비교한다.
 						return alert("권한이 없는 직원입니다.", history.goBack());
 					}
 				}

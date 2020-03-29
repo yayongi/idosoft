@@ -132,7 +132,7 @@ export default function  View(props) {
 
 	let data 		= {}; // 목록에서 선택한 데이터
 	
-	const loginSession = sessionStorage.getItem("loginSession");
+	const loginSession = JSON.stringify(sessionStorage.getItem("loginSession"));
 
 	React.useEffect(() => { // render 완료 후, 호출
 		console.log("call useEffect");
@@ -181,7 +181,7 @@ export default function  View(props) {
 	// 버튼 여부  활성화
 	const giveAuthorization = () => {
 		let isAuth = false;
-		const mno = loginSession.MEMBER_NO;
+		const mno = loginSession.member_NO;
 
 		console.log(`giveAuthorization :: dataState.status : ${dataState.status}`);
 		console.log(`giveAuthorization :: isAdmin : ${isAdmin}`);
