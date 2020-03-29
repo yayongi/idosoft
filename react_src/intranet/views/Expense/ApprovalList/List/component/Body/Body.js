@@ -39,7 +39,7 @@ function Body(props) {
       { id: 'payDate', label: '결제일', minWidth: 100, align: 'center', paddingLeft : 50 },
     ];
 
-    const loginSession = sessionStorage.getItem("loginSession"); // 세션 정보
+    const loginSession = JSON.parse(sessionStorage.getItem("loginSession")); // 세션 정보
 
    
 
@@ -177,7 +177,7 @@ function Body(props) {
     // 버튼 여부  활성화
     const giveAuthorization = (status, prevAuthPersonNO, authPersonNO) => {
       let isAuth = false;
-      const mno = loginSession.MEMBER_NO;
+      const mno = loginSession.member_NO;
 
       console.log(`giveAuthorization :: dataState.status : ${status}`);
       console.log(`giveAuthorization :: isAdmin : ${isAdmin}`);

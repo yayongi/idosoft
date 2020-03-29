@@ -247,6 +247,7 @@
 				AND A.USE_CN LIKE '%' + #{memo} + '%'
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND A.SANCTN_STTUS_CODE = 'SS0002'
 		</where>
 	</select>
 	<!-- 결재처리 -->
@@ -456,4 +457,72 @@
 		</where>
 	</update>
 	
+	<!-- 경비 월 통계 -->
+	<select id="getMonthlyExpenseStatistics" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			A.MEMBER_NO MEMBER_NO
+			, B.NAME NAME
+			, C.CODE_NAME POSITION
+			, SUM(A.USE_AMOUNT) TOTAL_AMOUNT
+		FROM 
+			TB_EXPENSE A
+			LEFT JOIN TB_MEMBER B
+			ON A.MEMBER_NO = B.MEMBER_NO
+			LEFT JOIN TB_CODE C
+			ON B.POSITION = C.CODE_ID
+		WHERE 
+			DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
+				BETWEEN DATE_FORMAT(#{REG_START_DATE}, '%Y-%m-%d') 
+				AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
+		GROUP BY A.MEMBER_NO
+		ORDER BY B.NAME ASC
+	</select>
+	<!-- 경비 월 통계 개인 내역 -->
+	<select id="getMonthlyExpenseRecode" parameterType="hashmap" resultType="hashmap">
+	SELECT 
+		 A.EXPENS_NO EXPENSE_NO
+		, A.MEMBER_NO MEMBER_NO
+		, D.CODE_NAME
+		, A.USE_CN USE_CN
+		, B.NAME NAME
+		, C.CODE_NAME POSITION
+		, A.USE_AMOUNT AMOUNT
+		, A.USE_DATE USE_DATE
+	FROM TB_EXPENSE A
+	LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+	LEFT JOIN TB_CODE C
+		ON B.POSITION = C.CODE_ID
+	LEFT JOIN TB_CODE D
+		ON A.EXPENS_TY_CODE = D.CODE_ID
+	<where>
+		AND A.MEMBER_NO = #{MEMBER_NO}
+		AND DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
+			BETWEEN DATE_FORMAT(#{REG_START_DATE}, '%Y-%m-%d') 
+				AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
+	</where> 
+	</select>
+	
+	<select id="getMonthTotalAmount" parameterType="hashmap" resultType="_int">
+	SELECT 
+		SUM(A.USE_AMOUNT) TOTTAL_AMOUNT
+	FROM TB_EXPENSE A
+	WHERE 
+		DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
+			BETWEEN DATE_FORMAT('2020-03-01', '%Y-%m-%d') 
+			AND DATE_FORMAT('2020-03-31', '%Y-%m-%d')
+	</select>
+	
+	<select id="getIndiMonthTotalAmount" parameterType="hashmap" resultType="_int">
+	SELECT 
+		SUM(A.USE_AMOUNT) TOTTAL_AMOUNT
+	FROM TB_EXPENSE A
+	<where>
+	AND DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
+		BETWEEN DATE_FORMAT('2020-03-01', '%Y-%m-%d') 
+		AND DATE_FORMAT('2020-03-31', '%Y-%m-%d')
+	AND MEMBER_NO = #{MEMBER_NO}
+	</where>
+				
+	</select>
 </mapper>

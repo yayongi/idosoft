@@ -51,7 +51,7 @@ export const useStyles = makeStyles (theme => ({
 		flex: 1,
 	},
 	table: {
-		minWidth: 700,
+		minWidth: 400,
 	},
 	margin_1 : {
 		margin: theme.spacing(3),
