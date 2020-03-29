@@ -65,6 +65,8 @@ const MemberReg = (props) => {
   const pathProfile = "\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
   const pathItcert = "\\itCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
   const pathSchoolcert = "\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+
+  const { routeProps } = props;
   
   const [state, setState] = React.useState({
     profile : null,
@@ -324,29 +326,29 @@ const MemberReg = (props) => {
     }
 	}
 
-  const uploadProfileImg = (event,pathProfile) => {
-    uploadFile(event,pathProfile);
+  const uploadProfileImg = (event,pathProfile,prefilename) => {
+    uploadFile(event,pathProfile,prefilename);
     setState({
       ...state,
-      profile : pathProfile + event.target.files[0].name
+      profile : event.target.files[0].name
     })
   }
 
-  const uploadCertImg = (event,pathItcert) => {
-    uploadFile(event,pathItcert);
+  const uploadCertImg = (event,pathItcert,prefilename) => {
+    uploadFile(event,pathItcert,prefilename);
 
     setState({
       ...state,
-      certFile : pathProfile + event.target.files[0].name
+      certFile : event.target.files[0].name
     })
   }
 
-  const uploadSchoolImg = (event,pathSchoolcert) => {
-    uploadFile(event,pathSchoolcert);
+  const uploadSchoolImg = (event,pathSchoolcert,prefilename) => {
+    uploadFile(event,pathSchoolcert,prefilename);
 
     setState({
       ...state,
-      schoolFile : pathProfile + event.target.files[0].name
+      schoolFile : event.target.files[0].name
     })
   }
 
@@ -374,9 +376,6 @@ const MemberReg = (props) => {
       birth_date : Moment(date).format('YYYY-MM-DD')
     })
   }
-  
-  
-
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
@@ -397,13 +396,13 @@ const MemberReg = (props) => {
                   height:'100%'
                 }}>
                   <div style={{textAlign:'-webkit-center'}}>
-                    <Avatar src="" className={classes.large} />
+                    <Avatar src="../../img/photo.jpg" className={classes.large} />
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
-                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile)}/>
-                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert)}/>
-                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert)}/>
+                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile,state.profile)}/>
+                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert,state.certFile)}/>
+                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert,state.schoolFile)}/>
                       <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
                                                 프로필 업로드
                       </Button>
@@ -718,11 +717,9 @@ const MemberReg = (props) => {
                       <Button variant="contained" color="primary" onClick={() => setValidationLevel()}>
                               저장하기
                       </Button>
-                      <RouterLink button="true" to="/member/" className={classes.router_link}>
-                        <Button variant="contained" color="primary">
-                                뒤로가기
-                        </Button>
-                      </RouterLink>
+                      <Button variant="contained" color="primary" onClick={() => routeProps.history.back()}>
+                              뒤로가기
+                      </Button>
                     </div>
                   </form>
                 </CardContent>

@@ -115,14 +115,14 @@ export function isValidNum(){
 }
 
 // 파일 업로드
-export function uploadFile(event,path){
+export function uploadFile(event,path,prefilename){
   const formData = new FormData();
 
   console.log('files[0] : ' + JSON.stringify(event.target.files));
   console.log('path : ' + path);
   formData.append('file', event.target.files[0]);
   formData.append('path', path);
-  formData.append('prefilename',"test.txt");
+  formData.append('prefilename',prefilename);
 
   const property = {
     url : '/intranet/fileUpload',
