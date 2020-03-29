@@ -20,7 +20,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-
+import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -382,175 +382,180 @@ export default function  View(props) {
 					</Stepper>
 				</div>
 				<Divider/>
-
-				<TableContainer component={Paper} style={{marginBottom:'10px'}}>
-					<Table aria-label="simple table">
-						<TableHead>
-							<TableRow>
-								<TableCell align="left" colSpan="2">
-									<Typography className={classes.title} color="inherit" variant="h6">					
-										등록자 정보
-									</Typography>
-								</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							<TableRow>
-								<TableCell align="left" component="th" scope="row" style={{width: '120px'}}>등록자</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="register"
-										name="register"
-										margin="dense"
-										value={dataState.name}
-										InputProps={{
-											readOnly: true,
-										}}
-										variant="outlined"
-										
-									/>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell align="left" component="th" scope="row">연락처</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="tel"
-										name="tel"
-										margin="dense"
-										value={phoneFormatter(dataState.phone)}
-										variant="outlined"
-										InputProps={{
-											readOnly: true,
-										}}
-									/>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell align="left" component="th" scope="row">이메일</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="email"
-										name="email"
-										margin="dense"
-										value={dataState.email}
-										variant="outlined"
-										InputProps={{
-											readOnly: true,
-										}}
-									/>
-								</TableCell>
-							</TableRow>
-						</TableBody>
-					</Table>
-				</TableContainer>
-				<Divider/>
-				<TableContainer component={Paper} style={{marginBottom:'10px'}}>
-					<Table aria-label="simple table">
-						<TableHead>
-							<TableRow>
-								<TableCell align="left" colSpan="2">
-									<Typography className={classes.title} color="inherit" variant="h6" >
-										경비 정보
-									</Typography>
-								</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							<TableRow>
-								<TableCell align="left" component="th" scope="row" style={{width: '120px'}}>경비유형</TableCell>
-								<TableCell align="left">
-									{expenseTypes.map((option, idx) => (
-										(dataState.expenseType == option.value) && 
+				<Grid container spacing={3}>
+					<Grid item xs={12} sm={6}>
+						<TableContainer component={Paper} style={{marginBottom:'10px'}}>
+							<Table aria-label="simple table">
+								<TableHead>
+									<TableRow>
+										<TableCell align="left" colSpan="2">
+											<Typography className={classes.title} color="inherit" variant="h6">					
+												등록자 정보
+											</Typography>
+										</TableCell>
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									<TableRow>
+										<TableCell align="left" component="th" scope="row" style={{width: '120px'}}>등록자</TableCell>
+										<TableCell align="left">
+											<TextField
+												id="register"
+												name="register"
+												margin="dense"
+												value={dataState.name}
+												InputProps={{
+													readOnly: true,
+												}}
+												variant="outlined"
+												
+											/>
+										</TableCell>
+									</TableRow>
+									<TableRow>
+										<TableCell align="left" component="th" scope="row">연락처</TableCell>
+										<TableCell align="left">
+											<TextField
+												id="tel"
+												name="tel"
+												margin="dense"
+												value={phoneFormatter(dataState.phone)}
+												variant="outlined"
+												InputProps={{
+													readOnly: true,
+												}}
+											/>
+										</TableCell>
+									</TableRow>
+									<TableRow>
+										<TableCell align="left" component="th" scope="row">이메일</TableCell>
+										<TableCell align="left">
+											<TextField
+												id="email"
+												name="email"
+												margin="dense"
+												value={dataState.email}
+												variant="outlined"
+												InputProps={{
+													readOnly: true,
+												}}
+											/>
+										</TableCell>
+									</TableRow>
+								</TableBody>
+							</Table>
+						</TableContainer>
+					</Grid>
+					<Grid item xs={12} sm={6}>
+					<TableContainer component={Paper} style={{marginBottom:'10px'}}>
+						<Table aria-label="simple table">
+							<TableHead>
+								<TableRow>
+									<TableCell align="left" colSpan="2">
+										<Typography className={classes.title} color="inherit" variant="h6" >
+											경비 정보
+										</Typography>
+									</TableCell>
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								<TableRow>
+									<TableCell align="left" component="th" scope="row" style={{width: '120px'}}>경비유형</TableCell>
+									<TableCell align="left">
+										{expenseTypes.map((option, idx) => (
+											(dataState.expenseType == option.value) && 
+											<TextField
+												id="expenseType"
+												name="expenseType"
+												select
+												margin="dense"
+												variant="outlined"
+												value={option.value}
+												InputProps={{
+													readOnly: true,
+												}}
+											>
+												{expenseTypes.map((option, idx) => (
+													<MenuItem key={option.value} value={option.value}>
+														{option.label}
+													</MenuItem>
+												))}
+											</TextField>
+										))}
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell align="left" component="th" scope="row">결제일</TableCell>
+									<TableCell align="left">
 										<TextField
-											id="expenseType"
-											name="expenseType"
-											select
+											id="regDate"
+											name="regDate"
 											margin="dense"
-											variant="outlined"
-											value={option.value}
+											value={dataState.payDate}
 											InputProps={{
 												readOnly: true,
 											}}
-										>
-											{expenseTypes.map((option, idx) => (
-												<MenuItem key={option.value} value={option.value}>
-													{option.label}
-												</MenuItem>
-											))}
-										</TextField>
-									))}
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell align="left" component="th" scope="row">결제일</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="regDate"
-										name="regDate"
-										margin="dense"
-										value={dataState.payDate}
-										InputProps={{
-											readOnly: true,
-										}}
-										variant="outlined"
-									/>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell align="left" component="th" scope="row">금액</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="pay"
-										name="pay"
-										margin="dense"
-										value={dataState.pay}
-										InputProps={{
-											readOnly: true,
-										}}
-										variant="outlined"
-									/>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell align="left" component="th" scope="row">내용</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="memo"
-										name="memo"
-										rows="5"
-										value={dataState.memo}
-										variant="outlined"
-										InputProps={{
-											readOnly: true,
-										}}
-										multiline
-										fullWidth
-									/>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell align="left" component="th" scope="row">영수증</TableCell>
-								<TableCell align="left">
-									<Card className={classes.root}>
-										<CardContent>
-											<div name="image">
-												<img
-													src={dataState.filePath}
-													title="image"
-													id="image"
-												/>
-											</div>
-										</CardContent>
-										<CardActions>
-											<Button size="small" onClick={printImageArea}>인쇄</Button>
-										</CardActions>
-										</Card>
-								</TableCell>
-							</TableRow>
-						</TableBody>
-					</Table>
-				</TableContainer>
+											variant="outlined"
+										/>
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell align="left" component="th" scope="row">금액</TableCell>
+									<TableCell align="left">
+										<TextField
+											id="pay"
+											name="pay"
+											margin="dense"
+											value={Number(dataState.pay).toLocaleString()}
+											InputProps={{
+												readOnly: true,
+											}}
+											variant="outlined"
+										/>
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell align="left" component="th" scope="row">내용</TableCell>
+									<TableCell align="left">
+										<TextField
+											id="memo"
+											name="memo"
+											rows="5"
+											value={dataState.memo}
+											variant="outlined"
+											InputProps={{
+												readOnly: true,
+											}}
+											multiline
+											fullWidth
+										/>
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell align="left" component="th" scope="row">영수증</TableCell>
+									<TableCell align="left">
+										<Card className={classes.root}>
+											<CardContent>
+												<div name="image">
+													<img
+														src={dataState.filePath}
+														title="image"
+														id="image"
+													/>
+												</div>
+											</CardContent>
+											<CardActions>
+												<Button size="small" onClick={printImageArea}>인쇄</Button>
+											</CardActions>
+											</Card>
+									</TableCell>
+								</TableRow>
+							</TableBody>
+						</Table>
+					</TableContainer>
+					</Grid>
+				</Grid>
+				
 				<Divider/>
 				<TableContainer component={Paper} style={{marginBottom:'10px'}}>
 					<Table aria-label="simple table">
