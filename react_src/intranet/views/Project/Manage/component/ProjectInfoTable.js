@@ -91,7 +91,7 @@ function ProjectInfo(props) {
                 <TableRow hover
                   role="checkbox"
                   tabIndex={-1}
-                  key={row.project_no}
+                  key={row.PROJECT_NO}
                   onClick={() => handleClickDetailView(event, row)} // react router의 상세
                 >
                   {columns.map((column, idx) => {

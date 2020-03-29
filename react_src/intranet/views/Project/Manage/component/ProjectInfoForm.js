@@ -135,13 +135,18 @@ export default function ProjectInfoForm(props) {
 			method: 'post',
 			data: dataState
 		}).then(response => {
-			alert("등록 되었습니다.");
+			if(!response.data.isDBError){
+				alert("등록 되었습니다.");
+				history.goBack();
+			}else{
+				alert("등록 실패했습니다.");
+			}
 			setShowLoadingBar(false);
 		}).catch(e => {
 			console.log(e);
 			setShowLoadingBar(false);
 		});
-		//history.goBack();
+		
 	}
 
 	const handleClickRemoveProject = () => {

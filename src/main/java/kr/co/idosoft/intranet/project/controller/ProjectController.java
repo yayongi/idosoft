@@ -50,9 +50,6 @@ public class ProjectController {
 		
 		List<Map<String, Object>> project_list = projectService.selectAllList();
 		
-		String jsonArrayList 	= null;
-		String jsonObjectData 	= null;
-		
 		List<Map<String, Object>> code_list = codetService.getLowCodeList((String) params.get("CODE_ID"));
 		
 		mv.addObject("project_list", project_list);
@@ -110,13 +107,15 @@ public class ProjectController {
 		params.put("BGNDE", ((String)params.get("BGNDE")).replace("-", ""));
 		params.put("ENDDE", ((String)params.get("ENDDE")).replace("-", ""));
 		
-		boolean result = true;
+		boolean db_result = false;
 		try {
 			
 			projectService.insert((HashMap<String, Object>)params);
 		}catch(Exception e) {
-			result = false;
+			LOG.debug("디비 에러남 DB ERROR");
+			db_result = true;
 		}
+		mv.addObject("isDBError", db_result);
 		return mv;
 	}
 }

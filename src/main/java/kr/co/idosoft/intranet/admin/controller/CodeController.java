@@ -92,16 +92,14 @@ public class CodeController {
 		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
 		params.put("REG_ID", mno);		//등록자 사번 추가
 		
-		boolean result = true;
+		boolean db_result = false;
 		try {
 			codeService.insert(params);
 		}catch(Exception e) {
-			result = false;
+			db_result = true;
 		}
-		
-		mv.addObject("isSuccess", result);
+		mv.addObject("isDBError", db_result);
 		mv.addObject("result", jsonObjectData);
-		
 		return mv;
 	}
 	
@@ -123,7 +121,6 @@ public class CodeController {
 		
 		// 검색 조건 제외하고 개발중..
 		
-		String jsonArrayList 	= null;
 		String jsonObjectData 	= null;
 		
 		HttpSession session = request.getSession();
@@ -132,14 +129,13 @@ public class CodeController {
 		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
 		params.put("REG_ID", mno);		//등록자 사번 추가
 		
-		boolean result = true;
+		boolean db_result = false;
 		try {
 			codeService.deleteInfo((String)params.get("CODE_ID"));
 		}catch(Exception e) {
-			result = false;
+			db_result = true;
 		}
-		
-		mv.addObject("isSuccess", result);
+		mv.addObject("isDBError", db_result);
 		mv.addObject("result", jsonObjectData);
 		
 		return mv;
@@ -172,14 +168,13 @@ public class CodeController {
 		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
 		params.put("UPD_ID", mno);		//등록자 사번 추가
 		
-		boolean result = true;
+		boolean db_result = false;
 		try {
 			codeService.update(params);
 		}catch(Exception e) {
-			result = false;
+			db_result = true;
 		}
-		
-		mv.addObject("isSuccess", result);
+		mv.addObject("isDBError", db_result);
 		mv.addObject("result", jsonObjectData);
 		
 		return mv;

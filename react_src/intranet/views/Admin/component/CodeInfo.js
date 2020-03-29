@@ -138,10 +138,14 @@ export default function CodeInfo(props) {
 			method: 'post',
 			data: sendData
 		}).then(response => {
-			console.log(response);
-			getOrigin();
-			setShowTotalInfoTable(true);
-			setShowLoadingBar(false);
+			if(!response.data.isDBError){
+				console.log(response);
+				getOrigin();
+				setShowTotalInfoTable(true);
+			}else{
+				alert("DB insert에 실패했습니다.");
+			}
+				setShowLoadingBar(false);
 		}).catch(e => {
 			console.log(e);
 			setShowLoadingBar(false);
@@ -159,10 +163,14 @@ export default function CodeInfo(props) {
 			method: 'post',
 			data: dataState
 		}).then(response => {
-			console.log(response);
-			alert("수정했습니다.");
-			getOrigin();
-			setShowTotalInfoTable(true);
+			if(!response.data.isDBError){
+				console.log(response);
+				alert("수정했습니다.");
+				getOrigin();
+				setShowTotalInfoTable(true);
+			}else{
+				alert("수정에 실패했습니다.");
+			}
 			setShowLoadingBar(false);
 		}).catch(e => {
 			console.log(e);
@@ -181,10 +189,14 @@ export default function CodeInfo(props) {
 			method: 'post',
 			data: {"CODE_ID": detailCodeInfo["CODE_ID"]}
 		}).then(response => {
-			console.log(response);
-			alert("삭제했습니다.");
-			getOrigin();
-			setShowTotalInfoTable(true);
+			if(!response.data.isDBError){
+				console.log(response);
+				alert("삭제했습니다.");
+				getOrigin();
+				setShowTotalInfoTable(true);
+			}else{
+				alert("삭제 실패했습니다.");
+			}
 			setShowLoadingBar(false);
 		}).catch(e => {
 			console.log(e);
