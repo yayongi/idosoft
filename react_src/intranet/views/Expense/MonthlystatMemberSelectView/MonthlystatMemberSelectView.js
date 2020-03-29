@@ -1,7 +1,6 @@
 
 import React, { Fragment } from 'react';
 
-import Fab from '@material-ui/core/Fab';
 import SaveIcon from '@material-ui/icons/Save';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -19,7 +18,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-
+import FilterListIcon from '@material-ui/icons/FilterList';
+import AddIcon from '@material-ui/icons/Add';
+import Typography from '@material-ui/core/Typography';
+import { Divider, Button, Hidden } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
@@ -204,6 +206,24 @@ import {data_2020_03, data_2020_01,data_2019_12, data_2019_11
 
 	return (
 		<Fragment>
+			<Toolbar className={classes.root}>
+				<Typography className={classes.title} color="secondary" variant="subtitle2">					
+				</Typography>
+				<div className={classes.container}>
+					<Hidden smDown>
+						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={excelExport} className={classes.button}>
+							엑셀 내보내기
+						</Button>
+					</Hidden>
+					<Hidden mdUp>
+						<IconButton color="primary" onClick={excelExport} className={classes.button}>
+							<SaveIcon />
+						</IconButton>
+					</Hidden>
+				</div>
+			</Toolbar>
+			
+			<Divider />
 			<Card>
 				<CardContent>
 					<Grid container spacing={3}>
@@ -244,10 +264,6 @@ import {data_2020_03, data_2020_01,data_2019_12, data_2019_11
 					</Grid>
 				</CardContent>
 			</Card>
-			<Fab variant="extended" color="primary" aria-label="add" className={classes.fab} onClick={excelDownload}>
-				<SaveIcon className={classes.saveIcon} />
-				엑셀다운로드
-			</Fab>
 
 			{/* Diallog Area START */}
 
@@ -266,10 +282,10 @@ import {data_2020_03, data_2020_01,data_2019_12, data_2019_11
 							<h4>총 금액 : {(Number)(indiTotalExpense).toLocaleString()} 원</h4> 
 						</Grid>
 						<Grid item xs={6} className={classes.right}>
-							<Fab variant="extended" color="primary" aria-label="add" className={classes.fab} onClick={indiExcelDownload}>
+							{/* <Fab variant="extended" color="primary" aria-label="add" className={classes.fab} onClick={indiExcelDownload}>
 								<SaveIcon className={classes.saveIcon} />
 								엑셀다운로드
-							</Fab>
+							</Fab> */}
 						</Grid>
 					</Grid>
 					<div style={{height : 20}}></div>
