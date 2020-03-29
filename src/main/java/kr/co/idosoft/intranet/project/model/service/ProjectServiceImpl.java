@@ -46,10 +46,23 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
+	public String selectMaxProject() {
+		// TODO Auto-generated method stub
+		return dao.selectMaxProject();
+	}
+	
+	
+	@Override
 	public List<Map<String, Object>> selectAllList() {
 		// TODO Auto-generated method stub
 		return dao.selectAllList();
 	}
-	
+
+	@Override
+	public void insertProjectMember(HashMap<String, Object> insert) {
+		// TODO Auto-generated method stub
+		dao.insert_member(insert);
+	}
+
 
 }

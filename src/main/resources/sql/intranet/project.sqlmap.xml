@@ -103,4 +103,23 @@
 			LEFT JOIN TB_MEMBER AS C ON A.PM = C.MEMBER_NO
 		ORDER BY PROJECT_NO
 	</select>
+	
+	<select id="selectMaxProject" resultType="String">
+		SELECT MAX(PROJECT_NO) FROM TB_PROJECT;
+	</select>
+	
+	
+	<!-- 프로젝트 멤버(투입인원 관련 쿼리문) -->
+	<!-- 프로젝트 멤버 등록 -->
+	<insert id="insert_member" parameterType="hashmap">
+		INSERT INTO TB_PROJECT_MEMBER 
+			(MEMBER_NO, PROJECT_NO, INPT_BGNDE, INPT_ENDDE, ROLE_CODE,
+			CHRG_JOB, USE_LANG, REG_DATETIME, UPD_DATETIME, REG_ID, UPD_ID, NOTE, TEMP_COLUM)		
+		VALUES 
+			(#{MEMBER_NO}, #{PROJECT_NO}, #{INPT_BGNDE}, #{INPT_ENDDE}, #{ROLE_CODE},
+			 #{CHRG_JOB}, #{USE_LANG}, DATE_FORMAT(NOW(),'%Y%m%d'), NULL, #{REG_ID}, NULL, "", "")
+	</insert>
+	
+	
+	
 </mapper>

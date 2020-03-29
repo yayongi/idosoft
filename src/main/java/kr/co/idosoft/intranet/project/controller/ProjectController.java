@@ -76,14 +76,16 @@ public class ProjectController {
 		
 		String jsonArrayList 	= null;
 		//String jsonObjectData 	= null;
+		List<String> inputCodeList = (List<String>)params.get("CODE_ID");
 		
-		
-		List<Map<String, Object>> code_list = codetService.getLowCodeList((String) params.get("CODE_ID"));
+		List<Map<String, Object>> code_list = codetService.getLowCodeList(inputCodeList.get(0));
+		List<Map<String, Object>> role_list = codetService.getLowCodeList(inputCodeList.get(1));
 		//jsonArrayList = JsonUtils.getJsonStringFromList(code_list); 	// JSONARRAY 변환
 		
 		List<Object> member_list = memberService.selectMemberList();
 		
 		mv.addObject("code_list", code_list);
+		mv.addObject("role_list", role_list);
 		mv.addObject("member_list", member_list);
 		
 		return mv;
@@ -99,18 +101,33 @@ public class ProjectController {
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
 		
-		HttpSession session = request.getSession();
+		HashMap<String, Object> dataState  = (HashMap<String, Object>)params.get("dataState");		//프로젝트 정보
+		List<HashMap<String, Object>> mdataState = (List<HashMap<String, Object>>)params.get("memDataState");	//프로젝트 투입인원 정보
 		
+		HttpSession session = request.getSession();
 		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
 		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
-		params.put("REG_ID", mno);		//등록자 사번 추가
-		params.put("BGNDE", ((String)params.get("BGNDE")).replace("-", ""));
-		params.put("ENDDE", ((String)params.get("ENDDE")).replace("-", ""));
+		dataState.put("REG_ID", mno);		//등록자 사번 추가
+		dataState.put("BGNDE", ((String)dataState.get("BGNDE")).replace("-", ""));
+		dataState.put("ENDDE", ((String)dataState.get("ENDDE")).replace("-", ""));
 		
 		boolean db_result = false;
 		try {
+			projectService.insert((HashMap<String, Object>)dataState);
 			
-			projectService.insert((HashMap<String, Object>)params);
+			String project_no = projectService.selectMaxProject();
+			for(HashMap<String, Object> tmp : mdataState) {
+				tmp.put("PROJECT_NO", project_no);
+				tmp.put("REG_ID", mno);
+				tmp.put("INPT_BGNDE", ((String)tmp.get("INPT_BGNDE")).replace("-", ""));
+				tmp.put("INPT_ENDDE", ((String)tmp.get("INPT_ENDDE")).replace("-", ""));
+				try {
+					projectService.insertProjectMember(tmp);
+				}catch(Exception e) {
+					continue;
+				}
+			}
+			
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			db_result = true;

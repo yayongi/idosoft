@@ -53,6 +53,20 @@ public class ProjectDaoImpl implements ProjectDao {
 		// TODO Auto-generated method stub
 		return (ArrayList)sqlTemplate.selectList("project.selectAllList");
 	}
+	
+	@Override
+	public String selectMaxProject() {
+		// TODO Auto-generated method stub
+		return sqlTemplate.selectOne("project.selectMaxProject");
+	}
+
+	@Override
+	public void insert_member(HashMap<String, Object> insert) {
+		sqlTemplate.insert("project.insert_member", insert);
+		
+	}
+
+	
 
 	
 	
