@@ -181,7 +181,7 @@ export default function  View(props) {
 
 		setDataState({
 			...dataState,
-			payDate: Moment(date).format('YYYYMMDD')
+			payDate: Moment(date).format('YYYY-MM-DD')
 		});
 	}
 	
@@ -544,7 +544,7 @@ export default function  View(props) {
 											views={["year", "month", "date"]}
 											format="yyyy-MM-dd" 
 											maxDate={new Date()}
-											value={dataState.payDate}
+											value={new Date(dataState.payDate)}
 											onChange={handleChangePayDate}
 											inputVariant="outlined"
 											readOnly={isReadOnly}
