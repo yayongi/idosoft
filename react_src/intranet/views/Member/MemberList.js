@@ -332,7 +332,7 @@ const MemberList = (props) => {
 	//전체 선택
 	const onSelectAllClick = () =>{
 		if (event.target.checked) {
-			const newSelecteds = state.memberList.map(datum => datum.id);
+			const newSelecteds = state.memberList.map(datum => datum.member_no);
 			setSelected(newSelecteds);
 			return;
 		}
@@ -382,12 +382,38 @@ const MemberList = (props) => {
 
 	// 맴버 엑셀 내보내기
 	const memberExcelExport = () =>{
-		let temp = state.memberList;
-		for(let i=0;i<selected.length;i++){
-			temp = temp.filter(temp => temp.member_no == String(selected[i]));
-		}
+		// let temp = [];
+		// for(let i=0;i<selected.length;i++){
+		// 	temp.push(state.memberList.find(row => row.member_no == String(selected[i])));
+		// }
 
-		excelExport(temp);
+		// console.log("temp : " + JSON.stringify(temp));
+
+		// excelExport(temp);
+
+		// 사원정보 엑셀 출력
+		axios({
+			url: '/intranet/member/exportexcel',
+			method: 'post',
+			data : {
+				selected : selected,
+				title : 'memberData.xls'
+			},
+			responseType: 'blob',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}).then(response => {
+			console.log("positionResult : " + JSON.stringify(response));
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', 'memberData.xls');
+			document.body.appendChild(link);
+			link.click();
+		}).catch(e => {
+			console.log(e);
+		});
 	}
 
 	return (

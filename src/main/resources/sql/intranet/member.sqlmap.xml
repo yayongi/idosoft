@@ -178,4 +178,42 @@
 			TB_MEMBER
 		WHERE MEMBER_NO LIKE CONCAT(#{member_no}, '%')
 	</select>
+	
+	<!-- 같은연도 사번 검색 -->
+	<select id="exportExcel" parameterType="String" resultType="java.util.LinkedHashMap">
+		SELECT
+		    MEMBER_NO,
+			EMAIL ,
+			NAME ,
+			POSITION, 
+			ADDRESS_1 ,
+			ADDRESS_2 ,
+			ZIP_CODE ,
+			PHONE_NUM ,
+			BIRTH_DATE ,
+			MARRIAGE_DATE ,
+			CAREER_DATE ,
+			ENTRY_DATE ,
+			SCHOOL_MAJOR ,
+			SCHOOL_CAREER ,
+			MOONCAL_YN ,
+			CERT_YN ,
+			MANAGER_YN ,
+			APPROVAL_YN ,
+			PHOTO_PATH ,
+			CERTFILE_JOB_PATH, 
+			CERTFILE_SCHOOL_PATH ,
+			UPD_DATE ,
+			RET_DATE ,
+			UPD_ID, 
+			NOTE ,
+			TEMP_COLUM 
+		FROM
+		    TB_MEMBER
+		WHERE
+		    MEMBER_NO IN
+	    <foreach collection="list" item="member_no"  open="(" close=")" separator=",">
+	        #{member_no}
+	    </foreach>
+	</select>
 </mapper>

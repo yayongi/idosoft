@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.member.model.service;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import kr.co.idosoft.intranet.member.vo.MemberVO;
@@ -27,4 +28,6 @@ public interface MemberService {
 	public int checkemail(MemberVO memberInfo);
 	// 동일 연도 사번 검색
 	public String findMemberNo(String member_no);
+	// 사원정보 엑셀 출력
+	public List<LinkedHashMap<String, Object>> exportExcel(List<String> member_no_list); 
 }

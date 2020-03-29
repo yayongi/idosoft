@@ -5,11 +5,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -18,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import kr.co.idosoft.intranet.member.vo.MemberVO;
 
 
 @Controller
@@ -135,4 +150,93 @@ public class fileController {
 			e.printStackTrace();
 		}
 	}
+	
+	// 엑셀 파일 생성 출력
+	public void exportExcel(List<LinkedHashMap<String,Object>> memberData, String title,HttpServletResponse response) throws IOException {
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		
+		Sheet sheet = workbook.createSheet("sheet");	//해당 파일이 생성 될 Sheet명
+	    Row row = null;									//행 ->
+	    Cell cell = null; 								// 행안에 한칸한칸
+	    int rowNo = 0;
+	    int cellNo = 0;
+	    
+	    //헤더 클자 Bold
+	    Font font = workbook.createFont();
+	    font.setBold(true);
+	    
+	    // 테이블 헤더용 스타일
+	    CellStyle headStyle = workbook.createCellStyle();
+
+	    headStyle.setBorderTop(BorderStyle.THIN);
+	    headStyle.setBorderBottom(BorderStyle.THIN);
+	    headStyle.setBorderLeft(BorderStyle.THIN);
+	    headStyle.setBorderRight(BorderStyle.THIN);
+	    headStyle.setFont(font);
+	    
+	    // 헤더 생성
+	    LinkedHashMap<String, Object> headerData = memberData.get(0);
+	    
+	    // 이터레이터 이용해서 key 값으로 헤더 만들기
+	    Set<String> set = headerData.keySet();
+	    Iterator<String> iterator = set.iterator();
+
+	    //0번 row
+	    row = sheet.createRow(rowNo++);
+	    
+	    // 데이터 맵핑용 리스트
+	    List<String> tempList = new ArrayList<String>();
+	    
+	    //Key 값을 헤더에 넣어 준다.
+	    while(iterator.hasNext()){
+			String key = (String)iterator.next();
+			cell = row.createCell(cellNo++);
+			cell.setCellStyle(headStyle);
+			cell.setCellValue(key);
+			tempList.add(key);
+    	}
+		
+	    // 데이터 부분 생성
+	    for(int i = 0; i < memberData.size();i++) {
+	    	LinkedHashMap<String, Object> data = new LinkedHashMap<String, Object>();
+	    	data = memberData.get(i);
+	    	row = sheet.createRow(rowNo++);
+	    	for(int j = 0;j < data.size();j++) {
+	    		cell = row.createCell(j);
+	    		
+	    		Object tempData = data.get(tempList.get(j));
+	    		
+	    		// 객체 타입에 따른 처리
+	    		if(tempData instanceof Boolean) {
+	    			cell.setCellValue((Boolean)tempData);
+	    		}else if(tempData instanceof String){
+	    			cell.setCellValue((String)tempData);
+	    		}
+	    	}
+	    	
+	    	// CELL 크기 자동 조정
+	    	for(int k = 0;k < data.size();k++) {
+	    		sheet.autoSizeColumn(k);
+	    	}
+	    }
+	    // 컨텐츠 타입과 파일명 지정
+	    response.setContentType("application/download;charset=utf-8");
+	    response.setHeader("Content-Disposition", "attachment;filename="+new String(title.getBytes("utf-8"),"8859_1"));
+		response.setHeader("Content-Transfer-Encoding", "binary");
+		//response.setHeader("filename", new String(title.getBytes("utf-8"),"8859_1"));
+	    
+	    // 엑셀 출력
+	    workbook.write(response.getOutputStream());
+	    workbook.close();
+	}
 }
+
+
+
+
+
+
+
+
+
+

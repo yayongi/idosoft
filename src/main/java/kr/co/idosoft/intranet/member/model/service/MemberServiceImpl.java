@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.member.model.service;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -71,6 +72,11 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public String findMemberNo(String member_no) {
 		return memberDao.findMemberNo(member_no);
+	}
+
+	@Override
+	public List<LinkedHashMap<String, Object>> exportExcel(List<String> member_no_list) {
+		return memberDao.exportExcel(member_no_list);
 	}
 	
 

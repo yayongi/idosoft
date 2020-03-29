@@ -2,10 +2,12 @@ package kr.co.idosoft.intranet.member.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,7 @@ import kr.co.idosoft.common.util.StringUtils;
 import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.member.model.service.MemberService;
 import kr.co.idosoft.intranet.member.vo.MemberVO;
+import kr.co.idosoft.intranet.util.fileController;
 
 @Controller
 public class MemberController {
@@ -168,6 +171,23 @@ public class MemberController {
 		}catch(Exception e) {
 			e.printStackTrace();
 			return 100;
+		}
+	}
+	
+	//사원 정보 엑셀 출력
+	@RequestMapping(value="/member/exportexcel", method=RequestMethod.POST)
+	@ResponseBody
+	public void exportExcel(Model model, @RequestBody HashMap<String,Object> data, HttpServletRequest request,HttpServletResponse response){
+		try {
+			// 선택된 직원 정보 가져오기
+			List<LinkedHashMap<String,Object>> tempList =  memberService.exportExcel((List<String>)data.get("selected"));
+			logger.debug("data : " + tempList);
+			
+			//엑셍 파일 만들어서 다운로드
+			fileController file = new fileController();
+			file.exportExcel(tempList,(String)data.get("title"),response);
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
