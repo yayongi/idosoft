@@ -72,7 +72,7 @@ function ProjectInfo(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(row => {
+            {rows.length > 0 && rows.map(row => {
               return (
                 <TableRow hover
                   role="checkbox"

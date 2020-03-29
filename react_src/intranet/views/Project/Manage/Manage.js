@@ -45,8 +45,10 @@ export default function ManageView(props) {
       method: 'post',
       data: {}
     }).then(response => {
-      setProjectOriginInfo(JSON.parse(response.data.list));
-      setProjectInfo(JSON.parse(response.data.list));
+      var result = JSON.parse(response.data.list);
+      result = !result ? [] : result;
+      setProjectOriginInfo(result);
+      setProjectInfo(result);
       setShowLoadingBar(false);
     }).catch(e => {
       console.log(e);
