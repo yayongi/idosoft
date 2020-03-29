@@ -51,8 +51,10 @@ public class fileController {
 			mf.transferTo(file); // 파일을 위에 지정 경로로 업로드
 			
 			//기존 파일 삭제 로직
-			if(!"".equals(preFileName) || preFileName != null) {
-				deleteFile(preFileName,path);
+			if(!"".equals(preFileName) && preFileName != null) {
+				
+				logger.debug("삭제 경로 : " + detailPath+preFileName);
+				deleteFile(preFileName,path+detailPath);
 			}
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block

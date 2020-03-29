@@ -12,7 +12,7 @@ import { Button} from '@material-ui/core';
 const DialogContent = withStyles(theme => ({
   root: {
     padding: theme.spacing(2),
-    minWidth: '500px',
+    //minWidth: '500px',
     minHeight: '100px',
   },
 }))(MuiDialogContent);
@@ -64,7 +64,6 @@ const FilterModal = ({props,state,setState,closeModal}) => {
 	}
 	
 	return (
-		<div>
 		<Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={props.openModal}>
 			<DialogTitle id="form-dialog-title" onClose={handleClose}>
 				직원검색
@@ -112,7 +111,6 @@ const FilterModal = ({props,state,setState,closeModal}) => {
 				</Button>
 			</DialogActions>
 		</Dialog>
-		</div>
 	);
 }
 

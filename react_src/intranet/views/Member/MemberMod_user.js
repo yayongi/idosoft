@@ -63,7 +63,9 @@ const useStyles = makeStyles(theme => ({
 
 const MemberMod_user = (props) => {
 
-  const { match } = props.routeProps;
+  const { routeProps } = props;
+
+  const match = routeProps.match;
 
   const member_no = match.params.member_no; 
 
@@ -319,8 +321,8 @@ const MemberMod_user = (props) => {
     }
 	}
   
-  const uploadProfileImg = (event,pathProfile) => {
-    uploadFile(event,pathProfile);
+  const uploadProfileImg = (event,pathProfile,preFileName) => {
+    uploadFile(event,pathProfile,preFileName);
     setState({
       ...state,
       profile : event.target.files[0].name
@@ -334,8 +336,8 @@ const MemberMod_user = (props) => {
     })
   }
 
-  const uploadCertImg = (event,pathItcert) => {
-    uploadFile(event,pathItcert);
+  const uploadCertImg = (event,pathItcert,preFileName) => {
+    uploadFile(event,pathItcert,preFileName);
 
     setState({
       ...state,
@@ -350,8 +352,8 @@ const MemberMod_user = (props) => {
     })
   }
 
-  const uploadSchoolImg = (event,pathSchoolcert) => {
-    uploadFile(event,pathSchoolcert);
+  const uploadSchoolImg = (event,pathSchoolcert,preFileName) => {
+    uploadFile(event,pathSchoolcert,preFileName);
 
     setState({
       ...state,
@@ -424,9 +426,9 @@ const MemberMod_user = (props) => {
                     </div>
                     <div style={{textAlign:'center'}}>
                       <div className={classes.textfield}>
-                        <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile)}/>
-                        <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert)}/>
-                        <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert)}/>
+                        <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile,state.profile)}/>
+                        <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert,state.certFile)}/>
+                        <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert,state.schoolFile)}/>
                         <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
                                                   프로필 업로드
                         </Button>
@@ -695,14 +697,12 @@ const MemberMod_user = (props) => {
                       </div>
                     </Toolbar>
                     <div className={classes.textfield}>
-                      <Button variant="contained" color="primary" onClick={() => saveMemberData()}>
-                                                저장하기
-                      </Button>
-                      <RouterLink button="true" to="/member/" className={`${classes.router_link} ${classes.button_tool}`}>
-                        <Button variant="contained" color="primary">
+                        <Button variant="contained" color="primary" onClick={() => saveMemberData()}>
+                                                  저장하기
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={() => routeProps.history.back()}>
                                                   뒤로가기
                         </Button>
-                      </RouterLink>
                       <RouterLink button="true" to="/resPassword/" className={classes.router_link}>
                         <Button variant="contained" color="primary">
                                                   비밀번호변경하기
