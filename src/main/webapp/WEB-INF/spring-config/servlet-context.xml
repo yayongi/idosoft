@@ -25,7 +25,9 @@
 	<interceptors>
 		<interceptor>
 			<mapping path="/**" />
+			<exclude-mapping path="/" />
 			<exclude-mapping path="/login" />
+			<exclude-mapping path="/resources/**" />
 			<beans:bean id="commonInterceptor"
 				class="kr.co.idosoft.common.interceptor.CommonInterceptor" />
 		</interceptor>
@@ -74,5 +76,5 @@
 		</beans:property>
 	</beans:bean>
 	
-	<context:component-scan base-package="kr.co.idosoft.*" />
+	<context:component-scan base-package="kr.co.idosoft" />
 </beans:beans>
