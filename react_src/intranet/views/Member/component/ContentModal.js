@@ -117,13 +117,19 @@ const ContentModal = ({props, closeModal}) => {
                   <Grid item xs={6}>
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
-                          {props.email}
+                            {props.phone_num}
+                        </Grid>
+                        <Grid item xs={12}>
+                            {props.email}
                         </Grid>
                         <Grid item xs={12}>
                             {props.address_1}
                         </Grid>
                         <Grid item xs={12}>
                             {props.address_2}
+                        </Grid>
+                        <Grid item xs={12}>
+                                                        입사일 : {props.entry_date}
                         </Grid>
                     </Grid>
                   </Grid>
@@ -137,6 +143,9 @@ const ContentModal = ({props, closeModal}) => {
                     </div>
                   </Grid>
                   <Grid item xs={12}>
+                    {props.phone_num}
+                  </Grid>
+                  <Grid item xs={12}>
                     {props.email}
                   </Grid>
                   <Grid item xs={12}>
@@ -144,6 +153,9 @@ const ContentModal = ({props, closeModal}) => {
                   </Grid>
                   <Grid item xs={12}>
                     {props.address_2}
+                  </Grid>
+                  <Grid item xs={12}>
+                                        입사일 : {props.entry_date}
                   </Grid>
                 </Grid>
               </Hidden>
