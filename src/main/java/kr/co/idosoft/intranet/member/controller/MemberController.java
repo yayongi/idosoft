@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +34,9 @@ public class MemberController {
 	private static final String INITPASSWORD = "idosoft1234"; // 초기비밀번호
 	
 	@Resource MemberService memberService;
+	
+	@Autowired
+	fileController file;
 	
 	
 	// 사원리스트 불러오기
@@ -114,6 +118,24 @@ public class MemberController {
 		}
 	}
 	
+	// 사원정보 수정
+	@RequestMapping(value="/member/initiallizepassword/", method=RequestMethod.POST)
+	@ResponseBody
+	public int initializePassword(Model model, @RequestBody MemberVO memberVo,HttpServletRequest request){
+		try {
+			SHAPasswordEncoder shaPasswordEncoder = new SHAPasswordEncoder(512); // SHA512
+			shaPasswordEncoder.setEncodeHashAsBase64(true);
+			
+			//초기 비밀번호 암호화
+			memberVo.setPwd(shaPasswordEncoder.encode(INITPASSWORD));
+			
+			return memberService.initializePassword(memberVo);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
 	// 사원정보 삭제
 	@RequestMapping(value="/member/memberdel", method=RequestMethod.POST)
 	@ResponseBody
@@ -184,7 +206,6 @@ public class MemberController {
 			logger.debug("data : " + tempList);
 			
 			//엑셍 파일 만들어서 다운로드
-			fileController file = new fileController();
 			file.exportExcel(tempList,(String)data.get("title"),response);
 		}catch(Exception e) {
 			e.printStackTrace();

@@ -31,13 +31,13 @@ public class ProjectDaoImpl implements ProjectDao {
 	}
 
 	@Override
-	public void deleteInfo(int project_no) {
+	public void deleteInfo(String project_no) {
 		// TODO Auto-generated method stub
 		sqlTemplate.delete("project.deleteInfo", project_no);
 	}
 
 	@Override
-	public HashMap<String, Object> selectInfo(int project_no) {
+	public HashMap<String, Object> selectInfo(String project_no) {
 		// TODO Auto-generated method stub
 		return sqlTemplate.selectOne("project.selectInfo", project_no);
 	}
@@ -66,8 +66,31 @@ public class ProjectDaoImpl implements ProjectDao {
 		
 	}
 
+	@Override
+	public List<Map<String, Object>> projectMemberList(String project_no) {
+		// TODO Auto-generated method stub
+		return (ArrayList)sqlTemplate.selectList("project.projectMemberList", project_no);
+	}
 	
+	@Override
+	public void removeMember(HashMap<String, Object> info) {
+		// TODO Auto-generated method stub
+		sqlTemplate.delete("project.removeMember", info);
+	}
 
+	@Override
+	public void updateMember(HashMap<String, Object> member) {
+		// TODO Auto-generated method stub
+		sqlTemplate.update("project.updateMember", member);
+	}
 	
+	@Override
+	public List<HashMap<String, String>> getPresentProject() {
+		return sqlTemplate.selectList("getPresentProject");
+	}
 	
+	@Override
+	public List<HashMap<String, String>> getProjectMember() {
+		return sqlTemplate.selectList("getProjectMember");
+	}
 }

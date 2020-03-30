@@ -28,13 +28,13 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public void deleteInfo(int project_no) {
+	public void deleteInfo(String project_no) {
 		// TODO Auto-generated method stub
 		dao.deleteInfo(project_no);
 	}
 
 	@Override
-	public HashMap<String, Object> selectInfo(int project_no) {
+	public HashMap<String, Object> selectInfo(String project_no) {
 		// TODO Auto-generated method stub
 		return dao.selectInfo(project_no);
 	}
@@ -62,6 +62,34 @@ public class ProjectServiceImpl implements ProjectService {
 	public void insertProjectMember(HashMap<String, Object> insert) {
 		// TODO Auto-generated method stub
 		dao.insert_member(insert);
+	}
+
+	@Override
+	public List<Map<String, Object>> projectMemberList(String project_no) {
+		// TODO Auto-generated method stub
+		return dao.projectMemberList(project_no);
+	}
+
+	@Override
+	public void removeMember(HashMap<String, Object> info) {
+		// TODO Auto-generated method stub
+		dao.removeMember(info);
+	}
+
+	@Override
+	public void updateMember(HashMap<String, Object> member) {
+		// TODO Auto-generated method stub
+		dao.updateMember(member);
+	}
+	
+	@Override
+	public List<HashMap<String, String>> getPresentProject() {
+		return dao.getPresentProject();
+	}
+
+	@Override
+	public List<HashMap<String, String>> getProjectMember() {
+		return dao.getProjectMember();
 	}
 
 

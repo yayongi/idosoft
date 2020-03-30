@@ -18,6 +18,9 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CreateIcon from '@material-ui/icons/Create';
 
 import { LoadingBar } from '../../../Admin/component/utils';
 
@@ -65,19 +68,25 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-/*
-	state 변경에 Re-Rendering 수행
-	state의 값이 이전과 동일해도 수행이 안됨.
-	전역 변수는 호출 안됨.
-*/
+function initCheck(match){
+	return typeof(match.params.id) == "undefined" ? "new" : "modify";
+}
 function ProjectInfoForm(props) {
+	console.log("props : ");
+	console.log(props);
+
+
 	const classes = useStyles();
 	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
-	const { location, history } = props.routeProps.routeProps;
+	const { location, match, history } = props.routeProps.routeProps;
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true, []);    //loading bar
 	const [instt_list, setInstt] = React.useState([], []);
-	const [member_list, setMember] = React.useState([], []);
+	const [member_list, setMember] = React.useState([], [member_list]);
 	const [role_list, setRole] = React.useState([], []);
+	const [updatedMemList, setUpdateMemList] = React.useState([], []);
+	const [renderWant, setRenderWant] = React.useState(true);
+	const screenType = initCheck(match);
+	
 	const [dataState, setDataState] = React.useState({
 		PROJECT_NM : "",
 		INSTT_CODE : "",
@@ -86,7 +95,6 @@ function ProjectInfoForm(props) {
 		TRANSPORT_CT : "",
 		PM : "",
 	});	// state : 수정을 위한 데이터 관리
-
 	const [memDataState, setMemDataState] = React.useState([{
 		MEMBER_NO : "",
 		CHRG_JOB : "",
@@ -94,7 +102,9 @@ function ProjectInfoForm(props) {
 		INPT_ENDDE : Moment(new Date()).format('YYYY-MM-DD'),
 		ROLE_CODE : "RL0001",
 		USE_LANG : "Java,Jsp,Javascript",
-	}], [memDataState]);	// state : 수정을 위한 데이터 관리
+	}]);	// state : 수정을 위한 데이터 관리
+
+
 
 
 	const columnsUp = [
@@ -103,15 +113,13 @@ function ProjectInfoForm(props) {
 		{ id: 'TERM', label: '프로젝트 기간', minWidth: 100, align: 'center' },
 		{ id: 'ROLE', label: '역할', minWidth: 100, align: 'center' },
 		{ id: 'USE_LANG', label: '비고', minWidth: 100, align: 'center' },
+		{ id: 'BTN', label: '수정/삭제', minWidth: 100, align: 'center' },
 	];
-
 	const columnsDown = [
 		{ id: 'MEMBER_NO', label: '이름', minWidth: 100, align: 'center' },
 		{ id: 'CHRG_JOB', label: '담당업무', minWidth: 100, align: 'center' },
-		{ id: 'TERM', label: '프로젝트 기간', minWidth: 100, align: 'center' },
+		{ id: 'BTN', label: '수정/삭제', minWidth: 100, align: 'center' },
 	];
-	
-	// Width에 따라 반응형으로 열이 없어
     let columns = columnsUp;
     if (isWidthUp('md', props.width)) {
       columns = columnsUp;
@@ -121,24 +129,49 @@ function ProjectInfoForm(props) {
 
 
 	useEffect(() => {
-		axios({
-			url: '/intranet/projectInfo',
-			method: 'post',
-			data: {"CODE_ID": ["CD0008", "CD0009"]}
-		}).then(response => {
-			console.log("response : ");
-			console.log(response.data.code_list);
-			console.log(response.data.member_list);
-			console.log(response.data.role_list);
-			setInstt(response.data.code_list);
-			setMember(response.data.member_list);
-			setRole(response.data.role_list);
-			setShowLoadingBar(false);
-		}).catch(e => {
-			console.log(e);
-			setShowLoadingBar(false);
-		});
-	}, []);
+		setUpdateMemList([]);
+		if(screenType == "new"){
+			axios({
+				url: '/intranet/projectInfo',
+				method: 'post',
+				data: {"CODE_ID": ["CD0008", "CD0009"]}
+			}).then(response => {
+				setInstt(response.data.code_list);
+				setMember(response.data.member_list);
+				setRole(response.data.role_list);
+				setShowLoadingBar(false);
+			}).catch(e => {
+				console.log(e);
+				setShowLoadingBar(false);
+			});
+		}else if(screenType == "modify"){
+			axios({
+				url: '/intranet/projectDetailInfo',
+				method: 'post',
+				data: {"PROJECT_NO": match.params.id}
+			}).then(response => {
+				setInstt(response.data.code_list);
+				setMember(response.data.member_list);
+				setRole(response.data.role_list);
+
+				var projectInfo = response.data.project_info;
+				projectInfo["BGNDE"] = projectInfo["BGNDE"].slice(0,4) + "-" + projectInfo["BGNDE"].slice(4,6) + "-" + projectInfo["BGNDE"].slice(6,8);  
+				projectInfo["ENDDE"] = projectInfo["ENDDE"].slice(0,4) + "-" + projectInfo["ENDDE"].slice(4,6) + "-" + projectInfo["ENDDE"].slice(6,8);  
+				setDataState(projectInfo);
+
+				var proMemList = response.data.proMemList;
+				for(var idx=0; idx < proMemList.length; idx++){
+					proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
+					proMemList[idx]["INPT_ENDDE"] = proMemList[idx]["INPT_ENDDE"].slice(0,4) + "-" + proMemList[idx]["INPT_ENDDE"].slice(4,6) + "-" + proMemList[idx]["INPT_ENDDE"].slice(6,8);
+				}
+				setMemDataState([...proMemList]);
+				setShowLoadingBar(false);
+			}).catch(e => {
+				console.log(e);
+				setShowLoadingBar(false);
+			});
+		}
+	}, [renderWant]);
 
 	const handleAddRow = () => {
 		console.log(memDataState);
@@ -168,6 +201,11 @@ function ProjectInfoForm(props) {
 	};
 
 	const handleMemChange = (event, idx) => {
+		if(screenType == "modify" && updatedMemList.indexOf(idx) < 0){
+			updatedMemList.push(idx);
+			setUpdateMemList(updatedMemList);
+		}
+
 		memDataState[idx][event.target.name] = event.target.value;
 		setMemDataState([...memDataState]);
 	}
@@ -182,6 +220,10 @@ function ProjectInfoForm(props) {
 			});
 		}else{
 			console.log("target include inpt_");
+			if(screenType == "modify" && updatedMemList.indexOf(idx) < 0){
+				updatedMemList.push(idx);
+				setUpdateMemList(updatedMemList);
+			}
 			memDataState[idx][target] = Moment(date).format('YYYY-MM-DD'); 
 			setMemDataState([...memDataState]);
 		}
@@ -216,21 +258,79 @@ function ProjectInfoForm(props) {
 			console.log(e);
 			setShowLoadingBar(false);
 		});
-		
 	}
 
+	const handleClickModifyProject = () => {
+		console.log("updatedMemList : ");
+		console.log(updatedMemList);
+
+		var memUpdateList = [];
+		for(var i=0; i < updatedMemList.length; i++){
+			memUpdateList.push(memDataState[updatedMemList[i]]);
+		}
+
+
+		setShowLoadingBar(true);
+		axios({
+			url: '/intranet/updateProjectInfo',
+			method: 'post',
+			data: {"PROJECT_NO":match.id, "dataState": dataState, "memDataState":memUpdateList}
+		}).then(response => {
+			setShowLoadingBar(false);
+			if(response.data.isDBError){
+				alert("수정 실패했습니다.")
+			}else{
+				alert("수정되었습니다.");
+				history.goBack();
+			}
+		}).catch(e => {
+			console.log(e);
+			setShowLoadingBar(false);
+		});
+	}
 	const handleClickRemoveProject = () => {
-		history.goBack();
+		setShowLoadingBar(true);
+		axios({
+			url: '/intranet/removeProject',
+			method: 'post',
+			data: {"PROJECT_NO": match.params.id}
+		}).then(response => {
+			setShowLoadingBar(false);
+			if(response.data.isDBError){
+				alert("삭제 실패 했습니다.")
+			}else{
+				alert("삭제했습니다.");
+				history.goBack();
+			}
+		}).catch(e => {
+			console.log(e);
+			setShowLoadingBar(false);
+		});
 	}
 
-	const handleClickUpdateProject = () => {
-		alert("수정되었습니다.");
-		history.goBack();
+	const handleRemoveMember = (member_no) => {
+		var list = memDataState.filter((info) => (info.MEMBER_NO != member_no));
+		
+		setShowLoadingBar(true);
+		axios({
+			url: '/intranet/removeMember',
+			method: 'post',
+			data: {"PROJECT_NO": match.params.id, "MEMBER_NO" : member_no}
+		}).then(response => {
+			setShowLoadingBar(false);
+			if(response.data.isDBError){
+				alert("삭제 실패 했습니다.")
+			}else{
+				alert("삭제했습니다.");
+				setMemDataState([...list]);
+				setRenderWant(!renderWant);
+			}
+		}).catch(e => {
+			console.log(e);
+			setShowLoadingBar(false);
+		});
 	}
-
-	const handleClickProjectMemberAdd = (dataState) => {
-	}
-
+	
 	const handleClickCancle = () => {
 		history.goBack();
 	};
@@ -246,15 +346,31 @@ function ProjectInfoForm(props) {
 								<TableCell align="left" colSpan="2">
 									<Toolbar>
 										<Typography className={classes.title} color="inherit" variant="h6">
-											프로젝트 등록
+											{screenType == "new" ? "프로젝트 등록" : "프로젝트 수정"}
 										</Typography>
 										<div>
 											<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickCancle}>
 												취소
 											</Button>
-											<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickAddProject}>
-												등록
-											</Button>
+
+											{
+												screenType == "new" &&
+												<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickAddProject}>
+													등록
+												</Button>
+											}
+											{
+												screenType == "modify" &&
+												<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickModifyProject}>
+													수정
+												</Button>
+											}
+											{
+												screenType == "modify" &&
+												<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickRemoveProject}>
+													삭제
+												</Button>
+											}
 										</div>
 									</Toolbar>
 								</TableCell>
@@ -269,7 +385,7 @@ function ProjectInfoForm(props) {
 										name="PROJECT_NM"
 										margin="dense"
 										variant="outlined"
-										defaultValue={dataState.PROJECT_NM}
+										value={dataState.PROJECT_NM}
 										onChange={handleChange}
 										fullWidth
 									>
@@ -353,7 +469,7 @@ function ProjectInfoForm(props) {
 										currencySymbol="￦"
 										minimumValue="0"
 										decimalPlaces={0}
-										defaultValue={dataState.TRANSPORT_CT}
+										value={dataState.TRANSPORT_CT}
 										onChange={handleChange}
 										fullWidth
 									/>
@@ -386,7 +502,7 @@ function ProjectInfoForm(props) {
 					<Table stickyHeader aria-label="sticky table">
 						<TableHead>
 							<TableRow>
-								<TableCell align="left" colSpan="5">
+								<TableCell align="left" colSpan="6">
 									<Toolbar>
 										<Typography className={classes.title} color="inherit" variant="h6">
 											투입인원
@@ -426,14 +542,19 @@ function ProjectInfoForm(props) {
 												variant="outlined"
 												value={memDataState[idx]["MEMBER_NO"]}
 												onChange={(event) => {handleMemChange(event, idx)}}
+												readOnly={screenType=="modify"}
 												fullWidth
 												select
 											>
-											{member_list.map(info => (
-												<MenuItem key={info.member_no} value={info.member_no}>
-													{info.name}
-												</MenuItem>
-											))}
+											{member_list.map(info => {
+												if(screenType == "new" || memDataState[idx]["MEMBER_NO"] == info.member_no || !memDataState[idx]["MEMBER_NO"]){
+													return (
+														<MenuItem key={info.member_no} value={info.member_no}>
+															{info.name}
+														</MenuItem>
+													)
+												}
+											})}
 											</TextField>
 										</TableCell>
 										<TableCell 
@@ -450,49 +571,51 @@ function ProjectInfoForm(props) {
 											>
 											</TextField>
 										</TableCell>
-										<TableCell 
-											align="left"
-											key={"INPT" + idx}>
-											<Toolbar>
-												<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-													<Grid container justify="space-around">
-														<DatePicker
-															locale='ko'
-															margin="dense"
-															id="INPT_BGNDE"
-															name="INPT_BGNDE"
-															views={["year", "month", "date"]}
-															format="yyyy-MM-dd"
-															/* maxDate={dataState.ENDDE} */
-															value={memDataState[idx]["INPT_BGNDE"]}
-															onChange={(data) => {handleChangeDate(data, "INPT_BGNDE", idx)}}
-															inputVariant="outlined"
-															readOnly={false}
-															fullWidth
-														/>
-													</Grid>
-												</MuiPickersUtilsProvider>
-												~
-												<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-													<Grid container justify="space-around">
-														<DatePicker
-															locale='ko'
-															margin="dense"
-															id="INPT_ENDDE"
-															name="INPT_ENDDE"
-															views={["year", "month", "date"]}
-															format="yyyy-MM-dd"
-															/* maxDate={dataState.ENDDE} */
-															value={memDataState[idx]["INPT_ENDDE"]}
-															onChange={(data) => {handleChangeDate(data, "INPT_ENDDE", idx)}}
-															inputVariant="outlined"
-															readOnly={false}
-															fullWidth
-														/>
-													</Grid>
-												</MuiPickersUtilsProvider>
-											</Toolbar>
-										</TableCell>
+										{ isWidthUp('md', props.width) && 
+											<TableCell 
+												align="left"
+												key={"INPT" + idx}>
+												<Toolbar>
+													<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+														<Grid container justify="space-around">
+															<DatePicker
+																locale='ko'
+																margin="dense"
+																id="INPT_BGNDE"
+																name="INPT_BGNDE"
+																views={["year", "month", "date"]}
+																format="yyyy-MM-dd"
+																minDate={dataState.BGNDE}
+																value={memDataState[idx]["INPT_BGNDE"]}
+																onChange={(data) => {handleChangeDate(data, "INPT_BGNDE", idx)}}
+																inputVariant="outlined"
+																readOnly={false}
+																fullWidth
+															/>
+														</Grid>
+													</MuiPickersUtilsProvider>
+													~
+													<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+														<Grid container justify="space-around">
+															<DatePicker
+																locale='ko'
+																margin="dense"
+																id="INPT_ENDDE"
+																name="INPT_ENDDE"
+																views={["year", "month", "date"]}
+																format="yyyy-MM-dd"
+																maxDate={dataState.ENDDE}
+																value={memDataState[idx]["INPT_ENDDE"]}
+																onChange={(data) => {handleChangeDate(data, "INPT_ENDDE", idx)}}
+																inputVariant="outlined"
+																readOnly={false}
+																fullWidth
+															/>
+														</Grid>
+													</MuiPickersUtilsProvider>
+												</Toolbar>
+											</TableCell>
+										}
 										{ isWidthUp('md', props.width) && 
 											<TableCell 
 												align="left"
@@ -508,7 +631,15 @@ function ProjectInfoForm(props) {
 													select
 												>
 													{role_list.map(info => {
-														if(info.CODE_ID == "RL0000"){
+														if(screenType == "modify"){
+															if(info.CODE_ID == memDataState[idx]["ROLE_CODE"]){
+																return (										
+																	<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
+																		{info.CODE_NAME}
+																	</MenuItem>
+																)
+															}
+														}else if(screenType == "new" && info.CODE_ID == "RL0000"){
 															
 														}else{
 															return (										
@@ -530,13 +661,23 @@ function ProjectInfoForm(props) {
 													name="USE_LANG"
 													margin="dense"
 													variant="outlined"
-													value={memDataState[0]["USE_LANG"]}
+													value={memDataState[idx]["USE_LANG"]}
 													onChange={(event) => {handleMemChange(event, idx)}}
 													fullWidth
 												>
 												</TextField>
 											</TableCell>
 										}
+
+										<TableCell 
+											align="left"
+											key={"BTN" + idx}>
+											{ screenType == "modify" && dataState["PM"] != memDataState[idx]["MEMBER_NO"] &&
+												<IconButton aria-label="delete" className={classes.margin} onClick={() => handleRemoveMember(memDataState[idx]["MEMBER_NO"])}>
+													<DeleteIcon fontSize="small" />
+												</IconButton>
+											}
+										</TableCell>
 									</TableRow>
 								)
 							})}

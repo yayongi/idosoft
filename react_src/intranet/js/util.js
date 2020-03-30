@@ -209,7 +209,7 @@ export function excelExport(json){
 
     if(errCode == 400){
       alert("세션이 만료되어 로그아웃 되었습니다. 다시 로그인 해주세요.");
-      location.href = "/#/signIn";
+      location.href = "/intranet/#/signIn";
     } else {
     }
   }
@@ -224,7 +224,9 @@ export function excelExport(json){
     }).then(response => {
       console.log('SESSION_DATA' + JSON.stringify(response.data.SESSION_DATA));
       sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
-      location.href="/#/dashboard";
+
+      location.href="/intranet/";
+
     }).catch(e => {
       processErrCode(e);
       console.log(e);

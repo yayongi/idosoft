@@ -115,6 +115,7 @@ public class fileController {
 			}
 			String filePath = request.getParameter("path");
 			String fileFullPath = path + filePath + fileName;
+			logger.debug("경로 : "+path);
 		
 			logger.debug("파일 경로 : " + fileFullPath);
 			

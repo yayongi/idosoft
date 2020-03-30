@@ -123,7 +123,7 @@ export default function App() {
 						</MainLayout>
 					} />
 					{/* 이력 수정 */}
-					<Route exact path='/project/history/view' render={(props) =>
+					<Route exact path='/project/history/view/:id' render={(props) =>
 						<MainLayout routeProps={props}>
 							<ModifyHistory routeProps={props} />
 						</MainLayout>
@@ -141,7 +141,7 @@ export default function App() {
 						</MainLayout>
 					} />
 					{/* 프로젝트 수정 */}
-					<Route exact path='/project/manage/view' render={(props) =>
+					<Route exact path='/project/manage/view/:id' render={(props) =>
 						<MainLayout routeProps={props}>
 							<ModifyProject routeProps={props} />
 						</MainLayout>

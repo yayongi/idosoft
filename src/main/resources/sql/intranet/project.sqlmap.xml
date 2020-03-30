@@ -17,28 +17,27 @@
 		UPDATE
 			TB_PROJECT
 		SET
-			PROJECT_NM = #{project_nm}
-			, INSTT_CODE = #{instt_code}
-			, BGNDE = #{bgnde}
-			, ENDDE = #{endde}
-			, PM = #{pm}
-			, TRANSPORT_CT = #{transport_ct}
+			PROJECT_NM = #{PROJECT_NM}
+			, INSTT_CODE = #{INSTT_CODE}
+			, BGNDE = #{BGNDE}
+			, ENDDE = #{ENDDE}
+			, TRANSPORT_CT = #{TRANSPORT_CT}
 			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
-			, UPD_ID = #{upd_id}
+			, UPD_ID = #{UPD_ID}
 		WHERE
-			PROJECT_NO = #{project_no}
+			PROJECT_NO = #{PROJECT_NO}
 	</update>
 	
 	<!--  프로젝트 삭제 -->
-	<delete id="deleteInfo" parameterType="int">
+	<delete id="deleteInfo" parameterType="String">
 		DELETE FROM
 			TB_PROJECT
 		WHERE
-			PROJECT_NO = #{project_no}
+			PROJECT_NO = #{PROJECT_NO}
 	</delete>
 	
 	<!-- 프로젝트 상세 조회  -->
-	<select id="selectInfo" resultType="hashMap" parameterType="int">
+	<select id="selectInfo" resultType="hashMap" parameterType="String">
 		SELECT	
 			A.PROJECT_NO
 			, A.PROJECT_NM
@@ -54,10 +53,10 @@
 			, A.UPD_ID
 			, C.CODE_NAME AS INSTT_NAME
 		FROM TB_PROJECT AS A
-			LEFT JOIN TB_MEMBER AS B ON TB_MEMBER.MEMBER_NO = A.PM
-			LEFT JOIN TB_CODE AS C ON TB_CODE.CODE_ID = A.INSTT_CODE
+			LEFT JOIN TB_MEMBER AS B ON B.MEMBER_NO = A.PM
+			LEFT JOIN TB_CODE AS C ON C.CODE_ID = A.INSTT_CODE
 		WHERE 
-			PROJECT_NO = #{project_no}
+			PROJECT_NO = #{PROJECT_NO}
 	</select>
 	
 	<!-- 프로젝트 전체 리스트 -->
@@ -77,7 +76,7 @@
 			, NOTE
 			, TEMP_COLUM
 		FROM	TB_PROJECT
-		ORDER BY PROJECT_NO
+		ORDER BY BGNDE DESC
 	</select>
 	
 	<!-- 프로젝트 전체 리스트 -->
@@ -120,6 +119,76 @@
 			 #{CHRG_JOB}, #{USE_LANG}, DATE_FORMAT(NOW(),'%Y%m%d'), NULL, #{REG_ID}, NULL, "", "")
 	</insert>
 	
+	<!-- 프로젝트 전체 리스트 -->
+	<select id="projectMemberList" resultType="hashMap" parameterType="String">
+		SELECT
+			A.MEMBER_NO
+			, A.PROJECT_NO
+			, A.INPT_BGNDE
+			, A.INPT_ENDDE
+			, A.ROLE_CODE
+			, A.CHRG_JOB
+			, A.USE_LANG
+			, A.REG_DATETIME
+			, A.UPD_DATETIME
+			, A.REG_ID
+			, A.UPD_ID
+			, A.NOTE
+			, A.TEMP_COLUM
+			, B.CODE_NAME AS ROLE_NAME
+			, C.NAME AS MEMBER_NAME
+		FROM	TB_PROJECT_MEMBER AS A
+			LEFT JOIN TB_CODE AS B ON A.ROLE_CODE = B.CODE_ID
+			LEFT JOIN TB_MEMBER AS C ON A.MEMBER_NO = C.MEMBER_NO
+		WHERE 
+			A.PROJECT_NO = #{PROJECT_NO}
+		ORDER BY MEMBER_NO ASC
+	</select>
 	
+	<!--  프로젝트 삭제 -->
+	<delete id="removeMember" parameterType="hashmap">
+		DELETE FROM
+			TB_PROJECT_MEMBER
+		WHERE
+			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
+	</delete>
 	
+	<!-- 프로젝트 수정 -->
+	<update id="updateMember" parameterType="hashmap">
+		UPDATE
+			TB_PROJECT_MEMBER
+		SET
+			INPT_BGNDE = #{INPT_BGNDE}
+			, INPT_ENDDE = #{INPT_ENDDE}
+			, ROLE_CODE = #{ROLE_CODE}
+			, CHRG_JOB = #{CHRG_JOB}
+			, USE_LANG = #{USE_LANG}
+			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
+			, UPD_ID = #{UPD_ID}
+		WHERE
+			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
+	</update>
+	
+	<!-- 대쉬보드용 프로젝트 조회 -->
+	<select id="getPresentProject" resultType="hashmap">
+	<![CDATA[ 
+		SELECT
+			PROJECT_NO,
+			PROJECT_NM
+		FROM TB_PROJECT
+		WHERE DATE_FORMAT(NOW(),'%Y%m%d') >= BGNDE 
+		AND DATE_FORMAT(NOW(),'%Y%m%d') <= ENDDE
+	]]>
+	</select>
+	
+	<!-- 프로젝트 인원 조회 -->
+	<select id="getProjectMember" resultType="hashmap">
+	<![CDATA[ 
+		SELECT
+			PROJECT_NO
+		FROM TB_PROJECT_MEMBER
+		WHERE DATE_FORMAT(NOW(),'%Y%m%d') >= INPT_BGNDE 
+		AND DATE_FORMAT(NOW(),'%Y%m%d') <= INPT_ENDDE
+	]]>
+	</select>
 </mapper>

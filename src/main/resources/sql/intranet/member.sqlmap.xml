@@ -136,6 +136,14 @@
 	    </foreach>	
 	</update>
 	
+	<!-- 사원 정보 삭제 -->
+	<update id="initializePassword" parameterMap="MemberVO">
+		UPDATE TB_MEMBER 
+		SET 
+			PWD=#{pwd}
+        WHERE MEMBER_NO=#{member_no}
+	</update>
+	
 	<!-- 코드 정보 -->
 	<select id="getCodeInfo" resultType="HashMap">
 		SELECT 

@@ -29,6 +29,7 @@ import ContentModal from "./component/ContentModal";
 import FilterModal from "./component/FilterModal";
 import axios from 'axios';
 import {dateFormatter, phoneFormatter, positionFormatter,excelExport,positionUnFormatter,dataCalculator} from '../../js/util';
+import { LoadingBar } from '../../common/LoadingBar/LoadingBar';
 
 const useStyles = makeStyles(theme =>({
 	tableWeb: {
@@ -77,6 +78,9 @@ const MemberList = (props) => {
 	const { routeProps } = props;
 	
 	const [selected, setSelected] = React.useState([]);
+
+	// 로딩바
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true);    //loading bar
 
 	const [state, setState] = React.useState({
 		preMemberList : null, //변경 직전 리스트
@@ -143,9 +147,12 @@ const MemberList = (props) => {
 					manager_yn:response.data.isAdmin==1?true:false
 				});
 			}
+			setShowLoadingBar(false);
 		}).catch(e => {
+			setShowLoadingBar(false);
 			console.log(e);
 		});
+		
 	},[])
 
 	const openContentModal = (datum) => {
@@ -421,6 +428,7 @@ const MemberList = (props) => {
 			<ContentModal props={openModal} closeModal={handleCloseModal}/>
 			<FilterModal props={openFilter}  state = {searchState} setState = {setSearchState} closeModal={handleClickClose}/>
 			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
+			<LoadingBar openLoading={isShowLoadingBar}/>
 
 			<Snackbar
 			anchorOrigin={{
@@ -601,7 +609,7 @@ const MemberList = (props) => {
 														{row.name}
 													</TableCell>
 													<TableCell align="center">
-														<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,row.manager_yn)}>
+														<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,state.manager_yn)}>
 															수정
 														</Button>
 														<RouterLink button="true" to="/project/history" className={classes.router_link}>

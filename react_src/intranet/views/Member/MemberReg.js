@@ -20,7 +20,8 @@ import ko from "date-fns/locale/ko";
 import Toolbar from '@material-ui/core/Toolbar';
 import Moment from "moment";
 import axios from 'axios';
-import { findAddress,positions,certYn,schCareer,emailValidation,uploadFile,downloadFile,isValidNum } from '../../js/util'
+import { findAddress,positions,certYn,schCareer,emailValidation,uploadFile,downloadFile,isValidNum } from '../../js/util';
+import { LoadingBar } from '../../common/LoadingBar/LoadingBar';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,9 +63,9 @@ const useStyles = makeStyles(theme => ({
 const MemberReg = (props) => {
 
   const classes = useStyles();
-  const pathProfile = "\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathItcert = "\\itCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathSchoolcert = "\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathProfile = "\/profile\/";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathItcert = "\/itCert\/";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathSchoolcert = "\/schoolCert\/";  //프로필 사진  파일업로드 & 다운로드 경로 
 
   const { routeProps } = props;
   
@@ -91,6 +92,9 @@ const MemberReg = (props) => {
 
   const [codeState, setCodeState] = React.useState(null);
 
+  // 로딩바
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true);    //loading bar
+
   useEffect(() => {
     axios({
       url: '/intranet/member/code',
@@ -106,8 +110,10 @@ const MemberReg = (props) => {
       console.log("positionResult : " + JSON.stringify(response));
       //직급 코드 관리
       setCodeState(response.data);
+      setShowLoadingBar(false);
     }).catch(e => {
       console.log(e);
+      setShowLoadingBar(false);
     });
   },[])
 
@@ -319,7 +325,7 @@ const MemberReg = (props) => {
         }).catch(e => {
           console.log(e);
         });
-        return location.href="/#/member/";
+        return location.href="/intranet/#/member/";
       }else{
         return;
       }
@@ -379,6 +385,7 @@ const MemberReg = (props) => {
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
+      <LoadingBar openLoading={isShowLoadingBar}/>
 			<Card>
 				<CardContent>
 					사원등록
@@ -396,7 +403,7 @@ const MemberReg = (props) => {
                   height:'100%'
                 }}>
                   <div style={{textAlign:'-webkit-center'}}>
-                    <Avatar src="../../img/photo.jpg" className={classes.large} />
+                    <Avatar src="" className={classes.large} />
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
@@ -717,7 +724,7 @@ const MemberReg = (props) => {
                       <Button variant="contained" color="primary" onClick={() => setValidationLevel()}>
                               저장하기
                       </Button>
-                      <Button variant="contained" color="primary" onClick={() => routeProps.history.back()}>
+                      <Button variant="contained" color="primary" onClick={() => location.href = '/intranet/#/member'}>
                               뒤로가기
                       </Button>
                     </div>

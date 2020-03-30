@@ -19,7 +19,7 @@ export default function Top(props) {
 		isLogin = true
 		session = JSON.parse(sessionStorage.getItem("loginSession"));
 	}else{
-		//location.href = '/#/signIn'
+		location.href = '/intranet/#/signIn'
 	}
 
 	// confirm, alert 창 함수
@@ -35,11 +35,12 @@ export default function Top(props) {
 		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
 	}
 
-	const handleCloseDialog = (result) => {
-    setDialog({title:'', content:'', onOff:false, isConfirm:false});
+	const handleCloseDialog = (title,result) => {
+	setDialog({title:'', content:'', onOff:false, isConfirm:false});
+	console.log("result : " + result);
 		if(result){
 			sessionStorage.removeItem("loginSession");
-			location.href = '/#/signIn';
+			location.href = '/intranet/#/signIn';
 		}else{
 			return;
 		}

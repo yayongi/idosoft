@@ -124,7 +124,11 @@ export default function  Filter(props) {
 		setOpen(false);
 	};
 	const handleExcelClick = () => {
-		excelExport(resData);
+		excelExport(
+			resData.filter((row => {
+				return selected.includes((row.res_no));
+			}))
+		);
 		setSelected([]);
 		// alert("엑셀 내보내기");
 	}

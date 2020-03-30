@@ -22,6 +22,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Moment from "moment";
 import axios from 'axios';
 import {findAddress,dateFormatter, phoneFormatter,unFormatter,certYn,emailValidation,uploadFile,downloadFile,isValidNum } from '../../js/util';
+import { LoadingBar } from '../../common/LoadingBar/LoadingBar';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -69,9 +70,9 @@ const MemberMod_admin = (props) => {
   
   const classes = useStyles();
 
-  const pathProfile     = "\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathItcert      = "\\itCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathSchoolcert  = "\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathProfile = "\/profile\/";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathItcert = "\/itCert\/";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathSchoolcert = "\/schoolCert\/";  //프로필 사진  파일업로드 & 다운로드 경로 
   
   const [state, setState] = React.useState({
     profile : null,
@@ -105,6 +106,9 @@ const MemberMod_admin = (props) => {
     graduationCode  : null,
     positionCode    : null,
   });
+
+  // 로딩바
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true);    //loading bar
 
   const row = infoState.memberData;
 
@@ -142,8 +146,10 @@ const MemberMod_admin = (props) => {
         marriage_date   : dateFormatter(response.data.memberData.marriage_date),
         birth_date      : dateFormatter(response.data.memberData.birth_date)
       })
+      setShowLoadingBar(false);
 		}).catch(e => {
-			console.log(e);
+      console.log(e);
+      setShowLoadingBar(false);
 		});
 	},[])
 
@@ -305,6 +311,25 @@ const MemberMod_admin = (props) => {
       })
     }
   }
+  // 비밀번호 초기화
+  const initializePassword = (member_no) => {
+    axios({
+			url: '/intranet/member/initiallizepassword/',
+      method: 'post',
+      data:{
+        member_no : member_no
+      },
+      headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+		}).then(response => {
+      console.log("memberResult : " + JSON.stringify(response));
+      const confirmData = ['confirm', '비밀번호 초기화가 완료 되었습니다.', false];
+      handleOpenDialog(...confirmData);
+		}).catch(e => {
+      console.log(e);
+		});
+  }
 
   const defaultValidation = () =>{
     setValidation({
@@ -348,7 +373,7 @@ const MemberMod_admin = (props) => {
         },
         }).then(response => {
           console.log(JSON.stringify(response));
-          return location.href="/#/member/";
+          return location.href="/intranet/#/member/";
         }).catch(e => {
           console.log(e);
         });
@@ -433,6 +458,7 @@ const MemberMod_admin = (props) => {
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
+      <LoadingBar openLoading={isShowLoadingBar}/>
 			{(row != null) && (
         <Card>
           <CardContent>
@@ -771,10 +797,10 @@ const MemberMod_admin = (props) => {
                         <Button variant="contained" color="primary" onClick={saveMemberData}>
                                                   저장하기
                         </Button>
-                        <Button variant="contained" color="primary" onClick={() => routeProps.history.back()}>
+                        <Button variant="contained" color="primary" onClick={() => location.href = '/intranet/#/member'}>
                                                   뒤로가기
                         </Button>
-                        <Button variant="contained" color="primary">
+                        <Button variant="contained" color="primary" onClick={() => initializePassword(row.member_no)}>
                                                   비밀번호 초기화
                         </Button>
                       </div>

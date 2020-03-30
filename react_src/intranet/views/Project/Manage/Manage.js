@@ -70,10 +70,10 @@ export default function ManageView(props) {
         searchedInfo = projectOriginInfo;
         break;
       case "1":
-        searchedInfo = projectOriginInfo.filter((info) => info.bgnde.slice(0,4) === conditions.searchDetailType);
+        searchedInfo = projectOriginInfo.filter((info) => info.BGNDE.slice(0,4) === conditions.searchDetailType);
         break;
       case "2":
-        searchedInfo = projectOriginInfo.filter((info) => info.instt_code === conditions.searchDetailType);
+        searchedInfo = projectOriginInfo.filter((info) => info.INSTT_CODE === conditions.searchDetailType);
         break;
       default:
         searchedInfo = projectOriginInfo;
