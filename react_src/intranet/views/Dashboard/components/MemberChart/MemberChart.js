@@ -23,7 +23,6 @@ export default function MemberChart(){
 				data : temp
 			});
 ;		}).catch(e => {
-			console.log(e);
 		});
 	},[])
 

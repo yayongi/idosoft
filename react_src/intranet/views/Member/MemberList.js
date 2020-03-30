@@ -131,8 +131,6 @@ const MemberList = (props) => {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
 		}).then(response => {
-			console.log("positionResult : " + JSON.stringify(response));
-
 			if(state.showAll == true && response.data.memberData != null){
 				let temp = response.data.memberData;
 				temp = temp.filter(temp => temp.ret_date === null);
@@ -150,7 +148,6 @@ const MemberList = (props) => {
 			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
-			console.log(e);
 		});
 		
 	},[])
@@ -243,8 +240,6 @@ const MemberList = (props) => {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
 		}).then(response => {
-			console.log("positionResult : " + JSON.stringify(response));
-			//
 			//체크박스로 선택된 직원 아이디로 선택적으로 필터링
 			let temp_1 = state.showMemberList;
 			for(let i=0;i<selected.length;i++){
@@ -275,7 +270,6 @@ const MemberList = (props) => {
 				hiddenMemberList: temp_2,
 			});
 		}).catch(e => {
-			console.log(e);
 		});
 	}
 
@@ -389,16 +383,6 @@ const MemberList = (props) => {
 
 	// 맴버 엑셀 내보내기
 	const memberExcelExport = () =>{
-		// let temp = [];
-		// for(let i=0;i<selected.length;i++){
-		// 	temp.push(state.memberList.find(row => row.member_no == String(selected[i])));
-		// }
-
-		// console.log("temp : " + JSON.stringify(temp));
-
-		// excelExport(temp);
-
-		// 사원정보 엑셀 출력
 		axios({
 			url: '/intranet/member/exportexcel',
 			method: 'post',
@@ -411,7 +395,6 @@ const MemberList = (props) => {
 				'Content-Type': 'application/json',
 			},
 		}).then(response => {
-			console.log("positionResult : " + JSON.stringify(response));
 			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
 			const link = document.createElement('a');
 			link.href = url;
@@ -419,7 +402,6 @@ const MemberList = (props) => {
 			document.body.appendChild(link);
 			link.click();
 		}).catch(e => {
-			console.log(e);
 		});
 	}
 

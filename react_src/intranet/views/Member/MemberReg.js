@@ -107,12 +107,10 @@ const MemberReg = (props) => {
       'Content-Type': 'application/json;charset=UTF-8'
     },
     }).then(response => {
-      console.log("positionResult : " + JSON.stringify(response));
       //직급 코드 관리
       setCodeState(response.data);
       setShowLoadingBar(false);
     }).catch(e => {
-      console.log(e);
       setShowLoadingBar(false);
     });
   },[])
@@ -136,7 +134,6 @@ const MemberReg = (props) => {
       'Content-Type': 'application/json;charset=UTF-8'
       },
     }).then(response => {
-      console.log("result : " + JSON.stringify(response));
       if(response.data == 0){
         //이름 Validation
         if(document.getElementById("name").value == "" || document.getElementById("name").value == null){
@@ -265,7 +262,6 @@ const MemberReg = (props) => {
         handleOpenDialog(...confirmData);
       }
     }).catch(e => {
-      console.log(e);
     });
   }
   const isValidEmail = () => {
@@ -321,9 +317,7 @@ const MemberReg = (props) => {
           'Content-Type': 'application/json;charset=UTF-8'
         },
         }).then(response => {
-          console.log(JSON.stringify(response));
         }).catch(e => {
-          console.log(e);
         });
         return location.href="/intranet/#/member/";
       }else{

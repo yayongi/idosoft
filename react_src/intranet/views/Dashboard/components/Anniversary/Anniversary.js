@@ -23,7 +23,6 @@ const Anniversary = () => {
 		}).then(response => {
 			setState(response.data)
 ;		}).catch(e => {
-			console.log(e);
 		});
 	},[])
 

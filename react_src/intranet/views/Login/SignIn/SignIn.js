@@ -119,7 +119,6 @@ class SignIn extends Component {
 					errorArartOpen();
 				}
 			}).catch(e => {
-				console.log(e);
 			});
 
 		}

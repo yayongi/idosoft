@@ -123,8 +123,6 @@ const MemberMod_user = (props) => {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
 		}).then(response => {
-      console.log("memberResult : " + JSON.stringify(response));
-      
       setState({
         profile : response.data.memberData.photo_path,
         certFile : response.data.memberData.certfile_job_path,
@@ -147,7 +145,6 @@ const MemberMod_user = (props) => {
       })
       setShowLoadingBar(false);
 		}).catch(e => {
-      console.log(e);
       setShowLoadingBar(false);
 		});
 	},[])
@@ -164,7 +161,6 @@ const MemberMod_user = (props) => {
       'Content-Type': 'application/json;charset=UTF-8'
       },
     }).then(response => {
-      console.log("result : " + JSON.stringify(response));
       if(response.data == 0){
         //기본주소 Validation
         if(document.getElementById("address_1").value === "" || document.getElementById("address_1").value === null){
@@ -259,7 +255,6 @@ const MemberMod_user = (props) => {
         handleOpenDialog(...confirmData);
       }
     }).catch(e => {
-      console.log(e);
     });
   }
 
@@ -316,10 +311,8 @@ const MemberMod_user = (props) => {
           'Content-Type': 'application/json;charset=UTF-8'
         },
         }).then(response => {
-          console.log(JSON.stringify(response));
           return location.href="/intranet/#/member/";
         }).catch(e => {
-          console.log(e);
         });
       }else{
         return;
