@@ -156,11 +156,9 @@ public class ProjectController {
 			int count = 0;
 			HashMap<String, String> tempMap = tempProject.get(i);
 			String projectNo = String.valueOf(tempMap.get("PROJECT_NO"));
-			LOG.debug("projectNo : " + projectNo);
 			for(int j = 0; j<tempProjectMember.size(); j++) {
 				HashMap<String, String> tempMemberMap = tempProjectMember.get(j);
 				String projectMemberNo = String.valueOf(tempMemberMap.get("PROJECT_NO"));
-				LOG.debug("result : " + projectNo.equals(projectMemberNo));
 				if(projectNo.equals(projectMemberNo)) {
 					count += 1;
 				}
@@ -170,7 +168,6 @@ public class ProjectController {
 			resultList.add(tempMap);
 		}
 		
-		LOG.debug("result : " + resultList);
 		return resultList;
 	}
 }
