@@ -325,7 +325,7 @@ const MemberReg = (props) => {
         }).catch(e => {
           console.log(e);
         });
-        return location.href="/#/member/";
+        return location.href="/intranet/#/member/";
       }else{
         return;
       }
@@ -724,7 +724,7 @@ const MemberReg = (props) => {
                       <Button variant="contained" color="primary" onClick={() => setValidationLevel()}>
                               저장하기
                       </Button>
-                      <Button variant="contained" color="primary" onClick={() => routeProps.history.back()}>
+                      <Button variant="contained" color="primary" onClick={() => location.href = '/intranet/#/member'}>
                               뒤로가기
                       </Button>
                     </div>

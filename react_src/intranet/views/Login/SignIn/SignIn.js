@@ -109,7 +109,7 @@ class SignIn extends Component {
 
 				if(loginSign == 'true'){
 					if(resPassSign == 'true'){
-						location.href="/#/resPassword";
+						location.href="/intranet/#/resPassword";
 					} else {
 						//로그인 후 세션 등록
 						getSessionMemberInfo();

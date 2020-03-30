@@ -373,7 +373,7 @@ const MemberMod_admin = (props) => {
         },
         }).then(response => {
           console.log(JSON.stringify(response));
-          return location.href="/#/member/";
+          return location.href="/intranet/#/member/";
         }).catch(e => {
           console.log(e);
         });
@@ -797,7 +797,7 @@ const MemberMod_admin = (props) => {
                         <Button variant="contained" color="primary" onClick={saveMemberData}>
                                                   저장하기
                         </Button>
-                        <Button variant="contained" color="primary" onClick={() => routeProps.history.back()}>
+                        <Button variant="contained" color="primary" onClick={() => location.href = '/intranet/#/member'}>
                                                   뒤로가기
                         </Button>
                         <Button variant="contained" color="primary" onClick={() => initializePassword(row.member_no)}>

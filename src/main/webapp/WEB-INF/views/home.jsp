@@ -15,5 +15,6 @@
 	<div id="root"></div>
 	<script type="text/javascript" src="<c:out value='<%=contextPath %>' />/resources/js/vendors.chunk.js.gz"></script>
 	<script type="text/javascript" src="<c:out value='<%=contextPath %>' />/resources/js/intranet.bundle.js.gz"></script>
+	<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </body>
 </html>
