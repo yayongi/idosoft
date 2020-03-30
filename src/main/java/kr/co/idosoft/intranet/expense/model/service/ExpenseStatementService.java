@@ -31,6 +31,16 @@ public interface ExpenseStatementService {
 	 * @return String
 	 */
 	String getIndiTotalAmount(Map<String, Object> data);
+	/**
+	 * 통신비 년별 통계
+	 * @return String
+	 */
+	List<Map<String, Object>> getCommExpenseList(Map<String, Object> data);
+	/**
+	 * 교통비 년별 통계
+	 * @return String
+	 */
+	List<Map<String, Object>> getTransExpenseList(Map<String, Object> data);
 
 	
 }
