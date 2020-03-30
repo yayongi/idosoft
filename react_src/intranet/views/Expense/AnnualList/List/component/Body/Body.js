@@ -50,11 +50,12 @@ function Body(props) {
     const { rows, setRows, routeProps
             , paging, setPaging, state
             , holdUp, setHoldUp 
-            , page, setPage, rowsPerPage, setRowsPerPage} = props;
+            , page, setPage, rowsPerPage, setRowsPerPage
+            , setShowLoadingBar} = props;
 
     const handleChangePage = (event, newPage) => {
       if(holdUp < newPage){ // 이미 가지고 있는 페이지를 다시 호출하는 것을 막기 위해 사용
-
+        setShowLoadingBar(true);
         Axios({
           url: '/intranet/getAnnaualList.exp',
           method: 'post',
@@ -79,8 +80,11 @@ function Body(props) {
           setRowsPerPage(Number(result.limit));
           setPage(Number(result.currentPage)-1);
           setHoldUp(Number(result.currentPage)-1);
+          setShowLoadingBar(false);
         }).catch(e => {
           processErrCode(e);
+          console.log(e);
+          setShowLoadingBar(false);
         });
       } else {
         setRowsPerPage(rowsPerPage);
@@ -89,6 +93,7 @@ function Body(props) {
     };
 
     const handleChangeRowsPerPage = event => {
+      setShowLoadingBar(true);
       Axios({
         url: '/intranet/getAnnaualList.exp',
         method: 'post',
@@ -114,9 +119,12 @@ function Body(props) {
         setRowsPerPage(Number(result.limit));
         setPage(Number(result.currentPage)-1);
         setHoldUp(Number(result.currentPage)-1);
+
+        setShowLoadingBar(false);
       }).catch(e => {
         processErrCode(e);
         console.log(e);
+        setShowLoadingBar(false);
       });
     };
 

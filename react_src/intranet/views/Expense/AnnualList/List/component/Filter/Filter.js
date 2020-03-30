@@ -22,7 +22,7 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import Axios from 'axios';
 
-import {processErrCode, isEmpty} from '../../../../../../js/util'
+import {processErrCode, isEmpty, expectedDevelopment} from '../../../../../../js/util'
  
 import {
   MuiPickersUtilsProvider,
@@ -60,13 +60,15 @@ export default function  Filter(props) {
 		paging, setPaging,
 		totalAmount, setTotalAmount,
 		routeProps, setHoldUp,
-		setPage ,setRowsPerPage
+		setPage ,setRowsPerPage,
+		setShowLoadingBar
 	} = props;
 
 	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
 	const [statuses, setStatuses] 			= React.useState([]);
 
 	useEffect(() => {
+		setShowLoadingBar(true);
 		Axios({
 			url: '/intranet/getCode.exp',
 			method: 'post',
@@ -85,9 +87,11 @@ export default function  Filter(props) {
 			setExpenseTypes(exPenseTypeList);
 			setStatuses(payTypeList);
 
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 		
 	}, []);
@@ -100,8 +104,9 @@ export default function  Filter(props) {
 		setOpen(false);
 	};
 
+	// 엑셀 내보내기
 	const excelExport = () => {
-		alert("엑셀 내보내기");
+		expectedDevelopment();
 	}
 	// 경비 신청 화면
 	const handleClickNew = () => {
@@ -126,6 +131,8 @@ export default function  Filter(props) {
 	// 상위 컴포넌트의 state를 갱신 처리 해줌
 	const handleClickSearch = () => {
 
+		setShowLoadingBar(true);
+
 		Axios({
 			url: '/intranet/getAnnaualList.exp',
 			method: 'post',
@@ -144,6 +151,8 @@ export default function  Filter(props) {
 			},
 
 		}).then(response => {
+			
+
 			filterSetRows(JSON.parse(response.data.list));
 			setTotalAmount(response.data.totalAmount);
 
@@ -163,11 +172,12 @@ export default function  Filter(props) {
 				status: document.getElementsByName("status")[0].value,
 				memo: document.getElementsByName("memo")[0].value,
 			});
-
 			handleClose();
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 	}
 

@@ -34,6 +34,8 @@ Moment.locale('ko'); // 한국 시간
 
 import {processErrCode, phoneFormatter, isEmpty} from "../../../../js/util"; 
 
+import { LoadingBar } from "../../../../common/LoadingBar/LoadingBar";
+
 const useStyles = makeStyles(theme => ({
 	table: {
 		minWidth: 650,
@@ -90,8 +92,9 @@ export default function  View(props) {
 	const [isAdmin, setIsAdmin] = React.useState("0");
 	const classes = useStyles();
 	
-	// step 처리 
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
 
+	// step 처리 
 	const getStepInfo = (row) => {
 		
 		let stepInfo = {
@@ -131,6 +134,8 @@ export default function  View(props) {
 	const loginSession = JSON.stringify(sessionStorage.getItem("loginSession"));
 
 	React.useEffect(() => { // render 완료 후, 호출
+		setShowLoadingBar(true);
+		
 		const params = match.params;
 
 		Axios({
@@ -161,10 +166,12 @@ export default function  View(props) {
 				alert("접근 권한이 없는 직원입니다.", history.back());
 			}
 			
+			setShowLoadingBar(false);
 		})
 		.catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 	}, []);
 
@@ -221,6 +228,8 @@ export default function  View(props) {
 	// 결재처리
 	const handleClickApprove =() => {
 
+		setShowLoadingBar(true);
+
 		let isRequest = "";
 
 		if(dataState.status == 'SS0000'){
@@ -266,12 +275,13 @@ export default function  View(props) {
 			stepInfo = getStepInfo(dataState);
 
 			setActiveStep(stepInfo.activeStep);
-
 			setAppOpen(false);
+			setShowLoadingBar(false);
 		})
 		.catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 	}
 
@@ -305,6 +315,8 @@ export default function  View(props) {
 	// 반려 처리
 	const handleClickReject = () => {
 
+		setShowLoadingBar(true);
+
 		let isRequest = "REG";
 
 		const params = match.params;
@@ -336,11 +348,14 @@ export default function  View(props) {
 			stepInfo = getStepInfo(dataState);
 			setActiveStep(stepInfo.activeStep);
 
+			
 			setRejOpen(false);
+			setShowLoadingBar(false);
 		})
 		.catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 	}
 
@@ -350,6 +365,7 @@ export default function  View(props) {
 
 	return (
 		<>	
+			<LoadingBar openLoading={isShowLoadingBar}/>
 			{!isEmpty(dataState) &&
 			<>
 				<div className={classes.root} style={{marginBottom:'10px'}}>

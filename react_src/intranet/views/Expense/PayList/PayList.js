@@ -25,10 +25,11 @@ import IconButton from '@material-ui/core/IconButton';
 import { Divider, Button, Hidden } from '@material-ui/core';
 
 import {useStyles} from './styles';
-import {dataAdmin2020, dataAdmin2019, dataAdmin2018, dataAdmin2017, nodata} from './data';
-
+import {expectedDevelopment} from '../../../js/util';
 import Moment from "moment";
 Moment.locale('ko'); // 한국 시간
+
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 
 //Server
 import Axios from 'axios';
@@ -44,7 +45,11 @@ export default function PayList() {
 		"성명","구분 ", "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "합계", "총합계"
 	];
 
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false);	//loading bar
+
 	React.useEffect(() => {
+
+		setShowLoadingBar(true);
 
 		Axios({
 			url: '/intranet/getCommAndTransExpenseList.exp',
@@ -60,9 +65,11 @@ export default function PayList() {
 			setCommList(JSON.parse(response.data.commList));
 			setTransList(JSON.parse(response.data.transList));
 			
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 		
 	}, []);
@@ -77,7 +84,7 @@ export default function PayList() {
 	}
 	
 	const excelExport = (e) => {
-		alert('엑셀다운로드 실행');
+		expectedDevelopment();
 	}
 
 
@@ -93,6 +100,8 @@ export default function PayList() {
 	*/
 	const handleChange = name => event => {
 		
+		setShowLoadingBar(true);
+
 		const value = event.target.value;
 
 		setYear(value);
@@ -111,14 +120,17 @@ export default function PayList() {
 			setCommList(JSON.parse(response.data.commList));
 			setTransList(JSON.parse(response.data.transList));
 			
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 	};
 	
 	return (
 		<>
+			<LoadingBar openLoading={isShowLoadingBar}/>
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">					
 				</Typography>

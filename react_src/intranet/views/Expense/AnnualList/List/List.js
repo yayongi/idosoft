@@ -6,7 +6,7 @@ import Axios from 'axios';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import { processErrCode, isEmpty } from '../../../../js/util'
-
+import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
 export default function  List(props) {
 	const [state, setState] = React.useState({
 		name: "",
@@ -27,8 +27,9 @@ export default function  List(props) {
 	const [ page, setPage ] = React.useState(0);						// 초기페이지가 0부터 시작
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
 	
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
 	useEffect(() => {
-
+		setShowLoadingBar(true);
 		Axios({
 			url: '/intranet/getAnnaualList.exp',
 			method: 'post',
@@ -52,15 +53,19 @@ export default function  List(props) {
 			} else {
 				// 빈화면 처리
 			}
+
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 		
 	}, []);
 
 	return (
 		<Fragment>
+				<LoadingBar openLoading={isShowLoadingBar}/>
 				{firstRender &&
 				<>
 					<Fragment>
@@ -72,6 +77,7 @@ export default function  List(props) {
 							totalAmount={totalAmount} setTotalAmount={setTotalAmount}
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							setPage={setPage} setRowsPerPage={setRowsPerPage}
+							setShowLoadingBar={setShowLoadingBar} 
 							/>
 					</Fragment>
 					<Paper>
@@ -84,6 +90,7 @@ export default function  List(props) {
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							page={page} setPage={setPage}
 							rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
+							setShowLoadingBar={setShowLoadingBar} 
 						/>
 					</Paper>
 				</>
