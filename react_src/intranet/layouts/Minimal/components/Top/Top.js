@@ -19,7 +19,7 @@ export default function Top(props) {
 		isLogin = true
 		session = JSON.parse(sessionStorage.getItem("loginSession"));
 	}else{
-		//location.href = '/#/signIn'
+		location.href = '/#/signIn'
 	}
 
 	// confirm, alert 창 함수
