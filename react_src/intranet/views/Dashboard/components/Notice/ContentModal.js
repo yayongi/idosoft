@@ -7,6 +7,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
+import Viewer from '../../../../common/Viewer/Viewer';
 
 const styles = theme => ({
   root: {
@@ -66,7 +67,7 @@ const ContentModal = ({props, closeModal}) => {
 		      {props.title}
         </DialogTitle>
         <DialogContent dividers>
-          <div dangerouslySetInnerHTML={ {__html: props.content} } ></div>
+          <Viewer defaultValue = {props.content}/>
         </DialogContent>
 
       </Dialog>

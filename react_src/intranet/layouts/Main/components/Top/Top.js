@@ -35,8 +35,9 @@ export default function Top(props) {
 		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
 	}
 
-	const handleCloseDialog = (result) => {
-    setDialog({title:'', content:'', onOff:false, isConfirm:false});
+	const handleCloseDialog = (title,result) => {
+	setDialog({title:'', content:'', onOff:false, isConfirm:false});
+	console.log("result : " + result);
 		if(result){
 			sessionStorage.removeItem("loginSession");
 			location.href = '/#/signIn';
