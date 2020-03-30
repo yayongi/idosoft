@@ -108,11 +108,11 @@ class SignIn extends Component {
 				const resPassSign = response.data.resPassSign;
 
 				if(loginSign == 'true'){
+					//로그인 후 세션 등록
+					getSessionMemberInfo();
 					if(resPassSign == 'true'){
 						location.href="/intranet/#/resPassword";
 					} else {
-						//로그인 후 세션 등록
-						getSessionMemberInfo();
 					}
 				} else {
 					const errorArartOpen = this.errorArartOpen.bind(this);
