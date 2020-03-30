@@ -42,6 +42,15 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 	public String getIndiTotalAmount(Map<String, Object> data) {
 		return dao.getIndiTotalAmount(data);
 	}
+	
+	@Override
+	public List<Map<String, Object>> getCommExpenseList(Map<String, Object> data) {
+		return dao.getCommExpenseList(data);
+	}
+	@Override
+	public List<Map<String, Object>> getTransExpenseList(Map<String, Object> data) {
+		return dao.getTransExpenseList(data);
+	}
 
 	
 }

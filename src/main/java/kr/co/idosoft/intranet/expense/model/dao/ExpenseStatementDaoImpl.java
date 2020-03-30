@@ -56,5 +56,21 @@ public class ExpenseStatementDaoImpl implements ExpenseStatementListDao {
 	public String getIndiTotalAmount(Map<String, Object> data) {
 		return String.valueOf((int)sqlTemplate.selectOne("expense.getIndiMonthTotalAmount", data));
 	}
+	/**
+	 * 통신비 월별 통계
+	 * @return List<Map<String, Object>>
+	 */
+	@Override
+	public List<Map<String, Object>> getCommExpenseList(Map<String, Object> data) {
+		return sqlTemplate.selectList("expense.getCommunicationExpenseList", data);
+	}
+	/**
+	 * 교통비 월별 통계
+	 * @return List<Map<String, Object>>
+	 */
+	@Override
+	public List<Map<String, Object>> getTransExpenseList(Map<String, Object> data) {
+		return sqlTemplate.selectList("expense.getTransExpenseList", data);
+	}
 
 }

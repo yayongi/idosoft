@@ -31,6 +31,16 @@ public interface ExpenseStatementListDao {
 	 * @return String
 	 */
 	String getIndiTotalAmount(Map<String, Object> data);
+	/**
+	 * 통신비 월별 통계
+	 * @return List<Map<String, Object>>
+	 */
+	List<Map<String, Object>> getCommExpenseList(Map<String, Object> data);
+	/**
+	 * 교통비 월별 통계
+	 * @return List<Map<String, Object>>
+	 */
+	List<Map<String, Object>> getTransExpenseList(Map<String, Object> data);
 	
 	
 }

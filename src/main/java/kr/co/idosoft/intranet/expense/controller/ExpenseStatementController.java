@@ -1,5 +1,7 @@
 package kr.co.idosoft.intranet.expense.controller;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import kr.co.idosoft.common.util.JsonUtils;
 import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.expense.model.service.ExpenseStatementServiceImpl;
@@ -34,9 +33,6 @@ import kr.co.idosoft.intranet.login.vo.SessionVO;
 @Controller
 public class ExpenseStatementController {
 	private static final Logger LOG = LoggerFactory.getLogger(ExpenseStatementController.class);
-	
-	private static final String EXPENSE_TYPE = "CD0002"; // 경비유형 
-	private static final String PAYMENT_TYPE = "CD0003"; // 결재유형
 	
 	@Resource
 	ExpenseStatementServiceImpl expenseStatementService;
@@ -180,6 +176,96 @@ public class ExpenseStatementController {
 		
 		mv.addObject("list", jsonArrayList);
 		mv.addObject("totalAmount", totalAmount);
+		
+		return mv;
+	}
+	
+	/**
+	 * 월별 경비 통계 리스트 
+	 * @param request
+	 * @param params
+	 * @return ModelAndView
+	 */
+	
+	@RequestMapping(value="/getCommAndTransExpenseList.exp", method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getCommAndTransExpenseList(HttpServletRequest request, @RequestBody Map<String, Object> params) {
+		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("/getCommAndTransExpenseList.exp");
+		}
+		
+		ModelAndView mv = new ModelAndView();
+		
+		Map<String, Object> data = new HashMap<>();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		String year = (String)params.get("year");				// 시작 날짜
+
+		LOG.debug("#####################################################################################");
+		LOG.debug("# SEARCH DATA ");
+		LOG.debug("# year 		: " + year);
+		LOG.debug("#####################################################################################");
+		
+		data.put("YEAR", year);		// 선택 년도
+		
+		HttpSession session = request.getSession();
+		
+		// 세션 VO에 세션 값 저장
+		String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
+
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		
+		// 세션 VO에 세션 값 저장
+		data.put("isAdmin", isAdmin);	// 관리자 여부
+		data.put("MEMBER_NO", mno);		// 사원번호
+		
+		// 통신비 목록 조회
+		List<Map<String, Object>> commList = expenseStatementService.getCommExpenseList(data);
+		// 교통비 조회
+		List<Map<String, Object>> transList = expenseStatementService.getTransExpenseList(data);
+		
+		data.remove("isAdmin");			// 관리자 여부 제거
+		data.remove("MEMBER_NO");		// 사원번호
+		
+		// Month KEY Array
+		String[] monthArray = {"Jan", "Fab", "Mar", "Apr", "May", "June", "Aug", "Sept", "Oct", "Nov", "Dec"};
+		
+		// 통신비 & 교통비 합계 
+		
+		for(int i = 0; i < commList.size(); i++) {
+			int commTotalAmount = 0;
+			int transTotalAmount = 0;
+			for(int j = 0; j < monthArray.length; j++) {
+				commTotalAmount += Integer.parseInt((String) commList.get(i).get(monthArray[j]));
+				commList.get(i).put("totalAmount", commTotalAmount);
+			}
+			for(int j = 0; j < monthArray.length; j++) {
+				transTotalAmount += Integer.parseInt(String.valueOf(transList.get(i).get(monthArray[j])));
+				transList.get(i).put("totalAmount", transTotalAmount);
+			}
+			
+			commList.get(i).put("commAndTransTotalAmount", transTotalAmount+commTotalAmount);
+		}
+		
+		String jsonArraycommList 	= null;
+		String jsonArraytransList	= null;
+		
+		jsonArraycommList = JsonUtils.getJsonStringFromList(commList); 	// JSONARRAY 변환
+		jsonArraytransList = JsonUtils.getJsonStringFromList(transList); 	// JSONARRAY 변환
+		LOG.debug("#################################################################################");
+		LOG.debug("# RETURN JSON ");
+		LOG.debug("# jsonArraycommList : " + jsonArraycommList);
+		LOG.debug("# jsonArraytransList : " + jsonArraytransList);
+		LOG.debug("#################################################################################");
+		
+		mv.addObject("commList", jsonArraycommList);
+		mv.addObject("transList", jsonArraytransList);
 		
 		return mv;
 	}
