@@ -66,8 +66,13 @@ public class ProjectDaoImpl implements ProjectDao {
 		
 	}
 
-	
+	@Override
+	public List<HashMap<String, String>> getPresentProject() {
+		return sqlTemplate.selectList("getPresentProject");
+	}
 
-	
-	
+	@Override
+	public List<HashMap<String, String>> getProjectMember() {
+		return sqlTemplate.selectList("getProjectMember");
+	}
 }

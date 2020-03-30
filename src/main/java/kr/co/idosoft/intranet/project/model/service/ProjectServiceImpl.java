@@ -64,5 +64,15 @@ public class ProjectServiceImpl implements ProjectService {
 		dao.insert_member(insert);
 	}
 
+	@Override
+	public List<HashMap<String, String>> getPresentProject() {
+		return dao.getPresentProject();
+	}
+
+	@Override
+	public List<HashMap<String, String>> getProjectMember() {
+		return dao.getProjectMember();
+	}
+
 
 }

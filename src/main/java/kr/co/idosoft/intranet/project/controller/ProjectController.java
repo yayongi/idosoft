@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.project.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -134,5 +136,40 @@ public class ProjectController {
 		}
 		mv.addObject("isDBError", db_result);
 		return mv;
+	}
+	
+	@RequestMapping(value="/projectDashboard",method=RequestMethod.POST)
+	@ResponseBody
+	public List<HashMap<String, String>> projectDashboard(Model model, HttpServletRequest request){
+		// 현재 진행 중이 프로젝트 목록 호출
+		List<HashMap<String, String>> tempProject = new ArrayList<HashMap<String, String>>();
+		tempProject = projectService.getPresentProject();
+		
+		// 현재 투입중인 프로젝트 인원
+		List<HashMap<String, String>> tempProjectMember = new ArrayList<HashMap<String, String>>();
+		tempProjectMember = projectService.getProjectMember();
+		
+		List<HashMap<String, String>> resultList = new ArrayList<HashMap<String, String>>();
+		
+		
+		for(int i = 0; i<tempProject.size(); i++) {
+			int count = 0;
+			HashMap<String, String> tempMap = tempProject.get(i);
+			String projectNo = String.valueOf(tempMap.get("PROJECT_NO"));
+			LOG.debug("projectNo : " + projectNo);
+			for(int j = 0; j<tempProjectMember.size(); j++) {
+				HashMap<String, String> tempMemberMap = tempProjectMember.get(j);
+				String projectMemberNo = String.valueOf(tempMemberMap.get("PROJECT_NO"));
+				LOG.debug("result : " + projectNo.equals(projectMemberNo));
+				if(projectNo.equals(projectMemberNo)) {
+					count += 1;
+				}
+			}
+			tempMap.put("memberCount",String.valueOf(count));
+			resultList.add(tempMap);
+		}
+		
+		LOG.debug("result : " + resultList);
+		return resultList;
 	}
 }
