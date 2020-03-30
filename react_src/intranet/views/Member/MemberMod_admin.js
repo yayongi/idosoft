@@ -311,6 +311,25 @@ const MemberMod_admin = (props) => {
       })
     }
   }
+  // 비밀번호 초기화
+  const initializePassword = (member_no) => {
+    axios({
+			url: '/intranet/member/initiallizepassword/',
+      method: 'post',
+      data:{
+        member_no : member_no
+      },
+      headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+		}).then(response => {
+      console.log("memberResult : " + JSON.stringify(response));
+      const confirmData = ['confirm', '비밀번호 초기화가 완료 되었습니다.', false];
+      handleOpenDialog(...confirmData);
+		}).catch(e => {
+      console.log(e);
+		});
+  }
 
   const defaultValidation = () =>{
     setValidation({
@@ -781,7 +800,7 @@ const MemberMod_admin = (props) => {
                         <Button variant="contained" color="primary" onClick={() => routeProps.history.back()}>
                                                   뒤로가기
                         </Button>
-                        <Button variant="contained" color="primary">
+                        <Button variant="contained" color="primary" onClick={() => initializePassword(row.member_no)}>
                                                   비밀번호 초기화
                         </Button>
                       </div>

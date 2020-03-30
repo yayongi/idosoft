@@ -114,6 +114,24 @@ public class MemberController {
 		}
 	}
 	
+	// 사원정보 수정
+	@RequestMapping(value="/member/initiallizepassword/", method=RequestMethod.POST)
+	@ResponseBody
+	public int initializePassword(Model model, @RequestBody MemberVO memberVo,HttpServletRequest request){
+		try {
+			SHAPasswordEncoder shaPasswordEncoder = new SHAPasswordEncoder(512); // SHA512
+			shaPasswordEncoder.setEncodeHashAsBase64(true);
+			
+			//초기 비밀번호 암호화
+			memberVo.setPwd(shaPasswordEncoder.encode(INITPASSWORD));
+			
+			return memberService.initializePassword(memberVo);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
 	// 사원정보 삭제
 	@RequestMapping(value="/member/memberdel", method=RequestMethod.POST)
 	@ResponseBody
