@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 import kr.co.idosoft.intranet.resource.service.ResourceServiceImpl;
 import kr.co.idosoft.intranet.resource.vo.ResourceVO;
@@ -79,7 +80,7 @@ public class ResourceController {
 		}
 	}
 	//코드 및 사원번호 조회
-	@PostMapping("/getResType")
+	@PostMapping("/get-restype")
 	public Map<String, List<Object>> getResType() {
 		Map<String, String> upper_codes = new HashMap<String, String>();
 		upper_codes.put("resTypeData", RES_CODE);
@@ -121,23 +122,37 @@ public class ResourceController {
 	}
 	//리스트
 	@PostMapping("/findlist")
-	public Map<String, Object> findResourceList(Model model, HttpServletRequest request) {
-		boolean isAdmin = "1".equals( (String)request.getSession().getAttribute("IS_ADMIN") )? true : false;
-		Map<String, Object> data = new HashMap<>();
-		data.put("resData", resService.findResourceList());
-		data.put("isAdmin", isAdmin);
+	public Map<String, Object> findResourceList(HttpServletRequest request, @RequestBody Map<String, Object> data) {
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
 		
-		logger.debug("#########################################################");
-		logger.debug("ISADMIN ? "+request.getSession().getAttribute("IS_ADMIN"));
-		logger.debug("#########################################################");
+		Map<String, Object> searchData = (Map<String, Object>) data.get("state");
+//		logger.debug("#########################################################");
+//		logger.debug("resType ? "+searchData.toString());
+//		logger.debug("#########################################################");
 		
-//		return resService.findResourceList();
-		return data;
+		Map<String, Object> resultData = new HashMap<>();
+		
+		int count = resService.getListCount(searchData);
+		resultData.put("count", count);
+		resultData.put("isAdmin", isAdmin);
+		//카운트가 0일경우 리스트는 반환하지 않음
+		if(count == 0) {
+			return resultData;
+		}
+		
+		resultData.put("resData", resService.findResourceList(data));
+		
+		return resultData;
 	}
 	//단일 조회
 	@PostMapping("/find")
 	public ResourceVO findResourceInfo(@RequestBody ResourceVO resVO) {
 		return resService.findResource(resVO.getRes_no());
+	}
+	//자원종류 코드 조회
+	@PostMapping("/get-restype-code")
+	public List<Object> getResTypeCode (HttpServletRequest request){
+		return resService.getCode(RES_CODE);
 	}
 	
 }

@@ -1,13 +1,10 @@
 import React, {Component, useDebugValue, useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-
-import NoticeListTable from './NoticeListTable';
-
-import Filter from '../component/Filter';
 import { useStaticState } from '@material-ui/pickers';
 
-import {noticeTestData} from '../Data';
+import NoticeListTable from './NoticeListTable';
+import Filter from '../component/Filter';
 
 import Moment from "moment"
 
@@ -22,22 +19,27 @@ const useStyles = makeStyles(theme => ({
 const NoticeList = () => {
 
 	const initState = {
-		searchType: '-1',
+		searchType: '1',
 		search: "",
 		stDt: null,
 		edDt: null,
 	}
 
 	const classes = useStyles();
-	const [state, setState] = React.useState(
-		initState
-	);
-	// const [temp, setTemp] = useState(initTemp());
+	const [state, setState] = useState(initState);
 	const [noticeData, setNoticeData] = useState([]);
 	const [selected, setSelected] = useState([]);
 
-	// const [filterData, setFilterData] = useState([]);
+	const [isAdmin, setIsAdmin] = useState(false);
+	const [count, setCount] = useState(0);
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+	const [temp, setTemp] = useState({
+		state : initState,
+		page : 0,
+		rowsPerPage : 10
+	});
 
 	useEffect(() => {
 		// setNoticeData(temp);
@@ -47,72 +49,53 @@ const NoticeList = () => {
 			headers: {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
+			data :{
+					state : state,
+					rowsPerPage : rowsPerPage,
+					page : page
+			},
 			}).then(response => {
-				console.log(response);
-				console.log(JSON.stringify(response));
+				console.log(response.data);
 				setNoticeData(response.data.noticeData);
 				setIsAdmin(response.data.isAdmin);
+				setCount(response.data.count);
 			}).catch(e => {
 				console.log(e);
 		});
 	}, []);
 
-	// const nowDate = Moment(new Date()).format('YYYYMMDD');
+	useEffect(()=>{
+		if(temp.state !== state || temp.rowsPerPage !== rowsPerPage || temp.page < page){
+			axios({
+					url: '/intranet/notice/findlist',
+					method : 'post',
+					headers: {
+						'Content-Type': 'application/json;charset=UTF-8'
+					},
+					data :{
+						state : state,
+						rowsPerPage : rowsPerPage,
+						page : page
+					},
+					}).then(response => {
+						//페이지가 0이아니면 누적
+						console.log(response.data);
+						console.log('page : '+page);
+						if(page !== 0){
+							setNoticeData([...noticeData,...response.data.noticeData]);
+						}else{
+							setNoticeData(response.data.noticeData);
+						}
+						setIsAdmin(response.data.isAdmin);
+						setCount(response.data.count);
+						setTemp({...temp, ['state']:state, ['rowsPerPage']:rowsPerPage, ['page']:page});
+					}).catch(e => {
+						console.log(e);
+				});
+		}
+	}, [state, page, rowsPerPage])
 
-	// const dateStr = (date) => {
-	// 	return date.substr(0,4)+date.substr(5,2)+date.substr(8,2);
-	// }
-
-	// const initTemp= () =>{
-	// 	const data = noticeTestData;
-	// 	if(localStorage.getItem('noticeTestData') !== null){
-	// 		return JSON.parse(localStorage.getItem("noticeTestData"));
-	// 	}else{
-	// 		localStorage.setItem('noticeTestData',JSON.stringify(data));
-	// 		return data;
-	// 	}
-	// }
 	
-	// useEffect(()=>{
-	// 	let filtering = [];
-	// 	if(noticeData!==undefined && JSON.stringify(noticeData) !== '[{}]'){
-	// 		filtering = noticeData.filter((obj) => {
-	// 			let result = true;
-	// 			if(state.searchType === '-1' && !obj.title.includes(state.search) && !obj.content.includes(state.search) && !obj.regId.includes(state.search) ){
-	// 				result = false;
-	// 			}else if(state.searchType === 'title' && !obj.title.includes(state.search)){
-	// 				result = false;
-	// 			}else if(state.searchType === 'content' && !obj.content.includes(state.search)){
-	// 				result = false;
-	// 			}else if(state.searchType === 'regId' && !obj.regId.includes(state.search)){
-	// 				result = false;
-	// 			}else if(state.stDt !== "Invalid date" &&  state.stDt !== null && eval(state.stDt > dateStr(obj.regDateTime).substr(0,6))){
-	// 				result = false;
-	// 			}else if(state.edDt !== "Invalid date" &&  state.edDt !== null && eval(state.edDt < dateStr(obj.regDateTime).substr(0,6))){
-	// 				result = false;
-	// 			}
-	// 			return result;
-	// 		});
-	// 		// console.log(JSON.stringify(filtering));
-	// 		setFilterData([
-	// 			...(filtering).filter((obj) => {
-	// 					if(obj.majorYn && eval(nowDate <= dateStr(obj.majorPeriodDate)) ) {
-	// 						return true;
-	// 					} 
-	// 			}).reverse()
-				
-	// 			, ...(filtering).filter((obj)=>{
-	// 					if(!obj.majorYn || eval(nowDate > dateStr(obj.majorPeriodDate)) ) {
-	// 						return true;
-	// 					}
-	// 			}).reverse()
-	// 		]);
-		
-	// 	}else{
-	// 		setFilterData(noticeData);
-	// 	}
-	// }, [noticeData, state]);
-
 	const handleSelectedNoticeNo = (selectedNo) => {
 		setSelected(selectedNo);
 	}
@@ -120,13 +103,37 @@ const NoticeList = () => {
 	return (
 		<div className={classes.root}>
 		<Filter 
-			noticeData={noticeData}
-			state={state} setState={setState}
+			// noticeData={noticeData}
+			// state={state} 
+			// setState={setState}
+			// selected={selected}
+			// setNoticeData={setNoticeData}
+
+			state={state} 
+			setState={setState}
 			selected={selected}
+			setSelected={setSelected}
 			setNoticeData={setNoticeData}
+			noticeData={noticeData}
+			setPage={setPage}
+			count={count}
+			setCount={setCount}
 		/>
 		<Card>
-			<NoticeListTable setNoticeData={setNoticeData} noticeData={noticeData} selectedNoticeNo={handleSelectedNoticeNo}/>
+			<NoticeListTable 
+				// setNoticeData={setNoticeData} 
+				// noticeData={noticeData} 
+				// selectedNoticeNo={handleSelectedNoticeNo}
+				count={count}
+				setCount={setCount} 
+				setNoticeData={setNoticeData} 
+				noticeData={noticeData} 
+				selectedNoticeNo={handleSelectedNoticeNo}
+				page={page}
+				setPage={setPage}
+				rowsPerPage={rowsPerPage}
+				setRowsPerPage={setRowsPerPage}
+			/>
 		</Card>
 		</div>
 	);

@@ -54,12 +54,19 @@ const useToolbarStyles = makeStyles(theme => ({
 
 // 자원 유형 Select 값
 const searchType = [
-	{ value: '-1', label: '전체'  },
-	{ value: 'title', label: '제목' },
-	{ value: 'content', label: '내용' },
-	{ value: 'regId', label: '작성자' },
+	{ id: '1', label: '전체'  },
+	{ id: 'TITLE', label: '제목' },
+	{ id: 'CONTENT', label: '내용' },
+	{ id: 'REG_ID', label: '작성자' },
 ];
 
+// Dialog 값 상위 컴포넌트의 state값으로 초기화
+const initDialogState = {
+	searchType: '1',
+	search: "",
+	stDt: null,
+	edDt: null,
+};
 
 // Select로 구성할 년월 목록
 const getListYyyyMm = (period) => {
@@ -82,10 +89,26 @@ export default function  Filter(props) {
 	
 	const classes = useToolbarStyles();
 	const {
-		noticeData, state, setState,setNoticeData
+			// noticeData, 
+			// state, 
+			// setState,
+			// setNoticeData
+
+			state,
+			setState,
+			selected,
+			setSelected,
+			setNoticeData,
+			noticeData,
+			setPage,
+			count,
+			setCount
 	} = props;
 	const [open, setOpen] = React.useState(false);
 	const [isDelete, setIsDelete] = React.useState(false);
+	const [confirm, setConfirm] = React.useState({});
+	const [dialogState, setDialogState] = React.useState(initDialogState); // 검색 버튼 클릭 전, 임시로 값 저장
+
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -94,7 +117,6 @@ export default function  Filter(props) {
 		setOpen(false);
 	};
 
-	const [confirm, setConfirm] = React.useState({});
 
 	// confirm Open Handler
 	const handleOpenConfirm = (title, content, isConfirm) => {
@@ -118,10 +140,10 @@ export default function  Filter(props) {
 		handleOpenConfirm('공지사항', '선택항목을 삭제하시겠습니까?', true);
 	}
 
-	//localStorage resData 선택요소 삭제 처리
+	//noticeData 선택요소 삭제 처리
 	const selectDelete = (result) => {
 		if(result){
-			console.log(props.selected);
+			console.log(selected);
 
 			axios({
 				url: '/intranet/notice/deletelist',
@@ -130,17 +152,17 @@ export default function  Filter(props) {
 					'Content-Type': 'application/json;charset=UTF-8'
 				},
 				data:{
-					board_no : props.selected
+					board_no : selected
 				},
 				}).then(response => {
-					console.log(response);
-					console.log(JSON.stringify(response));
+					console.log(response.data);
+					setCount(count-(selected.length));
 				}).catch(e => {
 					console.log(e);
 			});
 
 			const upStreamData = noticeData.filter((row => {
-				return !props.selected.includes((row.board_no));
+				return !selected.includes((row.board_no));
 			}));
 			setNoticeData(upStreamData);
 		}
@@ -148,30 +170,12 @@ export default function  Filter(props) {
 		return setIsDelete(false);
 	}
 
-	// Dialog 값 상위 컴포넌트의 state값으로 초기화
-	const initDialogState = {
-		searchType: '-1',
-		search: "",
-		stDt: null,
-		edDt: null,
-	};
-
-	// 검색 버튼 클릭 전, 임시로 값 저장
-	const [dialogState, setDialogState] = React.useState(
-		initDialogState
-	);
-
-	// React.useEffect(()=>{
-	// 	console.log(`검색조건 : ${JSON.stringify(dialogState)}`);
-	// }, [dialogState])
-
 	// Dialog 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {
 		setDialogState({
 			...dialogState,
 			[event.target.name]: event.target.value
 		});
-		// console.log(dialogState);
 	};
 	// 시작년월 
 	const handleChangeStDt = (date) => {
@@ -199,8 +203,10 @@ export default function  Filter(props) {
 		setState({
 			search: document.getElementsByName("search")[0].value,
 			searchType: document.getElementsByName("searchType")[0].value,
-			stDt: Moment(document.getElementsByName("stDt")[0].value).format('YYYYMM'),
-			edDt: Moment(document.getElementsByName("edDt")[0].value).format('YYYYMM')
+			stDt: Moment(document.getElementsByName("stDt")[0].value).format('YYYYMM') === "Invalid date"
+					?null:Moment(document.getElementsByName("stDt")[0].value).format('YYYYMM'),
+			edDt: Moment(document.getElementsByName("edDt")[0].value).format('YYYYMM') === "Invalid date"
+					?null:Moment(document.getElementsByName("edDt")[0].value).format('YYYYMM')
 		});
 		handleClose();
 	}
@@ -267,7 +273,7 @@ export default function  Filter(props) {
 								fullWidth
 							>
 								{searchType.map(option => (
-									<MenuItem key={option.value} value={option.value}>
+									<MenuItem key={option.id} value={option.id}>
 										{option.label}
 									</MenuItem>
 								))}

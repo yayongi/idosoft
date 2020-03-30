@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 import kr.co.idosoft.intranet.notice.service.NoticeServiceImpl;
 import kr.co.idosoft.intranet.notice.vo.NoticeVO;
@@ -102,19 +103,31 @@ public class NoticeController {
 		}
 		return true;
 	}
-//		리스트
+	//	리스트
 	@PostMapping("/findlist")
-	public Map<String, Object> findNoticeList(Model model, HttpServletRequest request) {
-		boolean isAdmin = "1".equals( (String)request.getSession().getAttribute("IS_ADMIN") )? true : false;
-		Map<String, Object> data = new HashMap<>();
-		data.put("noticeData", noticeService.findNoticeList());
-		data.put("isAdmin", isAdmin);
+	public Map<String, Object> findNoticeList(HttpServletRequest request, @RequestBody Map<String, Object> data) {
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		
+		Map<String, Object> searchData = (Map<String, Object>) data.get("state");
 		
 		logger.debug("#########################################################");
-		logger.debug("ISADMIN ? "+request.getSession().getAttribute("IS_ADMIN"));
+		logger.debug("searchData ? "+searchData.toString());
 		logger.debug("#########################################################");
 		
-		return data;
+		Map<String, Object> resultData = new HashMap<>();
+		
+		int count = noticeService.getListCount(searchData);
+		resultData.put("count", count);
+		resultData.put("isAdmin", isAdmin);
+		//카운트가 0일경우 리스트는 반환하지 않음
+		if(count == 0) {
+			return resultData;
+		}
+		
+		resultData.put("noticeData", noticeService.findNoticeList(data));
+		
+		return resultData;
+		
 	}
 	//단일 조회
 	@PostMapping("/find")

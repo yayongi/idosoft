@@ -17,7 +17,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import CommonDialog from '../../../js/CommonDialog';
 import ContentModal from '../component/ContentModal';
-
+import { isEmpty } from '../../../js/util';
 import Moment from "moment"
 
 import axios from 'axios';
@@ -56,11 +56,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function NoticeListTable({noticeData, selectedNoticeNo, setNoticeData}) {
+export default function NoticeListTable(props) {
   const classes = useStyles();
+  const {
+          count,
+          setCount,
+          setNoticeData,
+          noticeData,
+          selectedNoticeNo,
+          page,
+          setPage,
+          rowsPerPage,
+          setRowsPerPage
+  } = props;
+
+
   const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  // const [page, setPage] = React.useState(0);
+  // const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [rows, setRows] = React.useState(noticeData);
 
   const [deleteRow, setDeleteRow] = React.useState(0);
@@ -68,19 +81,13 @@ export default function NoticeListTable({noticeData, selectedNoticeNo, setNotice
 
   const [openModal, setOpenModal] = React.useState({title:'', content:'', openModal:false});
 
-  useEffect(()=>{
-    console.log(`selected : ${selected}`);
-  }, [selected])
+  // useEffect(()=>{
+  //   console.log(`selected : ${selected}`);
+  // }, [selected])
 
   useEffect(()=>{
-    // console.log(resData);
     setRows(noticeData);
-    setSelected([]);
   },[noticeData]);
-
-  useEffect(()=>{
-    localStorage.removeItem('noticeEditIndex');
-  },[]);
 
   const handleSelectAllClick = event => {
     if (event.target.checked) {
@@ -148,8 +155,8 @@ export default function NoticeListTable({noticeData, selectedNoticeNo, setNotice
           board_no : deleteRow
         },
 				}).then(response => {
-					console.log(response);
-					console.log(JSON.stringify(response));
+					console.log(response.data);
+          setCount(count-1);
 				}).catch(e => {
 					console.log(e);
 			});
@@ -169,10 +176,9 @@ export default function NoticeListTable({noticeData, selectedNoticeNo, setNotice
 
   const isSelected = board_no => selected.indexOf(board_no) !== -1;
 
-   const openContentModal = (title, Content, writer, reg_datetime) => {
+  const openContentModal = (title, Content, writer, reg_datetime) => {
       return setOpenModal({title:title, content:Content, writer:writer, reg_datetime:reg_datetime, openModal:true});
   }
-
 
   const handleCloseModal = (trigger) => {
     return setOpenModal({title:'', content:'', openModal:trigger});
@@ -192,10 +198,12 @@ export default function NoticeListTable({noticeData, selectedNoticeNo, setNotice
 	  {/* <ResourceListTool props={selected} /> */}
       <ContentModal props={openModal} closeModal={handleCloseModal}/>
       <CardContent className={classes.paper}>
+        {!isEmpty(noticeData) &&
+        <>
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          count={count}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
@@ -213,7 +221,7 @@ export default function NoticeListTable({noticeData, selectedNoticeNo, setNotice
                 <TableCell padding="checkbox">
                   <Checkbox
                     indeterminate={selected.length > 0 && rows.length < selected.length}
-                    checked={rows.length === selected.length && rows.length !== 0}
+                    checked={noticeData.length === selected.length && noticeData.length !== 0}
                     onChange={handleSelectAllClick}
                     inputProps={{ 'aria-label': 'select all desserts' }}
                     color="primary"
@@ -233,7 +241,7 @@ export default function NoticeListTable({noticeData, selectedNoticeNo, setNotice
               </TableRow>
             </TableHead>
             <TableBody>
-              { rows.length!==0 &&rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              { noticeData.length!==0 &&noticeData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.board_no);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -289,12 +297,14 @@ export default function NoticeListTable({noticeData, selectedNoticeNo, setNotice
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          count={count}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
+        </>
+        }
       </CardContent>
     </div>
   );
