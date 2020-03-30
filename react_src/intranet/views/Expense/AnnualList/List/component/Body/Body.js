@@ -55,8 +55,6 @@ function Body(props) {
     const handleChangePage = (event, newPage) => {
       if(holdUp < newPage){ // 이미 가지고 있는 페이지를 다시 호출하는 것을 막기 위해 사용
 
-        console.log('state : ' + JSON.stringify(state));
-
         Axios({
           url: '/intranet/getAnnaualList.exp',
           method: 'post',
@@ -74,7 +72,6 @@ function Body(props) {
             'Content-Type': 'application/json'
           },
         }).then(response => {
-          console.log(JSON.stringify(response.data));
           setRows(rows.concat(JSON.parse(response.data.list))); // JSONARRAY 이어 붙이기
           
           const result = JSON.parse(response.data.result);
@@ -83,8 +80,7 @@ function Body(props) {
           setPage(Number(result.currentPage)-1);
           setHoldUp(Number(result.currentPage)-1);
         }).catch(e => {
-          //processErrCode(e);
-          console.log(e);
+          processErrCode(e);
         });
       } else {
         setRowsPerPage(rowsPerPage);
@@ -110,7 +106,6 @@ function Body(props) {
           'Content-Type': 'application/json'
         },
       }).then(response => {
-        console.log(JSON.stringify(response.data));
         setRows(JSON.parse(response.data.list));
         setPaging(JSON.parse(response.data.result));
         
@@ -120,7 +115,7 @@ function Body(props) {
         setPage(Number(result.currentPage)-1);
         setHoldUp(Number(result.currentPage)-1);
       }).catch(e => {
-        //processErrCode(e);
+        processErrCode(e);
         console.log(e);
       });
     };

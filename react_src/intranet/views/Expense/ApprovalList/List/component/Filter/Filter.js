@@ -67,8 +67,6 @@ export default function  Filter(props) {
 	const [statuses, setStatuses] 			= React.useState([]);
 
 	useEffect(() => {
-		console.log("call useEffect");
-
 		Axios({
 			url: '/intranet/getCode.exp',
 			method: 'post',
@@ -80,7 +78,6 @@ export default function  Filter(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 			
 			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
 			const payTypeList 		= JSON.parse(response.data.payTypeList);
@@ -143,7 +140,6 @@ export default function  Filter(props) {
 			},
 
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 			filterSetRows(JSON.parse(response.data.list));
 			setTotalAmount(response.data.totalAmount);
 
@@ -197,12 +193,8 @@ export default function  Filter(props) {
 
 	const handleClickApprove =() => {
 		
-		console.log("call handleClickApprove");
-
 		const firSelected = state.firSelected;
 		const selected = state.selected;
-
-		console.log(`selected : ${selected[0]}`);
 
 		Axios({
 			url: '/intranet/multiplexApproval.exp',
@@ -215,7 +207,6 @@ export default function  Filter(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 			
 			const isError = response.data.isError;
 			if(isError == "false"){
@@ -223,15 +214,9 @@ export default function  Filter(props) {
 				const members = [...selected, ...firSelected];
 				let dataList = filterRows;
 
-				console.log(members);
-
 				members.map((data) => {
 
-					console.log('data' + JSON.stringify(data));
-					
 					const dataIdx = dataList.findIndex(item => item.seq === data);
-
-					console.log('before dataList[dataIdx].status : ' +dataList[dataIdx].status);
 
 					if(dataList[dataIdx].status == 'SS0000'){ // 진행 - 1차 결재 수행
 						dataList[dataIdx].status = "SS0001";
@@ -241,16 +226,12 @@ export default function  Filter(props) {
 						dataList[dataIdx].statusText = "완료";
 					}
 
-					console.log('after dataList[dataIdx].status : ' +dataList[dataIdx].status);
-
 					if(dataIdx > -1) {
 						dataList = [
 							...dataList.slice(0, dataIdx),
 							dataList[dataIdx],
 							...dataList.slice(dataIdx+1)
 						];
-
-						console.log('dataList' + JSON.stringify(dataList));
 
 					}
 				});
@@ -265,7 +246,7 @@ export default function  Filter(props) {
 			}
 		})
 		.catch(e => {
-			//processErrCode(e);
+			processErrCode(e);
 			console.log(e);
 		});
 	}

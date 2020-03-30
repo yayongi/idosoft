@@ -28,7 +28,6 @@ export default function  List(props) {
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
 	
 	useEffect(() => {
-		console.log("call useEffect");
 
 		Axios({
 			url: '/intranet/getAnnaualList.exp',
@@ -43,7 +42,6 @@ export default function  List(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 			const isNoN = response.data.isNoN;
 
 			if(isNoN == "false"){

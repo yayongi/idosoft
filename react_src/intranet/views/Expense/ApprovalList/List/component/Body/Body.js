@@ -61,8 +61,6 @@ function Body(props) {
     const handleChangePage = (event, newPage) => {
       if(holdUp < newPage){ // 이미 가지고 있는 페이지를 다시 호출하는 것을 막기 위해 사용
 
-        console.log('state : ' + JSON.stringify(state));
-
         Axios({
           url: '/intranet/getApprovalList.exp',
           method: 'post',
@@ -80,19 +78,16 @@ function Body(props) {
             'Content-Type': 'application/json'
           },
         }).then(response => {
-          console.log(JSON.stringify(response.data));
           setRows(rows.concat(JSON.parse(response.data.list))); // JSONARRAY 이어 붙이기
           
           const result = JSON.parse(response.data.result);
-
-          console.log(`isAdmin : ${response.data.isAdmin}`);
 
           setIsAdmin(response.data.isAdmin);
           setRowsPerPage(Number(result.limit));
           setPage(Number(result.currentPage)-1);
           setHoldUp(Number(result.currentPage)-1);
         }).catch(e => {
-          //processErrCode(e);
+          processErrCode(e);
           console.log(e);
         });
       } else {
@@ -119,7 +114,6 @@ function Body(props) {
           'Content-Type': 'application/json'
         },
       }).then(response => {
-        console.log(JSON.stringify(response.data));
         setRows(JSON.parse(response.data.list));
         setPaging(JSON.parse(response.data.result));
         
@@ -130,14 +124,13 @@ function Body(props) {
         setPage(Number(result.currentPage)-1);
         setHoldUp(Number(result.currentPage)-1);
       }).catch(e => {
-        //processErrCode(e);
+        processErrCode(e);
         console.log(e);
       });
     };
 
     // 상세페이지로 이동
     const handleClickView = (event, row) => {
-      console.log("call handleClickView");      
       routeProps.history.push(`${routeProps.match.url}/view/${row.seq}`);
     };
     
@@ -145,8 +138,6 @@ function Body(props) {
     const handleSelectClick = (e, seq, status) => {
       
       let selecteds = [];
-
-      console.log(`status : ${status}`)
 
       if(status ==='SS0000'){
         selecteds = [...state.firSelected];
@@ -179,8 +170,6 @@ function Body(props) {
       let isAuth = false;
       const mno = loginSession.member_NO;
 
-      console.log(`giveAuthorization :: dataState.status : ${status}`);
-      console.log(`giveAuthorization :: isAdmin : ${isAdmin}`);
       switch (status) {
       case 'SS0000':
         if(mno == prevAuthPersonNO || isAdmin == "1"){ 

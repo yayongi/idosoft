@@ -92,7 +92,6 @@ const emptyData = {
 	전역 변수는 호출 안됨.
 */
 export default function  View(props) {
-	console.log("call View Area");
 	const [files, setFiles] = React.useState([]);
 
 	const {routeProps, screenType } = props;
@@ -129,8 +128,6 @@ export default function  View(props) {
 			return stepInfo;
 		}
 
-		console.log(`row.status : ${row.status}`);
-		console.log(`row.statusText : ${row.statusText}`);
 		if(row.status == 'SS0001') {
 			stepInfo.activeStep = 2;
 		} else if(row.status == 'SS0002') {
@@ -177,8 +174,6 @@ export default function  View(props) {
 	// 결제일 변경 시, 임시로 값 저장
 	const handleChangePayDate = date => {
 
-		console.log(`date : ${date}`);
-
 		setDataState({
 			...dataState,
 			payDate: Moment(date).format('YYYY-MM-DD')
@@ -186,12 +181,8 @@ export default function  View(props) {
 	}
 	
 	React.useEffect(() => {		// render 완료 후, 호출
-		console.log("call useEffect");
-		console.log(JSON.stringify(match));
 
 		const params = match.params;
-
-		console.log(params.id);
 
 		Axios({
 			url: '/intranet/getAnnView.exp',
@@ -204,7 +195,6 @@ export default function  View(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 
 			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
 			const payTypeList 		= JSON.parse(response.data.payTypeList);
@@ -231,7 +221,7 @@ export default function  View(props) {
 			}
 		})
 		.catch(e => {
-			//processErrCode(e);
+			processErrCode(e);
 			console.log(e);
 		});
 	}, []);
@@ -267,8 +257,6 @@ export default function  View(props) {
 	}
 	
 	const valuedationCheck = () => {
-
-		console.log('dataState.pay : ' + dataState.pay);
 		
 		if(dataState.pay == '' || dataState.pay == undefined){
 			setStateOpen(true);
@@ -292,9 +280,6 @@ export default function  View(props) {
 
 	// 글 등록 후, 목록으로 이동
 	const handleClickNew = () => {
-		console.log("call handleClickNew");
-		
-		console.log("dataState : " + JSON.stringify(dataState));
 		
 		const formData = new FormData();
 		formData.append('file',files[0]);
@@ -315,7 +300,6 @@ export default function  View(props) {
 				'enctype': 'multipart/form-data'
 			}
 			}).then(response => {
-				console.log(`${JSON.stringify(response)}`);
 				
 				stateOpenEvent("등록이 완료되었습니다.");
 			}).catch(e => {
@@ -327,15 +311,10 @@ export default function  View(props) {
 
 	// 글 삭제 후, 목록으로 이동
 	const handleClickRemove = () => {
-		console.log("call handleClickRemove");
 		
 		const formData = new FormData();
 
-		console.log(`dataState.filePath : ${dataState.filePath} // files[0].filePath : ${files[0].filePath}`);
-
 		const params = match.params;
-
-		console.log(`params : ${JSON.stringify(params)}`)
 
 		if(dataState.filePath != files[0].preview){
 			formData.append('file',files[0]);
@@ -352,8 +331,6 @@ export default function  View(props) {
 				'enctype': 'multipart/form-data'
 			}
 			}).then(response => {
-				console.log(`${JSON.stringify(response)}`);
-				
 				stateOpenEvent("삭제  완료되었습니다.");
 			}).catch(e => {
 				processErrCode(e);
@@ -364,20 +341,13 @@ export default function  View(props) {
 	// 수정처리
 	const handleClickModify =() => {
 
-		console.log("call handleClickModify");
 		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
 			return;
 		}
 
-		console.log("dataState : " + JSON.stringify(dataState));
-		
 		const formData = new FormData();
 
-		console.log(`dataState.filePath : ${dataState.filePath} // files[0].filePath : ${files[0].filePath}`);
-
 		const params = match.params;
-
-		console.log(`params : ${JSON.stringify(params)}`)
 
 		if(dataState.filePath != files[0].preview){
 			formData.append('file',files[0]);
@@ -398,10 +368,7 @@ export default function  View(props) {
 				'enctype': 'multipart/form-data'
 			}
 			}).then(response => {
-				console.log(`${JSON.stringify(response)}`);
-				
 				stateOpenEvent("수정 완료되었습니다.");
-				//history.goBack();
 			}).catch(e => {
 				processErrCode(e);
 				console.log(e);
@@ -411,20 +378,13 @@ export default function  View(props) {
 	// 반려건, 다시 진행
 	const handleClickRetry = () => {
 
-		console.log("call handleClickRetry");
 		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
 			return;
 		}
 
-		console.log("dataState : " + JSON.stringify(dataState));
-		
 		const formData = new FormData();
 
-		console.log(`dataState.filePath : ${dataState.filePath} // files[0].filePath : ${files[0].filePath}`);
-
 		const params = match.params;
-
-		console.log(`params : ${JSON.stringify(params)}`)
 
 		if(dataState.filePath != files[0].preview){
 			formData.append('file',files[0]);
@@ -445,10 +405,7 @@ export default function  View(props) {
 				'enctype': 'multipart/form-data'
 			}
 			}).then(response => {
-				console.log(`${JSON.stringify(response)}`);
-				
 				stateOpenEvent("다시 결재 진행합니다.");
-				//history.goBack();
 			}).catch(e => {
 				processErrCode(e);
 				console.log(e);

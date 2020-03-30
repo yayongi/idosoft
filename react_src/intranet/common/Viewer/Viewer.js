@@ -19,7 +19,6 @@ const Viewer = ({defaultValue}) =>{
   const classes = useStyles();
   const ref = React.useRef();
   useEffect(()=>{
-    console.log(ref.current);
   },[])
 
   return (
@@ -31,7 +30,6 @@ const Viewer = ({defaultValue}) =>{
                 editor={ ClassicEditor }
                 data={defaultValue}
                 onInit={ editor => {
-                    console.log( 'Editor is ready to use!', editor );
                 } }
                 config = {{
 				          toolbar : [],
