@@ -209,13 +209,18 @@ export function excelExport(json){
 
   //  로그인 회원정보 세션데이터 가져오기
   //  작성자 : 유기환
-  export function getSessionMemberInfo(){
+  export function getSessionMemberInfo(resPassSign){
     axios({
       url: '/intranet/getSession',
       method: 'get',
       data: {}
     }).then(response => {
       sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
+      if(resPassSign == 'true'){
+        location.href="/intranet/#/resPassword";
+      } else {
+        location.href="/intranet/";
+      }
     }).catch(e => {
       processErrCode(e);
       return null;
