@@ -1,5 +1,6 @@
-import React, { useDebugValue, useEffect, useState } from 'react';
+import React, { useDebugValue, useEffect, useState, Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -18,6 +19,7 @@ import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import axios from 'axios';
 
 import CommonDialog from '../../../js/CommonDialog';
+import { isEmpty } from '../../../js/util';
 
 const headCells = [
   { id: 'res_no', label: '번호' },
@@ -77,11 +79,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function ResourceListTable({resData, selectedResNo, setResData}, props) {
+function ResourceListTable(props) {
   const classes = useStyles();
+
+  const {
+          count,
+          setCount, 
+          resData, 
+          selectedResNo, 
+          setResData, 
+          page, 
+          setPage, 
+          rowsPerPage, 
+          setRowsPerPage
+  } = props;
+
   const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  // const [page, setPage] = React.useState(0);
+  // const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [rows, setRows] = React.useState(resData);
   const [deleteRow, setDeleteRow] = React.useState(0);
   const [confirm, setConfirm] = React.useState({});
@@ -93,19 +108,6 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
   // } else {
   //   columns =columnsDown;
   // }
-
-  useEffect(()=>{
-    console.log(`selected : ${selected}`);
-  }, [selected])
-
-  useEffect(()=>{
-    setRows(resData);
-    setSelected([]);
-  },[resData]);
-
-  useEffect(()=>{
-    localStorage.removeItem('resEditIndex');
-  },[]);
 
   const handleSelectAllClick = event => {
     if (event.target.checked) {
@@ -137,12 +139,14 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
   };
 
   const handleChangePage = (event, newPage) => {
+    console.log('newPage : '+newPage)
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+    console.log("RowerPerPage : "+parseInt(event.target.value, 10));
   };
 
   //개별 삭제 handler
@@ -174,8 +178,8 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
           res_no : deleteRow
         },
 				}).then(response => {
-					console.log(response);
-					console.log(JSON.stringify(response));
+          console.log(response.data);
+          setCount(count-1);
 				}).catch(e => {
 					console.log(e);
       });
@@ -189,21 +193,27 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
 	}
 
   const handleEditClick = (res_no) => {
-    localStorage.setItem('resEditIndex', res_no);
+    // localStorage.setItem('resEditIndex', res_no);
   }
 
   const isSelected = res_no => selected.indexOf(res_no) !== -1;
   // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   return (
-    <div className={classes.root}>
-      <CommonDialog props={confirm} closeCommonDialog={handleCloseConfirm}/>
-	  {/* <ResourceListTool props={selected} /> */}
-      <CardContent className={classes.paper}>
+    <Fragment>
+    <CommonDialog props={confirm} closeCommonDialog={handleCloseConfirm}/>
+
+    <Paper className={classes.root}>
+        <TableContainer className={classes.container}>
+
+      {/* <CardContent className={classes.paper}> */}
+       {!isEmpty(resData) &&
+       <>
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          // count={rows.length}
+          count={count}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
@@ -214,14 +224,16 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
             className={classes.table}
             aria-labelledby="tableTitle"
             size='medium'
-            aria-label="enhanced table"
+            // aria-label="enhanced table"
+            stickyHeader
+            aria-label="sticky table"
           >
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
                     <Checkbox
-                      indeterminate={selected.length > 0 && rows.length < selected.length}
-                      checked={rows.length === selected.length && rows.length !== 0}
+                      indeterminate={selected.length > 0 && resData.length < selected.length}
+                      checked={resData.length === selected.length && resData.length !== 0}
                       onChange={handleSelectAllClick}
                       inputProps={{ 'aria-label': 'select all desserts' }}
                       color="primary"
@@ -241,7 +253,7 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.length > 0 && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              {resData.length > 0 && resData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.res_no);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -271,14 +283,19 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
                       <TableCell align="center">{row.model_nm}</TableCell>
                       <TableCell align="center">{row.mark_code}</TableCell>
                       <TableCell align="center">
-                          {row.product_mtn !== undefined && row.product_mtn !== null ? row.product_mtn : "미설정"}
+                          {/* {row.product_mtn !== undefined && row.product_mtn !== null ? row.product_mtn : "미설정"} */}
+                          {isEmpty(row.product_mtn)? "미설정" : row.product_mtn}
                       </TableCell>
                       <TableCell align="center">
-                          {row.purchase_mtn !== undefined && row.purchase_mtn !== null ? row.purchase_mtn : "미설정"}
+                          {/* {row.purchase_mtn !== undefined && row.purchase_mtn !== null ? row.purchase_mtn : "미설정"} */}
+                          {isEmpty(row.purchase_mtn)? "미설정" : row.purchase_mtn}
                       </TableCell>
                       <TableCell align="center">{row.display_size_code}</TableCell>
                       <TableCell align="center">{row.serial_no}</TableCell>
-                      <TableCell align="center">{row.mac_addr}</TableCell>
+                      <TableCell align="center">
+                                          {isEmpty(row.mac_addr)? "미설정" : row.mac_addr}
+                                          {/* {row.mac_addr} */}
+                      </TableCell>
                       <TableCell align="center">{row.holder}</TableCell>
                       {/* 관리자의 경우 */}
                       <TableCell align="center">
@@ -300,14 +317,19 @@ function ResourceListTable({resData, selectedResNo, setResData}, props) {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          // count={rows.length}
+          count={count}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
-      </CardContent>
-    </div>
+        </>
+      }
+      {/* </CardContent> */}
+      </TableContainer>
+      </Paper>
+    </Fragment>
   );
 }
 export default withWidth()(ResourceListTable);

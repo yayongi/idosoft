@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.notice.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -17,8 +18,10 @@ public interface NoticeDao {
 
 	NoticeVO select(int board_no);
 
-	List<NoticeVO> selectList();
+	List<NoticeVO> selectList(Map<String,Object> data);
 	// 대쉬보드용 리스트
 	List<NoticeVO> selectListDashboard();
+
+	int count(Map<String, Object> data);
 
 }

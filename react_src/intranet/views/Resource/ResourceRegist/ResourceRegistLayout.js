@@ -158,7 +158,7 @@ function RegistGrid() {
 		//셀렉트박스 데이터를 받아옴.
 
 		axios({
-			url: '/intranet/resource/getResType',
+			url: '/intranet/resource/get-restype',
 			method : 'post',
 			headers: {
 				'Content-Type': 'application/json;charset=UTF-8'

@@ -1,5 +1,7 @@
 package kr.co.idosoft.common.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -257,6 +259,18 @@ public class StringUtils {
 	public static Map fromJsonMap(String reqString) {
 		Gson gson = new Gson();
 		return gson.fromJson(reqString, HashMap.class);
+	}
+	
+	//한글유니코드(\uAC00-\uD7A3), 숫자 0~9(0-9), 영어 소문자a~z(a-z), 대문자A~Z(A-Z), 공백(\s) 외에 제거
+	public static String StringReplace(String str){
+		String match = "[^\uAC00-\uD7A3xfe0-9a-zA-Z\\s]";
+		str =str.replaceAll(match, "");
+		return str;
+	}
+	//1칸이상의 공백을 기준으로 String을 나누어 List로 반환 
+	public static List<String> arStrRegexMultiSpace (String str){
+		String[] strArr = str.split("\\s+");
+		return new ArrayList<>(Arrays.asList(strArr));
 	}
 }
 

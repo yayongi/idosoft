@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.notice.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,8 @@ public interface NoticeService {
 	//대쉬보드용 리스트
 	List<NoticeVO> selectListDashboard();
 
-	List<NoticeVO> findNoticeList();
+	List<NoticeVO> findNoticeList(Map<String, Object> data);
+	
+	int getListCount(Map<String, Object> searchData);
 
 }

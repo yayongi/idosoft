@@ -2,7 +2,9 @@ package kr.co.idosoft.intranet.notice.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.idosoft.common.util.StringUtils;
 import kr.co.idosoft.intranet.notice.dao.NoticeDao;
 import kr.co.idosoft.intranet.notice.vo.NoticeVO;
 
@@ -59,8 +62,40 @@ public class NoticeServiceImpl implements NoticeService{
 	}
 	//공지 리스트 조회
 	@Override
-	public List<NoticeVO> findNoticeList(){
-		return noticeDao.selectList();
+	public List<NoticeVO> findNoticeList(Map<String, Object> data){
+		Map<String, Object> searchData = (Map<String, Object>) data.get("state");
+		
+		Map<String,Object> newMap =new HashMap<String,Object>();
+		for(String str : searchData.keySet()) {
+			if("search".equals(str)) {
+				List<String> searchList = StringUtils.arStrRegexMultiSpace(StringUtils.StringReplace((String) searchData.get(str)));
+				if("".equals(searchList.get(0))) newMap.put("searchList", null);
+				else newMap.put("searchList", searchList);
+			}else {
+				newMap.put(str, String.valueOf(searchData.get(str)));
+			}
+		}
+		newMap.put("offset", (Integer)data.get("page")*(Integer)data.get("rowsPerPage"));
+		newMap.put("limit", (Integer)data.get("rowsPerPage"));
+		
+		return noticeDao.selectList(newMap);
+	}
+	//공지 리스트 카운트
+	@Override
+	public int getListCount(Map<String, Object> searchData) {
+		Map<String,Object> newMap =new HashMap<String,Object>();
+		for(String str : searchData.keySet()) {
+			if("search".equals(str)) {
+				List<String> searchList = StringUtils.arStrRegexMultiSpace(StringUtils.StringReplace((String) searchData.get(str)));
+				
+				if("".equals(searchList.get(0))) newMap.put("searchList", null);
+				else newMap.put("searchList", searchList);
+			}else {
+				newMap.put(str, String.valueOf(searchData.get(str)));
+			}
+		}
+		
+		return noticeDao.count(newMap);
 	}
 	
 	// 대쉬보드용 리스트

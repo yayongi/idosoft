@@ -17,23 +17,25 @@ const useStyles = makeStyles(theme => ({
 const Viewer = ({defaultValue}) =>{
 
   const classes = useStyles();
-
+  const ref = React.useRef();
   useEffect(()=>{
+    console.log(ref.current);
   },[])
 
   return (
           <div className={classes.root}>
             <CKEditor
-				disabled = {true}
-				isReadOnly={true}
+                ref={ref}
+				        disabled = {true}
+				        isReadOnly={true}
                 editor={ ClassicEditor }
                 data={defaultValue}
                 onInit={ editor => {
                     console.log( 'Editor is ready to use!', editor );
                 } }
                 config = {{
-				  toolbar : [],
-				  isReadOnly : true,
+				          toolbar : [],
+				          isReadOnly : true,
                 }}
             />
         </div>

@@ -14,7 +14,8 @@ public interface ResourceDao {
 	int update(ResourceVO resourceVO);
 	int delete(int res_no);
 	ResourceVO select(int res_no);
-	List<ResourceVO> selectList();
+	List<ResourceVO> selectList(Map<String,Object> data);
+	int allCount(Map<String, String> search);
 	List<Object> getCode(String code_id);
 	List<Object> getHolders();
 }

@@ -53,14 +53,31 @@ public class ResourceServiceImpl implements ResourceService{
 	}
 	//자원 리스트 조회
 	@Override
-	public List<ResourceVO> findResourceList(){
-		return resDao.selectList();
+	public List<ResourceVO> findResourceList(Map<String, Object> data){
+		
+		Map<String, Object> searchData = (Map<String, Object>) data.get("state");
+		
+		Map<String,Object> newMap =new HashMap<String,Object>();
+		for(String str : searchData.keySet()) {
+			newMap.put(str, String.valueOf(searchData.get(str)));
+		}
+		newMap.put("offset", (Integer)data.get("page")*(Integer)data.get("rowsPerPage"));
+		newMap.put("limit", data.get("rowsPerPage"));
+		return resDao.selectList(newMap);
+	}
+	//자원 리스트 카운트
+	@Override
+	public int getListCount(Map<String, Object> searchData) {
+		Map<String,String> newMap =new HashMap<String,String>();
+		for(String str : searchData.keySet()) {
+			newMap.put(str, String.valueOf(searchData.get(str)));
+		}
+		return resDao.allCount(newMap);
 	}
 	//코드정보 조회
 	@Override
 	public List<Object> getCode(String code_id) {
-//		return resDao.getCode(code_id);
-		return null;
+		return resDao.getCode(code_id);
 	}
 	//코드명, 코드번호 및 멤버이름, 멤버번호 조회
 	@Override

@@ -44,10 +44,17 @@ public class ResourceDaoImpl implements ResourceDao {
 	}
 	//자원 정보 리스트 가져오기
 	@Override
-	public List<ResourceVO> selectList() {
-		List<ResourceVO> list = sqlTemplate.selectList("resource.selectList");
+	public List<ResourceVO> selectList(Map<String,Object> data) {
+		List<ResourceVO> list = sqlTemplate.selectList("resource.selectList", data);
 		return list;
 	}
+	//자원 정보 리스트 카운트
+	@Override
+	public int allCount(Map<String, String> searchData) {
+		int count = sqlTemplate.selectOne("resource.allCount", searchData);
+		return count;
+	}
+	
 	//코드 가져오기
 	@Override
 	public List<Object> getCode(String code_id) {

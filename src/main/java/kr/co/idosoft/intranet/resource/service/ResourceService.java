@@ -17,11 +17,14 @@ public interface ResourceService {
 	
 	ResourceVO findResource(int res_no); 
 	
-	List<ResourceVO> findResourceList();
+	List<ResourceVO> findResourceList(Map<String, Object> data);
 
 	List<Object> getCode(String code_id);
 
+	int getListCount(Map<String, Object> searchData);
+	
 	Map<String, List<Object>> getSelectType(Map<String, String> upper_codes);
+
 
 	
 }
