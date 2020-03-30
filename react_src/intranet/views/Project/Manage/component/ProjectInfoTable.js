@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 
 function ProjectInfo(props) {
   const classes = useStyles();
-  const { projectInfo } = props;
+  const { projectInfo, routeProps } = props;
   
 
   const makeTableFormInfo = () => {
@@ -34,11 +34,6 @@ function ProjectInfo(props) {
   }
 
   const rows = makeTableFormInfo();
-
-
-  
-
-  console.log(rows);
 
   //console.log(rows);
   // 상세페이지로 이동
@@ -65,6 +60,7 @@ function ProjectInfo(props) {
   }
 
   const handleClickDetailView = (event, row) => {
+    routeProps.history.push(`${routeProps.match.url}/view/${row.PROJECT_NO}`);
   };
 
   return (
@@ -98,6 +94,8 @@ function ProjectInfo(props) {
                     var value = row[column.id];
                     if(column.id === "TRANSPORT_CT"){
                       value = row["TRANSPORT_CT"].toLocaleString();
+                    }else if(column.id === "YEAR"){
+                      value = value  +"년"
                     }
                     return (
                       <TableCell key={row.PROJECT_NO + idx} align={column.align} className={column.className}>
