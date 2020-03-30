@@ -165,6 +165,7 @@ public class ProjectController {
 					count += 1;
 				}
 			}
+			tempMap.put("PROJECT_NO",String.valueOf(tempMap.get("PROJECT_NO")));
 			tempMap.put("memberCount",String.valueOf(count));
 			resultList.add(tempMap);
 		}
