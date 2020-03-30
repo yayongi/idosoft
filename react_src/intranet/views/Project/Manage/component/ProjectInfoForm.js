@@ -299,7 +299,7 @@ function ProjectInfoForm(props) {
 		axios({
 			url: '/intranet/removeMember',
 			method: 'post',
-			data: {"project_no": match.params.id, "member_no" : member_no}
+			data: {"PROJECT_NO": match.params.id, "MEMBER_NO" : member_no}
 		}).then(response => {
 			setShowLoadingBar(false);
 			if(response.data.isDBError){
