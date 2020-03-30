@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.resource.dao;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,5 +68,10 @@ public class ResourceDaoImpl implements ResourceDao {
 	@Override
 	public List<Object> getHolders() {
 		return sqlTemplate.selectList("resource.getHolders");
+	}
+	//엑셀파일출력용 자원정보 가져오기
+	@Override
+	public List<LinkedHashMap<String, Object>> exportExcel(List<String> res_no_list) {
+		return sqlTemplate.selectList("resource.exportExcel",res_no_list);
 	}
 }

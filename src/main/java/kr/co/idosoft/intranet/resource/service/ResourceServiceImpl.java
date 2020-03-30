@@ -2,6 +2,7 @@ package kr.co.idosoft.intranet.resource.service;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -95,5 +96,8 @@ public class ResourceServiceImpl implements ResourceService{
 		
 		return resSelectType;
 	}
-	
+	@Override
+	public List<LinkedHashMap<String, Object>> exportExcel(List<String> res_no_list) {
+		return resDao.exportExcel(res_no_list);
+	}
 }

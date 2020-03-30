@@ -79,7 +79,7 @@ const useStyles = makeStyles(theme => ({
     width: 1,
   },
   margin: {
-    margin: theme.spacing(1),
+    // margin: theme.spacing(1),
   },
 }));
 
@@ -87,6 +87,7 @@ function ResourceListTable(props) {
   const classes = useStyles();
 
   const {
+          isAdmin,
           count,
           setCount, 
           resData, 
@@ -116,7 +117,7 @@ function ResourceListTable(props) {
 
   const handleSelectAllClick = event => {
     if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.res_no);
+      const newSelecteds = resData.map(n => n.res_no);
       setSelected(newSelecteds);
       return;
     }
@@ -243,7 +244,7 @@ function ResourceListTable(props) {
               <TableRow>
                 <TableCell padding="checkbox">
                     <Checkbox
-                      indeterminate={selected.length > 0 && resData.length < selected.length}
+                      // indeterminate={selected.length > 0 && resData.length < selected.length}
                       checked={resData.length === selected.length && resData.length !== 0}
                       onChange={handleSelectAllClick}
                       inputProps={{ 'aria-label': 'select all desserts' }}
@@ -263,8 +264,9 @@ function ResourceListTable(props) {
                         {headCell.label}
                     </TableCell>
                   ))}
-                  {/* <TableCell style={{minWidth:'50px'}}></TableCell> */}
-                  <TableCell align={'center'}>수정 / 삭제</TableCell> 
+                  {isAdmin &&
+                  <TableCell align={'center'}>수정 / 삭제</TableCell>
+                  } 
                   </>
                 }
                 {!isWidthUp('md', props.width) &&
@@ -279,8 +281,9 @@ function ResourceListTable(props) {
                           {headCell.label}
                       </TableCell>
                     ))}
-                    {/* <TableCell style={{width:'5px'}}></TableCell> */}
+                    {isAdmin &&
                     <TableCell align={'center'}>수정 / 삭제</TableCell> 
+                    }
                   </>
                 }
               </TableRow>
@@ -336,6 +339,7 @@ function ResourceListTable(props) {
                     }
                       <TableCell align="center" onClick={event=>openContentModal(row)}>{row.holder}</TableCell>
                       {/* 관리자의 경우 */}
+                      {isAdmin &&
                       <TableCell align="center">
                         <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.res_no)}>
                           <DeleteIcon fontSize="small" />
@@ -346,6 +350,7 @@ function ResourceListTable(props) {
                           </IconButton>
                         </RouterLink>
                       </TableCell>
+                      }
                     </TableRow>
                   );
                 })}
