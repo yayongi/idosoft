@@ -19,7 +19,6 @@ public interface ProjectService {
 	List<Map<String, Object>> projectMemberList(String project_no);
 	void removeMember(HashMap<String, Object> info);
 	void updateMember(HashMap<String, Object> member);
-
 	//현재 진행중인 프로젝트
 	public List<HashMap<String, String>> getPresentProject();
 	

@@ -24,10 +24,8 @@ public interface ProjectDao {
 	void insert_member(HashMap<String, Object> insert);
 	void removeMember(HashMap<String, Object> info);
 	void updateMember(HashMap<String, Object> member);
-
 	//현재 진행중인 프로젝트
 	public List<HashMap<String, String>> getPresentProject();
-	
 	//프로젝트 개인이력 
 	public List<HashMap<String,String>> getProjectMember();
 }

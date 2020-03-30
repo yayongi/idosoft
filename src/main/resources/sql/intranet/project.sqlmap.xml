@@ -180,4 +180,15 @@
 		AND DATE_FORMAT(NOW(),'%Y%m%d') <= ENDDE
 	]]>
 	</select>
+	
+	<!-- 프로젝트 인원 조회 -->
+	<select id="getProjectMember" resultType="hashmap">
+	<![CDATA[ 
+		SELECT
+			PROJECT_NO
+		FROM TB_PROJECT_MEMBER
+		WHERE DATE_FORMAT(NOW(),'%Y%m%d') >= INPT_BGNDE 
+		AND DATE_FORMAT(NOW(),'%Y%m%d') <= INPT_ENDDE
+	]]>
+	</select>
 </mapper>

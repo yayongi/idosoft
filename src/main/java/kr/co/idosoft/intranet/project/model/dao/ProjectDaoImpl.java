@@ -71,7 +71,7 @@ public class ProjectDaoImpl implements ProjectDao {
 		// TODO Auto-generated method stub
 		return (ArrayList)sqlTemplate.selectList("project.projectMemberList", project_no);
 	}
-
+	
 	@Override
 	public void removeMember(HashMap<String, Object> info) {
 		// TODO Auto-generated method stub
@@ -88,7 +88,7 @@ public class ProjectDaoImpl implements ProjectDao {
 	public List<HashMap<String, String>> getPresentProject() {
 		return sqlTemplate.selectList("getPresentProject");
 	}
-
+	
 	@Override
 	public List<HashMap<String, String>> getProjectMember() {
 		return sqlTemplate.selectList("getProjectMember");
