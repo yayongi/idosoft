@@ -78,6 +78,11 @@ public class MemberServiceImpl implements MemberService {
 	public List<LinkedHashMap<String, Object>> exportExcel(List<String> member_no_list) {
 		return memberDao.exportExcel(member_no_list);
 	}
+
+	@Override
+	public int initializePassword(MemberVO memberVo) {
+		return memberDao.initializePassword(memberVo);
+	}
 	
 
 }

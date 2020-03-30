@@ -79,4 +79,10 @@ public class MemberDaoImpl implements MemberDao {
 	public List<LinkedHashMap<String, Object>> exportExcel(List<String> member_no_list) {
 		return sqlTemplate.selectList("exportExcel",member_no_list);
 	}
+
+	@Override
+	public int initializePassword(MemberVO memberVo) {
+		// TODO Auto-generated method stub
+		return sqlTemplate.update("initializePassword",memberVo);
+	}
 }

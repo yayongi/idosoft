@@ -29,4 +29,6 @@ public interface MemberDao {
 	public String findMemberNo(String member_no);
 	// 사원정보 엑셀 출력
 	public List<LinkedHashMap<String, Object>> exportExcel(List<String> member_no_list);
+	// 사원 비밀번호 초기화
+	public int initializePassword(MemberVO memberVo);
 }
