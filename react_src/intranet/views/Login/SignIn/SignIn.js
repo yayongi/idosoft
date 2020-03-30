@@ -113,6 +113,7 @@ class SignIn extends Component {
 					if(resPassSign == 'true'){
 						location.href="/intranet/#/resPassword";
 					} else {
+						location.href="/intranet/";
 					}
 				} else {
 					const errorArartOpen = this.errorArartOpen.bind(this);

@@ -216,9 +216,6 @@ export function excelExport(json){
       data: {}
     }).then(response => {
       sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
-
-      location.href="/intranet/";
-
     }).catch(e => {
       processErrCode(e);
       return null;
