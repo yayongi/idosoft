@@ -13,15 +13,18 @@ import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
+import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableContainer from '@material-ui/core/TableContainer';
+
+import TextField from '@material-ui/core/TextField';
 
 import {isEmpty} from '../../../js/util';
 
 const styles = theme => ({
   root: {
     margin: 0,
-    padding: theme.spacing(2),
+    // padding: theme.spacing(2),
   },
   closeButton: {
     position: 'absolute',
@@ -69,7 +72,7 @@ const DialogContent = withStyles(theme => ({
 const DialogActions = withStyles(theme => ({
   root: {
     margin: 0,
-    padding: theme.spacing(1),
+    // padding: theme.spacing(1),
   },
 }))(MuiDialogActions);
 
@@ -95,51 +98,47 @@ const ContentModal = ({props, closeModal}) => {
         </DialogTitle>
         <DialogContent dividers>
           <TableContainer className={classes.container}>
-          <Table className={classes.tableRoot} aria-label="sticky table">
-            <TableBody>
-              <TableRow hover>
-                <TableCell className={classes.tableCell} align={"left"}>번호</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.res_no}</TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell className={classes.tableCell} align={"left"}>종류</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.res_code}</TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell className={classes.tableCell} align={"left"}>모델명</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.model_nm} </TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell className={classes.tableCell} align={"left"}>제조사</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.mark_code}</TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell className={classes.tableCell} align={"left"}>제조일</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.product_mtn}</TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell className={classes.tableCell} align={"left"}>구입일</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.purchase_mtn}</TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell className={classes.tableCell} align={"left"}>화면크기</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.display_size_code}</TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell className={classes.tableCell} align={"left"}>시리얼번호</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.serial_no}</TableCell>
-              </TableRow>
-              <TableRow hover> 
-                <TableCell className={classes.tableCell} align={"left"}>MAC주소</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.mac_addr}</TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell className={classes.tableCell} align={"left"}>보유자</TableCell>
-                <TableCell className={classes.tableCell}> {props.resData.holder}</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-          </TableContainer>
+            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader>
+              <TableHead>
+                  <TableCell  align={"center"}>종류</TableCell>
+                  <TableCell  align={"center"}>모델명</TableCell>
+                  <TableCell  align={"center"}>제조사</TableCell>
+              </TableHead>
+              <TableBody>
+                  <TableCell align={"center"}> {props.resData.res_code}</TableCell>
+                  <TableCell align={"center"}> {props.resData.model_nm} </TableCell>
+                  <TableCell align={"center"}> {props.resData.mark_code}</TableCell>
+              </TableBody>
+            </Table>
+            <br/>
+            <br/>
+            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader>
+              <TableHead>
+                  <TableCell  align={"center"}>제조년월</TableCell>
+                  <TableCell  align={"center"}>구입년월</TableCell>
+                  <TableCell  align={"center"}>화면크기</TableCell>
+              </TableHead>
+              <TableBody>
+                  <TableCell align={"center"}> {props.resData.product_mtn === null ? "미등록" : props.resData.product_mtn}</TableCell>
+                  <TableCell align={"center"}> {props.resData.purchase_mtn === null ? "미등록" : props.resData.purchase_mtn} </TableCell>
+                  <TableCell align={"center"}> {props.resData.display_size_code}</TableCell>
+              </TableBody>
+            </Table>
+            <br/>
+            <br/>
+            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader>
+              <TableHead>
+                  <TableCell  align={"center"}>시리얼번호</TableCell>
+                  <TableCell  align={"center"}>MAC주소</TableCell>
+                  <TableCell  align={"center"}>보유자</TableCell>
+              </TableHead>
+              <TableBody>
+                  <TableCell align={"center"}> {props.resData.serial_no}</TableCell>
+                  <TableCell align={"center"}> {props.resData.mac_addr === "" ? "미등록" : props.resData.mac_addr} </TableCell>
+                  <TableCell align={"center"}> {props.resData.holder}</TableCell>
+              </TableBody>
+            </Table>
+            </TableContainer>
         </DialogContent>
       </Dialog>
     </div>

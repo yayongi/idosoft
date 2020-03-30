@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.resource.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,8 @@ public interface ResourceService {
 	int getListCount(Map<String, Object> searchData);
 	
 	Map<String, List<Object>> getSelectType(Map<String, String> upper_codes);
+
+	List<LinkedHashMap<String, Object>> exportExcel(List<String> res_no_list);
 
 
 	

@@ -8,6 +8,8 @@ import ResourceListTable from './ResourceListTable';
 import Filter from '../component/Filter';
 import { useStaticState } from '@material-ui/pickers';
 
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
+
 import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
@@ -34,12 +36,13 @@ const ResourceList = () => {
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+	const [isShowLoadingBar, setShowLoadingBar] = useState(true);//로딩바
+
 	const [temp, setTemp] = useState({
 		state : initState,
 		page : 0,
 		rowsPerPage : 10
 	});
-	
 	useEffect(() => {
 		axios({
 				url: '/intranet/resource/findlist',
@@ -58,8 +61,10 @@ const ResourceList = () => {
 					setResData(response.data.resData);
 					setIsAdmin(response.data.isAdmin);
 					setCount(response.data.count);
+					setShowLoadingBar(false);
 				}).catch(e => {
 					console.log(e);
+					setShowLoadingBar(false);
 			});
 	}, []);
 
@@ -88,8 +93,10 @@ const ResourceList = () => {
 						setIsAdmin(response.data.isAdmin);
 						setCount(response.data.count);
 						setTemp({...temp, ['state']:state, ['rowsPerPage']:rowsPerPage, ['page']:page});
+						setShowLoadingBar(false);
 					}).catch(e => {
 						console.log(e);
+						setShowLoadingBar(false);
 				});
 		}
 	}, [state, page, rowsPerPage]);
@@ -101,7 +108,9 @@ const ResourceList = () => {
 
 	return (
 		<React.Fragment>
+			<LoadingBar openLoading={isShowLoadingBar}/>
 			<Filter 
+				isAdmin={isAdmin}
 				state={state} 
 				setState={setState}
 				selected={selected}
@@ -115,6 +124,7 @@ const ResourceList = () => {
 			{/* <Card> */}
 			<Paper className={classes.root}>
 				<ResourceListTable 
+					isAdmin={isAdmin}
 					count={count}
 					setCount={setCount} 
 					setResData={setResData} 

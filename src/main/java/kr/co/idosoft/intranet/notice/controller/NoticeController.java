@@ -58,10 +58,14 @@ public class NoticeController {
 	//수정
 	@PostMapping("/modify")
 	public boolean modifyNotice(Model model, @RequestBody NoticeVO noticeVO, HttpServletRequest request) {
+		SessionVO sessionVo = (SessionVO) request.getSession().getAttribute("SESSION_DATA");
+		String mNo = sessionVo.getMEMBER_NO();						// 회원번호
+		NoticeVO regedNotice = noticeService.findNotice(noticeVO.getBoard_no());
 		
-		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
-		noticeVO.setUpd_id(sessionVO.getMEMBER_NO());
+		//작성자만 수정가능
+		if(!mNo.equals(regedNotice.getReg_id())) return false;
 		
+		noticeVO.setUpd_id(mNo);
 		try {
 			if(0 < noticeService.modifyNotice(noticeVO)) {
 				return true;
@@ -76,7 +80,15 @@ public class NoticeController {
 	//단일 삭제
 	@PostMapping("/delete")
 	public boolean deleteNotice(@RequestBody NoticeVO noticeVO, HttpServletRequest request) {
-//			boolean isAdmin = (String) request.getSession().getAttribute("IS_ADMIN") == "1" ? true : false;
+		
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		
+		SessionVO sessionVo = (SessionVO) request.getSession().getAttribute("SESSION_DATA");
+		String mNo = sessionVo.getMEMBER_NO();						// 회원번호
+		NoticeVO regedNotice = noticeService.findNotice(noticeVO.getBoard_no());
+		
+		//작성자 또는 관리자 삭제가능
+		if(!mNo.equals(regedNotice.getReg_id()) || !isAdmin) return false;
 		
 		try {
 			if(0 < noticeService.deleteNotice(noticeVO.getBoard_no())) {
@@ -92,6 +104,9 @@ public class NoticeController {
 	//선택 삭제
 	@PostMapping("/deletelist")
 	public boolean  deleteNoticeeList(@RequestBody Map<String, List<Integer>> notice_no_list, HttpServletRequest request) {
+		
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		if(!isAdmin) return false;
 		
 		List<Integer> selectedNoticeNo = (List<Integer>) notice_no_list.get("board_no");
 		

@@ -170,12 +170,13 @@ export default function NoticeRegistLayout() {
 	}
 
 	// Dialog Close Handler
-	const handleCloseDialog = (result) => {
-		//등록 및 수정 처리
+	const handleCloseDialog = (title, result) => {
+    //등록 및 수정 처리
 		if(dialog.isConfirm*result){
+      console.log("등록처리")
 			noticeDataRegist();
 		}
-
+    console.log("등록안됨");
 		setDialog({title:'', content:'', onOff:false, isConfirm:false});
     return setResultDialog(result);
 	}

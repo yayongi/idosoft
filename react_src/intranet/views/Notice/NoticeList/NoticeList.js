@@ -5,6 +5,7 @@ import { useStaticState } from '@material-ui/pickers';
 import Paper from '@material-ui/core/Paper';
 import NoticeListTable from './NoticeListTable';
 import Filter from '../component/Filter';
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 
 import Moment from "moment"
 
@@ -15,6 +16,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
   },
 }));
+
+const loginData = JSON.parse(sessionStorage.getItem('loginSession'));
 
 const NoticeList = () => {
 
@@ -35,6 +38,10 @@ const NoticeList = () => {
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+	const [memberNo, setMemberNo] = useState(loginData.member_NO);
+
+	const [isShowLoadingBar, setShowLoadingBar] = useState(true);//로딩바
+
 	const [temp, setTemp] = useState({
 		state : initState,
 		page : 0,
@@ -43,6 +50,7 @@ const NoticeList = () => {
 
 	useEffect(() => {
 		// setNoticeData(temp);
+		// setShowLoadingBar(true);
 		axios({
 			url: '/intranet/notice/findlist',
 			method : 'post',
@@ -59,13 +67,16 @@ const NoticeList = () => {
 				setNoticeData(response.data.noticeData);
 				setIsAdmin(response.data.isAdmin);
 				setCount(response.data.count);
+				setShowLoadingBar(false);
 			}).catch(e => {
+				setShowLoadingBar(false);
 				console.log(e);
 		});
 	}, []);
 
 	useEffect(()=>{
 		if(temp.state !== state || temp.rowsPerPage !== rowsPerPage || temp.page < page){
+		setShowLoadingBar(true);
 			axios({
 					url: '/intranet/notice/findlist',
 					method : 'post',
@@ -89,7 +100,9 @@ const NoticeList = () => {
 						setIsAdmin(response.data.isAdmin);
 						setCount(response.data.count);
 						setTemp({...temp, ['state']:state, ['rowsPerPage']:rowsPerPage, ['page']:page});
+						setShowLoadingBar(false);
 					}).catch(e => {
+						setShowLoadingBar(false);
 						console.log(e);
 				});
 		}
@@ -101,40 +114,43 @@ const NoticeList = () => {
 	}
 
 	return (
-		<div className={classes.root}>  
-		<Filter 
-			// noticeData={noticeData}
-			// state={state} 
-			// setState={setState}
-			// selected={selected}
-			// setNoticeData={setNoticeData}
-
-			state={state} 
-			setState={setState}
-			selected={selected}
-			setSelected={setSelected}
-			setNoticeData={setNoticeData}
-			noticeData={noticeData}
-			setPage={setPage}
-			count={count}
-			setCount={setCount}
-		/>
-		<Card>
-			<NoticeListTable 
-				// setNoticeData={setNoticeData} 
-				// noticeData={noticeData} 
-				// selectedNoticeNo={handleSelectedNoticeNo}
-				count={count}
-				setCount={setCount} 
-				setNoticeData={setNoticeData} 
-				noticeData={noticeData} 
-				selectedNoticeNo={handleSelectedNoticeNo}
-				page={page}
+		<div className={classes.root}>
+			<LoadingBar openLoading={isShowLoadingBar}/>  
+			<Filter 
+				// noticeData={noticeData}
+				// state={state} 
+				// setState={setState}
+				// selected={selected}
+				// setNoticeData={setNoticeData}
+				isAdmin={isAdmin}
+				state={state} 
+				setState={setState}
+				selected={selected}
+				setSelected={setSelected}
+				setNoticeData={setNoticeData}
+				noticeData={noticeData}
 				setPage={setPage}
-				rowsPerPage={rowsPerPage}
-				setRowsPerPage={setRowsPerPage}
+				count={count}
+				setCount={setCount}
 			/>
-		</Card>
+			<Card>
+				<NoticeListTable 
+					// setNoticeData={setNoticeData} 
+					// noticeData={noticeData} 
+					// selectedNoticeNo={handleSelectedNoticeNo}
+					memberNo={memberNo}
+					isAdmin={isAdmin}
+					count={count}
+					setCount={setCount} 
+					setNoticeData={setNoticeData} 
+					noticeData={noticeData} 
+					selectedNoticeNo={handleSelectedNoticeNo}
+					page={page}
+					setPage={setPage}
+					rowsPerPage={rowsPerPage}
+					setRowsPerPage={setRowsPerPage}
+				/>
+			</Card>
 		</div>
 	);
 }

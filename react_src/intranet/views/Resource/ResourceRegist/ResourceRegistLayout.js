@@ -214,7 +214,7 @@ function RegistGrid() {
 	}
 
 	// Dialog Close Handler
-	const handleCloseDialog = (result) => {
+	const handleCloseDialog = (title, result) => {
 		//등록 및 수정 처
 		if(dialog.isConfirm*result){
 			resDataRegist();

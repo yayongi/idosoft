@@ -149,4 +149,28 @@
 		FROM
 			TB_MEMBER
 	</select>
+	<!-- 엑셀 -->
+	<select id="exportExcel" parameterType="String" resultType="java.util.LinkedHashMap">
+		SELECT
+			CAST(TB_RESOURCE.RES_NO AS CHAR(10)) AS 번호, 
+			A.CODE_NAME AS 자원종류,
+			TB_RESOURCE.MODEL_NM AS 모델명, 
+			B.CODE_NAME AS 제조사,
+			DATE_FORMAT(STR_TO_DATE(TB_RESOURCE.PRODUCT_MTN, '%Y%m'),'%Y-%m ') AS 제조년월,
+			DATE_FORMAT(STR_TO_DATE(TB_RESOURCE.PURCHASE_MTN, '%Y%m'),'%Y-%m ') AS 구입년월,
+			C.CODE_NAME AS 화면크기,
+			TB_RESOURCE.SERIAL_NO AS Serial번호, 
+			TB_RESOURCE.MAC_ADDR AS MAC주소,
+			D.NAME AS 보유자
+		FROM	TB_RESOURCE
+			LEFT OUTER JOIN TB_CODE A ON TB_RESOURCE.RES_CODE = A.CODE_ID
+			LEFT OUTER JOIN TB_CODE B ON TB_RESOURCE.MARK_CODE = B.CODE_ID
+			LEFT OUTER JOIN TB_CODE C ON TB_RESOURCE.DISPLAY_SIZE_CODE = C.CODE_ID
+			LEFT OUTER JOIN TB_MEMBER D ON TB_RESOURCE.HOLDER = D.MEMBER_NO
+		WHERE
+			TB_RESOURCE.RES_NO IN
+	    <foreach collection="list" item="res_no"  open="(" close=")" separator=",">
+	        #{res_no}
+	    </foreach>
+	</select>
 </mapper>

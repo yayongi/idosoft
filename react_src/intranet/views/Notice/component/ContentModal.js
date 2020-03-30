@@ -89,20 +89,10 @@ const ContentModal = ({props, closeModal}) => {
      
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={props.openModal}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-         {/* Modal title */}
-          <Table className={classes.tableRoot} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell className={classes.tableCell}> {props.title}</TableCell>
-                <TableCell className={classes.tableCell}> {props.writer}</TableCell>
-                <TableCell className={classes.tableCell}> {props.reg_datetime}</TableCell>
-              </TableRow>
-            </TableHead>
-          </Table>
-
-
+          {props.title}
         </DialogTitle>
         <DialogContent dividers>
+          {`작성자 : ${props.writer}`} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {`작성일 : ${props.reg_datetime}`}
           <div className={classes.root}>
             <Viewer defaultValue={props.content}/>
           </div>

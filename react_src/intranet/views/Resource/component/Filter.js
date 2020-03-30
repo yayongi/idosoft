@@ -85,6 +85,7 @@ export default function  Filter(props) {
 	
 	const classes = useToolbarStyles();
 	const {
+			isAdmin,
 			resData, 
 			state, 
 			setState,
@@ -124,11 +125,36 @@ export default function  Filter(props) {
 		setOpen(false);
 	};
 	const handleExcelClick = () => {
-		excelExport(
-			resData.filter((row => {
-				return selected.includes((row.res_no));
-			}))
-		);
+		// excelExport(
+		// 	resData.filter((row => {
+		// 		return selected.includes((row.res_no));
+		// 	}))
+		// );
+
+		// 사원정보 엑셀 출력
+		axios({
+			url: '/intranet/resource/exportexcel',
+			method: 'post',
+			data : {
+				selected : selected,
+				title : 'resourceData.xls'
+			},
+			responseType: 'blob',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}).then(response => {
+			console.log("positionResult : " + JSON.stringify(response));
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', 'resourceData.xls');
+			document.body.appendChild(link);
+			link.click();
+		}).catch(e => {
+			console.log(e);
+		});
+
 		setSelected([]);
 		// alert("엑셀 내보내기");
 	}
@@ -241,6 +267,8 @@ export default function  Filter(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={handleExcelClick} className={classes.button}>
 							엑셀 내보내기
 						</Button>
+						{isAdmin &&
+						<>
 						<RouterLink button="true" to="/resource/regist">
 						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
 							자원등록
@@ -249,6 +277,8 @@ export default function  Filter(props) {
 						<Button variant="contained" color="secondary" size="small" onClick={handleSelectDelete} startIcon={<DeleteIcon />}>
 							자원삭제
 						</Button>
+						</>
+						}
 					</Hidden>
 					<Hidden mdUp>
 						<IconButton color="primary" onClick={handleClickOpen} className={classes.button}>
@@ -257,6 +287,8 @@ export default function  Filter(props) {
 						<IconButton color="primary" onClick={handleExcelClick} className={classes.button}>
 							<SaveIcon />
 						</IconButton>
+						{isAdmin &&
+						<>
 						<RouterLink button="true" to="/resource/regist">
 							<IconButton color="primary" className={classes.button}>
 								<AddIcon />
@@ -265,6 +297,8 @@ export default function  Filter(props) {
 						<IconButton color="secondary" onClick={handleSelectDelete}>
 							<DeleteIcon />
 						</IconButton>
+						</>
+						}
 					</Hidden>
 				</div>
 			</Toolbar>
