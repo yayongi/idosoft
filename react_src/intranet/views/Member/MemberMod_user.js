@@ -22,6 +22,7 @@ import Moment from "moment";
 import axios from 'axios';
 import CommonDialog from '../../js/CommonDialog';
 import {findAddress,dateFormatter, phoneFormatter, positionFormatter,schCareer,unFormatter,certYn,uploadFile,downloadFile,dataCalculator,emailValidation,isValidNum } from '../../js/util';
+import { LoadingBar } from '../../common/LoadingBar/LoadingBar';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -70,9 +71,9 @@ const MemberMod_user = (props) => {
   const member_no = match.params.member_no; 
 
   const classes = useStyles();
-  const pathProfile = "\\profile\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathItcert = "\\itCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
-  const pathSchoolcert = "\\schoolCert\\";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathProfile = "\/profile\/";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathItcert = "\/itCert\/";  //프로필 사진  파일업로드 & 다운로드 경로 
+  const pathSchoolcert = "\/schoolCert\/";  //프로필 사진  파일업로드 & 다운로드 경로 
 
   const [state, setState] = React.useState({
     profile : null,
@@ -105,6 +106,9 @@ const MemberMod_user = (props) => {
   const [codeState, setCodeState] = React.useState({
     graduationCode:null
   });
+
+  // 로딩바
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true);    //loading bar
   
   const row = infoState.memberData;
 
@@ -141,8 +145,10 @@ const MemberMod_user = (props) => {
         marriage_date : dateFormatter(response.data.memberData.marriage_date),
         birth_date : dateFormatter(response.data.memberData.birth_date)
       })
+      setShowLoadingBar(false);
 		}).catch(e => {
-			console.log(e);
+      console.log(e);
+      setShowLoadingBar(false);
 		});
 	},[])
 
@@ -396,6 +402,7 @@ const MemberMod_user = (props) => {
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
+      <LoadingBar openLoading={isShowLoadingBar}/>
       {(row != null) && (
         <Card>
           <CardContent>
