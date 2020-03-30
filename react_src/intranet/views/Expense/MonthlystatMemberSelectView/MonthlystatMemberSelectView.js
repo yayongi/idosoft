@@ -58,9 +58,6 @@ import {useStyles} from './styles';
 	const [selectedDate, setSelectedDate] = React.useState(new Date());
 	
 	React.useEffect(() => {
-	console.log("call useEffect");
-
-		console.log(` YYYYMM : ${String(Moment(new Date()).format('YYYYMM'))}`);
 
 		Axios({
 			url: '/intranet/getMonthlyExpense.exp',
@@ -72,8 +69,6 @@ import {useStyles} from './styles';
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
-			console.log(JSON.stringify(response.data.isError));
 
 			if(response.data.isError == "true"){
 				return alert(response.data.errorMessage , history.goBack());
@@ -86,7 +81,7 @@ import {useStyles} from './styles';
 			setTotalAmount(total_amount);
 			
 		}).catch(e => {
-			//processErrCode(e);
+			processErrCode(e);
 			console.log(e);
 		});
 		
@@ -96,7 +91,6 @@ import {useStyles} from './styles';
 		
 		setSelectedDate(date);
 		
-		console.log(`선택 날짜 : ${Moment(date).format('YYYYMM')}`);
 		const regDate = Moment(date).format('YYYYMM');
 		
 		Axios({
@@ -123,7 +117,6 @@ import {useStyles} from './styles';
 	}
 
 	const handleClickOpen = (MEMBER_NO) => {
-		console.log('open');
 		
 		Axios({
 			url: '/intranet/getMonthlyExpenseView.exp',
@@ -151,20 +144,15 @@ import {useStyles} from './styles';
 	};
 
 	const handleClose = () => {
-		console.log('close');
 		setOpen(false);
 	};
 	
 	const excelDownload = (e) => {
-		console.log('엑셀다운로드 실행');
-		console.log(`excel export member : ${typeof(JSON.stringify(data_2020_01.members))}`)
-		
 		excelExport(data_2020_01.members);
 	};
 
 	
 	const indiExcelDownload = (e) => {
-		console.log(`excel export member : ${typeof(JSON.stringify(data_2020_01.members))}`)
 		excelExport(data_2020_01.members);
 	};
 

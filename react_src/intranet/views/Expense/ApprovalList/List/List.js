@@ -32,7 +32,6 @@ export default function  List(props) {
 	// 로딩바
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false);    //loading bar
 	useEffect(() => {
-		console.log("call useEffect");
 		setShowLoadingBar(true);
 		Axios({
 			url: '/intranet/getApprovalList.exp',
@@ -47,7 +46,6 @@ export default function  List(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 
 			const isNoN = response.data.isNoN;
 			if(isNoN == "false"){
