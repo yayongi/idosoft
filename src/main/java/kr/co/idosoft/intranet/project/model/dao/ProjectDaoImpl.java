@@ -93,4 +93,10 @@ public class ProjectDaoImpl implements ProjectDao {
 	public List<HashMap<String, String>> getProjectMember() {
 		return sqlTemplate.selectList("getProjectMember");
 	}
+
+	@Override
+	public void removeMemberForPro(String project_no) {
+		// TODO Auto-generated method stub
+		sqlTemplate.delete("project.removeMemberForPro", project_no);
+	}
 }

@@ -44,6 +44,12 @@ public class HistoryServiceImpl implements HistoryService {
 		// TODO Auto-generated method stub
 		return dao.selectList();
 	}
+
+	@Override
+	public void removeHistoryForPro(String project_no) {
+		// TODO Auto-generated method stub
+		dao.removeHistoryForPro(project_no);
+	}
 	
 
 }
