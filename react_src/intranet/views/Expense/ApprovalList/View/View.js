@@ -78,8 +78,6 @@ const useStyles = makeStyles(theme => ({
 	전역 변수는 호출 안됨.
 */
 export default function  View(props) {
-	console.log("call View Area");
-
 	const {routeProps } = props;
 	const {history, location, match} = routeProps;
 	const [expenseTypes, setExpenseTypes] = React.useState([]);
@@ -109,8 +107,6 @@ export default function  View(props) {
 			return stepInfo;
 		}
 
-		console.log(`row.status : ${row.status}`);
-		console.log(`row.statusText : ${row.statusText}`);
 		if(row.status == 'SS0001') {
 			stepInfo.activeStep = 2;
 		} else if(row.status == 'SS0002') {
@@ -135,12 +131,7 @@ export default function  View(props) {
 	const loginSession = JSON.stringify(sessionStorage.getItem("loginSession"));
 
 	React.useEffect(() => { // render 완료 후, 호출
-		console.log("call useEffect");
-		console.log(JSON.stringify(match));
-		console.log(`loginSession : ${loginSession}`);
 		const params = match.params;
-
-		console.log(params.id);
 
 		Axios({
 			url: '/intranet/getAppView.exp',
@@ -152,7 +143,6 @@ export default function  View(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 
 			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
 			const payTypeList 		= JSON.parse(response.data.payTypeList);
@@ -183,8 +173,6 @@ export default function  View(props) {
 		let isAuth = false;
 		const mno = loginSession.member_NO;
 
-		console.log(`giveAuthorization :: dataState.status : ${dataState.status}`);
-		console.log(`giveAuthorization :: isAdmin : ${isAdmin}`);
 		switch (dataState.status) {
 		case 'SS0000':
 			if(mno == dataState.prevAuthPersonNO || isAdmin == "1"){
@@ -233,8 +221,6 @@ export default function  View(props) {
 	// 결재처리
 	const handleClickApprove =() => {
 
-		console.log("call handleClickApprove");
-		
 		let isRequest = "";
 
 		if(dataState.status == 'SS0000'){
@@ -257,7 +243,6 @@ export default function  View(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 			
 			const isError = response.data.isError;
 			if(isError == "false"){
@@ -294,7 +279,6 @@ export default function  View(props) {
 	const printImageArea = () => {
 		let container = document.getElementsByName("image");
 		
-		//console.log('container : ' + JSON.stringify(container));
 		/** 팝업 */
 		let innerHtml = container[0].innerHTML
 		let popupWindow = window.open("", "_blank", "width=700,height=800");
@@ -320,7 +304,6 @@ export default function  View(props) {
 
 	// 반려 처리
 	const handleClickReject = () => {
-		console.log("call handleClickReject");
 
 		let isRequest = "REG";
 
@@ -338,7 +321,6 @@ export default function  View(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 			
 			const isError = response.data.isError;
 			if(isError == "false"){

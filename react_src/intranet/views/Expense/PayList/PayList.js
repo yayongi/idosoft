@@ -45,9 +45,6 @@ export default function PayList() {
 	];
 
 	React.useEffect(() => {
-	console.log("call useEffect");
-
-		console.log(` YYYY : ${String(Moment(new Date()).format('YYYY'))}`);
 
 		Axios({
 			url: '/intranet/getCommAndTransExpenseList.exp',
@@ -59,7 +56,6 @@ export default function PayList() {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 
 			setCommList(JSON.parse(response.data.commList));
 			setTransList(JSON.parse(response.data.transList));
@@ -97,8 +93,6 @@ export default function PayList() {
 	*/
 	const handleChange = name => event => {
 		
-		console.log(`value : ${event.target.value}`)
-
 		const value = event.target.value;
 
 		setYear(value);
@@ -113,7 +107,6 @@ export default function PayList() {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 
 			setCommList(JSON.parse(response.data.commList));
 			setTransList(JSON.parse(response.data.transList));

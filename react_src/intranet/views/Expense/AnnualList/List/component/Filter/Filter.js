@@ -67,8 +67,6 @@ export default function  Filter(props) {
 	const [statuses, setStatuses] 			= React.useState([]);
 
 	useEffect(() => {
-		console.log("call useEffect");
-
 		Axios({
 			url: '/intranet/getCode.exp',
 			method: 'post',
@@ -80,7 +78,6 @@ export default function  Filter(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 			
 			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
 			const payTypeList 		= JSON.parse(response.data.payTypeList);
@@ -108,7 +105,6 @@ export default function  Filter(props) {
 	}
 	// 경비 신청 화면
 	const handleClickNew = () => {
-		console.log("call handleClickNew");
 		routeProps.history.push(`${routeProps.match.url}/new`);
 	}
 
@@ -148,7 +144,6 @@ export default function  Filter(props) {
 			},
 
 		}).then(response => {
-			console.log(JSON.stringify(response.data));
 			filterSetRows(JSON.parse(response.data.list));
 			setTotalAmount(response.data.totalAmount);
 

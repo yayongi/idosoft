@@ -69,7 +69,6 @@ const img = {
 	전역 변수는 호출 안됨.
 */
 export default function  PreviewFileUpload(props) {
-	console.log("call View Area");
 	const {files, setFiles} = props;
 	const {
 		getRootProps,
@@ -80,7 +79,6 @@ export default function  PreviewFileUpload(props) {
 	} = useDropzone({
 		accept: 'image/*',
 		onDrop: acceptedFiles => {
-			console.log("file : " + JSON.stringify(acceptedFiles));
 			setFiles(acceptedFiles.map(file => Object.assign(file, {
 				preview: URL.createObjectURL(file)
 			})));
