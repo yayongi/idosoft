@@ -227,9 +227,9 @@ public class ProjectController {
 		return mv;
 	}
 	
-	@RequestMapping(value="/removeMember",method=RequestMethod.POST)
+	@RequestMapping(value="/removeProject",method=RequestMethod.POST)
 	@ResponseBody
-	public ModelAndView removeMember(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+	public ModelAndView removeProject(HttpServletRequest request, @RequestBody Map<String, Object> params ){
 		ModelAndView mv = new ModelAndView();
 		
 		// ModelAndView 초기값 셋팅
@@ -239,7 +239,7 @@ public class ProjectController {
 		
 		boolean db_result = false;
 		try {
-			projectService.removeMember((HashMap<String, Object>)params);
+			projectService.deleteInfo((String)params.get("PROJECT_NO"));
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());

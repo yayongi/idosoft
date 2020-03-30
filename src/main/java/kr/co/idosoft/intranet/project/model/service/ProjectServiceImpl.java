@@ -28,7 +28,7 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public void deleteInfo(int project_no) {
+	public void deleteInfo(String project_no) {
 		// TODO Auto-generated method stub
 		dao.deleteInfo(project_no);
 	}

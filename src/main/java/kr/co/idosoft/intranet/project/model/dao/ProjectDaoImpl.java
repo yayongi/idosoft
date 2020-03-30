@@ -31,7 +31,7 @@ public class ProjectDaoImpl implements ProjectDao {
 	}
 
 	@Override
-	public void deleteInfo(int project_no) {
+	public void deleteInfo(String project_no) {
 		// TODO Auto-generated method stub
 		sqlTemplate.delete("project.deleteInfo", project_no);
 	}

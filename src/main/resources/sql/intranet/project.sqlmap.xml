@@ -29,7 +29,7 @@
 	</update>
 	
 	<!--  프로젝트 삭제 -->
-	<delete id="deleteInfo" parameterType="int">
+	<delete id="deleteInfo" parameterType="String">
 		DELETE FROM
 			TB_PROJECT
 		WHERE
@@ -76,7 +76,7 @@
 			, NOTE
 			, TEMP_COLUM
 		FROM	TB_PROJECT
-		ORDER BY PROJECT_NO
+		ORDER BY BGNDE DESC
 	</select>
 	
 	<!-- 프로젝트 전체 리스트 -->

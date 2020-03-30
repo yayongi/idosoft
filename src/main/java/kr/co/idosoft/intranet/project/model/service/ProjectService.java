@@ -7,7 +7,7 @@ import java.util.Map;
 public interface ProjectService {
 	void insert(HashMap<String, Object> insert);
 	void update(HashMap<String, Object> update);
-	void deleteInfo(int project_no);
+	void deleteInfo(String project_no);
 	HashMap<String, Object> selectInfo(String project_no);
 	List<Map<String, Object>> selectList(HashMap<String, Object> condition);
 	String selectMaxProject();

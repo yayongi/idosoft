@@ -289,7 +289,23 @@ function ProjectInfoForm(props) {
 		});
 	}
 	const handleClickRemoveProject = () => {
-		history.goBack();
+		setShowLoadingBar(true);
+		axios({
+			url: '/intranet/removeProject',
+			method: 'post',
+			data: {"PROJECT_NO": match.params.id}
+		}).then(response => {
+			setShowLoadingBar(false);
+			if(response.data.isDBError){
+				alert("삭제 실패 했습니다.")
+			}else{
+				alert("삭제했습니다.");
+				history.goBack();
+			}
+		}).catch(e => {
+			console.log(e);
+			setShowLoadingBar(false);
+		});
 	}
 
 	const handleRemoveMember = (member_no) => {
