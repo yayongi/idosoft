@@ -123,8 +123,6 @@ const MemberMod_admin = (props) => {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
 		}).then(response => {
-      console.log("memberResult : " + JSON.stringify(response));
-      
       setInfoState({
         memberData : response.data.memberData,
       })
@@ -148,7 +146,6 @@ const MemberMod_admin = (props) => {
       })
       setShowLoadingBar(false);
 		}).catch(e => {
-      console.log(e);
       setShowLoadingBar(false);
 		});
 	},[])
@@ -166,7 +163,6 @@ const MemberMod_admin = (props) => {
       'Content-Type': 'application/json;charset=UTF-8'
       },
     }).then(response => {
-      console.log("result : " + JSON.stringify(response));
       if(response.data == 0){
         //이름 Validation
         if(document.getElementById("name").value == "" || document.getElementById("name").value == null){
@@ -296,7 +292,6 @@ const MemberMod_admin = (props) => {
         handleOpenDialog(...confirmData);
       }
     }).catch(e => {
-      console.log(e);
     });
   }
 
@@ -323,11 +318,9 @@ const MemberMod_admin = (props) => {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
 		}).then(response => {
-      console.log("memberResult : " + JSON.stringify(response));
       const confirmData = ['confirm', '비밀번호 초기화가 완료 되었습니다.', false];
       handleOpenDialog(...confirmData);
 		}).catch(e => {
-      console.log(e);
 		});
   }
 
@@ -372,10 +365,8 @@ const MemberMod_admin = (props) => {
           'Content-Type': 'application/json;charset=UTF-8'
         },
         }).then(response => {
-          console.log(JSON.stringify(response));
           return location.href="/intranet/#/member/";
         }).catch(e => {
-          console.log(e);
         });
       }else{
         return;

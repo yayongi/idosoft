@@ -42,14 +42,12 @@ class ResPassword extends Component {
 			open : true,
 			errMsg : errMsg,
 		});
-		console.log('open : ' + this.state.open);
 		this.forceUpdate();
 	}
 
 	// errorArart 닫기 
 	errorArartClose(){
 		this.setState({open : false,});
-		console.log('open : ' + this.state.open);
 		this.forceUpdate();
 	}
 
@@ -112,9 +110,6 @@ class ResPassword extends Component {
 		
 		if(prevPassCheck && passwordCheck){
 			if(prevPassword != "" && password != "") {
-				
-				console.log(`prevPassword : ${prevPassword} , password : ${password}`);
-				
 					axios({
 						url: '/intranet/resPassword',
 						method: 'post',
@@ -136,7 +131,6 @@ class ResPassword extends Component {
 						
 					}).catch(e => {
 						processErrCode(e);
-						console.log(e);
 					});
 			}
 		}

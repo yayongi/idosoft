@@ -118,8 +118,6 @@ export function isValidNum(){
 export function uploadFile(event,path,prefilename){
   const formData = new FormData();
 
-  console.log('files[0] : ' + JSON.stringify(event.target.files));
-  console.log('path : ' + path);
   formData.append('file', event.target.files[0]);
   formData.append('path', path);
   formData.append('prefilename',prefilename);
@@ -134,10 +132,8 @@ export function uploadFile(event,path,prefilename){
   }
   
   axios(property).then(response => {
-      console.log(JSON.stringify(response));	
     }).catch(e => {
       processErrCode(e)
-      console.log(e);
     });
 } 
 
@@ -163,7 +159,6 @@ export function downloadFile(event,path){
       link.click();
     }).catch(e => {
       processErrCode(e)
-      console.log(e);
     });
 } 
 //엑셀 내보내기
@@ -186,10 +181,8 @@ export function excelExport(json){
       link.setAttribute('download', response.headers.filename);
       document.body.appendChild(link);
       link.click();
-			console.log('Excel Export Success' + JSON.stringify(response));	
 		}).catch(e => {
       processErrCode(e);
-			console.log(e);
 		});
 	}
 
@@ -222,14 +215,12 @@ export function excelExport(json){
       method: 'get',
       data: {}
     }).then(response => {
-      console.log('SESSION_DATA' + JSON.stringify(response.data.SESSION_DATA));
       sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
 
       location.href="/intranet/";
 
     }).catch(e => {
       processErrCode(e);
-      console.log(e);
       return null;
     });
   }
