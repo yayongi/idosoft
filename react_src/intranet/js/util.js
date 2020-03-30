@@ -219,7 +219,7 @@ export function excelExport(json){
       if(resPassSign == 'true'){
         location.href="/intranet/#/resPassword";
       } else {
-        location.href="/intranet/";
+        location.href="/intranet/#/";
       }
     }).catch(e => {
       processErrCode(e);
