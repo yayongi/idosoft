@@ -16,7 +16,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import Viewer from '../../../common/Viewer/Viewer';
-// import Viewer from './Viewer';
 
 
 const styles = theme => ({
@@ -79,9 +78,7 @@ const ContentModal = ({props, closeModal}) => {
 
   //클래스까지 설정
   const classes = useStyles();
-  // const handleClickOpen = () => {
-  //   setOpen(true);
-  // };
+ 
   const handleClose = () => {
     setOpen(false);
     closeModal(false);
@@ -89,12 +86,10 @@ const ContentModal = ({props, closeModal}) => {
 
   return (
     <div>
-      {/* <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Open dialog
-      </Button> */}
+     
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={props.openModal}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          {/* Modal title */}
+         {/* Modal title */}
           <Table className={classes.tableRoot} aria-label="simple table">
             <TableHead>
               <TableRow>
@@ -108,14 +103,11 @@ const ContentModal = ({props, closeModal}) => {
 
         </DialogTitle>
         <DialogContent dividers>
-          {/* <div dangerouslySetInnerHTML={ {__html: props.content} } /> */}
-          <Viewer defaultValue={props.content}/>
+          <div className={classes.root}>
+            <Viewer defaultValue={props.content}/>
+          </div>
         </DialogContent>
-        {/* <DialogActions>
-          <Button autoFocus onClick={handleClose} color="primary">
-            Save changes
-          </Button>
-        </DialogActions> */}
+        
       </Dialog>
     </div>
   );

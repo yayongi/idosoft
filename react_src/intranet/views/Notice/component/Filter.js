@@ -57,7 +57,7 @@ const searchType = [
 	{ id: '1', label: '전체'  },
 	{ id: 'TITLE', label: '제목' },
 	{ id: 'CONTENT', label: '내용' },
-	{ id: 'REG_ID', label: '작성자' },
+	{ id: 'WRITER', label: '작성자' },
 ];
 
 // Dialog 값 상위 컴포넌트의 state값으로 초기화

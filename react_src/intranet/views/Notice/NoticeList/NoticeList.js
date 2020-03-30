@@ -2,7 +2,7 @@ import React, {Component, useDebugValue, useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import { useStaticState } from '@material-ui/pickers';
-
+import Paper from '@material-ui/core/Paper';
 import NoticeListTable from './NoticeListTable';
 import Filter from '../component/Filter';
 
@@ -101,7 +101,7 @@ const NoticeList = () => {
 	}
 
 	return (
-		<div className={classes.root}>
+		<div className={classes.root}>  
 		<Filter 
 			// noticeData={noticeData}
 			// state={state} 

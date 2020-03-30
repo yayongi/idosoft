@@ -1,4 +1,4 @@
-import React, { useDebugValue, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -13,7 +13,9 @@ import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CreateIcon from '@material-ui/icons/Create';
+import Paper from '@material-ui/core/Paper';
 import { Link as RouterLink } from 'react-router-dom';
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 import CommonDialog from '../../../js/CommonDialog';
 import ContentModal from '../component/ContentModal';
@@ -26,6 +28,18 @@ const headCells = [
   { id: 'board_no', label: '번호' },
   { id: 'title', label: '제목' },
   { id: 'reg_datetime', label: '작성일' },
+  { id: 'writer', label: '작성자' },
+];
+
+const columnsUp = [
+  { id: 'board_no', label: '번호' },
+  { id: 'title', label: '제목' },
+  { id: 'reg_datetime', label: '작성일' },
+  { id: 'writer', label: '작성자' },
+];
+
+const columnsDown = [
+  { id: 'title', label: '제목' },
   { id: 'writer', label: '작성자' },
 ];
 
@@ -56,7 +70,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function NoticeListTable(props) {
+function NoticeListTable(props) {
   const classes = useStyles();
   const {
           count,
@@ -70,6 +84,13 @@ export default function NoticeListTable(props) {
           setRowsPerPage
   } = props;
 
+  // Width에 따라 반응형으로 열이 보여지는 개수 조정
+  let columns = columnsUp;
+  if(isWidthUp('md', props.width)) {
+    columns =columnsUp;
+  } else {
+    columns =columnsDown;
+  }
 
   const [selected, setSelected] = React.useState([]);
   // const [page, setPage] = React.useState(0);
@@ -193,11 +214,11 @@ export default function NoticeListTable(props) {
 	}
 
   return (
-    <div className={classes.root}>
+     <div className={classes.root}>
       <CommonDialog props={confirm} closeCommonDialog={handleCloseConfirm}/>
-	  {/* <ResourceListTool props={selected} /> */}
       <ContentModal props={openModal} closeModal={handleCloseModal}/>
-      <CardContent className={classes.paper}>
+      <Paper className={classes.root}>
+        <TableContainer className={classes.container}>
         {!isEmpty(noticeData) &&
         <>
         <TablePagination
@@ -209,91 +230,115 @@ export default function NoticeListTable(props) {
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
-        <TableContainer>
-          <Table
-            className={classes.table}
-            aria-labelledby="tableTitle"
-            size='medium'
-            aria-label="enhanced table"
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    indeterminate={selected.length > 0 && rows.length < selected.length}
-                    checked={noticeData.length === selected.length && noticeData.length !== 0}
-                    onChange={handleSelectAllClick}
-                    inputProps={{ 'aria-label': 'select all desserts' }}
-                    color="primary"
-                  />
-                </TableCell>
-                {headCells.map(headCell => (
+        <Table
+          // className={classes.table}
+          aria-labelledby="tableTitle"
+          // size='medium'
+          stickyHeader
+          aria-label="sticky table"
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  indeterminate={selected.length > 0 && rows.length < selected.length}
+                  checked={noticeData.length === selected.length && noticeData.length !== 0}
+                  onChange={handleSelectAllClick}
+                  inputProps={{ 'aria-label': 'select all desserts' }}
+                  color="primary"
+                />
+              </TableCell>
+              {isWidthUp('md', props.width) &&
+                <>
+                {columns.map(headCell => (
                   <TableCell
                     key={headCell.id}
                     align={'center'}
                     padding={'default'}
-                    // style={{minWidth:'100px'}}
                   >
                       {headCell.label}
                   </TableCell>
                 ))}
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              { noticeData.length!==0 &&noticeData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.board_no);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+                <TableCell align={'center'}>수정 / 삭제</TableCell>
+              </>
+              }
+              {!isWidthUp('md', props.width) &&
+                <>
+                {columns.map(headCell => (
+                  <TableCell
+                    key={headCell.id}
+                    align={'center'}
+                    padding={'none'}
+                  >
+                      {headCell.label}
+                  </TableCell>
+                ))}
+                <TableCell align={'center'}>수정 / 삭제</TableCell>
+              </>
+              }
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            { noticeData.length!==0 &&noticeData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => {
+                const isItemSelected = isSelected(row.board_no);
+                const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      // key={row.board_no}
-                      key={`row${index}`}
-                      // selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                          color="primary"
-                          onClick={event => handleClick(event, row.board_no)}
-                        />
-                      </TableCell>
-                      <TableCell align="center" component="th" id={labelId} scope="row" padding="none"
-                                  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)} >
-                                {row.major_yn && eval(nowDate <= row.major_period_date) ? '[중요]' : row.board_no}
-                      </TableCell>
-                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
-                        {row.title}
-                      </TableCell>
-                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
-                        {row.reg_datetime}
-                      </TableCell>
-                      <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
-                        {row.writer}
-                      </TableCell>
-                      {/* 관리자의 경우 */}
-                      <TableCell align="center" style={{maxWidth:'80px'}}>
-                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.board_no)}>
-                          <DeleteIcon fontSize="small" />
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    // key={row.board_no}
+                    key={`row${index}`}
+                    // selected={isItemSelected}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isItemSelected}
+                        inputProps={{ 'aria-labelledby': labelId }}
+                        color="primary"
+                        onClick={event => handleClick(event, row.board_no)}
+                      />
+                    </TableCell>
+                    {isWidthUp('md', props.width) &&
+                    <>
+                    <TableCell align="center" component="th" id={labelId} scope="row" padding="none"
+                                onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)} >
+                              {row.major_yn && eval(nowDate <= row.major_period_date) ? '[중요]' : row.board_no}
+                    </TableCell>
+                    </>
+                    }
+                    <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
+                      {row.title}
+                    </TableCell>
+                    {isWidthUp('md', props.width) &&
+                    <>
+                    <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
+                      {row.reg_datetime}
+                    </TableCell>
+                    </>
+                    }
+                    <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
+                      {row.writer}
+                    </TableCell>
+                    {/* 관리자의 경우 */}
+                    <TableCell align="center">
+                      <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.board_no)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                      <RouterLink button="true" to={"/notice/regist/?id="+row.board_no}>
+                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.board_no)}>
+                          <CreateIcon fontSize="small" />
                         </IconButton>
-                        <RouterLink button="true" to={"/notice/regist/?id="+row.board_no}>
-                          <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.board_no)}>
-                            <CreateIcon fontSize="small" />
-                          </IconButton>
-                        </RouterLink>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                      </RouterLink>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </Table>
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
@@ -305,7 +350,9 @@ export default function NoticeListTable(props) {
         />
         </>
         }
-      </CardContent>
+        </TableContainer>
+      </Paper>
     </div>
   );
 }
+export default withWidth()(NoticeListTable);

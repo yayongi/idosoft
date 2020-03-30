@@ -19,37 +19,38 @@ import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import axios from 'axios';
 
 import CommonDialog from '../../../js/CommonDialog';
+import ContentModal from '../component/ContentModal';
 import { isEmpty } from '../../../js/util';
 
 const headCells = [
-  { id: 'res_no', label: '번호' },
-  { id: 'res_code', label: '자원종류' },
-  { id: 'model_nm', label: '모델명' },
-  { id: 'mark_code', label: '제조사' },
-  { id: 'product_mtn', label: '제조년월' },
-  { id: 'purchase_mtn', label: '구입년월' },
-  { id: 'display_size_code', label: '화면크기' },
-  { id: 'serial_no', label: 'Serial번호' },
-  { id: 'mac_addr', label: 'Mac주소' },
-  { id: 'holder', label: '보유자' },
+  { id: 'res_no', label: '번호'},
+  { id: 'res_code', label: '자원종류'},
+  { id: 'model_nm', label: '모델명'},
+  { id: 'mark_code', label: '제조사'},
+  { id: 'product_mtn', label: '제조년월'},
+  { id: 'purchase_mtn', label: '구입년월'},
+  { id: 'display_size_code', label: '화면크기'},
+  { id: 'serial_no', label: 'Serial번호'},
+  { id: 'mac_addr', label: 'Mac주소'},
+  { id: 'holder', label: '보유자'},
 ];
 const columnsUp = [
-      { id: 'res_no', label: '번호' },
-      { id: 'res_code', label: '자원종류' },
-      { id: 'model_nm', label: '모델명' },
-      { id: 'mark_code', label: '제조사' },
-      { id: 'product_mtn', label: '제조년월' },
-      { id: 'purchase_mtn', label: '구입년월' },
-      { id: 'display_size_code', label: '화면크기' },
-      { id: 'serial_no', label: 'Serial번호' },
-      { id: 'mac_addr', label: 'Mac주소' },
-      { id: 'holder', label: '보유자' },
+      { id: 'res_no', label: '번호', minWidth: 100, align: 'center', paddingLeft : 50 },
+      { id: 'res_code', label: '자원종류', minWidth: 100, align: 'center', paddingLeft : 50 },
+      { id: 'model_nm', label: '모델명', minWidth: 100, align: 'center', paddingLeft : 50 },
+      { id: 'mark_code', label: '제조사' , minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'product_mtn', label: '제조년월' , minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'purchase_mtn', label: '구입년월' , minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'display_size_code', label: '화면크기' , minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'serial_no', label: 'Serial번호' , minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'mac_addr', label: 'Mac주소' , minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'holder', label: '보유자' , minWidth: 100, align: 'center', paddingLeft : 50},
     ];
 
 const columnsDown = [
-      { id: 'res_no', label: '번호' },
-      { id: 'model_nm', label: '모델명' },
-      { id: 'holder', label: '보유자' },
+      // { id: 'res_no', label: '번호' , minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'model_nm', label: '모델명' , minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'holder', label: '보유자' , minWidth: 100, align: 'center', paddingLeft : 50},
 ];
 
 const useStyles = makeStyles(theme => ({
@@ -60,8 +61,11 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     marginBottom: theme.spacing(2),
   },
-  table: {
+  tableWeb: {
     minWidth: 750,
+  },
+  tableApp:{
+    width:'100%'
   },
   visuallyHidden: {
     border: 0,
@@ -100,14 +104,15 @@ function ResourceListTable(props) {
   const [rows, setRows] = React.useState(resData);
   const [deleteRow, setDeleteRow] = React.useState(0);
   const [confirm, setConfirm] = React.useState({});
+  const [openModal, setOpenModal] = React.useState({resData:{}, openModal:false});
 
   // Width에 따라 반응형으로 열이 보여지는 개수 조정
   let columns = columnsUp;
-  // if(isWidthUp('md', props.width)) {
-  //   columns =columnsUp;
-  // } else {
-  //   columns =columnsDown;
-  // }
+  if(isWidthUp('md', props.width)) {
+    columns =columnsUp;
+  } else {
+    columns =columnsDown;
+  }
 
   const handleSelectAllClick = event => {
     if (event.target.checked) {
@@ -164,7 +169,8 @@ function ResourceListTable(props) {
 		setConfirm({title:'', content:'', onOff:false, isConfirm:false});
 		return resDelete(result);
 		
-	}
+  }
+  
   //localStorage resData  삭제 처리
 	const resDelete = (result) => {
 		if(result){
@@ -192,6 +198,14 @@ function ResourceListTable(props) {
 		return setDeleteRow(0);
 	}
 
+  const openContentModal = (row) => {
+      return setOpenModal({resData:row, openModal:true});
+  }
+
+  const handleCloseModal = (trigger) => {
+    return setOpenModal({resData:{}, openModal:trigger});
+  }
+
   const handleEditClick = (res_no) => {
     // localStorage.setItem('resEditIndex', res_no);
   }
@@ -202,11 +216,9 @@ function ResourceListTable(props) {
   return (
     <Fragment>
     <CommonDialog props={confirm} closeCommonDialog={handleCloseConfirm}/>
-
+    <ContentModal props={openModal} closeModal={handleCloseModal}/>
     <Paper className={classes.root}>
-        <TableContainer className={classes.container}>
-
-      {/* <CardContent className={classes.paper}> */}
+      <TableContainer className={classes.container}>
        {!isEmpty(resData) &&
        <>
         <TablePagination
@@ -219,12 +231,11 @@ function ResourceListTable(props) {
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
-        <TableContainer>
+        {/* <TableContainer> */}
           <Table
-            className={classes.table}
+            // className={isWidthUp('md', props.width) ? classes.tableWeb : classes.tableApp}
             aria-labelledby="tableTitle"
-            size='medium'
-            // aria-label="enhanced table"
+            // size='medium'
             stickyHeader
             aria-label="sticky table"
           >
@@ -237,19 +248,41 @@ function ResourceListTable(props) {
                       onChange={handleSelectAllClick}
                       inputProps={{ 'aria-label': 'select all desserts' }}
                       color="primary"
+                      //  style={{minWidth:'10px'}}
                     />
                 </TableCell>
-                {columns.map(headCell => (
-                  <TableCell
-                    key={headCell.id}
-                    align={'center'}
-                    padding={'default'}
-                    style={{minWidth:'100px'}}
-                  >
-                      {headCell.label}
-                  </TableCell>
-                ))}
-                <TableCell></TableCell>
+                {isWidthUp('md', props.width) &&
+                  <>
+                  {columns.map(headCell => (
+                    <TableCell
+                      key={headCell.id}
+                      align={'center'}
+                      padding={'default'}
+                      // style={{minWidth:'50px'}}
+                    >
+                        {headCell.label}
+                    </TableCell>
+                  ))}
+                  {/* <TableCell style={{minWidth:'50px'}}></TableCell> */}
+                  <TableCell align={'center'}>수정 / 삭제</TableCell> 
+                  </>
+                }
+                {!isWidthUp('md', props.width) &&
+                  <>
+                    {columns.map(headCell => (
+                      <TableCell
+                        key={headCell.id}
+                        align={'center'}
+                        padding={'none'}
+                        // style={{width:'5px'}}
+                      >
+                          {headCell.label}
+                      </TableCell>
+                    ))}
+                    {/* <TableCell style={{width:'5px'}}></TableCell> */}
+                    <TableCell align={'center'}>수정 / 삭제</TableCell> 
+                  </>
+                }
               </TableRow>
             </TableHead>
             <TableBody>
@@ -276,27 +309,32 @@ function ResourceListTable(props) {
                             onClick={event => handleClick(event, row.res_no)}
                           />
                       </TableCell>
-                      <TableCell align="center" component="th" id={labelId} scope="row" padding="none">
+                      {isWidthUp('md', props.width) &&
+                      <>
+                      <TableCell align="center" component="th" id={labelId} scope="row" padding="none" onClick={event=>openContentModal(row)}>
                         {row.res_no}
                       </TableCell>
-                      <TableCell align="center">{row.res_code}</TableCell>
-                      <TableCell align="center">{row.model_nm}</TableCell>
-                      <TableCell align="center">{row.mark_code}</TableCell>
-                      <TableCell align="center">
-                          {/* {row.product_mtn !== undefined && row.product_mtn !== null ? row.product_mtn : "미설정"} */}
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>{row.res_code}</TableCell>
+                      </>
+                      }
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>{row.model_nm}</TableCell>
+                      {isWidthUp('md', props.width) &&
+                      <>
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>{row.mark_code}</TableCell>
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>
                           {isEmpty(row.product_mtn)? "미설정" : row.product_mtn}
                       </TableCell>
-                      <TableCell align="center">
-                          {/* {row.purchase_mtn !== undefined && row.purchase_mtn !== null ? row.purchase_mtn : "미설정"} */}
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>
                           {isEmpty(row.purchase_mtn)? "미설정" : row.purchase_mtn}
                       </TableCell>
-                      <TableCell align="center">{row.display_size_code}</TableCell>
-                      <TableCell align="center">{row.serial_no}</TableCell>
-                      <TableCell align="center">
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>{row.display_size_code}</TableCell>
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>{row.serial_no}</TableCell>
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>
                                           {isEmpty(row.mac_addr)? "미설정" : row.mac_addr}
-                                          {/* {row.mac_addr} */}
                       </TableCell>
-                      <TableCell align="center">{row.holder}</TableCell>
+                      </>
+                    }
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>{row.holder}</TableCell>
                       {/* 관리자의 경우 */}
                       <TableCell align="center">
                         <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.res_no)}>
@@ -313,11 +351,10 @@ function ResourceListTable(props) {
                 })}
             </TableBody>
           </Table>
-        </TableContainer>
+        {/* </TableContainer> */}
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          // count={rows.length}
           count={count}
           rowsPerPage={rowsPerPage}
           page={page}
@@ -326,7 +363,6 @@ function ResourceListTable(props) {
         />
         </>
       }
-      {/* </CardContent> */}
       </TableContainer>
       </Paper>
     </Fragment>
