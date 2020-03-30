@@ -23,7 +23,9 @@ import { Divider, Button, Hidden } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
-import {excelExport, processErrCode, isEmpty} from '../../../js/util';
+import {processErrCode, isEmpty, expectedDevelopment} from '../../../js/util';
+
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 
 import Moment from "moment";
 Moment.locale('ko'); // 한국 시간
@@ -55,9 +57,13 @@ import {useStyles} from './styles';
 
 	const [open, setOpen] = React.useState(false);
 
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); 
+
 	const [selectedDate, setSelectedDate] = React.useState(new Date());
 	
 	React.useEffect(() => {
+
+		setShowLoadingBar(true);
 
 		Axios({
 			url: '/intranet/getMonthlyExpense.exp',
@@ -80,15 +86,19 @@ import {useStyles} from './styles';
 			setMembers(list);
 			setTotalAmount(total_amount);
 			
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 		
 	}, []);
 
 	const handleDateChange = (date) => {
 		
+		setShowLoadingBar(true)
+
 		setSelectedDate(date);
 		
 		const regDate = Moment(date).format('YYYYMM');
@@ -109,15 +119,19 @@ import {useStyles} from './styles';
 			setMembers(list);
 			setTotalAmount(total_amount);
 			
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 
 	}
 
 	const handleClickOpen = (MEMBER_NO) => {
 		
+		setShowLoadingBar(true);
+
 		Axios({
 			url: '/intranet/getMonthlyExpenseView.exp',
 			method: 'post',
@@ -136,28 +150,26 @@ import {useStyles} from './styles';
 			setIndiTotalAmount(total_amount);
 			setOpen(true);
 			
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 		
 	};
 
+	const excelExport = () => {
+		expectedDevelopment();
+	}
+
 	const handleClose = () => {
 		setOpen(false);
-	};
-	
-	const excelDownload = (e) => {
-		excelExport(data_2020_01.members);
-	};
-
-	
-	const indiExcelDownload = (e) => {
-		excelExport(data_2020_01.members);
 	};
 
 	return (
 		<Fragment>
+			<LoadingBar openLoading={isShowLoadingBar}/>
 			{!isEmpty(members) &&
 			<>
 				<Toolbar className={classes.root}>

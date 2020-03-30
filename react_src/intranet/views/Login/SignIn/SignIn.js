@@ -17,6 +17,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 
 import {getSessionMemberInfo} from '../../../js/util';
 
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
+
 // Server
 import axios from 'axios';
 
@@ -34,10 +36,19 @@ class SignIn extends Component {
 			password: '',
 			errors: [],
 			open: false,
+			isShowLoadingBar: false
 		}
 
 	}
 	
+	setShowLoadingBar(param){
+		this.setState({
+			...this.state,
+			isShowLoadingBar: param
+		})
+		this.forceUpdate();
+	}
+
 	// errorArart 열기
 	errorArartOpen(){
 		this.setState({open:true,});
@@ -83,6 +94,11 @@ class SignIn extends Component {
 
 	// 로그인 버튼 클릭 시, 호출
 	loginHandleClick = (e) => {
+
+		const setShowLoadingBar = this.setShowLoadingBar.bind(this);
+
+		setShowLoadingBar(true);
+
 		const { email, password } = this.state;
 
 		if(email == ""){
@@ -113,8 +129,12 @@ class SignIn extends Component {
 				} else {
 					const errorArartOpen = this.errorArartOpen.bind(this);
 					errorArartOpen();
+					setShowLoadingBar(false);
 				}
+
 			}).catch(e => {
+				console.log(e);
+				setShowLoadingBar(false);
 			});
 
 		}
@@ -158,6 +178,7 @@ class SignIn extends Component {
 
 		return (
 			<React.Fragment>
+				<LoadingBar openLoading={this.state.isShowLoadingBar}/>
 				<Container component="main" maxWidth="xs">
 					<CssBaseline />
 					{/* <img style={{ width: 100, height: 100 }} alt='log' src='https://lifesaver.codes/amazonbook1.jpg' /> */}
