@@ -114,6 +114,16 @@ public class NoticeController {
 		logger.debug("searchData ? "+searchData.toString());
 		logger.debug("#########################################################");
 		
+		if(searchData.get("stDt") != null){
+			searchData.put("stDt", searchData.get("stDt")+"01");
+		}
+		if(searchData.get("edDt") != null){
+			int lastDate = (Integer) commonUtil.LastDateInMonth(String.valueOf(searchData.get("edDt")));
+			searchData.put("edDt", searchData.get("edDt")+String.valueOf(lastDate));
+		}
+		data.put("searchData", searchData);
+		
+		
 		Map<String, Object> resultData = new HashMap<>();
 		
 		int count = noticeService.getListCount(searchData);

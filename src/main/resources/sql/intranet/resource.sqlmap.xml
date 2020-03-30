@@ -36,12 +36,23 @@
 			RES_NO = #{res_no}
 	</update>
 	
-	<!--  자원 삭제 -->
+	<!--  자원 단일 삭제 -->
 	<delete id="deleteInfo" parameterType="int">
 		DELETE FROM
 			TB_RESOURCE
 		WHERE
 			RES_NO = #{res_no}
+	</delete>
+	
+	<!-- 자원 선택 삭제 -->
+	<delete id="deleteList" parameterType="hashmap">
+		DELETE FROM
+			TB_RESOURCE
+		WHERE
+			TB_RESOURCE.RES_NO IN
+			<foreach collection="resNoList" item="resNo"  open="(" close=")" separator=",">
+				#{resNo}
+			</foreach>
 	</delete>
 	
 	<!-- 자원 정보  -->

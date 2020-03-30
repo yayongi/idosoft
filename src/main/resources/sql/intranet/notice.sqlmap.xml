@@ -86,7 +86,13 @@
 							CONCAT('%',#{word},'%')
 					</foreach>
 				</if>
-				<if test='searchType != "1" and searchType != "null" and searchType != "" '>
+				<if test='searchType != "1" and searchType != "null" and searchType == "WRITER" '>
+					AND 
+					<foreach collection="searchList" item="word" separator="OR">
+						A.NAME LIKE CONCAT('%',#{word},'%')
+					</foreach>
+				</if>
+				<if test='searchType != "1" and searchType != "null" and searchType != "" and searchType != "WRITER"'>
 					AND 
 					<foreach collection="searchList" item="word" separator="OR">
 						${searchType} LIKE CONCAT('%',#{word},'%')
@@ -176,12 +182,12 @@
 			</if>
 			<if test='stDt != "null" and stDt !=""'>
 				<![CDATA[ 
-				AND DATE_FORMAT(#{stDt}, '%Y-%m-%d') <= DATE_FORMAT(TB_BOARD.REG_DATETIME, '%Y-%m-%d')
+				AND DATE_FORMAT(#{stDt}, '%Y-%m-%d') <= DATE_FORMAT(REG_DATETIME, '%Y-%m-%d')
 				]]>
 			</if>
 			<if test='edDt != "null" and edDt !=""'>
 				<![CDATA[ 
-				AND DATE_FORMAT(#{edDt}, '%Y-%m-%d') >= DATE_FORMAT(TB_BOARD.REG_DATETIME, '%Y-%m-%d')
+				AND DATE_FORMAT(#{edDt}, '%Y-%m-%d') >= DATE_FORMAT(REG_DATETIME, '%Y-%m-%d')
 				]]>
 			</if>
 		</where>

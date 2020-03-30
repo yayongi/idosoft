@@ -36,6 +36,10 @@ public class ResourceDaoImpl implements ResourceDao {
 	public int delete(int res_no) {
 		return sqlTemplate.delete("resource.deleteInfo", res_no);
 	}
+	//자원 선택 삭제
+	public int delete(Map<String, List<Integer> > data) {
+		return sqlTemplate.delete("resource.deleteList", data);
+	}
 	//자원 정보 가져오기
 	@Override
 	public ResourceVO select(int res_no) {
@@ -54,7 +58,6 @@ public class ResourceDaoImpl implements ResourceDao {
 		int count = sqlTemplate.selectOne("resource.allCount", searchData);
 		return count;
 	}
-	
 	//코드 가져오기
 	@Override
 	public List<Object> getCode(String code_id) {
