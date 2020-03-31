@@ -8,6 +8,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import FaceIcon from '@material-ui/icons/Face';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CommonDialog from '../../../../js/CommonDialog';
+import { getRootPath } from '../../../../js/util';
 
 export default function Top(props) {
 	const {classes, handleDrawerOpen} = props;
@@ -19,7 +20,7 @@ export default function Top(props) {
 		isLogin = true
 		session = JSON.parse(sessionStorage.getItem("loginSession"));
 	}else{
-		location.href = '/#/signIn'
+		location.href = getRootPath() + '/#/signIn'
 	}
 
 	// confirm, alert 창 함수
@@ -39,7 +40,7 @@ export default function Top(props) {
 	setDialog({title:'', content:'', onOff:false, isConfirm:false});
 		if(result){
 			sessionStorage.removeItem("loginSession");
-			location.href = '/#/signIn';
+			location.href = getRootPath() +'/#/signIn';
 		}else{
 			return;
 		}
