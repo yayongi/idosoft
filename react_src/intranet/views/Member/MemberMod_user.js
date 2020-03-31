@@ -302,7 +302,7 @@ const MemberMod_user = (props) => {
 	const handleCloseDialog = (title,result) => {
     setDialog({title:'', content:'', onOff:false, isConfirm:false});
 
-    if(title != "Alert"){
+    if(title != "이메일 확인"){
       if(result){
         axios({
           url: '/intranet/member/memberupd/',
@@ -415,7 +415,7 @@ const MemberMod_user = (props) => {
                     height:'100%'
                   }}>
                     <div style={{textAlign:'-webkit-center'}}>
-                      <Avatar src={row.photo_path != undefined ? getRootPath() + pathProfile + row.photo_path : ""} className={classes.large} />
+                      <Avatar src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + state.profile : ""} className={classes.large} />
                     </div>
                     <div style={{textAlign:'center'}}>
                       <Typography>

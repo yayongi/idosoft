@@ -308,7 +308,7 @@ const MemberReg = (props) => {
 	const handleCloseDialog = (title,result) => {
     setDialog({title:'', content:'', onOff:false, isConfirm:false});
 
-    if(title != "Alert"){
+    if(title != "이메일 확인"){
       if(result){
         axios({
           url: '/intranet/member/memberinst',
@@ -398,7 +398,7 @@ const MemberReg = (props) => {
                   height:'100%'
                 }}>
                   <div style={{textAlign:'-webkit-center'}}>
-                    <Avatar src="" className={classes.large} />
+                    <Avatar src={pathProfile != null? getRootPath() + "/resources" + pathProfile + state.profile:""} className={classes.large} />
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>

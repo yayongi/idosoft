@@ -106,16 +106,13 @@ export function dataCalculator(param){
 
 // 전화번호 자릿수 
 export function isValidNum(){
-    var regexp = /[0-9]{11}/g;  
+    var regexp = /[^0-9]{11}/g;  
     document.getElementById("phone_num").value = unFormatter(document.getElementById("phone_num").value).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") 
-
-    console.log("test1 : " + document.getElementById("phone_num").value);
-    console.log("test2 : " + unFormatter(document.getElementById("phone_num").value));
 
     if (regexp.test(unFormatter(document.getElementById("phone_num").value))) {   
       document.getElementById("phone_num").value = unFormatter(document.getElementById("phone_num").value).substring(0,11).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
-    return false;   
-  }  
+      return false;   
+    }  
 }
 
 // 파일 업로드

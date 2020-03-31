@@ -177,7 +177,7 @@
 			COUNT(*)
 		FROM TB_MEMBER
 			WHERE EMAIL = #{email}
-			<if test="member_no != null">
+			<if test="member_no != null and !member_no.equals('')">
 			AND MEMBER_NO != #{member_no} 
 			</if>
 	</select>
