@@ -113,8 +113,8 @@ export function isValidNum(){
       document.getElementById("phone_num").value = unFormatter(document.getElementById("phone_num").value).substring(0,11).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
       return false;   
     }  
-}
 
+}
 // 파일 업로드
 export function uploadFile(event,path,prefilename){
   const formData = new FormData();
