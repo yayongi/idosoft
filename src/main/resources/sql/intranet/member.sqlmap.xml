@@ -177,7 +177,9 @@
 			COUNT(*)
 		FROM TB_MEMBER
 			WHERE EMAIL = #{email}
+			<if test="member_no != null">
 			AND MEMBER_NO != #{member_no} 
+			</if>
 	</select>
 	
 	<!-- 같은연도 사번 검색 -->
@@ -189,8 +191,8 @@
 		WHERE MEMBER_NO LIKE CONCAT(#{member_no}, '%')
 	</select>
 	
-	<!-- 같은연도 사번 검색 -->
-	<select id="exportExcel" parameterType="String" resultType="java.util.LinkedHashMap">
+	<!-- 엑셍 -->
+	<select id="exportExcelList" parameterMap="MemberVO" resultType="java.util.LinkedHashMap">
 		SELECT
 		    MEMBER_NO,
 			EMAIL ,
@@ -222,8 +224,8 @@
 		    TB_MEMBER
 		WHERE
 		    MEMBER_NO IN
-	    <foreach collection="list" item="member_no"  open="(" close=")" separator=",">
-	        #{member_no}
+	    <foreach collection="list" item="item"  open="(" close=")" separator=",">
+	        #{item.member_no}
 	    </foreach>
 	</select>
 </mapper>

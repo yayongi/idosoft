@@ -108,6 +108,10 @@ export function dataCalculator(param){
 export function isValidNum(){
     var regexp = /[0-9]{11}/g;  
     document.getElementById("phone_num").value = unFormatter(document.getElementById("phone_num").value).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") 
+
+    console.log("test1 : " + document.getElementById("phone_num").value);
+    console.log("test2 : " + unFormatter(document.getElementById("phone_num").value));
+
     if (regexp.test(unFormatter(document.getElementById("phone_num").value))) {   
       document.getElementById("phone_num").value = unFormatter(document.getElementById("phone_num").value).substring(0,11).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
     return false;   
@@ -202,7 +206,7 @@ export function excelExport(json){
 
     if(errCode == 400){
       alert("세션이 만료되어 로그아웃 되었습니다. 다시 로그인 해주세요.");
-      location.href = "/intranet/#/signIn";
+      location.href = getRootPath() + "/#/signIn";
     } else {
     }
   }
@@ -217,9 +221,9 @@ export function excelExport(json){
     }).then(response => {
       sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
       if(resPassSign == 'true'){
-        location.href="/intranet/#/resPassword";
+        location.href= getRootPath() +"/#/resPassword";
       } else {
-        location.href="/intranet/#/";
+        location.href= getRootPath() +"/#/";
       }
     }).catch(e => {
       processErrCode(e);

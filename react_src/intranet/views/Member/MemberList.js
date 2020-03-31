@@ -30,6 +30,7 @@ import FilterModal from "./component/FilterModal";
 import axios from 'axios';
 import {dateFormatter, phoneFormatter, positionFormatter,excelExport,positionUnFormatter,dataCalculator} from '../../js/util';
 import { LoadingBar } from '../../common/LoadingBar/LoadingBar';
+import { getRootPath } from '../../js/util';
 
 const useStyles = makeStyles(theme =>({
 	tableWeb: {
@@ -318,7 +319,7 @@ const MemberList = (props) => {
 
 	// Dialog창의 title과 content, confirm여부  담는 배열
 	// 배열 없이도 파라미터 입력해서 사용가능
-	const confirmData = ['confirm', '직원정보를 삭제하시게습니까?', true];
+	const confirmData = ['직원정보삭제', '직원정보를 삭제하시게습니까?', true];
 
 	//Dialog open handler
 	const handleOpenDialog = (title, content, isConfirm) => {
@@ -393,7 +394,7 @@ const MemberList = (props) => {
 			url: '/intranet/member/exportexcel',
 			method: 'post',
 			data : {
-				selected : selected,
+				memeberList : state.memberList,
 				title : 'memberData.xls'
 			},
 			responseType: 'blob',
@@ -512,12 +513,14 @@ const MemberList = (props) => {
 									{(state.memberList.length != 0) ? (
 										<Table className={classes.tableWeb} stickyHeader aria-label="simple table">
 										<TableHead>
-											<TableRow>	
-												<TableCell padding="checkbox">
-													<Checkbox 
-														onChange={onSelectAllClick}
-													></Checkbox>
-												</TableCell>
+											<TableRow>
+												{state.manager_yn && (
+													<TableCell padding="checkbox">
+														<Checkbox 
+															onChange={onSelectAllClick}
+														></Checkbox>
+													</TableCell>
+												)}	
 												<TableCell align="center">이름</TableCell>
 												<TableCell align="center">직급</TableCell>
 												<TableCell align="center">주소</TableCell>
@@ -531,13 +534,15 @@ const MemberList = (props) => {
 										<TableBody>
 										{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
 											<TableRow key={row.member_no} hover style={(row.ret_date != null)? {backgroundColor:"lightgrey"}:{}}>
-												<TableCell padding="checkbox">
-													<Checkbox
-														checked={(selected.indexOf(row.member_no) !== -1)? true : false}
-														onChange={() => selectedItem(event,row.member_no)}
-														key = {row.member_no}
-													/>
-												</TableCell>
+												{state.manager_yn && (
+													<TableCell padding="checkbox">
+														<Checkbox
+															checked={(selected.indexOf(row.member_no) !== -1)? true : false}
+															onChange={() => selectedItem(event,row.member_no)}
+															key = {row.member_no}
+														/>
+													</TableCell>
+												)}
 												<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
 													{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
 													{row.name}
@@ -573,11 +578,13 @@ const MemberList = (props) => {
 									(<Table className={classes.tableApp} stickyHeader aria-label="simple table">
 										<TableHead>
 											<TableRow>	
-												<TableCell padding="checkbox">
-													<Checkbox 
-														onChange={onSelectAllClick}
-													></Checkbox>
-												</TableCell> 
+												{state.manager_yn && (
+													<TableCell padding="checkbox">
+														<Checkbox 
+															onChange={onSelectAllClick}
+														></Checkbox>
+													</TableCell> 
+												)}
 												<TableCell align="center">이름</TableCell>
 												<TableCell align="center"></TableCell>
 											</TableRow>
@@ -585,6 +592,7 @@ const MemberList = (props) => {
 										<TableBody>
 										{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
 												<TableRow key={row.member_no} hover style={(row.ret_date != null)?  {backgroundColor:"lightgrey"}:{}}>
+													{state.manager_yn && (
 													<TableCell padding="checkbox">
 														<Checkbox
 															checked={(selected.indexOf(row.member_no) !== -1)? true : false}
@@ -592,6 +600,7 @@ const MemberList = (props) => {
 															key = {row.member_no}
 														/>
 													</TableCell>
+													)}
 													<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>
 														{row.manager_yn === true && (<StarIcon style={{verticalAlign:'bottom'}}/>) } 
 														{row.name}

@@ -76,8 +76,8 @@ public class MemberDaoImpl implements MemberDao {
 	}
 
 	@Override
-	public List<LinkedHashMap<String, Object>> exportExcel(List<String> member_no_list) {
-		return sqlTemplate.selectList("exportExcel",member_no_list);
+	public List<LinkedHashMap<String, Object>> exportExcelList(List<MemberVO> memberVoList) {
+		return sqlTemplate.selectList("exportExcelList",memberVoList);
 	}
 
 	@Override

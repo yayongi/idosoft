@@ -201,8 +201,9 @@ public class MemberController {
 	@ResponseBody
 	public void exportExcel(Model model, @RequestBody HashMap<String,Object> data, HttpServletRequest request,HttpServletResponse response){
 		try {
+			List<MemberVO> memberVoList = (List<MemberVO>)data.get("memeberList");
 			// 선택된 직원 정보 가져오기
-			List<LinkedHashMap<String,Object>> tempList =  memberService.exportExcel((List<String>)data.get("selected"));
+			List<LinkedHashMap<String,Object>> tempList =  memberService.exportExcelList(memberVoList);
 			logger.debug("data : " + tempList);
 			
 			//엑셍 파일 만들어서 다운로드

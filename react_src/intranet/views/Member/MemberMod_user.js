@@ -23,6 +23,7 @@ import axios from 'axios';
 import CommonDialog from '../../js/CommonDialog';
 import {findAddress,dateFormatter, phoneFormatter, positionFormatter,schCareer,unFormatter,certYn,uploadFile,downloadFile,dataCalculator,emailValidation,isValidNum } from '../../js/util';
 import { LoadingBar } from '../../common/LoadingBar/LoadingBar';
+import { getRootPath } from '../../js/util';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -251,7 +252,7 @@ const MemberMod_user = (props) => {
 
         handleOpenDialog(...confirmData);
       }else{
-        const confirmData = ['Alert', '이메일이 중복됩니다.', false];
+        const confirmData = ['이메일 확인', '이메일이 중복됩니다.', false];
         handleOpenDialog(...confirmData);
       }
     }).catch(e => {
@@ -289,7 +290,7 @@ const MemberMod_user = (props) => {
 
 	// Dialog창의 title과 content, confirm여부  담는 배열
 	// 배열 없이도 파라미터 입력해서 사용가능
-	const confirmData = ['confirm', '저장하시겠습니까?', true];
+	const confirmData = ['사원정보 수정', '저장하시겠습니까?', true];
 
 	//Dialog open handler
 	const handleOpenDialog = (title, content, isConfirm) => {
@@ -311,7 +312,7 @@ const MemberMod_user = (props) => {
           'Content-Type': 'application/json;charset=UTF-8'
         },
         }).then(response => {
-          return location.href="/intranet/#/member/";
+          return location.href= getRootPath() + "/#/member/";
         }).catch(e => {
         });
       }else{
@@ -414,7 +415,7 @@ const MemberMod_user = (props) => {
                     height:'100%'
                   }}>
                     <div style={{textAlign:'-webkit-center'}}>
-                      <Avatar src={row.photo_path != undefined ? pathProfile + row.photo_path : ""} className={classes.large} />
+                      <Avatar src={row.photo_path != undefined ? getRootPath() + pathProfile + row.photo_path : ""} className={classes.large} />
                     </div>
                     <div style={{textAlign:'center'}}>
                       <Typography>
@@ -700,7 +701,7 @@ const MemberMod_user = (props) => {
                         <Button variant="contained" color="primary" onClick={() => saveMemberData()}>
                                                   저장하기
                         </Button>
-                        <Button variant="contained" color="primary" onClick={() => location.href = '/intranet/#/member'}>
+                        <Button variant="contained" color="primary" onClick={() => location.href = getRootPath() + '/#/member'}>
                                                   뒤로가기
                         </Button>
                       <RouterLink button="true" to="/resPassword/" className={classes.router_link}>

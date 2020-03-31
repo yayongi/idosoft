@@ -75,8 +75,8 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public List<LinkedHashMap<String, Object>> exportExcel(List<String> member_no_list) {
-		return memberDao.exportExcel(member_no_list);
+	public List<LinkedHashMap<String, Object>> exportExcelList(List<MemberVO> memberVoList) {
+		return memberDao.exportExcelList(memberVoList);
 	}
 
 	@Override

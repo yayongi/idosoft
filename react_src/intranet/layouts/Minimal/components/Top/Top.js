@@ -29,7 +29,7 @@ export default function Top(props) {
 
 	// Dialog창의 title과 content, confirm여부  담는 배열
 	// 배열 없이도 파라미터 입력해서 사용가능
-	const confirmData = ['confirm', '로그아웃하시겠습니까?', true];
+	const confirmData = ['로그아웃', '로그아웃하시겠습니까?', true];
 
 	//Dialog open handler
 	const handleOpenDialog = (title, content, isConfirm) => {

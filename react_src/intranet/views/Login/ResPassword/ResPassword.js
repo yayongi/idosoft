@@ -17,6 +17,7 @@ import axios from 'axios';
 import { isEqual } from 'date-fns';
 
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
+import { getRootPath } from '../../../js/util';
 
 class ResPassword extends Component {
 	
@@ -141,7 +142,7 @@ class ResPassword extends Component {
 
 							errorArartOpen(errMessage);
 						} else {
-							location.href="/intranet/#/signIn";
+							location.href= getRootPath() + "/#/signIn";
 						}
 						
 						setShowLoadingBar(false);

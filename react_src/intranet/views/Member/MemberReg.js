@@ -22,6 +22,7 @@ import Moment from "moment";
 import axios from 'axios';
 import { findAddress,positions,certYn,schCareer,emailValidation,uploadFile,downloadFile,isValidNum } from '../../js/util';
 import { LoadingBar } from '../../common/LoadingBar/LoadingBar';
+import { getRootPath } from '../../js/util';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -258,7 +259,7 @@ const MemberReg = (props) => {
 
         handleOpenDialog(...confirmData);
       }else{
-        const confirmData = ['Alert', '이메일이 중복됩니다.', false];
+        const confirmData = ['이메일 확인', '이메일이 중복됩니다.', false];
         handleOpenDialog(...confirmData);
       }
     }).catch(e => {
@@ -295,7 +296,7 @@ const MemberReg = (props) => {
 
 	// Dialog창의 title과 content, confirm여부  담는 배열
 	// 배열 없이도 파라미터 입력해서 사용가능
-	const confirmData = ['confirm', '저장하시겠습니까?', true];
+	const confirmData = ['사원정보등록', '저장하시겠습니까?', true];
 
   //Dialog open handler
 	const handleOpenDialog = (title, content, isConfirm) => {
@@ -319,7 +320,7 @@ const MemberReg = (props) => {
         }).then(response => {
         }).catch(e => {
         });
-        return location.href="/intranet/#/member/";
+        return location.href= getRootPath() + "/#/member/";
       }else{
         return;
       }
@@ -718,7 +719,7 @@ const MemberReg = (props) => {
                       <Button variant="contained" color="primary" onClick={() => setValidationLevel()}>
                               저장하기
                       </Button>
-                      <Button variant="contained" color="primary" onClick={() => location.href = '/intranet/#/member'}>
+                      <Button variant="contained" color="primary" onClick={() => location.href = getRootPath() + '/#/member'}>
                               뒤로가기
                       </Button>
                     </div>

@@ -18,6 +18,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import {getSessionMemberInfo} from '../../../js/util';
 
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
+import { getRootPath } from '../../../js/util';
 
 // Server
 import axios from 'axios';
@@ -133,7 +134,7 @@ class SignIn extends Component {
 				}
 
 			}).catch(e => {
-				console.log(e);
+				console.log(e);66
 				setShowLoadingBar(false);
 			});
 
