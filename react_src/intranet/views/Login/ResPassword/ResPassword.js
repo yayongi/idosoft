@@ -97,9 +97,9 @@ class ResPassword extends Component {
 
 	// 로그인 버튼 클릭 시, 호출
 	resetPasswordHandleClick = (e) => {
-		setShowLoadingBar(true);
-
 		const setShowLoadingBar = this.setShowLoadingBar.bind(this);
+		
+		setShowLoadingBar(true);
 
 		const { prevPassword, password} = this.state;
 		
