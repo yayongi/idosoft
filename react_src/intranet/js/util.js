@@ -232,4 +232,13 @@ export function excelExport(json){
   export function expectedDevelopment(resPassSign){
     alert("개발 진행중입니다.");
   }
+  
+
+//현재 경로가 개발인지 여부에 따라 /intranet 을 붙여줄지 여부에 따라 rootPath를 리턴해줌
+//개발이면 /intranet이 X 
+//운영이면 /intranet이 O
+export function getRootPath(){
+ return location.host.includes("localhost") || location.host.includes("127.0.0.1") ? "" : "/intranet";
+}
+
 
