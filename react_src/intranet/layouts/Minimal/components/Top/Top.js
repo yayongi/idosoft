@@ -19,7 +19,7 @@ export default function Top(props) {
 		isLogin = true
 		session = JSON.parse(sessionStorage.getItem("loginSession"));
 	}else{
-		location.href = '/#/signIn'
+		location.href = '/intranet/#/signIn'
 	}
 
 	// confirm, alert 창 함수
@@ -39,7 +39,7 @@ export default function Top(props) {
 	setDialog({title:'', content:'', onOff:false, isConfirm:false});
 		if(result){
 			sessionStorage.removeItem("loginSession");
-			location.href = '/#/signIn';
+			location.href = '/intranet/#/signIn';
 		}else{
 			return;
 		}

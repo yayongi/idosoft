@@ -202,7 +202,7 @@ export function excelExport(json){
 
     if(errCode == 400){
       alert("세션이 만료되어 로그아웃 되었습니다. 다시 로그인 해주세요.");
-      location.href = "/#/signIn";
+      location.href = "/intranet/#/signIn";
     } else {
     }
   }
@@ -217,19 +217,13 @@ export function excelExport(json){
     }).then(response => {
       sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
       if(resPassSign == 'true'){
-        location.href="/#/resPassword";
+        location.href="/intranet/#/resPassword";
       } else {
-        location.href="/";
+        location.href="/intranet/#/";
       }
     }).catch(e => {
       processErrCode(e);
       return null;
     });
-  }
-
-  //  로그인 회원정보 세션데이터 가져오기
-  //  작성자 : 유기환
-  export function expectedDevelopment(resPassSign){
-    alert("개발 진행중입니다.");
   }
 
