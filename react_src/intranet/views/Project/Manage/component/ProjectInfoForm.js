@@ -242,10 +242,12 @@ function ProjectInfoForm(props) {
 			USE_LANG : "PM",
 		}].concat(memDataState);
 
+		var instt = instt_list.filter((info) => (info.instt_code == dataState.instt_code))[0];
+
 		axios({
 			url: '/intranet/insertProject',
 			method: 'post',
-			data: {"dataState" : dataState, "memDataState": mDataState}
+			data: {"dataState" : dataState, "memDataState": mDataState, "instt_name":instt["CODE_NAME"], "instt_code":instt["CODE_ID"]}
 		}).then(response => {
 			if(!response.data.isDBError){
 				alert("등록 되었습니다.");

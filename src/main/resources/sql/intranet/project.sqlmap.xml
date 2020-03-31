@@ -153,6 +153,14 @@
 			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
 	</delete>
 	
+	<!--  프로젝트 삭제 -->
+	<delete id="removeMemberForPro" parameterType="String">
+		DELETE FROM
+			TB_PROJECT_MEMBER
+		WHERE
+			PROJECT_NO = #{PROJECT_NO}
+	</delete>
+	
 	<!-- 프로젝트 수정 -->
 	<update id="updateMember" parameterType="hashmap">
 		UPDATE

@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.resource.dao;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,4 +19,5 @@ public interface ResourceDao {
 	int allCount(Map<String, String> search);
 	List<Object> getCode(String code_id);
 	List<Object> getHolders();
+	List<LinkedHashMap<String, Object>> exportExcel(List<String> res_no_list);
 }

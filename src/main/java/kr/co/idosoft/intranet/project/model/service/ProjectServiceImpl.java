@@ -92,5 +92,11 @@ public class ProjectServiceImpl implements ProjectService {
 		return dao.getProjectMember();
 	}
 
+	@Override
+	public void removeMemberForPro(String project_no) {
+		// TODO Auto-generated method stub
+		dao.removeMemberForPro(project_no);
+	}
+
 
 }

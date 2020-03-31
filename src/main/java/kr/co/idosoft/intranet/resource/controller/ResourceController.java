@@ -1,10 +1,12 @@
 package kr.co.idosoft.intranet.resource.controller;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -25,6 +27,7 @@ import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 import kr.co.idosoft.intranet.resource.service.ResourceServiceImpl;
 import kr.co.idosoft.intranet.resource.vo.ResourceVO;
+import kr.co.idosoft.intranet.util.fileController;
 
 @RestController
 @RequestMapping("/resource")
@@ -42,6 +45,13 @@ public class ResourceController {
 	//등록
 	@PostMapping("/register")
 	public boolean registResource(@RequestBody ResourceVO resVO, HttpServletRequest request) {
+		//관리자 여부
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		if(!isAdmin) {
+			//관리자가 아니면 false
+			return false;
+		}
+		
 		
 		String path = request.getSession().getServletContext().getRealPath("/")+"resources";
 		
@@ -64,6 +74,13 @@ public class ResourceController {
 	//수정
 	@PostMapping("/modify")
 	public boolean modifyResource(Model model, @RequestBody ResourceVO resVO, HttpServletRequest request) {
+		//관리자 여부
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		if(!isAdmin) {
+			//관리자가 아니면 false
+			return false;
+		}
+		
 		
 		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
 		resVO.setUpd_id(sessionVO.getMEMBER_NO());
@@ -93,7 +110,13 @@ public class ResourceController {
 	//단일 삭제
 	@PostMapping("/delete")
 	public boolean deleteResource(@RequestBody ResourceVO resVO, HttpServletRequest request) {
-//		boolean isAdmin = (String) request.getSession().getAttribute("IS_ADMIN") == "1" ? true : false;
+		
+		//관리자 여부
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		if(!isAdmin) {
+			//관리자가 아니면 false
+			return false;
+		}
 		
 		try {
 			if(0 < resService.deleteResource(resVO.getRes_no())) {
@@ -109,6 +132,13 @@ public class ResourceController {
 	//선택 삭제
 	@PostMapping("/deletelist")
 	public boolean  deleteResourceList(@RequestBody Map<String, List<Integer>> res_no_list, HttpServletRequest request) {
+		//관리자 여부
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		if(!isAdmin) {
+			//관리자가 아니면 false
+			return false;
+		}
+		
 		
 		List<Integer> selectedResNo = (List<Integer>) res_no_list.get("res_no");
 		
@@ -123,12 +153,13 @@ public class ResourceController {
 	//리스트
 	@PostMapping("/findlist")
 	public Map<String, Object> findResourceList(HttpServletRequest request, @RequestBody Map<String, Object> data) {
+		//관리자 여부
 		boolean isAdmin = commonUtil.isAdmin(request.getSession());
 		
 		Map<String, Object> searchData = (Map<String, Object>) data.get("state");
-//		logger.debug("#########################################################");
-//		logger.debug("resType ? "+searchData.toString());
-//		logger.debug("#########################################################");
+		logger.debug("#########################################################");
+		logger.debug("isAdmin ? "+isAdmin);
+		logger.debug("#########################################################");
 		
 		Map<String, Object> resultData = new HashMap<>();
 		
@@ -153,6 +184,22 @@ public class ResourceController {
 	@PostMapping("/get-restype-code")
 	public List<Object> getResTypeCode (HttpServletRequest request){
 		return resService.getCode(RES_CODE);
+	}
+	
+	//사원 정보 엑셀 출력
+	@RequestMapping(value="/exportexcel", method=RequestMethod.POST)
+	public void exportExcel(Model model, @RequestBody HashMap<String,Object> data, HttpServletRequest request,HttpServletResponse response){
+		try {
+			// 선택된 직원 정보 가져오기
+			List<LinkedHashMap<String,Object>> tempList =  resService.exportExcel((List<String>)data.get("selected"));
+			logger.debug("data : " + tempList);
+			
+			//엑셍 파일 만들어서 다운로드
+			fileController file = new fileController();
+			file.exportExcel(tempList,(String)data.get("title"),response);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

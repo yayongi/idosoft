@@ -16,6 +16,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import axios from 'axios';
 import { isEqual } from 'date-fns';
 
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
+
 class ResPassword extends Component {
 	
 	constructor(props){
@@ -32,9 +34,18 @@ class ResPassword extends Component {
 			errors: [],
 			open: false,
 			errMsg: '',
+			isShowLoadingBar: false
 		}
 	}
 	
+	setShowLoadingBar(param){
+		this.setState({
+			...this.state,
+			isShowLoadingBar: param
+		})
+		this.forceUpdate();
+	}
+
 	// errorArart 열기
 	errorArartOpen(errMsg){
 
@@ -86,6 +97,10 @@ class ResPassword extends Component {
 
 	// 로그인 버튼 클릭 시, 호출
 	resetPasswordHandleClick = (e) => {
+		setShowLoadingBar(true);
+
+		const setShowLoadingBar = this.setShowLoadingBar.bind(this);
+
 		const { prevPassword, password} = this.state;
 		
 		let prevPassCheck = true;
@@ -129,8 +144,10 @@ class ResPassword extends Component {
 							location.href="/intranet/#/signIn";
 						}
 						
+						setShowLoadingBar(false);
 					}).catch(e => {
 						processErrCode(e);
+						setShowLoadingBar(false);
 					});
 			}
 		}
@@ -176,6 +193,7 @@ class ResPassword extends Component {
 
 		return (
 			<React.Fragment>
+				<LoadingBar openLoading={this.state.isShowLoadingBar}/>
 				<Typography variant="h3" component="h2" align="center">
 					비밀번호 재설정
 				</Typography>

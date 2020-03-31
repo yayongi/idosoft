@@ -19,13 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import kr.co.idosoft.common.util.JsonUtils;
 import kr.co.idosoft.intranet.admin.model.service.CodeServiceImpl;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 import kr.co.idosoft.intranet.member.model.service.MemberServiceImpl;
+import kr.co.idosoft.intranet.project.model.service.HistoryServiceImpl;
 import kr.co.idosoft.intranet.project.model.service.ProjectServiceImpl;
 
 @Controller
@@ -35,6 +32,7 @@ public class ProjectController {
 	@Resource ProjectServiceImpl projectService;	//프로젝트 정보
 	@Resource CodeServiceImpl codetService;			//코드정보
 	@Resource MemberServiceImpl memberService;		//멤버정보
+	@Resource HistoryServiceImpl historyService;		//멤버정보
 	
 	
 	@RequestMapping(value="/allProject",method=RequestMethod.POST)
@@ -123,6 +121,12 @@ public class ProjectController {
 				tmp.put("INPT_ENDDE", ((String)tmp.get("INPT_ENDDE")).replace("-", ""));
 				try {
 					projectService.insertProjectMember(tmp);
+					
+					LOG.debug((String)params.get("instt_name"));
+					tmp.put("INSTT_NM", (String)params.get("instt_name"));
+					tmp.put("INSTT_CODE", (String)params.get("instt_code"));
+					tmp.put("PROJECT_NM", (String)dataState.get("PROJECT_NM"));
+					historyService.insert(tmp);
 				}catch(Exception e) {
 					continue;
 				}
@@ -240,6 +244,10 @@ public class ProjectController {
 		boolean db_result = false;
 		try {
 			projectService.deleteInfo((String)params.get("PROJECT_NO"));
+			projectService.removeMemberForPro((String)params.get("PROJECT_NO"));
+			LOG.debug("여기");
+			historyService.removeHistoryForPro((String)params.get("PROJECT_NO"));
+			LOG.debug("여기2");
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());

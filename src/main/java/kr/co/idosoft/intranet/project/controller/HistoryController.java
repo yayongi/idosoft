@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.project.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,11 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import kr.co.idosoft.common.util.JsonUtils;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
+import kr.co.idosoft.intranet.member.model.service.MemberServiceImpl;
 import kr.co.idosoft.intranet.project.model.service.HistoryServiceImpl;
 
 @Controller
@@ -30,7 +28,7 @@ public class HistoryController {
 private static final Logger LOG = LoggerFactory.getLogger(HistoryController.class);
 	
 	@Resource HistoryServiceImpl historyService;
-	
+	@Resource MemberServiceImpl memberService;		//멤버정보
 	
 	@RequestMapping(value="/allHistory",method=RequestMethod.POST)
 	@ResponseBody
@@ -40,6 +38,11 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 			LOG.debug("/resister.exp");
 		}
 		
+		HttpSession session = request.getSession();
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String managerYN = sessionVo.getMANAGER_YN();
+		String member_no = sessionVo.getMEMBER_NO();
+		
 		ModelAndView mv = new ModelAndView();
 		
 		// ModelAndView 초기값 셋팅
@@ -47,37 +50,24 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
 		
-		// 검색 조건 제외하고 개발중..
-		Map<String, Object> data = new HashMap<>();
 		
-		HttpSession session = request.getSession();
-		
-		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
-		
-		// 세션 VO에 세션 값 저장
-		String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
-
-		data.put("MEMBER_NO", mno);		// 사원번호
-		data.put("isAdmin", isAdmin);	// 관리자 여부
-		
-		List<Map<String, Object>> list = historyService.selectList();
-		
-		String jsonArrayList 	= null;
-		String jsonObjectData 	= null;
-		
-		ObjectMapper mapper = new ObjectMapper();
+		ArrayList<Map<String, Object>> history_list = new ArrayList<Map<String, Object>>();
+		ArrayList<Object> member_list = new ArrayList<Object>();
 		try {
-			jsonArrayList = JsonUtils.getJsonStringFromList(list); 	// JSONARRAY 변환
-			jsonObjectData = mapper.writeValueAsString(data); 		// JSONOBJECT 변환
-		} catch (JsonProcessingException e) {
+			history_list = (ArrayList<Map<String, Object>>)historyService.selectList();
+			if(!"N".equals(managerYN)) {
+				member_list = (ArrayList<Object>)memberService.selectMemberList();
+			}else {
+				member_list.add(memberService.selectMember(member_no));
+			}
+			
+		} catch (Exception e) {
 			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
 		}
 		
 		
-		mv.addObject("list", jsonArrayList);
-		LOG.debug("JSON OBJECT 변환 실패 : " + list);
-		mv.addObject("result", jsonObjectData);
+		mv.addObject("history_list", history_list);
+		mv.addObject("member_list", member_list);
 		return mv;
 	}
 

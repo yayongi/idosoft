@@ -48,4 +48,10 @@ public class HistoryDaoImpl implements HistoryDao {
 		return (ArrayList)sqlTemplate.selectList("history.selectList");
 	}
 
+	@Override
+	public void removeHistoryForPro(String project_no) {
+		// TODO Auto-generated method stub
+		sqlTemplate.delete("history.removeHistoryForPro", project_no);
+	}
+
 }

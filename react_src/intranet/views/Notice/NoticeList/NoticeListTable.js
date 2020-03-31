@@ -66,13 +66,15 @@ const useStyles = makeStyles(theme => ({
     width: 1,
   },
   margin: {
-    margin: theme.spacing(1),
+    // margin: theme.spacing(1),
   },
 }));
 
 function NoticeListTable(props) {
   const classes = useStyles();
   const {
+          memberNo,
+          isAdmin,
           count,
           setCount,
           setNoticeData,
@@ -239,6 +241,7 @@ function NoticeListTable(props) {
         >
           <TableHead>
             <TableRow>
+              {isAdmin&&
               <TableCell padding="checkbox">
                 <Checkbox
                   indeterminate={selected.length > 0 && rows.length < selected.length}
@@ -248,6 +251,7 @@ function NoticeListTable(props) {
                   color="primary"
                 />
               </TableCell>
+              }
               {isWidthUp('md', props.width) &&
                 <>
                 {columns.map(headCell => (
@@ -259,7 +263,7 @@ function NoticeListTable(props) {
                       {headCell.label}
                   </TableCell>
                 ))}
-                <TableCell align={'center'}>수정 / 삭제</TableCell>
+                <TableCell align={'center'} width={'200px'}>수정 / 삭제</TableCell>
               </>
               }
               {!isWidthUp('md', props.width) &&
@@ -273,7 +277,7 @@ function NoticeListTable(props) {
                       {headCell.label}
                   </TableCell>
                 ))}
-                <TableCell align={'center'}>수정 / 삭제</TableCell>
+                <TableCell align={'center'} >수정 / 삭제</TableCell>
               </>
               }
             </TableRow>
@@ -294,6 +298,7 @@ function NoticeListTable(props) {
                     key={`row${index}`}
                     // selected={isItemSelected}
                   >
+                    {isAdmin&&
                     <TableCell padding="checkbox">
                       <Checkbox
                         checked={isItemSelected}
@@ -302,6 +307,7 @@ function NoticeListTable(props) {
                         onClick={event => handleClick(event, row.board_no)}
                       />
                     </TableCell>
+                    }
                     {isWidthUp('md', props.width) &&
                     <>
                     <TableCell align="center" component="th" id={labelId} scope="row" padding="none"
@@ -310,7 +316,7 @@ function NoticeListTable(props) {
                     </TableCell>
                     </>
                     }
-                    <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
+                    <TableCell align="center" width={isWidthUp('md', props.width) ? '45%' : '25%'} onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
                       {row.title}
                     </TableCell>
                     {isWidthUp('md', props.width) &&
@@ -325,14 +331,18 @@ function NoticeListTable(props) {
                     </TableCell>
                     {/* 관리자의 경우 */}
                     <TableCell align="center">
+                    {(isAdmin || memberNo === row.reg_id) &&
                       <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.board_no)}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
+                    }
+                    { memberNo === row.reg_id &&
                       <RouterLink button="true" to={"/notice/regist/?id="+row.board_no}>
                         <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.board_no)}>
                           <CreateIcon fontSize="small" />
                         </IconButton>
                       </RouterLink>
+                    }
                     </TableCell>
                   </TableRow>
                 );

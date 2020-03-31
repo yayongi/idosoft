@@ -32,6 +32,8 @@ import Moment from "moment";
 
 import { processErrCode, getUrlParams, isEmpty } from "../../../../js/util";
 
+import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar'; 
+
 import axios from 'axios';
 
 import {
@@ -110,6 +112,8 @@ export default function  View(props) {
 
 	const isReadOnly = (data.status != undefined && data.status != '-1' && data.status != 'SS0000' && data.status != 'SS00003');				// 신규, 진행, 반려가 아니면 수정이 안되도록 설정
 
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
+
 	const classes = useStyles();
 	
 	const loginSession = JSON.parse(sessionStorage.getItem("loginSession"));
@@ -182,6 +186,8 @@ export default function  View(props) {
 	
 	React.useEffect(() => {		// render 완료 후, 호출
 
+		setShowLoadingBar(true);
+
 		const params = match.params;
 
 		Axios({
@@ -219,10 +225,13 @@ export default function  View(props) {
 			} else {
 				setDataState(emptyData);
 			}
+
+			setShowLoadingBar(false);
 		})
 		.catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 	}, []);
 
@@ -281,6 +290,8 @@ export default function  View(props) {
 	// 글 등록 후, 목록으로 이동
 	const handleClickNew = () => {
 		
+		setShowLoadingBar(true);
+
 		const formData = new FormData();
 		formData.append('file',files[0]);
 		formData.append('EXPENS_TY_CODE',dataState.expenseType);
@@ -289,7 +300,7 @@ export default function  View(props) {
 		formData.append('USE_CN',dataState.memo); 
 
 		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
-			return;
+			return setShowLoadingBar(false);
 		}
 
 		axios({
@@ -300,11 +311,12 @@ export default function  View(props) {
 				'enctype': 'multipart/form-data'
 			}
 			}).then(response => {
-				
+				setShowLoadingBar(false);
 				stateOpenEvent("등록이 완료되었습니다.");
 			}).catch(e => {
 				processErrCode(e);
 				console.log(e);
+				setShowLoadingBar(false);
 		});
 
 	}
@@ -312,6 +324,8 @@ export default function  View(props) {
 	// 글 삭제 후, 목록으로 이동
 	const handleClickRemove = () => {
 		
+		setShowLoadingBar(true);
+
 		const formData = new FormData();
 
 		const params = match.params;
@@ -331,18 +345,22 @@ export default function  View(props) {
 				'enctype': 'multipart/form-data'
 			}
 			}).then(response => {
+				setShowLoadingBar(false);
 				stateOpenEvent("삭제  완료되었습니다.");
 			}).catch(e => {
 				processErrCode(e);
 				console.log(e);
+				setShowLoadingBar(false);
 		});
 
 	}
 	// 수정처리
 	const handleClickModify =() => {
 
+		setShowLoadingBar(true);
+
 		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
-			return;
+			return setShowLoadingBar(false);
 		}
 
 		const formData = new FormData();
@@ -368,18 +386,22 @@ export default function  View(props) {
 				'enctype': 'multipart/form-data'
 			}
 			}).then(response => {
+				setShowLoadingBar(false);
 				stateOpenEvent("수정 완료되었습니다.");
 			}).catch(e => {
 				processErrCode(e);
 				console.log(e);
+				setShowLoadingBar(false);
 		});
 		
 	}
 	// 반려건, 다시 진행
 	const handleClickRetry = () => {
 
+		setShowLoadingBar(true);
+
 		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
-			return;
+			return setShowLoadingBar(false);
 		}
 
 		const formData = new FormData();
@@ -405,15 +427,18 @@ export default function  View(props) {
 				'enctype': 'multipart/form-data'
 			}
 			}).then(response => {
+				setShowLoadingBar(false);
 				stateOpenEvent("다시 결재 진행합니다.");
 			}).catch(e => {
 				processErrCode(e);
 				console.log(e);
+				setShowLoadingBar(false);
 		});
 		
 	}
 	return (
 		<>
+			<LoadingBar openLoading={isShowLoadingBar}/>
 			{!isEmpty(dataState) &&
 			<>
 			<div className={classes.root}>

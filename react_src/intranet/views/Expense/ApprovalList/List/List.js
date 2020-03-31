@@ -81,6 +81,7 @@ export default function  List(props) {
 							totalAmount={totalAmount} setTotalAmount={setTotalAmount}
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							setPage={setPage} setRowsPerPage={setRowsPerPage}
+							setShowLoadingBar={setShowLoadingBar}
 							/>
 					</Fragment>
 					<Paper>
@@ -95,6 +96,7 @@ export default function  List(props) {
 							page={page} setPage={setPage}
 							rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
 							isAdmin={isAdmin} setIsAdmin={setIsAdmin}
+							setShowLoadingBar={setShowLoadingBar}
 						/>
 					</Paper>
 				</>

@@ -41,8 +41,6 @@ function Body(props) {
 
     const loginSession = JSON.parse(sessionStorage.getItem("loginSession")); // 세션 정보
 
-   
-
     // 정렬
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
@@ -56,11 +54,11 @@ function Body(props) {
             , paging, setPaging, state, setState
             , holdUp, setHoldUp 
             , page, setPage, rowsPerPage, setRowsPerPage
-            , isAdmin, setIsAdmin} = props;
+            , isAdmin, setIsAdmin, setShowLoadingBar} = props;
 
     const handleChangePage = (event, newPage) => {
       if(holdUp < newPage){ // 이미 가지고 있는 페이지를 다시 호출하는 것을 막기 위해 사용
-
+        setShowLoadingBar(true);
         Axios({
           url: '/intranet/getApprovalList.exp',
           method: 'post',
@@ -86,9 +84,12 @@ function Body(props) {
           setRowsPerPage(Number(result.limit));
           setPage(Number(result.currentPage)-1);
           setHoldUp(Number(result.currentPage)-1);
+
+          setShowLoadingBar(false);
         }).catch(e => {
           processErrCode(e);
           console.log(e);
+          setShowLoadingBar(false);
         });
       } else {
         setRowsPerPage(rowsPerPage);
@@ -97,6 +98,9 @@ function Body(props) {
     };
 
     const handleChangeRowsPerPage = event => {
+
+      setShowLoadingBar(true);
+
       Axios({
         url: '/intranet/getApprovalList.exp',
         method: 'post',
@@ -123,9 +127,12 @@ function Body(props) {
         setRowsPerPage(Number(result.limit));
         setPage(Number(result.currentPage)-1);
         setHoldUp(Number(result.currentPage)-1);
+
+        setShowLoadingBar(false);
       }).catch(e => {
         processErrCode(e);
         console.log(e);
+        setShowLoadingBar(false);
       });
     };
 

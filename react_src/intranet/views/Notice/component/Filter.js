@@ -17,6 +17,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
+
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
@@ -93,7 +96,7 @@ export default function  Filter(props) {
 			// state, 
 			// setState,
 			// setNoticeData
-
+			isAdmin,
 			state,
 			setState,
 			selected,
@@ -143,7 +146,6 @@ export default function  Filter(props) {
 	//noticeData 선택요소 삭제 처리
 	const selectDelete = (result) => {
 		if(result){
-			console.log(selected);
 
 			axios({
 				url: '/intranet/notice/deletelist',
@@ -155,10 +157,9 @@ export default function  Filter(props) {
 					board_no : selected
 				},
 				}).then(response => {
-					console.log(response.data);
 					setCount(count-(selected.length));
 				}).catch(e => {
-					console.log(e);
+					// console.log(e);
 			});
 
 			const upStreamData = noticeData.filter((row => {
@@ -179,7 +180,7 @@ export default function  Filter(props) {
 	};
 	// 시작년월 
 	const handleChangeStDt = (date) => {
-		console.log(date);
+		// console.log(date);
 		setDialogState({
 			...dialogState,
 			stDt: Moment(date).format('YYYYMM')
@@ -209,12 +210,43 @@ export default function  Filter(props) {
 					?null:Moment(document.getElementsByName("edDt")[0].value).format('YYYYMM')
 		});
 		handleClose();
+		setOpenSnackBar(true);
 	}
+
+	const [openSnackBar, setOpenSnackBar] = React.useState(false);
+	const snackBarClose = (event, reason) => {
+		if (reason === 'clickaway') {
+		return;
+		}
+
+		setOpenSnackBar(false);
+	};
 
 	return (
 		<Fragment>
 
 			<CommonDialog props={confirm} closeCommonDialog={handleCloseConfirm}/>
+
+			{/* <Snackbar
+			anchorOrigin={{
+				vertical: 'top',
+				horizontal: 'center',
+			}}
+			onClose={snackBarClose}
+			open={openSnackBar}
+			autoHideDuration={6000}
+			message={
+						(state.searchType === '1' ? "전체 : " : state.searchType + " : ") +
+						state.search 
+					}
+			action={
+				<React.Fragment>
+					<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
+						<CloseIcon fontSize="small" />
+					</IconButton>
+				</React.Fragment>
+			}
+			/> */}
 
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} variant="h6" >					
@@ -231,9 +263,11 @@ export default function  Filter(props) {
 							공지사항 등록
 						</Button>
 						</RouterLink>
+						{isAdmin&&
 						<Button variant="contained" color="secondary" size="small" onClick={handleSelectDelete} startIcon={<DeleteIcon />}>
 							공지사항 삭제
 						</Button>
+						}
 					</Hidden>
 					<Hidden mdUp>
 						<IconButton color="primary" onClick={handleClickOpen} className={classes.button}>
@@ -245,9 +279,11 @@ export default function  Filter(props) {
 								<AddIcon />
 							</IconButton>
 						</RouterLink>
+						{isAdmin&&
 						<IconButton color="secondary" onClick={handleSelectDelete}>
 							<DeleteIcon />
 						</IconButton>
+						}
 					</Hidden>
 				</div>
 			</Toolbar>

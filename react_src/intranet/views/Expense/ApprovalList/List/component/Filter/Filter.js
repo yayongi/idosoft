@@ -28,7 +28,7 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 
-import { processErrCode, isEmpty} from '../../../../../../js/util';
+import { processErrCode, isEmpty, expectedDevelopment} from '../../../../../../js/util';
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
 		// justifyContent: 'flex-end',
@@ -60,13 +60,15 @@ export default function  Filter(props) {
 		paging, setPaging,
 		totalAmount, setTotalAmount,
 		routeProps, setHoldUp,
-		setPage ,setRowsPerPage
+		setPage ,setRowsPerPage,
+		setShowLoadingBar
 	} = props;
 
 	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
 	const [statuses, setStatuses] 			= React.useState([]);
 
 	useEffect(() => {
+		setShowLoadingBar(true);
 		Axios({
 			url: '/intranet/getCode.exp',
 			method: 'post',
@@ -85,9 +87,11 @@ export default function  Filter(props) {
 			setExpenseTypes(exPenseTypeList);
 			setStatuses(payTypeList);
 
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 		
 	}, []);
@@ -101,7 +105,7 @@ export default function  Filter(props) {
 	};
 
 	const excelExport = () => {
-		alert("엑셀 내보내기");
+		expectedDevelopment();
 	}
 
 	// Dialog 값 상위 컴포넌트의 state값으로 초기화
@@ -121,6 +125,8 @@ export default function  Filter(props) {
 	// Dialog에서 검색버튼 클릭 시
 	// 상위 컴포넌트의 state를 갱신 처리 해줌
 	const handleClickSearch = () => {
+
+		setShowLoadingBar(true);
 
 		Axios({
 			url: '/intranet/getAnnaualList.exp',
@@ -161,9 +167,11 @@ export default function  Filter(props) {
 			});
 
 			handleClose();
+			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 
 		
@@ -193,6 +201,8 @@ export default function  Filter(props) {
 
 	const handleClickApprove =() => {
 		
+		setShowLoadingBar(true);
+
 		const firSelected = state.firSelected;
 		const selected = state.selected;
 
@@ -243,11 +253,14 @@ export default function  Filter(props) {
 				});
 				
 				setAppOpen(false);
+
+				setShowLoadingBar(false);
 			}
 		})
 		.catch(e => {
 			processErrCode(e);
 			console.log(e);
+			setShowLoadingBar(false);
 		});
 	}
 
