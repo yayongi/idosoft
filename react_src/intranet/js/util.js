@@ -226,4 +226,10 @@ export function excelExport(json){
       return null;
     });
   }
+  
+    //  개발미흡 alert
+  //  작성자 : 유기환
+  export function expectedDevelopment(resPassSign){
+    alert("개발 진행중입니다.");
+  }
 
