@@ -106,7 +106,7 @@
 	</select>
 	<!-- 경비관리목록 총 개수 -->
 	<select id="getAnnalListCount" parameterType="hashmap"
-		resultType="_int">
+		resultType="int">
 		SELECT COUNT(*)
 		FROM TB_EXPENSE A
 		LEFT JOIN TB_MEMBER B
@@ -227,7 +227,7 @@
 		WHERE EXPENS_NO = #{EXPENS_NO}
 	</delete>
 	<!-- 경비 총금액 -->
-	<select id="getTotalAmount" parameterType="hashmap" resultType="_int">
+	<select id="getTotalAmount" parameterType="hashmap" resultType="int">
 		SELECT SUM(USE_AMOUNT) 
 		FROM TB_EXPENSE A
 		LEFT JOIN TB_MEMBER B
@@ -349,7 +349,7 @@
 		ORDER BY A.EXPENS_NO DESC
 	</select>
 	<!-- 경비 총금액 -->
-	<select id="getAppTotalAmount" parameterType="hashmap" resultType="_int">
+	<select id="getAppTotalAmount" parameterType="hashmap" resultType="int">
 		SELECT SUM(USE_AMOUNT) 
 		FROM TB_EXPENSE A
 		LEFT JOIN TB_MEMBER B
@@ -381,7 +381,7 @@
 	</select>
 	<!-- 경비관리목록 총 개수 -->
 	<select id="getAppAnnalListCount" parameterType="hashmap"
-		resultType="_int">
+		resultType="int">
 		SELECT COUNT(*)
 		FROM TB_EXPENSE A
 		LEFT JOIN TB_MEMBER B
@@ -505,24 +505,24 @@
 	</where> 
 	</select>
 	
-	<select id="getMonthTotalAmount" parameterType="hashmap" resultType="_int">
+	<select id="getMonthTotalAmount" parameterType="hashmap" resultType="int">
 	SELECT 
 		SUM(A.USE_AMOUNT) TOTTAL_AMOUNT
 	FROM TB_EXPENSE A
 	WHERE 
 		DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
-			BETWEEN DATE_FORMAT('2020-03-01', '%Y-%m-%d') 
-			AND DATE_FORMAT('2020-03-31', '%Y-%m-%d')
+			BETWEEN DATE_FORMAT(#{REG_START_DATE}, '%Y-%m-%d') 
+			AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
 	</select>
 	
-	<select id="getIndiMonthTotalAmount" parameterType="hashmap" resultType="_int">
+	<select id="getIndiMonthTotalAmount" parameterType="hashmap" resultType="int">
 	SELECT 
 		SUM(A.USE_AMOUNT) TOTTAL_AMOUNT
 	FROM TB_EXPENSE A
 	<where>
 	AND DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
-		BETWEEN DATE_FORMAT('2020-03-01', '%Y-%m-%d') 
-		AND DATE_FORMAT('2020-03-31', '%Y-%m-%d')
+		BETWEEN DATE_FORMAT(#{REG_START_DATE}, '%Y-%m-%d') 
+		AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
 	AND MEMBER_NO = #{MEMBER_NO}
 	</where>
 				

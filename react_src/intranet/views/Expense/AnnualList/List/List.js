@@ -22,7 +22,8 @@ export default function  List(props) {
 	const [paging, setPaging] = React.useState({listCount : 0});
 	const [ holdUp, setHoldUp ] = React.useState(0);					// 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
 	const [firstRender, setFirstRender ] = React.useState(false);
-	
+	const [isNoN, setIsNoN] = React.useState(false);
+
 	// 페이징
 	const [ page, setPage ] = React.useState(0);						// 초기페이지가 0부터 시작
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
@@ -51,6 +52,8 @@ export default function  List(props) {
 				setTotalAmount(response.data.totalAmount);
 				setFirstRender(true);
 			} else {
+				setFirstRender(true);
+				setIsNoN(isNoN);
 				// 빈화면 처리
 			}
 
@@ -67,7 +70,6 @@ export default function  List(props) {
 		<Fragment>
 				<LoadingBar openLoading={isShowLoadingBar}/>
 				{firstRender &&
-				<>
 					<Fragment>
 						<Filter 
 							filterRows={rows} filterSetRows={setRows}
@@ -80,6 +82,10 @@ export default function  List(props) {
 							setShowLoadingBar={setShowLoadingBar} 
 							/>
 					</Fragment>
+				}
+				{isNoN ? 
+					<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} ><h3 style={{paddingTop:"100px"}}> 현재 경비 목록이 없습니다.</h3></Paper>
+					: 
 					<Paper>
 						<Body 
 							rows={rows} 
@@ -93,7 +99,6 @@ export default function  List(props) {
 							setShowLoadingBar={setShowLoadingBar} 
 						/>
 					</Paper>
-				</>
 				}
 		</Fragment>
 		);

@@ -170,8 +170,6 @@ import {useStyles} from './styles';
 	return (
 		<Fragment>
 			<LoadingBar openLoading={isShowLoadingBar}/>
-			{!isEmpty(members) &&
-			<>
 				<Toolbar className={classes.root}>
 					<Typography className={classes.title} color="secondary" variant="subtitle2">					
 					</Typography>
@@ -190,6 +188,7 @@ import {useStyles} from './styles';
 				</Toolbar>
 				
 				<Divider />
+				
 				<Card>
 					<CardContent>
 						<Grid container spacing={3}>
@@ -223,6 +222,7 @@ import {useStyles} from './styles';
 							</Grid>
 						</Grid>
 						<div style={{height : 20}}/>
+						{!isEmpty(members) ?
 						<Grid container spacing={3}>
 							<Grid item xs={12}>
 								<TableContainer component={Paper}>
@@ -247,10 +247,11 @@ import {useStyles} from './styles';
 								</TableContainer>
 							</Grid>
 						</Grid>
+						: 
+						<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} ><h3 style={{paddingTop:"100px"}}> 월 경비 목록이 없습니다.</h3></Paper>
+						}
 					</CardContent>
 				</Card>
-			</>
-			}
 
 			{/* Diallog Area START */}
 

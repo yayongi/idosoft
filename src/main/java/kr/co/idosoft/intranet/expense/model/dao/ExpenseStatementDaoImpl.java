@@ -46,7 +46,9 @@ public class ExpenseStatementDaoImpl implements ExpenseStatementListDao {
 	 */
 	@Override
 	public String getTotalAmount(Map<String, Object> data) {
-		return String.valueOf((int)sqlTemplate.selectOne("expense.getMonthTotalAmount", data));
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getMonthTotalAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
 	}
 	/**
 	 * 개인 총 금액 합계
@@ -54,7 +56,9 @@ public class ExpenseStatementDaoImpl implements ExpenseStatementListDao {
 	 */
 	@Override
 	public String getIndiTotalAmount(Map<String, Object> data) {
-		return String.valueOf((int)sqlTemplate.selectOne("expense.getIndiMonthTotalAmount", data));
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getIndiMonthTotalAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
 	}
 	/**
 	 * 통신비 월별 통계

@@ -33,7 +33,9 @@ public class ApprovalListDaoImpl implements ApprovalListDao {
 
 	@Override
 	public int getListCount(Map<String, Object> data) {
-		return (int) sqlTemplate.selectOne("expense.getAppAnnalListCount", data);
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getAppAnnalListCount", data);
+		
+		return result != null ? result : 0;
 	}
 
 	/**
@@ -105,7 +107,10 @@ public class ApprovalListDaoImpl implements ApprovalListDao {
 	@Override
 	public String getTotalAmount(Map<String, Object> data) {
 		
-		return String.valueOf((int)sqlTemplate.selectOne("expense.getAppTotalAmount", data));
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getAppTotalAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
+		
 	}
 	/**
 	 * 결재 처리

@@ -33,7 +33,10 @@ public class AnnalListDaoImpl implements AnnalListDao {
 
 	@Override
 	public int getListCount(Map<String, Object> data) {
-		return (int) sqlTemplate.selectOne("expense.getAnnalListCount", data);
+		
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getAnnalListCount", data);
+		
+		return result != null ? result : 0;
 	}
 
 	/**
@@ -152,7 +155,9 @@ public class AnnalListDaoImpl implements AnnalListDao {
 	@Override
 	public String getTotalAmount(Map<String, Object> data) {
 		
-		return String.valueOf((int)sqlTemplate.selectOne("expense.getTotalAmount", data));
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getTotalAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
 	}
 	/**
 	 * 경비 진행
