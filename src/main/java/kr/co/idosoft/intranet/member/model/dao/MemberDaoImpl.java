@@ -22,7 +22,7 @@ public class MemberDaoImpl implements MemberDao {
 	
 	// 사원 정보 리스트 가져오기
 	@Override
-	public List<Object> selectMemberList() {
+	public List<MemberVO> selectMemberList() {
 		return sqlTemplate.selectList("selectMemberList");
 	}
 

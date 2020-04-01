@@ -42,9 +42,9 @@ public class MemberController {
 	// 사원리스트 불러오기
 	@RequestMapping(value="/member/memberlist", method=RequestMethod.POST)
 	@ResponseBody
-	public HashMap<String, Object> getMemberList(Model model, HttpServletRequest request,HttpSession session){
+	public LinkedHashMap<String, Object> getMemberList(Model model, HttpServletRequest request,HttpSession session){
 		try {
-			HashMap<String, Object> tempMap = new HashMap<String, Object>();
+			LinkedHashMap<String, Object> tempMap = new LinkedHashMap<String, Object>();
 			tempMap.put("memberData", memberService.selectMemberList());
 			tempMap.put("isAdmin", commonUtil.isAdmin(session));
 			return tempMap;

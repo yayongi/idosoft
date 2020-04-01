@@ -550,7 +550,7 @@ const MemberList = (props) => {
 													{row.name}
 												</TableCell>
 												<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{row.code_name}</TableCell>
-												<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer"}}>
+												<TableCell onClick={event => openContentModal(row)} style={{cursor : "pointer", maxWidth:"200px"}}>
 													{row.address_1} {row.address_2}
 													</TableCell>
 												<TableCell align="center" onClick={event => openContentModal(row)} style={{cursor : "pointer"}} className = {classes.fontsize}>{phoneFormatter(row.phone_num)}</TableCell>

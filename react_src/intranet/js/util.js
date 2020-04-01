@@ -22,6 +22,9 @@ export function findAddress(component1,component2){
 //날자 포맷
 //작성자 : 강성우
 export function dateFormatter(param){
+  if(param == null || param == ""){
+    return null
+  }
 	if(param.length == 8){
 		return `${param.substring(0,4)}-${param.substring(4,6)}-${param.substring(6,8)}`
 	}else if(param.length == 6){
@@ -38,6 +41,10 @@ export function phoneFormatter(param){
 //Unformatter
 //작성자 : 강성우
 export function unFormatter(param){
+  if(param == null){
+    return
+  }
+
 	var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
     if(regExp.test(param)){
         param = param.replace(regExp, "");
@@ -78,7 +85,7 @@ export function emailValidation(param){
 //경력 계산기
 //작성자 : 강성우
 export function dataCalculator(param){
-  if(param == null || param == undefined) {
+  if(param == null || param == undefined || param == "") {
     return false;
   }
   let now = new Date();

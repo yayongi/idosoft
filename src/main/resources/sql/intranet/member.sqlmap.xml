@@ -11,9 +11,9 @@
 			*,
 			B.CODE_NAME
 		FROM TB_MEMBER A
-		
 		INNER JOIN TB_CODE B
 		WHERE A.POSITION = B.CODE_ID
+		ORDER BY A.POSITION
 	</select>
 	
 	<!-- 사원 정보  -->

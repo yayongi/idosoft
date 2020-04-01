@@ -269,21 +269,21 @@ const MemberMod_admin = (props) => {
             address_2 : document.getElementById("address_2").value,
             zip_code : document.getElementById("zip_code").value,
             phone_num : unFormatter(document.getElementById("phone_num").value),
-            career_date : unFormatter(document.getElementById("career_date").value),
-            entry_date : unFormatter(document.getElementById("entry_date").value),
-            birth_date : unFormatter(document.getElementById("birth_date").value),
+            career_date : unFormatter(document.getElementById("career_date").value != "" ? document.getElementById("career_date").value.replace(/\-/gi,""):null),
+            entry_date : unFormatter(document.getElementById("entry_date").value != "" ? document.getElementById("entry_date").value.replace(/\-/gi,""):null),
+            birth_date : unFormatter(document.getElementById("birth_date").value != ""? document.getElementById("birth_date").value.replace(/\-/gi,""):null),
             school_major : document.getElementById("school_major").value,
             cert_yn : document.getElementById("cert_yn").nextSibling.value,
             email : document.getElementById("email").value,
             manager_yn : document.getElementById("manager_yn").checked? 1:0,
             school_career : document.getElementById("school_career").nextSibling.value,
-            marriage_date : unFormatter(document.getElementById("marriage_date").value),
+            marriage_date : unFormatter(document.getElementById("marriage_date").value != ""? document.getElementById("marriage_date").value.replace(/\-/gi,""):null),
             approval_yn : document.getElementById("approval_yn").checked? 1:0,
             mooncal_yn : document.getElementById("mooncal_yn").checked? 1:0,
             photo_path : state.profile,
             certfile_job_path : state.certFile,
             certfile_school_path : state.schoolFile,
-            upd_id : ''
+            upd_id : JSON.parse(sessionStorage.getItem("loginSession")).member_no
           }
         })
 

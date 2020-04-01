@@ -239,21 +239,22 @@ const MemberReg = (props) => {
               address_1 : document.getElementById("address_1").value,
               address_2 : document.getElementById("address_2").value,
               zip_code : document.getElementById("zip_code").value,
-              phone_num : document.getElementById("phone_num").value.replace(/\-/gi,""),
-              entry_date : document.getElementById("entry_date").value.replace(/\-/gi,""),
-              birth_date : document.getElementById("birth_date").value.replace(/\-/gi,""),
+              phone_num : document.getElementById("phone_num").value !="" ? document.getElementById("phone_num").value.replace(/\-/gi,""):null,
+              entry_date : document.getElementById("entry_date").value != "" ? document.getElementById("entry_date").value.replace(/\-/gi,""):null,
+              birth_date : document.getElementById("birth_date").value != ""? document.getElementById("birth_date").value.replace(/\-/gi,""):null,
               school_major : document.getElementById("school_major").value,
               cert_yn : document.getElementById("cert_yn").nextSibling.value,
               email : document.getElementById("email").value,
               manager_yn : document.getElementById("manager_yn").checked ? 1:0,
               school_career : document.getElementById("school_career").nextSibling.value,
-              marriage_date : document.getElementById("marriage_date").value.replace(/\-/gi,""),
+              marriage_date : document.getElementById("marriage_date").value != "" ? document.getElementById("marriage_date").value.replace(/\-/gi,""):null,
               approval_yn : document.getElementById("approval_yn").checked ? 1:0,
               mooncal_yn : document.getElementById("mooncal_yn").checked ? 1:0,
-              career_date : document.getElementById("career_date").value.replace(/\-/gi,""),
+              career_date : document.getElementById("career_date").value != "" ? document.getElementById("career_date").value.replace(/\-/gi,""):null,
               photo_path : state.profile,
               certfile_job_path : state.certFile,
               certfile_school_path : state.schoolFile,
+              reg_id : JSON.parse(sessionStorage.getItem("loginSession")).member_no
             }
           })
 

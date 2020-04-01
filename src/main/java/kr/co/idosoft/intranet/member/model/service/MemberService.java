@@ -9,7 +9,7 @@ import kr.co.idosoft.intranet.member.vo.MemberVO;
 public interface MemberService {
 
 	// 사원 리스트 호출
-	public List<Object> selectMemberList();
+	public List<MemberVO> selectMemberList();
 	// 사원 정보 호출
 	public MemberVO selectMember(String member_no);
 	// 사원 정보 등록

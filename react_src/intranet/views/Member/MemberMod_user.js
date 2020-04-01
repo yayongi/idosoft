@@ -232,8 +232,8 @@ const MemberMod_user = (props) => {
             zip_code : document.getElementById("zip_code").value,
             phone_num : unFormatter(document.getElementById("phone_num").value),
             career_date : row.career_date,
-            entry_date : unFormatter(document.getElementById("entry_date").value),
-            birth_date : unFormatter(document.getElementById("birth_date").value),
+            entry_date : unFormatter(document.getElementById("entry_date").value != "" ? document.getElementById("entry_date").value.replace(/\-/gi,""):null),
+            birth_date : unFormatter(document.getElementById("birth_date").value != ""? document.getElementById("birth_date").value.replace(/\-/gi,""):null),
             school_major : document.getElementById("school_major").value,
             cert_yn : document.getElementById("cert_yn").nextSibling.value,
             email : document.getElementById("email").value,
@@ -242,11 +242,11 @@ const MemberMod_user = (props) => {
             marriage_date : unFormatter(document.getElementById("marriage_date").value),
             approval_yn : row.approval_yn,
             mooncal_yn : document.getElementById("mooncal_yn").checked? 1:0,
-            career_date : unFormatter(document.getElementById("career_date").value),
+            career_date : unFormatter(document.getElementById("career_date").value != "" ? document.getElementById("career_date").value.replace(/\-/gi,""):null),
             photo_path : state.profile,
             certfile_job_path : state.certFile,
             certfile_school_path : state.schoolFile,
-            upd_id : ''
+            upd_id : JSON.parse(sessionStorage.getItem("loginSession")).member_no
           }
         });
 
