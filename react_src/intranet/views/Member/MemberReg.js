@@ -69,7 +69,7 @@ const MemberReg = (props) => {
   const pathSchoolcert = "\/schoolCert\/";  //프로필 사진  파일업로드 & 다운로드 경로 
 
   const { routeProps } = props;
-  
+
   const [state, setState] = React.useState({
     profile : null,
     certFile : null,
@@ -328,32 +328,6 @@ const MemberReg = (props) => {
     }
 	}
 
-  const uploadProfileImg = (event,pathProfile,prefilename) => {
-    uploadFile(event,pathProfile,prefilename);
-    setState({
-      ...state,
-      profile : event.target.files[0].name
-    })
-  }
-
-  const uploadCertImg = (event,pathItcert,prefilename) => {
-    uploadFile(event,pathItcert,prefilename);
-
-    setState({
-      ...state,
-      certFile : event.target.files[0].name
-    })
-  }
-
-  const uploadSchoolImg = (event,pathSchoolcert,prefilename) => {
-    uploadFile(event,pathSchoolcert,prefilename);
-
-    setState({
-      ...state,
-      schoolFile : event.target.files[0].name
-    })
-  }
-
   const getCarDate = (date) => {
     setDateState({
       ...dateState,
@@ -378,6 +352,19 @@ const MemberReg = (props) => {
       birth_date : Moment(date).format('YYYY-MM-DD')
     })
   }
+
+  const readUrl = (event,path) => {
+    if (event.target.files && event.target.files[0]) {
+    var reader = new FileReader();
+    
+    reader.onload = function (e) {
+      document.getElementById(path).setAttribute('src',e.target.result);  
+    }
+    
+    reader.readAsDataURL(event.target.files[0]);
+    }
+  }
+
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
@@ -398,39 +385,35 @@ const MemberReg = (props) => {
                 <CardContent style={{
                   height:'100%'
                 }}>
-                  <div style={{textAlign:'-webkit-center'}}>
-                    <Avatar src={pathProfile != null? getRootPath() + "/resources" + pathProfile + state.profile:""} className={classes.large} />
+                  <div style={{textAlign:'center'}}>
+                    <img id="profileImg" className={classes.large} style={{borderRadius: "70%"}}/>
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
-                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile,state.profile)}/>
-                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert,state.certFile)}/>
-                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert,state.schoolFile)}/>
+                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => readUrl(event,"profileImg")}/>
+                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => readUrl(event,"certImg")}/>
+                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => readUrl(event,"schoolImg")}/>
                       <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
                                                 프로필 업로드
-                      </Button>
-                      <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
-                        <input type="hidden" value={state.profile}/> 
-                                                프로필 다운로드
                       </Button>
                     </div>
                     <div className={classes.textfield}>
                       <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileItcert").click()}>
                                                 자격증 업로드
                       </Button>
-                      <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
-                        <input type="hidden" value={state.certFile}/> 
-                                                자격증 다운로드
-                      </Button>
                     </div>
                     <div className={classes.textfield}>
                       <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileSchoolcert").click()}>
                                                 증명서 업로드
                       </Button>
-                      <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
-                        <input type="hidden" value={state.schoolFile}/> 
-                                                증명서 다운로드
-                      </Button>
+                    </div>
+                    <div>
+                      <div style={{textAlign:'center'}}>
+                        <img id="certImg" className={classes.large}/>
+                      </div>   
+                      <div style={{textAlign:'center'}}>
+                        <img id="schoolImg" className={classes.large}/>
+                      </div>                   
                     </div>
                   </div>
                 </CardContent>

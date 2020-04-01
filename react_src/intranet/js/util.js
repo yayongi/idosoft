@@ -123,12 +123,13 @@ export function isValidNum(){
 
 }
 // 파일 업로드
-export function uploadFile(event,path,prefilename){
+export function uploadFile(event,path,prefilename,dateTime){
   const formData = new FormData();
 
-  formData.append('file', event.target.files[0]);
+  formData.append('file', event.files[0]);
   formData.append('path', path);
   formData.append('prefilename',prefilename);
+  formData.append('dateTime',dateTime);
 
   const property = {
     url : '/intranet/fileUpload',
@@ -162,7 +163,7 @@ export function downloadFile(event,path){
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', response.headers.filename);
+      link.setAttribute('download', response.headers.filename.split("_")[1]);
       document.body.appendChild(link);
       link.click();
     }).catch(e => {

@@ -376,48 +376,51 @@ const MemberMod_admin = (props) => {
 	}
   
  const uploadProfileImg = (event,pathProfile,preFileName) => {
-    uploadFile(event,pathProfile,preFileName);
+   let dateTime = new Date().getTime();
+    uploadFile(event,pathProfile,preFileName,dateTime);
     setState({
       ...state,
-      profile : event.target.files[0].name
+      profile : dateTime+"_"+event.target.files[0].name
     })
 
     setInfoState({
       memberData : {
       ...infoState.memberData,
-      photo_path : event.target.files[0].name
+      photo_path : dateTime+"_"+event.target.files[0].name
       }
     })
   }
 
   const uploadCertImg = (event,pathItcert,preFileName) => {
-    uploadFile(event,pathItcert,preFileName);
+    let dateTime = new Date().getTime();
+    uploadFile(event,pathItcert,preFileName,dateTime);
 
     setState({
       ...state,
-      certFile : event.target.files[0].name
+      certFile : dateTime+"_"+event.target.files[0].name
     })
 
     setInfoState({
       memberData : {
         ...infoState.memberData,
-        certfile_job_path : event.target.files[0].name
+        certfile_job_path : dateTime+"_"+event.target.files[0].name
       }
     })
   }
 
   const uploadSchoolImg = (event,pathSchoolcert,preFileName) => {
-    uploadFile(event,pathSchoolcert,preFileName);
+    let dateTime = new Date().getTime();
+    uploadFile(event,pathSchoolcert,preFileName,dateTime);
 
     setState({
       ...state,
-      schoolFile : event.target.files[0].name
+      schoolFile : dateTime+"_"+event.target.files[0].name
     })
 
     setInfoState({
       memberData : {
         ...infoState.memberData,
-        certfile_school_path : event.target.files[0].name
+        certfile_school_path : dateTime+"_"+event.target.files[0].name
       }
     })
   }
