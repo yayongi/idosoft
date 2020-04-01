@@ -25,7 +25,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { Divider, Button, Hidden } from '@material-ui/core';
 
 import {useStyles} from './styles';
-import {expectedDevelopment} from '../../../js/util';
+import {expectedDevelopment, processErrCode} from '../../../js/util';
 import Moment from "moment";
 Moment.locale('ko'); // 한국 시간
 
