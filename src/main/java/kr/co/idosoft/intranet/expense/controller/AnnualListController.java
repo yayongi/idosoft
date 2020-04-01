@@ -207,7 +207,7 @@ public class AnnualListController {
 	public ModelAndView resisterExpense(MultipartHttpServletRequest mutipartRequest
 										, HttpServletRequest request) {
 		
-		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
+		String path = request.getSession().getServletContext().getContextPath() + "/resources/expense/";
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/resister.exp // path : " + path);
@@ -466,7 +466,7 @@ public class AnnualListController {
 	public ModelAndView updateExpense(MultipartHttpServletRequest mutipartRequest
 										, HttpServletRequest request) {
 		
-		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
+		String path = request.getSession().getServletContext().getContextPath() + "/resources/expense/";
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/update.exp // path : " + path);
@@ -592,7 +592,7 @@ public class AnnualListController {
 	public ModelAndView deleteExpense(MultipartHttpServletRequest mutipartRequest
 										, HttpServletRequest request) {
 		
-		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
+		String path = request.getSession().getServletContext().getContextPath() + "/resources/expense/";
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/delete.exp // path : " + path);
@@ -657,7 +657,7 @@ public class AnnualListController {
 	public ModelAndView Proceed(MultipartHttpServletRequest mutipartRequest
 										, HttpServletRequest request) {
 		
-		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
+		String path = request.getSession().getServletContext().getContextPath() + "/resources/expense/";;
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/Proceed.exp // path : " + path);
