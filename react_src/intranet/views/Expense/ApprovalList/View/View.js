@@ -543,24 +543,25 @@ export default function  View(props) {
 														src={dataState.filePath}
 														title="image"
 														id="image"
+														style={{maxWidth : 200}}
 													/>
 												</div>
 											</CardContent>
 											<CardActions>
 												<Toolbar className={classes.root}>
-														<div className={classes.container}>
-															<Hidden smDown>
-																<Button variant="contained" color="primary" size="small" startIcon={<PrintIcon />} onClick={printImageArea} className={classes.button}>
-																	인쇄
-																</Button>
-															</Hidden>
-															<Hidden mdUp>
-																<IconButton color="primary" onClick={printImageArea} className={classes.button}>
-																	<PrintIcon />
-																</IconButton>
-															</Hidden>
-														</div>
-													</Toolbar>
+													<div className={classes.container} align="center">
+														<Hidden smDown>
+															<Button variant="contained" color="primary" size="small" startIcon={<PrintIcon />} onClick={printImageArea} className={classes.button}>
+																인쇄
+															</Button>
+														</Hidden>
+														<Hidden mdUp>
+															<IconButton color="primary" onClick={printImageArea} className={classes.button}>
+																<PrintIcon />
+															</IconButton>
+														</Hidden>
+													</div>
+												</Toolbar>
 											</CardActions>
 											</Card>
 									</TableCell>
