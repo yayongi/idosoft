@@ -131,7 +131,7 @@ export default function  View(props) {
 
 	let data 		= {}; // 목록에서 선택한 데이터
 	
-	const loginSession = JSON.stringify(sessionStorage.getItem("loginSession"));
+	const loginSession = JSON.parse(sessionStorage.getItem("loginSession"));
 
 	React.useEffect(() => { // render 완료 후, 호출
 		setShowLoadingBar(true);

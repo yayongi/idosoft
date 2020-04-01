@@ -48,22 +48,22 @@ export const menus = [
 		]
 	},
 	{
-		title: '경비관리',
+		title: '경비',
 		href: '/expense',
 		icon: <CreditCard />, 
 		submenu: [
 			{
-				title: '경비관리목록',
+				title: '경비관리',
 				href: '/expense/annualList',
 				icon: <SubdirectoryArrowRightIcon fontSize="small"/>, 
 			},
 			{
-				title: '경비결재관리목록',
+				title: '경비결재관리',
 				href: '/expense/approvalList',
 				icon: <SubdirectoryArrowRightIcon fontSize="small"/>, 
 			},
 			{
-				title: '교통/통신비관리목록',
+				title: '교통/통신비 조회',
 				href: '/expense/payList',
 				icon: <SubdirectoryArrowRightIcon fontSize="small"/>, 
 			},
