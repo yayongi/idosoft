@@ -26,15 +26,15 @@ const FilterModal = ({props,state,setState,closeModal}) => {
 
 	// 검색 버튼 클릭 전, 임시로 값 저장
 	const [dialogState, setDialogState] = React.useState({
-		category : "",
-		searchword : ""
+		category : state.category != "" ? state.category: 0,
+		searchword : state.searchword
 	});
 
 	// Dialog 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {
 		setDialogState({
 			...dialogState,
-			[event.target.id]: event.target.value
+			[event.target.name]: event.target.value
 		});
 	};
 
@@ -72,16 +72,16 @@ const FilterModal = ({props,state,setState,closeModal}) => {
 				<Grid container justify="flex-start">
 					<Grid item xs={6} style={{paddingRight: 10}}>
 						<TextField
-								id="category"
-								name="category"
-								select
-								margin="dense"
-								label="유형"
-								defaultValue={dialogState.category}
-								onChange={handleChange}
-								fullWidth>
-								<MenuItem key={0} value={0}>이름</MenuItem>
-								<MenuItem key={1} value={1}>직급</MenuItem>
+							id="category"
+							name="category"
+							select
+							margin="dense"
+							label="유형"
+							defaultValue={dialogState.category}
+							onChange={handleChange}
+							fullWidth>
+							<MenuItem key={0} value={0}>이름</MenuItem>
+							<MenuItem key={1} value={1}>직급</MenuItem>
 						</TextField>
 					</Grid>
 					<Grid item xs={6} style={{paddingRight: 10}}>
@@ -94,6 +94,7 @@ const FilterModal = ({props,state,setState,closeModal}) => {
 							InputLabelProps={{
 								shrink: true,
 							}}
+							defaultValue={dialogState.searchword}
 							type="search"
 							onChange={handleChange}
 							fullWidth

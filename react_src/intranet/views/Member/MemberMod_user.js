@@ -79,7 +79,8 @@ const MemberMod_user = (props) => {
   const [state, setState] = React.useState({
     profile : null,
     certFile : null,
-    schoolFile : null
+    schoolFile : null,
+    isIdentified : false
   });
 
   const [infoState, setInfoState] = React.useState({
@@ -127,7 +128,8 @@ const MemberMod_user = (props) => {
       setState({
         profile : response.data.memberData.photo_path,
         certFile : response.data.memberData.certfile_job_path,
-        schoolFile :response.data.memberData.certfile_school_path
+        schoolFile :response.data.memberData.certfile_school_path,
+        isIdentified : (response.data.memberData.member_no === JSON.parse(sessionStorage.getItem("loginSession")).member_NO) ? true:false
       })
 
       setInfoState({
@@ -430,27 +432,33 @@ const MemberMod_user = (props) => {
                         <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile,state.profile)}/>
                         <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert,state.certFile)}/>
                         <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert,state.schoolFile)}/>
-                        <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
-                                                  프로필 업로드
-                        </Button>
+                        {state.isIdentified == true && (
+                          <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
+                                                      프로필 업로드
+                          </Button>
+                        )}
                         <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
                           <input type="hidden" value={infoState.memberData.photo_path}/> 
                                                   프로필 다운로드
                         </Button>
                       </div>
                       <div className={classes.textfield}>
+                        {state.isIdentified == true && (
                         <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileItcert").click()}>
                                                   자격증 업로드
                         </Button>
+                        )}
                         <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
                           <input type="hidden" value={infoState.memberData.certFile}/> 
                                                   자격증 다운로드
                         </Button>
                       </div>
                       <div className={classes.textfield}>
+                        {state.isIdentified == true && (
                         <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileSchoolcert").click()}>
                                                   증명서 업로드
                         </Button>
+                         )}
                         <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
                           <input type="hidden" value={infoState.memberData.schoolFile}/> 
                                                   증명서 다운로드
@@ -464,7 +472,9 @@ const MemberMod_user = (props) => {
                 <Card>
                   <CardContent>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField autoComplete="off" style={{width:'70%'}} id="email" size="small" label="이메일" defaultValue={row.email} onClick={defaultValidation}  error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} variant="outlined" InputProps={{}}/>
+                      <TextField autoComplete="off" style={{width:'70%'}} id="email" size="small" label="이메일" defaultValue={row.email} onClick={defaultValidation}  error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} variant="outlined" InputProps={{
+                        readOnly: !state.isIdentified,
+                      }}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField autoComplete="off" style={{width:'34%'}} id="address_1" size="small" label="기본주소" defaultValue={row.address_1} onClick={defaultValidation}  error={validation.address_1.error} helperText={validation.address_1.helperText} variant="outlined" InputProps={{
@@ -474,13 +484,18 @@ const MemberMod_user = (props) => {
                         readOnly: true,
                       }}/>
                       <TextField autoComplete="off" style={{width:'70%'}} id="address_2" size="small" label="상세주소" defaultValue={row.address_2} variant="outlined" onClick={defaultValidation} error={validation.address_2.error} helperText={validation.address_2.helperText}InputProps={{
+                        readOnly: !state.isIdentified,
                       }}/>
-                      <Button variant="contained" color="primary" onClick={() => findAddress("address_1","zip_code")}>
-                                              주소찾기
-                      </Button>
+                      {state.isIdentified == true && (
+                        <Button variant="contained" color="primary" onClick={() => findAddress("address_1","zip_code")}>
+                                                    주소찾기
+                        </Button>
+                      )}
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" onKeyUp={isValidNum} defaultValue={phoneFormatter(row.phone_num)} variant="outlined" />
+                      <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" onKeyUp={isValidNum} defaultValue={phoneFormatter(row.phone_num)} variant="outlined" InputProps={{
+                        readOnly: !state.isIdentified,
+                      }}/>
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField style={{width:'25%'}}
@@ -490,6 +505,9 @@ const MemberMod_user = (props) => {
                         variant="outlined"
                         defaultValue={row.cert_yn}
                         size="small" 
+                        InputProps={{
+                          readOnly: !state.isIdentified,
+                        }}
                       >
                         {certYn.map(option => (
                           <MenuItem key={option.value} value={option.value}>
@@ -498,7 +516,9 @@ const MemberMod_user = (props) => {
                         ))}
                       </TextField>
                       
-                      <TextField autoComplete="off" style={{width:'25%'}} size="small" id="school_major" label="학교/학과" defaultValue={row.school_major} variant="outlined" />
+                      <TextField autoComplete="off" style={{width:'25%'}} size="small" id="school_major" label="학교/학과" defaultValue={row.school_major} variant="outlined" InputProps={{
+                        readOnly: !state.isIdentified,
+                      }}/>
                       <TextField style={{width:'25%'}}
                         id="school_career"
                         select
@@ -508,7 +528,10 @@ const MemberMod_user = (props) => {
                         size="small" 
                         error={validation.school_career.error}
                         helperText={validation.school_career.helperText}
-                        onClick={defaultValidation} 
+                        onClick={defaultValidation}
+                        InputProps={{
+                          readOnly: !state.isIdentified,
+                        }} 
                       >
                         {codeState.graduationCode != null && codeState.graduationCode.map(option => (
                           <MenuItem key={option.CODE_ID} value={option.CODE_ID}>
@@ -531,9 +554,10 @@ const MemberMod_user = (props) => {
                                       id="career_date"
                                       views={["year", "month", "date"]}
                                       format="yyyy-MM-dd"
-                                      value={dateState.career_date}
+                                      defaultValue={dateState.career_date}
                                       onChange={getCarDate}
                                       inputVariant="outlined"
+                                      disabled={!state.isIdentified}
                                     />
                                   </Grid>
                                 </MuiPickersUtilsProvider>
@@ -551,6 +575,7 @@ const MemberMod_user = (props) => {
                                       value={dateState.marriage_date}
                                       onChange={getMarDate}
                                       inputVariant="outlined"
+                                      disabled={!state.isIdentified}
                                     />
                                   </Grid>
                                 </MuiPickersUtilsProvider>
@@ -568,8 +593,7 @@ const MemberMod_user = (props) => {
                                       value={dateState.entry_date}
                                       onChange={getEntry}
                                       inputVariant="outlined"
-                                      readOnly={false}
-                                      fullWidth
+                                      disabled={!state.isIdentified}
                                     />
                                   </Grid>
                                 </MuiPickersUtilsProvider>
@@ -587,8 +611,7 @@ const MemberMod_user = (props) => {
                                       value={dateState.birth_date}
                                       onChange={getBirth}
                                       inputVariant="outlined"
-                                      readOnly={false}
-                                      fullWidth
+                                      disabled={!state.isIdentified}
                                     />
                                   </Grid>
                                 </MuiPickersUtilsProvider>
@@ -600,6 +623,7 @@ const MemberMod_user = (props) => {
                                   color="primary"
                                   id="mooncal_yn"
                                   defaultChecked={row.mooncal_yn}
+                                  disabled={!state.isIdentified}
                                 />
                               }
                               label="음력"
@@ -621,6 +645,7 @@ const MemberMod_user = (props) => {
                                     value={dateState.career_date}
                                     onChange={getCarDate}
                                     inputVariant="outlined"
+                                    disabled={!state.isIdentified}
                                   />
                                 </Grid>
                               </MuiPickersUtilsProvider>
@@ -638,6 +663,7 @@ const MemberMod_user = (props) => {
                                     value={dateState.marriage_date}
                                     onChange={getMarDate}
                                     inputVariant="outlined"
+                                    disabled={!state.isIdentified}
                                   />
                                 </Grid>
                               </MuiPickersUtilsProvider>
@@ -657,8 +683,7 @@ const MemberMod_user = (props) => {
                                       value={dateState.entry_date}
                                       onChange={getEntry}
                                       inputVariant="outlined"
-                                      readOnly={false}
-                                      fullWidth
+                                      disabled={!state.isIdentified}
                                     />
                                   </Grid>
                                 </MuiPickersUtilsProvider>
@@ -676,8 +701,7 @@ const MemberMod_user = (props) => {
                                       value={dateState.birth_date}
                                       onChange={getBirth}
                                       inputVariant="outlined"
-                                      readOnly={false}
-                                      fullWidth
+                                      disabled={!state.isIdentified}
                                     />
                                   </Grid>
                                 </MuiPickersUtilsProvider>
@@ -689,6 +713,7 @@ const MemberMod_user = (props) => {
                                   color="primary"
                                   id="mooncal_yn"
                                   defaultChecked={row.mooncal_yn}
+                                  disabled={!state.isIdentified}
                                 />
                               }
                               label="음력"
@@ -698,17 +723,21 @@ const MemberMod_user = (props) => {
                       </div>
                     </Toolbar>
                     <div className={classes.textfield}>
+                        {state.isIdentified == true && (
                         <Button variant="contained" color="primary" onClick={() => saveMemberData()}>
                                                   저장하기
                         </Button>
+                        )}
                         <Button variant="contained" color="primary" onClick={() => location.href = getRootPath() + '/#/member'}>
                                                   뒤로가기
                         </Button>
-                      <RouterLink button="true" to="/resPassword/" className={classes.router_link}>
-                        <Button variant="contained" color="primary">
-                                                  비밀번호변경하기
-                        </Button>
-                      </RouterLink>
+                        {state.isIdentified == true && (
+                        <RouterLink button="true" to="/resPassword/" className={classes.router_link}>
+                          <Button variant="contained" color="primary">
+                                                    비밀번호변경하기
+                          </Button>
+                        </RouterLink>
+                        )}
                     </div>
                   </CardContent>
                 </Card>

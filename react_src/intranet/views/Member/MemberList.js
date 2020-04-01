@@ -428,7 +428,6 @@ const MemberList = (props) => {
 			}}
 			onClose={snackBarClose}
 			open={openSnackBar}
-			autoHideDuration={6000}
 			message={searchState.category === 0 ? "이름 : "+searchState.searchword:"직급 : "+searchState.searchword}
 			action={
 				<React.Fragment>
