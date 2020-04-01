@@ -42,11 +42,6 @@ public class ProjectDaoImpl implements ProjectDao {
 		return sqlTemplate.selectOne("project.selectInfo", project_no);
 	}
 
-	@Override
-	public List<Map<String, Object>> selectList(HashMap<String, Object> condition) {
-		// TODO Auto-generated method stub
-		return (ArrayList)sqlTemplate.selectList("project.selectList", condition);
-	}
 
 	@Override
 	public List<Map<String, Object>> selectAllList() {

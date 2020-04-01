@@ -4,8 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import HistoryInfoTable from './component/HistoryInfoTable'
 import HistorySearchDiv from './component/HistorySearchDiv'
-import { LoadingBar } from '../../Admin/component/utils';
-
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 import axios from 'axios';
 
 const mainStyles = makeStyles(theme => ({
@@ -16,28 +15,27 @@ const mainStyles = makeStyles(theme => ({
   },
 }));
 
-function getUserInfo(){
-	return JSON.parse(sessionStorage.getItem("loginSession"));
-}
 
 export default function HistoryView(props) {
-	console.log("HistoryView");
 	const classes = mainStyles();
-	const [historyOriginInfo, setHistoryOriginInfo ] = useState([]);
-	const [memberlist, setMemberList] = useState([]);
+	const [historyOriginInfo, setHistoryOriginInfo ] = useState([], []);
 	const [historyInfo, setHistoryInfo] = useState([]);
+	const [memberlist, setMemberList] = useState([]);
 	const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
-	const userInfo = getUserInfo();
-
+	const userInfo = JSON.parse(sessionStorage.getItem("loginSession"));
+	
+	
+	console.log("getSessionMemberInfo : ");
+	console.log(userInfo);
+	
 	useEffect(() => {
 		axios({
 			url: '/intranet/allHistory',
 			method: 'post',
 			data: {}
 		}).then(response => {
+			console.log(response);
 			setHistoryInfo(response.data.history_list);
-			setHistoryOriginInfo(response.data.history_list);
-			setMemberList(response.data.member_list);
 			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -52,7 +50,7 @@ export default function HistoryView(props) {
 			<Grid container spacing={2}>
 			<Grid item xs={12}>
 				<Paper className={classes.paper}>
-					<HistoryInfoTable historyInfo={ historyInfo } memberlist={memberlist} routeProps={props.routeProps}/>
+					<HistoryInfoTable historyInfo={ historyInfo } routeProps={props.routeProps}/>
 				</Paper>
 			</Grid>
 			</Grid>

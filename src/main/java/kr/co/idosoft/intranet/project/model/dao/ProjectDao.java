@@ -15,7 +15,6 @@ public interface ProjectDao {
 	void update(HashMap<String, Object> update);
 	void deleteInfo(String project_no);
 	HashMap<String, Object> selectInfo(String project_no);
-	List<Map<String, Object>> selectList(HashMap<String, Object> condition);
 	String selectMaxProject();
 	List<Map<String, Object>> selectAllList();
 

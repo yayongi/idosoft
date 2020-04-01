@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="history">
-	<!-- 프로젝트 등록 -->
+	<!-- 이력 등록 -->
 	<insert id="insert" parameterType="hashmap">
 		INSERT INTO TB_MEM_HIST 
 			(MEMBER_NO, PROJECT_NO, PROJECT_NM, INSTT_CODE, INSTT_NM, INPT_BGNDE, INPT_ENDDE,
@@ -13,7 +13,7 @@
 			, DATE_FORMAT(NOW(),'%Y%m%d'), null, #{REG_ID}, null, "", "")
 	</insert>
 	
-	<!-- 프로젝트 수정 -->
+	<!-- 이력 수정 -->
 	<update id="update" parameterType="hashmap">
 		UPDATE
 			TB_MEM_HIST
@@ -32,55 +32,34 @@
 			MEM_HIST_NO = #{MEMBER_NO}
 	</update>
 	
-	<!--  프로젝트 삭제 -->
-	<delete id="deleteInfo" parameterType="int">
-		DELETE FROM
-			TB_MEM_HIST
-		WHERE
-			MEM_HIST_NO = #{MEM_HIST_NO}
-	</delete>
 	
-	<!--  프로젝트 삭제 -->
-	<delete id="removeHistoryForPro" parameterType="String">
-		DELETE FROM
-			TB_MEM_HIST
-		WHERE
-			PROJECT_NO = #{PROJECT_NO}
-	</delete>
-	
-	<!-- 프로젝트 상세 조회  -->
-	<select id="selectInfo" resultType="hashmap" parameterType="int">
-		SELECT	
-			*
-		FROM 
-			TB_MEM_HIST
-		WHERE 
-			MEM_HIST_NO = #{MEM_HIST_NO}
-	</select>
-	
-	<!-- 프로젝트 전체 리스트 -->
-	<select id="selectList" resultType="hashmap">
+	<!-- 이력 조회 -->
+	<select id="selectHistory" parameterType="String"  resultType="hashMap">
 		SELECT
 			HIST.MEM_HIST_NO
-			, HIST.MEMBER_NO
-			, HIST.PROJECT_NO
-			, HIST.PROJECT_NM
-			, HIST.INSTT_CODE
-			, HIST.INSTT_NM
-			, HIST.INPT_BGNDE
-			, HIST.INPT_ENDDE
-			, HIST.ROLE_CODE
-			, HIST.CHRG_JOB
-			, HIST.USE_LANG
-			, HIST.REG_DATETIME
-			, HIST.UPD_DATETIME
-			, HIST.REG_ID
-			, HIST.UPD_ID
-			, HIST.NOTE
-			, HIST.TEMP_COLUM
-			, MEMBER.NAME AS MEMBER_NAME
+        , HIST.MEMBER_NO
+        , HIST.PROJECT_NO
+        , HIST.PROJECT_NM
+        , HIST.INSTT_CODE
+        , HIST.INSTT_NM
+        , HIST.INPT_BGNDE
+        , HIST.INPT_ENDDE
+        , HIST.ROLE_CODE
+        , HIST.CHRG_JOB
+        , HIST.USE_LANG
+        , HIST.REG_DATETIME
+        , HIST.UPD_DATETIME
+        , HIST.REG_ID
+        , HIST.UPD_ID
+        , HIST.NOTE
+        , HIST.TEMP_COLUM
+        , MEM.NAME AS MEMBER_NAME
 		FROM TB_MEM_HIST AS HIST
-			LEFT JOIN TB_MEMBER AS MEMBER ON HIST.MEMBER_NO = MEMBER.MEMBER_NO
-		ORDER BY HIST.MEMBER_NO
+		LEFT JOIN TB_MEMBER AS MEM ON MEM.MEMBER_NO = HIST.MEMBER_NO 
+		WHERE 1 = 1
+		<if test="MEMBER_NO != ''">
+			AND HIST.MEMBER_NO like #{MEMBER_NO}
+		</if>
+		ORDER BY HIST.INPT_BGNDE DESC
 	</select>
 </mapper>

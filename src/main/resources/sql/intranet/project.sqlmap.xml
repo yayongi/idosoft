@@ -44,6 +44,7 @@
 			, A.INSTT_CODE
 			, A.BGNDE
 			, A.ENDDE
+			, CONCAT(date_format(A.BGNDE,'%Y-%m-%d'), "~" , date_format(A.ENDDE,'%Y-%m-%d')) AS TERM
 			, A.PM
 			, B.NAME AS PM_NAME
 			, A.TRANSPORT_CT
@@ -55,52 +56,31 @@
 		FROM TB_PROJECT AS A
 			LEFT JOIN TB_MEMBER AS B ON B.MEMBER_NO = A.PM
 			LEFT JOIN TB_CODE AS C ON C.CODE_ID = A.INSTT_CODE
-		WHERE 
-			PROJECT_NO = #{PROJECT_NO}
-	</select>
-	
-	<!-- 프로젝트 전체 리스트 -->
-	<select id="selectList" resultType="hashMap" parameterType="hashMap">
-		SELECT
-			PROJECT_NO
-			, PROJECT_NM
-			, INSTT_CODE
-			, BGNDE
-			, ENDDE
-			, PM
-			, TRANSPORT_CT
-			, REG_DATETIME
-			, UPD_DATETIME
-			, REG_ID
-			, UPD_ID
-			, NOTE
-			, TEMP_COLUM
-		FROM	TB_PROJECT
-		ORDER BY BGNDE DESC
+			WHERE 
+				PROJECT_NO = #{PROJECT_NO}
 	</select>
 	
 	<!-- 프로젝트 전체 리스트 -->
 	<select id="selectAllList" resultType="hashMap">
-		SELECT
+		SELECT	
 			A.PROJECT_NO
 			, A.PROJECT_NM
 			, A.INSTT_CODE
 			, A.BGNDE
 			, A.ENDDE
+			, CONCAT(date_format(A.BGNDE,'%Y-%m-%d'), "~" , date_format(A.ENDDE,'%Y-%m-%d')) AS TERM
 			, A.PM
+			, B.NAME AS PM_NAME
 			, A.TRANSPORT_CT
 			, A.REG_DATETIME
 			, A.UPD_DATETIME
 			, A.REG_ID
 			, A.UPD_ID
-			, A.NOTE
-			, A.TEMP_COLUM
-			, B.CODE_NAME AS INSTT_NAME
-			, C.NAME AS PM_NAME
-		FROM	TB_PROJECT AS A
-			LEFT JOIN TB_CODE AS B ON A.INSTT_CODE = B.CODE_ID
-			LEFT JOIN TB_MEMBER AS C ON A.PM = C.MEMBER_NO
-		ORDER BY PROJECT_NO
+			, C.CODE_NAME AS INSTT_NAME
+		FROM TB_PROJECT AS A
+			LEFT JOIN TB_MEMBER AS B ON B.MEMBER_NO = A.PM
+			LEFT JOIN TB_CODE AS C ON C.CODE_ID = A.INSTT_CODE
+		ORDER BY BGNDE DESC
 	</select>
 	
 	<select id="selectMaxProject" resultType="String">

@@ -1,7 +1,6 @@
 package kr.co.idosoft.intranet.project.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
-import kr.co.idosoft.intranet.member.model.service.MemberServiceImpl;
+import kr.co.idosoft.intranet.member.vo.MemberVO;
 import kr.co.idosoft.intranet.project.model.service.HistoryServiceImpl;
 
 @Controller
@@ -28,19 +28,14 @@ public class HistoryController {
 private static final Logger LOG = LoggerFactory.getLogger(HistoryController.class);
 	
 	@Resource HistoryServiceImpl historyService;
-	@Resource MemberServiceImpl memberService;		//멤버정보
 	
 	@RequestMapping(value="/allHistory",method=RequestMethod.POST)
 	@ResponseBody
 	public ModelAndView allHistory(HttpServletRequest request, @RequestBody Map<String, Object> params ){
 		
-		if(LOG.isDebugEnabled()) {
-			LOG.debug("/resister.exp");
-		}
-		
 		HttpSession session = request.getSession();
 		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-		String managerYN = sessionVo.getMANAGER_YN();
+		boolean isAdmin = commonUtil.isAdmin(session);
 		String member_no = sessionVo.getMEMBER_NO();
 		
 		ModelAndView mv = new ModelAndView();
@@ -52,14 +47,11 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		
 		
 		ArrayList<Map<String, Object>> history_list = new ArrayList<Map<String, Object>>();
-		ArrayList<Object> member_list = new ArrayList<Object>();
 		try {
-			history_list = (ArrayList<Map<String, Object>>)historyService.selectList();
-			if(!"N".equals(managerYN)) {
-				member_list = (ArrayList<Object>)memberService.selectMemberList();
-			}else {
-				member_list.add(memberService.selectMember(member_no));
+			if(isAdmin) {
+				member_no = "";
 			}
+			history_list = (ArrayList<Map<String, Object>>)historyService.selectHistory(member_no);
 			
 		} catch (Exception e) {
 			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
@@ -67,7 +59,47 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		
 		
 		mv.addObject("history_list", history_list);
+		return mv;
+	}
+	
+	@RequestMapping(value="/historyinfoForm",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView historyinfoForm(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		
+		HttpSession session = request.getSession();
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		boolean isAdmin = commonUtil.isAdmin(session);
+		String member_no = sessionVo.getMEMBER_NO();
+		
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		
+		List<MemberVO> member_list = new ArrayList<MemberVO>();
+		List<Map<String, Object>> hist_list = new ArrayList<Map<String, Object>>();
+		List<String> inputCodeList = (List<String>)params.get("CODE_ID");
+		List<Map<String, Object>> code_list = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
+		try {
+			if(isAdmin) {
+				member_list = historyService.selectMemberList();
+			}
+			hist_list = historyService.selectAllList();
+			code_list = historyService.getLowCodeList(inputCodeList.get(0));
+			role_list = historyService.getLowCodeList(inputCodeList.get(1));
+		} catch (Exception e) {
+			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
+		}
+		
+		
 		mv.addObject("member_list", member_list);
+		mv.addObject("hist_list", hist_list);
+		mv.addObject("code_list", code_list);
+		mv.addObject("role_list", role_list);
 		return mv;
 	}
 

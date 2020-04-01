@@ -31,27 +31,9 @@ public class HistoryDaoImpl implements HistoryDao {
 	}
 
 	@Override
-	public void deleteInfo(int mem_hist_no) {
+	public List<Map<String, Object>> selectHistory(String member_no) {
 		// TODO Auto-generated method stub
-		sqlTemplate.delete("history.deleteInfo", mem_hist_no);
-	}
-
-	@Override
-	public HashMap<String, Object> selectInfo(int mem_hist_no) {
-		// TODO Auto-generated method stub
-		return sqlTemplate.selectOne("history.selectInfo", mem_hist_no);
-	}
-
-	@Override
-	public List<Map<String, Object>> selectList() {
-		// TODO Auto-generated method stub
-		return (ArrayList)sqlTemplate.selectList("history.selectList");
-	}
-
-	@Override
-	public void removeHistoryForPro(String project_no) {
-		// TODO Auto-generated method stub
-		sqlTemplate.delete("history.removeHistoryForPro", project_no);
+		return (ArrayList)sqlTemplate.selectList("history.selectHistory", member_no);
 	}
 
 }

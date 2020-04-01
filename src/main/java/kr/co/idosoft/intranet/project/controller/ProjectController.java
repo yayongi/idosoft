@@ -22,7 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import kr.co.idosoft.intranet.admin.model.service.CodeServiceImpl;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 import kr.co.idosoft.intranet.member.model.service.MemberServiceImpl;
-import kr.co.idosoft.intranet.project.model.service.HistoryServiceImpl;
+import kr.co.idosoft.intranet.member.vo.MemberVO;
 import kr.co.idosoft.intranet.project.model.service.ProjectServiceImpl;
 
 @Controller
@@ -30,9 +30,6 @@ public class ProjectController {
 	private static final Logger LOG = LoggerFactory.getLogger(ProjectController.class);
 	
 	@Resource ProjectServiceImpl projectService;	//프로젝트 정보
-	@Resource CodeServiceImpl codetService;			//코드정보
-	@Resource MemberServiceImpl memberService;		//멤버정보
-	@Resource HistoryServiceImpl historyService;		//멤버정보
 	
 	
 	@RequestMapping(value="/allProject",method=RequestMethod.POST)
@@ -50,7 +47,7 @@ public class ProjectController {
 		
 		List<Map<String, Object>> project_list = projectService.selectAllList();
 		
-		List<Map<String, Object>> code_list = codetService.getLowCodeList((String) params.get("CODE_ID"));
+		List<Map<String, Object>> code_list = projectService.getLowCodeList((String) params.get("CODE_ID"));
 		
 		mv.addObject("project_list", project_list);
 		mv.addObject("code_list", code_list);
@@ -72,15 +69,14 @@ public class ProjectController {
 		// 검색 조건 제외하고 개발중..
 		Map<String, Object> data = new HashMap<>();
 		
-		//List<Map<String, Object>> list = historyService.selectList();
 		
 		String jsonArrayList 	= null;
 		//String jsonObjectData 	= null;
 		List<String> inputCodeList = (List<String>)params.get("CODE_ID");
 		
-		List<Map<String, Object>> code_list = codetService.getLowCodeList(inputCodeList.get(0));
-		List<Map<String, Object>> role_list = codetService.getLowCodeList(inputCodeList.get(1));
-		List<Object> member_list = memberService.selectMemberList();
+		List<Map<String, Object>> code_list = projectService.getLowCodeList(inputCodeList.get(0));
+		List<Map<String, Object>> role_list = projectService.getLowCodeList(inputCodeList.get(1));
+		List<MemberVO> member_list = projectService.selectMemberList();
 		
 		mv.addObject("code_list", code_list);
 		mv.addObject("role_list", role_list);
@@ -119,17 +115,7 @@ public class ProjectController {
 				tmp.put("REG_ID", mno);
 				tmp.put("INPT_BGNDE", ((String)tmp.get("INPT_BGNDE")).replace("-", ""));
 				tmp.put("INPT_ENDDE", ((String)tmp.get("INPT_ENDDE")).replace("-", ""));
-				try {
-					projectService.insertProjectMember(tmp);
-					
-					LOG.debug((String)params.get("instt_name"));
-					tmp.put("INSTT_NM", (String)params.get("instt_name"));
-					tmp.put("INSTT_CODE", (String)params.get("instt_code"));
-					tmp.put("PROJECT_NM", (String)dataState.get("PROJECT_NM"));
-					historyService.insert(tmp);
-				}catch(Exception e) {
-					continue;
-				}
+				projectService.insertProjectMember(tmp);
 			}
 			
 		}catch(Exception e) {
@@ -154,17 +140,15 @@ public class ProjectController {
 		List<Map<String, Object>> proMemList = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> code_list = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
-		List<Object> member_list = new ArrayList<Object>();
+		List<MemberVO> member_list = new ArrayList<MemberVO>();
 		String project_no = (String)params.get("PROJECT_NO");
 		boolean db_result = false;
 		try {
 			project_info = projectService.selectInfo(project_no);
 			proMemList = projectService.projectMemberList(project_no);
-			code_list =  codetService.getLowCodeList("CD0008");
-			role_list =  codetService.getLowCodeList("CD0009");
-			LOG.debug("여기야?");
-			member_list = memberService.selectMemberList();
-			LOG.debug("여기야? 2");
+			code_list =  projectService.getLowCodeList("CD0008");
+			role_list =  projectService.getLowCodeList("CD0009");
+			member_list = projectService.selectMemberList();
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());
@@ -245,9 +229,6 @@ public class ProjectController {
 		try {
 			projectService.deleteInfo((String)params.get("PROJECT_NO"));
 			projectService.removeMemberForPro((String)params.get("PROJECT_NO"));
-			LOG.debug("여기");
-			historyService.removeHistoryForPro((String)params.get("PROJECT_NO"));
-			LOG.debug("여기2");
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());

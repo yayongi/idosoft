@@ -19,33 +19,15 @@ const useStyles = makeStyles({
   },
 });
 
+
 function HistoryInfoTable(props) {
   const classes = useStyles();
-  const { historyInfo, memberlist } = props;
-
-  const getRebuildInfo = () => {
-    var histList = [];
-
-    for(var i=0; i < memberlist.length; i++){
-      var tmp = historyInfo.filter((info) => {
-        return info.MEMBER_NO == memberlist[i]["member_no"];
-      });
-
-      if(tmp.length > 0){
-        histList.push(tmp);
-      }
-    }
-
-    return histList;
-  }
-
-  const rebuildInfo = getRebuildInfo();
-
-  console.log("rebuildInfo : ");
-  console.log(rebuildInfo);
-
+  const { historyInfo } = props;
+  
+  console.log("historyInfo : ");
+  console.log(historyInfo);
   const columnsUp = [
-    { id: 'MEMBER_NAME', label: '이름', minWidth: 100, align: 'center' },
+    { id: 'PROJECT_IDX', label: '순번', minWidth: 100, align: 'center' },
     { id: 'PROJECT_NM', label: '프로젝트명', minWidth: 100, align: 'center' },
     { id: 'INSTT_NM', label: '기관', minWidth: 100, align: 'center' },
     { id: 'TERM', label: '프로젝트 기간', minWidth: 100, align: 'center' },
@@ -53,7 +35,7 @@ function HistoryInfoTable(props) {
     { id: 'USE_LANG', label: '비고(사용언어)', minWidth: 100, align: 'center' },
   ];
   const columnsDown = [
-    { id: 'MEMBER_NAME', label: '이름', minWidth: 100, align: 'center' },
+    { id: 'PROJECT_IDX', label: '순번', minWidth: 100, align: 'center' },
     { id: 'PROJECT_NM', label: '프로젝트명', minWidth: 100, align: 'center' },
   ];
   // Width에 따라 반응형으로 열이 없어
@@ -73,70 +55,43 @@ function HistoryInfoTable(props) {
     <Paper className={classes.root}>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
-          {rebuildInfo.map((rows, idx) => (
-              <TableBody>
-                <TableRow
-                  key={idx}>
-                  {columns.map(column => (
-                    <TableCell
-                      key={column.id}
-                      align="center"
-                      style={{ minWidth: column.minWidth }}
-                      className={column.className}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-                  {rows.map((info, rowIdx) => (
-                    <TableRow
-                      key={idx+"_"+rowIdx}>
-                      <TableCell 
-                        align="center"
-                        key={"MEMBER_NAME_"+rowIdx}>
-                          {info["MEMBER_NAME"]}
-                      </TableCell>
-
-                      <TableCell 
-                        align="center"
-                        key={"PROJECT_NM_"+rowIdx}>
-                          {info["PROJECT_NM"]}
-                      </TableCell>
-                      { isWidthUp('md', props.width) && 
-                        <TableCell 
-                          align="center"
-                          key={"INSTT_NM_"+rowIdx}>
-                          {info["INSTT_NM"]}
-                        </TableCell>
-                      }
-
-                      { isWidthUp('md', props.width) &&
-                        <TableCell 
-                          align="center"
-                          key={"TERM_"+rowIdx}>
-                          {info["INPT_BGNDE"] + "~" + info["INPT_ENDDE"]}
-                        </TableCell>
-                      }
-
-                      { isWidthUp('md', props.width) &&
-                        <TableCell 
-                          align="center"
-                          key={"CHRG_JOB_"+rowIdx}>
-                          {info["CHRG_JOB"]}
-                        </TableCell>
-                      }
-
-                      { isWidthUp('md', props.width) &&
-                        <TableCell 
-                          align="center"
-                          key={"USE_LANG_"+rowIdx}>
-                          {info["USE_LANG"]}
-                        </TableCell>
-                      }
-                  </TableRow>
-                ))}
-              </TableBody>
-          ))}
+		  <TableBody>
+		  	{historyInfo.length == 0 &&
+		  		<>
+				  	 <TableRow>
+					    <TableCell
+				            align="left"
+			            	colspan="6"
+				          >
+					    	현재 등록된 이력이 없습니다.
+				    	</TableCell>
+				    </TableRow>
+		  		</>
+		  	}
+		  	{historyInfo.length > 0 &&
+		  		<>
+				    <TableRow>
+					    <TableCell
+				            align="left"
+			            	colspan="6"
+				          >
+				    	송원회
+				    	</TableCell>
+				    </TableRow>
+				  	<TableRow>
+				        {columns.map(column => (
+				          <TableCell
+				            align="center"
+				            style={{ minWidth: column.minWidth }}
+				            className={column.className}
+				          >
+				            {column.label}
+				          </TableCell>
+				        ))}
+				    </TableRow>
+				</>
+		  	}
+		  </TableBody>
         </Table>
       </TableContainer>
     </Paper>

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kr.co.idosoft.intranet.member.vo.MemberVO;
+
 public interface ProjectService {
 	void insert(HashMap<String, Object> insert);
 	void update(HashMap<String, Object> update);
@@ -27,4 +29,9 @@ public interface ProjectService {
 	//프로젝트 개인이력 
 	public List<HashMap<String,String>> getProjectMember();
 	
+	//하위 코드 조회
+	List<Map<String, Object>> getLowCodeList(String code_id);
+	
+	// 사원 리스트 호출
+	public List<MemberVO> selectMemberList();
 }

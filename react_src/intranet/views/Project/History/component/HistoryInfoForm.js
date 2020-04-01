@@ -18,72 +18,16 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 
+import { LoadingBar } from '../../../Admin/component/utils';
+
+import axios from 'axios';
+
 import {
   MuiPickersUtilsProvider,
   DatePicker,
 } from '@material-ui/pickers';
 
 import { Link as RouterLink } from 'react-router-dom';
-import { getProjectInfoDB, getSiteInfoDB, getMemberInfoDB } from '../../data';
-
-import { getCodeInfoDB } from '../../../Admin/data'
-
-function initData(location) {
-	console.log("initData");
-
-	var urlSplitList = location.pathname.split("/");
-	var currentLastPath = urlSplitList[urlSplitList.length - 1];
-
-	var data = {};
-	data["screenType"] = currentLastPath == "new" ? "new" : "modify";
-	
-	data["member_no"] = "2017041701";
-	data["project_no"] = "";
-	data["project_nm"] = "";
-	data["instt_code"] = "";
-	data["instt_nm"] = "";
-	data["inpt_bgnde"] = Moment(new Date()).format('YYYY-MM-DD');
-	data["inpt_endde"] = Moment((new Date()).setFullYear(new Date().getFullYear() + 1)).format('YYYY-MM-DD');
-	data["role_code"] = "";
-	data["chrg_job"] = "";
-	data["use_lang"] = "java, jsp";
-	data["reg_datetime"] = "";
-	data["upd_datetime"] = "";
-	data["reg_id"] = "";
-	data["upd_id"] = "";
-	data["note"] = "";
-	data["temp_colum"] = "";
-	
-	data["insttList"] = getSiteInfoDB();
-	data["projectList"] = localStorage.getItem("resProjData") ? JSON.parse(localStorage.getItem("resProjData")) : getProjectInfoDB();	
-	data["memberList"] = getMemberInfoDB();
-	data["codeList"] = localStorage.getItem("resCodeData") ? JSON.parse(localStorage.getItem("resCodeData")) : getCodeInfoDB();
-
-	var user_name = (data["memberList"]).filter((member) => {
-		return member.member_id == data["member_no"];
-	});
-
-	data["member_name"] = user_name[0]["member_name"];
-
-
-	var query = location.search;
-	if (query) {
-		query.replace("?", "").split("&").map((param => {
-			var kValue = param.split("=")[0];
-			var vValue = decodeURIComponent(param.split("=")[1]);
-			return data[kValue] = vValue;
-		}));
-	}
-	return data;
-}
-
-function jsonToQuery(obj) {
-	return ('?' +
-		Object.keys(obj).map(function (key) {
-			return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
-		}).join('&'));
-}
-
 
 const useStyles = makeStyles(theme => ({
 	table: {
@@ -119,51 +63,53 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-/*
-	state 변경에 Re-Rendering 수행
-	state의 값이 이전과 동일해도 수행이 안됨.
-	전역 변수는 호출 안됨.
-*/
+function initCheck(match){
+	return typeof(match.params.id) == "undefined" ? "new" : "modify";
+}
+function getUserInfo(){
+	return JSON.parse(sessionStorage.getItem("loginSession"));
+}
 export default function ProjectInfoForm(props) {
-	console.log("call ProjectInfoForm Area");
 
-	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
-	const { match, location, history } = props.routeProps.routeProps;
-	const [dataState, setDataState] = React.useState(initData(location));	// state : 수정을 위한 데이터 관리
-	const [ isShowProjectInput, setIsShowProject ] = React.useState(false);
-	const [ isShowInSttInput, setIsShowInStt ] 		= React.useState(false);
 	const classes = useStyles();
-
-
-	useEffect(() => {
-		console.log("userEffect");
-		console.log("dataState.project_no : " + dataState.project_no);
-		if(dataState.screenType != "new"){
-			if(dataState.project_no == "-1" || dataState.project_no == ""){
-				setIsShowProject(true);
-			}else{
-				setIsShowProject(false);
-			}
-
-			if(dataState.instt_code == "-1" || dataState.instt_code == ""){
-				setIsShowInStt(true);
-			}else{
-				setIsShowInStt(false);
-			}
-		}else{
-			if(dataState.project_no == "-1" || dataState.project_no == ""){
-				setIsShowProject(true);
-			}else{
-				setIsShowProject(false);
-			}
-
-			if(dataState.instt_code == "-1" || dataState.instt_code == ""){
-				setIsShowInStt(true);
-			}else{
-				setIsShowInStt(false);
-			}
+	
+	const { match, location, history } = props.routeProps.routeProps;
+	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false, []);    //loading bar
+	const [isShowProjectInput, setShowProjectInput] = React.useState(true, []);
+	const [isShowInSttInput, setShowInSttInput] = React.useState(true, []);
+	const useInfo = getUserInfo();
+	const [member_list, setMember_list] = React.useState([]);
+	const [instt_list, setinstt_list] = React.useState([]);
+	const [role_list, setrole_list] = React.useState([]);
+	const [dataState, setDataState] = React.useState([
+		{
+			member_name:"",
+			project_no: "",
+			project_nm : "",
+			instt_code: "",
+			instt_nm : "",
+			inpt_bgnde:"",
+			inpt_endde:"",
+			role_code:"",
+			chrg_job:"",
+			use_lang:""
 		}
-	});
+	]);	// state : 수정을 위한 데이터 관리
+	const screenType = initCheck(match);
+	useEffect(() => {
+		axios({
+			url: '/intranet/historyinfoForm',
+			method: 'post',
+			data: {"CODE_ID": ["CD0008", "CD0009"]}
+		}).then(response => {
+			console.log(response);
+			debugger;
+			//setHistoryInfo(response.data.history_list);
+			setShowLoadingBar(false);
+		}).catch(e => {
+			setShowLoadingBar(false);
+		});
+	}, []);
 
 	// 필드 값 변경 시, 임시로 값 저장
 	const handleChange = event => {
@@ -174,33 +120,6 @@ export default function ProjectInfoForm(props) {
 	};
 
 	const hadleChangeProject = (event) => {
-		if(event.target.value == "-1"){
-			setIsShowProject(true);
-
-			setDataState({
-				...dataState,
-				project_no: event.target.value, 
-			});
-		}else{
-			setIsShowProject(false);
-			var project_select_list = dataState.projectList.filter((info) => {
-				return info.project_no == event.target.value; 
-			});
-
-			if(project_select_list.length > 0){
-				var instt_select_list = dataState.insttList.filter((info) => {
-					return info.instt_code == project_select_list[0]["instt_code"];
-				})
-
-				if(instt_select_list.length > 0){
-					setDataState({
-						...dataState,
-						project_no: event.target.value, 
-						instt_code: instt_select_list[0]["instt_code"]
-					});
-				}
-			}
-		}
 	}
 
 	const hadleChangeInstt = (event) => {
@@ -236,129 +155,15 @@ export default function ProjectInfoForm(props) {
 
 	const handleClickAddHist = () => {
 
-		
-
-		var resHistData = JSON.parse(localStorage.getItem("resHistData"));
-		var mem_hist_no  = resHistData.length+1;
-		var member_no  = dataState.member_no;
-		
-		var project_nm  = "";
-		var project_select_list = dataState.projectList.filter(project => {
-			return project.project_no == dataState.project_no; 
-		})
-
-		if(project_select_list.length > 0){
-			project_nm = project_select_list[0]["project_nm"];
-		}else{
-			project_nm = dataState.project_nm;
-		}
-		var project_no  = dataState.project_no != "-1" ? dataState.project_no : "";
-
-		
-		var instt_nm  = "";
-		var instt_select_list = dataState.insttList.filter(instt => {
-			return instt.instt_code == dataState.instt_code; 
-		});
-
-		if(instt_select_list.length > 0){
-			instt_nm = instt_select_list[0]["instt_name"];
-		}else{
-			instt_nm = dataState.instt_nm
-		}
-		var instt_code  = dataState.instt_code != "-1" ? dataState.instt_code : "";
-		var inpt_bgnde  = dataState.inpt_bgnde.replace(/[^0-9]/g, '');
-		var inpt_endde  = dataState.inpt_endde.replace(/[^0-9]/g, '');
-		var role_code  = dataState.role_code;
-		var chrg_job  = dataState.chrg_job;
-		var use_lang  = dataState.use_lang;
-		var reg_datetime  = "20200321";
-		var upd_datetime  = "";
-		var reg_id  = dataState.member_no;
-		var upd_id  = "";
-		var note  = "";
-		var temp_colum  = "";
-
-		resHistData.push(
-			{
-				"mem_hist_no":mem_hist_no,
-				"member_no":  member_no, 
-				"project_no" : project_no != "" ? project_no : "", 
-				"project_nm" : project_nm, 
-				"instt_code" : instt_code != "" ? instt_code : "",
-				"instt_nm" : instt_nm, 
-				"inpt_bgnde" : inpt_bgnde, 
-				"inpt_endde" : inpt_endde, 
-				"role_code" : role_code, 
-				"chrg_job" : chrg_job, 
-				"use_lang" : use_lang, 
-				"reg_datetime" :reg_datetime, 
-				"upd_datetime" : upd_datetime, 
-				"reg_id" : reg_id, 
-				"upd_id" : upd_id, 
-				"note" : note, 
-				"temp_colum": temp_colum
-			}
-		)
-
-		resHistData.sort((a, b) => {
-			return parseInt(b.inpt_bgnde) - parseInt(a.inpt_bgnde);
-		});
-
-		localStorage.setItem('resHistData', JSON.stringify(resHistData));
-
 		alert("등록 되었습니다.");
 		history.goBack();
 	}
 
 	const handleClickRemoveHistory = () => {
-		var resHistData = JSON.parse(localStorage.getItem("resHistData"));
-
-		var idx = -1;
-		resHistData.filter((histData, index) => {
-			if(histData.mem_hist_no == dataState.mem_hist_no){
-				idx = index;
-				return histData;
-			}
-		});
-
-		if(idx > -1){
-			resHistData.splice(idx, 1);
-			localStorage.setItem("resHistData", JSON.stringify(resHistData));
-			alert("삭제되었습니다.");
-		}else{
-			alert("삭제 중 오류가 발생했습니다.");
-		}
 		history.goBack();
 	}
 
 	const handleClickUpdateHistory = () => {
-		console.log("handleClickUpdateHistory");
-
-		var resHistData = JSON.parse(localStorage.getItem("resHistData"));
-		var idx = -1;
-		resHistData.filter((histData, index) => {
-			if(histData.mem_hist_no == dataState.mem_hist_no){
-				idx = index;
-				return histData;
-			}
-		});
-
-		var resProjData = JSON.parse(localStorage.getItem("resProjData"));
-		var projectList = resProjData.filter(projData => {
-			return projData.project_no == dataState.project_no;
-		});
-
-		resHistData[idx]["project_no"] 	= dataState.project_no;
-		resHistData[idx]["project_nm"] 	= projectList.length > 0 ? projectList[0]["project_nm"] : dataState.project_nm;
-		resHistData[idx]["instt_nm"] 	= dataState.instt_nm;
-		resHistData[idx]["instt_code"] 	= dataState.instt_code;
-		resHistData[idx]["inpt_bgnde"] 	= dataState.inpt_bgnde.replace(/[^0-9]/g, '');
-		resHistData[idx]["inpt_endde"] 	= dataState.inpt_endde.replace(/[^0-9]/g, '');
-		resHistData[idx]["role_code"] 	= dataState.role_code;
-		resHistData[idx]["chrg_job"] 	= dataState.chrg_job;
-		resHistData[idx]["use_lang"] 	= dataState.use_lang;
-		localStorage.setItem("resHistData", JSON.stringify(resHistData));
-		
 		alert("수정되었습니다.");
 		history.goBack();
 	}
@@ -369,6 +174,7 @@ export default function ProjectInfoForm(props) {
 
 	return (
 		<>
+			<LoadingBar openLoading={isShowLoadingBar}/>
 			<div className={classes.root}>
 			</div>
 			<TableContainer component={Paper}>
@@ -393,6 +199,21 @@ export default function ProjectInfoForm(props) {
 									variant="outlined"
 									defaultValue={dataState.member_name}
 									onChange={handleChange}
+									fullWidth
+								>
+								</TextField>
+							</TableCell>
+						</TableRow>
+						<TableRow>
+							<TableCell align="left" component="th" scope="row" style={{ width: '120px' }}>연도</TableCell>
+							<TableCell align="left">
+								<TextField
+									id="member_name"
+									name="member_name"
+									margin="dense"
+									variant="outlined"
+									defaultValue={dataState.member_name}
+									onChange={handleChange}
 									InputProps={{
 									 	 readOnly: true,
 									}}
@@ -404,6 +225,7 @@ export default function ProjectInfoForm(props) {
 								</TextField>
 							</TableCell>
 						</TableRow>
+
 						<TableRow>
 							<TableCell align="left" component="th" scope="row">프로젝트명</TableCell>
 							<TableCell align="left">
@@ -419,11 +241,6 @@ export default function ProjectInfoForm(props) {
 									<MenuItem key={-1} value={-1} name="직접입력">
 										{"직접입력"}
 									</MenuItem>
-									{dataState.projectList.map(tmp => (
-										<MenuItem key={tmp.project_no} value={tmp.project_no} name={tmp.project_nm}>
-											{tmp.project_nm}
-										</MenuItem>
-									))}
 								</TextField>
 							</TableCell>
 						</TableRow>
@@ -459,11 +276,11 @@ export default function ProjectInfoForm(props) {
 									<MenuItem key={-1} value={-1} name={"직접입력"}>
 										{"직접입력"}
 									</MenuItem>
-									{dataState.insttList.map(tmp => (
+									{/* {dataState.insttList.map(tmp => (
 										<MenuItem key={tmp.instt_code} value={tmp.instt_code} name={tmp.instt_name}>
 											{tmp.instt_name}
 										</MenuItem>
-									))}
+									))} */}
 								</TextField>
 							</TableCell>
 						</TableRow>
@@ -496,7 +313,7 @@ export default function ProjectInfoForm(props) {
 											name="inpt_bgnde"
 											views={["year", "month", "date"]}
 											format="yyyy-MM-dd"
-											value={new Date(Number(dataState.inpt_bgnde.slice(0, 4)), Number(dataState.inpt_bgnde.slice(5, 7)) - 1, Number(dataState.inpt_bgnde.slice(8, 10)))}
+											value={"2020-03-31"}
 											onChange={handleChangeInpt_bgnde}
 											inputVariant="outlined"
 											readOnly={false}
@@ -518,7 +335,7 @@ export default function ProjectInfoForm(props) {
 											name="inpt_endde"
 											views={["year", "month", "date"]}
 											format="yyyy-MM-dd"
-											value={new Date(Number(dataState.inpt_endde.slice(0, 4)), Number(dataState.inpt_endde.slice(5, 7)) - 1, Number(dataState.inpt_endde.slice(8, 10)))}
+											value={"2020-03-31"}
 											onChange={handleChangeInpt_endde}
 											inputVariant="outlined"
 											readOnly={false}
@@ -539,13 +356,13 @@ export default function ProjectInfoForm(props) {
 									value={dataState.role_code}
 									fullWidth
 									select>
-									{dataState.codeList.filter((code) => {
+									{/* {dataState.codeList.filter((code) => {
 										return code.upper_code == "CD0009"
 									}).map(tmp => (
 										<MenuItem key={tmp.code_id} value={tmp.code_id} name={tmp.code_name}>
 											{tmp.code_name}
 										</MenuItem>
-									))}
+									))} */}
 								</TextField>
 							</TableCell>
 						</TableRow>
