@@ -239,7 +239,7 @@ const MemberReg = (props) => {
               address_1 : document.getElementById("address_1").value,
               address_2 : document.getElementById("address_2").value,
               zip_code : document.getElementById("zip_code").value,
-              phone_num : document.getElementById("phone_num").value,
+              phone_num : document.getElementById("phone_num").value.replace(/\-/gi,""),
               entry_date : document.getElementById("entry_date").value.replace(/\-/gi,""),
               birth_date : document.getElementById("birth_date").value.replace(/\-/gi,""),
               school_major : document.getElementById("school_major").value,

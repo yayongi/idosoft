@@ -157,18 +157,32 @@
 	<!-- 생일 가져오기 -->
 	<select id="getBirthDate" parameterType="HashMap" resultType="HashMap">
 		SELECT 
-			NAME
-		FROM TB_MEMBER
-			WHERE (BIRTH_DATE = #{solarDate} AND MOONCAL_YN = 0)
-			OR (BIRTH_DATE = #{moonDate} AND MOONCAL_YN = 1) 
+			A.NAME,
+			(SELECT CODE_NAME FROM TB_CODE WHERE CODE_ID = A.POSITION) AS POSITION
+		FROM
+		(
+			SELECT 
+				NAME,
+				POSITION
+			FROM TB_MEMBER
+				WHERE (BIRTH_DATE = #{solarDate} AND MOONCAL_YN = 0)
+				OR (BIRTH_DATE = #{moonDate} AND MOONCAL_YN = 1) 
+		) A
 	</select>
 	
 	<!-- 결혼기념일 가져오기 -->
 	<select id="getMarriageDate" parameterType="String" resultType="HashMap">
 		SELECT 
-			NAME
-		FROM TB_MEMBER
-			WHERE MARRIAGE_DATE =#{solarDate} 
+			A.NAME,
+			(SELECT CODE_NAME FROM TB_CODE WHERE CODE_ID = A.POSITION) AS POSITION
+		FROM
+		(
+			SELECT 
+				NAME,
+				POSITION
+			FROM TB_MEMBER
+				WHERE MARRIAGE_DATE = #{solarDate} 
+		) A
 	</select>
 	
 	<!-- 이메일 중복 검사 -->
@@ -177,7 +191,7 @@
 			COUNT(*)
 		FROM TB_MEMBER
 			WHERE EMAIL = #{email}
-			<if test="member_no != null and !member_no.equals('')">
+			<if test="member_no != null">
 			AND MEMBER_NO != #{member_no} 
 			</if>
 	</select>

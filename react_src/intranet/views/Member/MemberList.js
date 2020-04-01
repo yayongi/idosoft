@@ -250,8 +250,10 @@ const MemberList = (props) => {
 			//체크박스로 선택된 직원 아이디로 선택적으로 필터링
 			let temp_1 = state.showMemberList;
 			for(let i=0;i<selected.length;i++){
-				if(temp_1.member_no !== String(selected[i])){
-					temp_1.ret_date = "99999999";
+				for(let j=0;j<temp_1.length;j++){
+					if(temp_1[j].member_no === String(selected[i])){
+						temp_1[j].ret_date = "99999999";
+					}
 				}
 			}
 

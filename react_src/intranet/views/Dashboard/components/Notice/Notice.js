@@ -16,13 +16,25 @@ import Title from '../Title';
 import { data } from './data';
 
 const useStyles = makeStyles(theme => ({
-	seeMore: {
-		marginTop: theme.spacing(3),
+	alignCenter : {
+		textAlign:"center"
 	},
+	maxWidth : {
+		maxWidth : "100px"
+	},
+	overflowCon : {
+		whiteSpace:"nowrap",
+		overflow:"hidden",
+		textOverflow:"ellipsis"
+	},
+	textBold : {
+		fontWeight:600
+	}
 }));
 
 const Notice = () => {
-
+	const classes = useStyles();
+	
 	const [state, setState] =  React.useState(null);
 	
 	useEffect(() => {
@@ -76,20 +88,20 @@ const Notice = () => {
 					</Grid>
 				</Grid>
 			</Title>
-			<Table size="x-small">
+			<Table size="small">
 				<TableHead>
 					<TableRow>
-						<TableCell>제목</TableCell>
-						<TableCell>일자</TableCell>
-						<TableCell>작성자</TableCell>
+						<TableCell className={`${classes.alignCenter} ${classes.maxWidth}`}>제목</TableCell>
+						<TableCell className={classes.alignCenter}>일자</TableCell>
+						<TableCell className={classes.alignCenter}>작성자</TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
 					{(state != null) && state.map(datum => (
 						<TableRow key={datum.board_no} onClick={event => openContentModal(datum.title, datum.content)} style={{cursor : "pointer"}}>
-							<TableCell>{datum.title}</TableCell>
-							<TableCell>{datum.reg_datetime}</TableCell>
-							<TableCell>{datum.writer}</TableCell>
+							<TableCell className={`${classes.alignCenter} ${classes.maxWidth} ${classes.overflowCon} ${datum.major_period_date != null?  classes.textBold: null}`}>{datum.title}</TableCell>
+							<TableCell className={`${classes.alignCenter} ${datum.major_period_date != null?  classes.textBold: null}`}>{datum.reg_datetime}</TableCell>
+							<TableCell className={`${classes.alignCenter} ${datum.major_period_date != null?  classes.textBold: null}`}>{datum.writer}</TableCell>
 						</TableRow>
 					))}
 				</TableBody>
