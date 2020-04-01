@@ -89,7 +89,7 @@
 				AND A.MEMBER_NO = #{MEMBER_NO}
 			</if>
 			<if test="name != null and name !=''">
-				AND B.NAME LIKE '%' + #{name} + '%'
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
 			</if>
 			<if test="expenseType != null">
 				AND A.EXPENS_TY_CODE = #{expenseType}
@@ -98,7 +98,7 @@
 				AND A.SANCTN_STTUS_CODE = #{status}
 			</if>
 			<if test="memo != null and memo !=''">
-				AND A.USE_CN LIKE '%' + #{memo} + '%'
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 		</where>
@@ -116,7 +116,7 @@
 				AND A.MEMBER_NO = #{MEMBER_NO}
 			</if>
 			<if test="name != null and name !=''">
-				AND B.NAME LIKE '%' + #{name} + '%'
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
 			</if>
 			<if test="expenseType != null">
 				AND A.EXPENS_TY_CODE = #{expenseType}
@@ -125,7 +125,7 @@
 				AND A.SANCTN_STTUS_CODE = #{status}
 			</if>
 			<if test="memo != null and memo !=''">
-				AND A.USE_CN LIKE '%' + #{memo} + '%'
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 		</where>
@@ -237,7 +237,7 @@
 				AND A.MEMBER_NO = #{MEMBER_NO}
 			</if>
 			<if test="name != null and name !=''">
-				AND B.NAME LIKE '%' + #{name} + '%'
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
 			</if>
 			<if test="expenseType != null">
 				AND A.EXPENS_TY_CODE = #{expenseType}
@@ -246,7 +246,7 @@
 				AND A.SANCTN_STTUS_CODE = #{status}
 			</if>
 			<if test="memo != null and memo !=''">
-				AND A.USE_CN LIKE '%' + #{memo} + '%'
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 			AND A.SANCTN_STTUS_CODE = 'SS0002'
@@ -333,7 +333,7 @@
 				</if>
 			</if>
 			<if test="name != null and name !=''">
-				AND B.NAME LIKE '%' + #{name} + '%'
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
 			</if>
 			<if test="expenseType != null">
 				AND A.EXPENS_TY_CODE = #{expenseType}
@@ -342,7 +342,7 @@
 				AND A.SANCTN_STTUS_CODE = #{status}
 			</if>
 			<if test="memo != null and memo !=''">
-				AND A.USE_CN LIKE '%' + #{memo} + '%'
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 		</where>
@@ -364,7 +364,7 @@
 				</if>
 			</if>
 			<if test="name != null and name !=''">
-				AND B.NAME LIKE '%' + #{name} + '%'
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
 			</if>
 			<if test="expenseType != null">
 				AND A.EXPENS_TY_CODE = #{expenseType}
@@ -373,7 +373,7 @@
 				AND A.SANCTN_STTUS_CODE = #{status}
 			</if>
 			<if test="memo != null and memo !=''">
-				AND A.USE_CN LIKE '%' + #{memo} + '%'
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 			AND SANCTN_STTUS_CODE = 'SS0002'
@@ -396,7 +396,7 @@
 				</if>
 			</if>
 			<if test="name != null and name !=''">
-				AND B.NAME LIKE '%' + #{name} + '%'
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
 			</if>
 			<if test="expenseType != null">
 				AND A.EXPENS_TY_CODE = #{expenseType}
@@ -405,7 +405,7 @@
 				AND A.SANCTN_STTUS_CODE = #{status}
 			</if>
 			<if test="memo != null and memo !=''">
-				AND A.USE_CN LIKE '%' + #{memo} + '%'
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 		</where>

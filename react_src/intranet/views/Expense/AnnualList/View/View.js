@@ -215,7 +215,7 @@ export default function  View(props) {
 
 				if(response.data.isAdmin != '1'){ // 관리자는 접근 가능
 					if(data.mno != loginSession.member_NO){ // 로그인 세션의 사번과 경비 정보에 등록된 사번을 비교한다.
-						return alert("권한이 없는 직원입니다.", history.goBack());
+						return stateOpenEvent("권한이 없는 직원입니다.");
 					}
 				}
 
@@ -229,9 +229,9 @@ export default function  View(props) {
 			setShowLoadingBar(false);
 		})
 		.catch(e => {
+			setShowLoadingBar(false);
 			processErrCode(e);
 			console.log(e);
-			setShowLoadingBar(false);
 		});
 	}, []);
 
@@ -246,10 +246,19 @@ export default function  View(props) {
 	// 값 체크 START
 	const [stateOpen, setStateOpen] 		= React.useState(false);
 	const [stateMessage, setStateMessage]	= React.useState("");
+	
+	const [confOpen, setConfOpen]			= React.useState(false); // 등록, 수정, 삭제, 삭제, 진행  conform 창 추가 2020-04-01
+	const [confMessage, setConfMessage]		= React.useState("");
+	const [process, setProcess]				= React.useState("");
+	
 	const [isError, setIsError] 			= React.useState(false);
 
-	const stateCloseClick = () => {
-		setStateOpen(false);
+	const stateCloseClick = (param) => {
+		if(param = 'conf'){ // 
+			setConfOpen(false);
+		} else {
+			setStateOpen(false);
+		}
 	}
 
 	const stateComfClick = () => {
@@ -257,6 +266,48 @@ export default function  View(props) {
 			return history.goBack();
 		}
 		return setStateOpen(false);;
+	}
+
+	const ComfHandleClick = (event) => {
+
+		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
+			return setShowLoadingBar(false);
+		}
+
+		if(event == 'del'){
+			setConfMessage('삭제 하시겠습니까?');
+			setProcess('del');
+			setConfOpen(true);
+		} else if(event == 'reg') {
+			setConfMessage('등록 하시겠습니까?');
+			setProcess('reg');
+			setConfOpen(true);
+		} else if(event == 'upt') {
+			setConfMessage('수정 하시겠습니까?');
+			setProcess('upt');
+			setConfOpen(true);
+		}  else if(event == 'rep') {
+			setConfMessage('재결재  하시겠습니까?');
+			setProcess('rep');
+			setConfOpen(true);
+		}
+
+	}
+
+	// 처리 handle
+	const comfProcessHandleClick = (event) => {
+		
+		setConfOpen(false);
+
+		if(process == 'del'){					// 삭제
+			handleClickRemove();
+		} else if(process == 'reg') {			// 등록
+			handleClickNew();
+		} else if(process == 'upt') {			// 수정
+			handleClickModify();
+		} else {					// 재결재
+			handleClickRetry();
+		}
 	}
 
 	const stateOpenEvent = (msg) => {
@@ -282,6 +333,33 @@ export default function  View(props) {
 			return false;
 		}
 
+		if(screenType == 'new'){ // 등록 처리 일 경우,
+			if(isEmpty(files)){
+				setStateOpen(true);
+				setStateMessage('사진을 등록해주세요.');
+				setIsError(true);
+				return false;
+			}
+		} else {				// 등록 처리를 제외한 나머지
+
+			let conn = false;
+
+			if(dataState.filePath != files[0].preview){ // 이미지를 수정 처리한 경우,
+				conn = isEmpty(files);
+			} else {									// 이미지를 수정 처리하지 않은 경우,
+				conn = isEmpty(dataState.filePath);
+			}
+
+			if(conn){
+				setStateOpen(true);
+				setStateMessage('사진을 등록해주세요.');
+				setIsError(true);
+				return false;
+			}
+		}
+
+		
+
 		return true;
 	}
 
@@ -299,10 +377,6 @@ export default function  View(props) {
 		formData.append('USE_AMOUNT',dataState.pay);
 		formData.append('USE_CN',dataState.memo); 
 
-		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
-			return setShowLoadingBar(false);
-		}
-
 		axios({
 			url: '/intranet/resister.exp',
 			method : 'post',
@@ -314,9 +388,9 @@ export default function  View(props) {
 				setShowLoadingBar(false);
 				stateOpenEvent("등록이 완료되었습니다.");
 			}).catch(e => {
+				setShowLoadingBar(false);
 				processErrCode(e);
 				console.log(e);
-				setShowLoadingBar(false);
 		});
 
 	}
@@ -348,9 +422,9 @@ export default function  View(props) {
 				setShowLoadingBar(false);
 				stateOpenEvent("삭제  완료되었습니다.");
 			}).catch(e => {
+				setShowLoadingBar(false);
 				processErrCode(e);
 				console.log(e);
-				setShowLoadingBar(false);
 		});
 
 	}
@@ -358,10 +432,6 @@ export default function  View(props) {
 	const handleClickModify =() => {
 
 		setShowLoadingBar(true);
-
-		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
-			return setShowLoadingBar(false);
-		}
 
 		const formData = new FormData();
 
@@ -395,14 +465,10 @@ export default function  View(props) {
 		});
 		
 	}
-	// 반려건, 다시 진행
+	// 반려건, 다시 재결재 요청 
 	const handleClickRetry = () => {
 
 		setShowLoadingBar(true);
-
-		if(!valuedationCheck()){ // valuedationCheck 실패시, return 
-			return setShowLoadingBar(false);
-		}
 
 		const formData = new FormData();
 
@@ -430,9 +496,9 @@ export default function  View(props) {
 				setShowLoadingBar(false);
 				stateOpenEvent("다시 결재 진행합니다.");
 			}).catch(e => {
+				setShowLoadingBar(false);
 				processErrCode(e);
 				console.log(e);
-				setShowLoadingBar(false);
 		});
 		
 	}
@@ -595,7 +661,7 @@ export default function  View(props) {
 					{	
 						(dataState.status == '-1') &&
 						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickNew}>
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => ComfHandleClick('reg')}> 
 								등록
 							</Button>
 						)
@@ -603,7 +669,7 @@ export default function  View(props) {
 					{	
 						(dataState.status == 'SS0000' || dataState.status == 'SS0003') &&
 						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickModify}>
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => ComfHandleClick('upt')}>
 								수정
 							</Button>
 						)
@@ -611,7 +677,7 @@ export default function  View(props) {
 					{	
 						(dataState.status == 'SS0000' || dataState.status == 'SS0003') &&
 						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickRemove}>
+							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => ComfHandleClick('del')}>
 								삭제
 							</Button>
 						)
@@ -619,8 +685,8 @@ export default function  View(props) {
 					{	
 						(dataState.status == 'SS0003') &&
 						(
-							<Button variant="contained" color="secondary" size="small"  className={classes.button} onClick={handleClickRetry}>
-								진행
+							<Button variant="contained" color="secondary" size="small"  className={classes.button} onClick={() => ComfHandleClick('rep')}>
+								재결재
 							</Button>
 						)
 					}
@@ -628,7 +694,7 @@ export default function  View(props) {
 			</Toolbar>
 			<Dialog
 				open={stateOpen}
-				onClose={stateCloseClick}
+				onClose={() => stateCloseClick('else')}
 				aria-labelledby="alert-dialog-title"
 				aria-describedby="alert-dialog-description"
 			>
@@ -639,6 +705,27 @@ export default function  View(props) {
 				</DialogContent>
 				<DialogActions>
 				<Button onClick={stateComfClick} color="primary" autoFocus>
+					확인
+				</Button>
+				</DialogActions>
+			</Dialog>
+
+			<Dialog
+				open={confOpen}
+				onClose={() => stateCloseClick('conf')}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogContent>
+				<DialogContentText id="alert-dialog-description">
+					{confMessage}
+				</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+				<Button onClick={() => stateCloseClick('del')} color="primary">
+					취소
+				</Button>
+				<Button onClick={() => comfProcessHandleClick({process})} color="primary" autoFocus>
 					확인
 				</Button>
 				</DialogActions>

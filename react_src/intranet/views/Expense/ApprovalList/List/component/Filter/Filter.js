@@ -61,7 +61,9 @@ export default function  Filter(props) {
 		totalAmount, setTotalAmount,
 		routeProps, setHoldUp,
 		setPage ,setRowsPerPage,
-		setShowLoadingBar
+		setShowLoadingBar,
+		setIsNoN, setEmptyMessage,
+		setOpenSnackBar, setSnackBarMessage
 	} = props;
 
 	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
@@ -89,9 +91,9 @@ export default function  Filter(props) {
 
 			setShowLoadingBar(false);
 		}).catch(e => {
+			setShowLoadingBar(false);
 			processErrCode(e);
 			console.log(e);
-			setShowLoadingBar(false);
 		});
 		
 	}, []);
@@ -128,50 +130,97 @@ export default function  Filter(props) {
 
 		setShowLoadingBar(true);
 
+		const name 			= document.getElementsByName("name")[0].value;
+		const expenseType 	= document.getElementsByName("expenseType")[0].value;
+		const payStDt 		= document.getElementsByName("payStDt")[0].value.replace(/[^0-9]/g, "");
+		const payEdDt 		= document.getElementsByName("payEdDt")[0].value.replace(/[^0-9]/g, "");
+		const status 		= document.getElementsByName("status")[0].value;
+		const memo 			= document.getElementsByName("memo")[0].value;
+
 		Axios({
 			url: '/intranet/getAnnaualList.exp',
 			method: 'post',
 			data: {
 				currentPage : '1',
 				limit : '10',
-				name: document.getElementsByName("name")[0].value,
-				expenseType: document.getElementsByName("expenseType")[0].value,
-				payStDt: document.getElementsByName("payStDt")[0].value.replace(/[^0-9]/g, ""),
-				payEdDt: document.getElementsByName("payEdDt")[0].value.replace(/[^0-9]/g, ""),
-				status: document.getElementsByName("status")[0].value,
-				memo: document.getElementsByName("memo")[0].value
+				name: name,
+				expenseType: expenseType,
+				payStDt: payStDt,
+				payEdDt: payEdDt,
+				status: status,
+				memo: memo
 			},
 			headers: {
 				'Content-Type': 'application/json'
 			},
 
 		}).then(response => {
-			filterSetRows(JSON.parse(response.data.list));
-			setTotalAmount(response.data.totalAmount);
 
-			const result = JSON.parse(response.data.result);
+			const isNoN = response.data.isNoN;
 
-			/* 페이징 관련 state */
-			setPaging(result);
-			setHoldUp(0);
-			setRowsPerPage(Number(result.limit));
-			setPage(Number(result.currentPage)-1);
+			if(isNoN == "false"){
+				filterSetRows(JSON.parse(response.data.list));
+				setTotalAmount(response.data.totalAmount);
 
-			setState({
-				name: document.getElementsByName("name")[0].value,
-				expenseType: document.getElementsByName("expenseType")[0].value,
-				payStDt: document.getElementsByName("payStDt")[0].value.replace(/[^0-9]/g, ""),
-				payEdDt: document.getElementsByName("payEdDt")[0].value.replace(/[^0-9]/g, ""),
-				status: document.getElementsByName("status")[0].value,
-				memo: document.getElementsByName("memo")[0].value,
-			});
+				const result = JSON.parse(response.data.result);
+
+				/* 페이징 관련 state */
+				setPaging(result);
+				setHoldUp(0);
+				setRowsPerPage(Number(result.limit));
+				setPage(Number(result.currentPage)-1);
+
+				setState({
+					name: name,
+					expenseType: expenseType,
+					payStDt: payStDt,
+					payEdDt: payEdDt,
+					status: status,
+					memo: memo
+				});
+			} else { // true
+				setIsNoN(isNoN);
+				setEmptyMessage("검색 목록이 없습니다.");
+			}
+
+			// 검색어 화면에 띄어주기 위한 로직 처리 START /////////////////////////////
+
+			let expLabel = ""; 
+			let statLabel = "";
+
+			if(expenseType != "-1"){
+				expenseTypes.map(option => {
+				if(option.value == expenseType) expLabel = option.label;
+				});
+			} else {
+				expLabel = "전체";
+			}
+
+			if(status != "-1"){
+				statuses.map(option => {
+				if(option.value == status) statLabel = option.label;
+				});
+			} else {
+				statLabel = "전체";
+			}
+			
+			// 검색어 화면에 띄어주기 위한 로직 처리 END //////////////////////////////
+
+			setOpenSnackBar(true);
+			setSnackBarMessage(`${name.trim() != "" ? " 이름 : " + name.trim() +", " : ""} 
+								경비유형 : ${expLabel} ,등록기간 : ${Moment(payStDt+'01').format('YYYY년 MM월')} ~ ${Moment(payEdDt+'01').format('YYYY년 MM월')}
+								,진행상태 : ${statLabel} ${memo.trim() != "" ? " ,내용 : " + memo.trim() : ""}`);
+			
+			/* setSnackBarMessage(`검색 조건으로 ${name.trim() != "" ? " 이름은 \'" + name.trim() +"\'" : ""} 
+				경비유형은(는) \'${expLabel}\' 등록기간은 \'${Moment(payStDt+'01').format('YYYY년 MM월')} ~ ${Moment(payEdDt+'01').format('YYYY년 MM월')}\' 
+				진행상태은(는) \'${statLabel}\' ${memo.trim() != "" ? " 내용은 \'" + memo.trim() +"\'" : ""} (으)로 검색하셨습니다.`); */
 
 			handleClose();
 			setShowLoadingBar(false);
 		}).catch(e => {
+			setShowLoadingBar(false);
 			processErrCode(e);
 			console.log(e);
-			setShowLoadingBar(false);
 		});
 
 		
@@ -258,9 +307,9 @@ export default function  Filter(props) {
 			}
 		})
 		.catch(e => {
+			setShowLoadingBar(false);
 			processErrCode(e);
 			console.log(e);
-			setShowLoadingBar(false);
 		});
 	}
 
