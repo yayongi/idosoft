@@ -26,6 +26,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import PrintIcon from '@material-ui/icons/Print';
+import { Hidden } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+
 
 import Axios from 'axios';
 
@@ -543,7 +547,20 @@ export default function  View(props) {
 												</div>
 											</CardContent>
 											<CardActions>
-												<Button size="small" onClick={printImageArea}>인쇄</Button>
+												<Toolbar className={classes.root}>
+														<div className={classes.container}>
+															<Hidden smDown>
+																<Button variant="contained" color="primary" size="small" startIcon={<PrintIcon />} onClick={printImageArea} className={classes.button}>
+																	인쇄
+																</Button>
+															</Hidden>
+															<Hidden mdUp>
+																<IconButton color="primary" onClick={printImageArea} className={classes.button}>
+																	<PrintIcon />
+																</IconButton>
+															</Hidden>
+														</div>
+													</Toolbar>
 											</CardActions>
 											</Card>
 									</TableCell>
