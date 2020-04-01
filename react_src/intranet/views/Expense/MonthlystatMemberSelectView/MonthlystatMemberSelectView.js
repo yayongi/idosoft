@@ -7,6 +7,10 @@ import CardContent from '@material-ui/core/CardContent';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import CloseIcon from '@material-ui/icons/Close';
@@ -56,6 +60,8 @@ import {useStyles} from './styles';
 	const [indiTotalAmount, setIndiTotalAmount] = React.useState(0);
 
 	const [open, setOpen] = React.useState(false);
+	const [errOpen, setErrOpen] = React.useState(false);
+	const [errMessage, setErrMessage] = React.useState("");
 
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); 
 
@@ -77,7 +83,7 @@ import {useStyles} from './styles';
 		}).then(response => {
 
 			if(response.data.isError == "true"){
-				return alert(response.data.errorMessage , history.goBack());
+				return openHandleClick(response.data.errorMessage);
 			}
 
 			const list = JSON.parse(response.data.list);
@@ -88,9 +94,9 @@ import {useStyles} from './styles';
 			
 			setShowLoadingBar(false);
 		}).catch(e => {
+			setShowLoadingBar(false);
 			processErrCode(e);
 			console.log(e);
-			setShowLoadingBar(false);
 		});
 		
 	}, []);
@@ -121,9 +127,9 @@ import {useStyles} from './styles';
 			
 			setShowLoadingBar(false);
 		}).catch(e => {
+			setShowLoadingBar(false);
 			processErrCode(e);
 			console.log(e);
-			setShowLoadingBar(false);
 		});
 
 	}
@@ -152,9 +158,9 @@ import {useStyles} from './styles';
 			
 			setShowLoadingBar(false);
 		}).catch(e => {
+			setShowLoadingBar(false);
 			processErrCode(e);
 			console.log(e);
-			setShowLoadingBar(false);
 		});
 		
 	};
@@ -166,6 +172,21 @@ import {useStyles} from './styles';
 	const handleClose = () => {
 		setOpen(false);
 	};
+
+	const openHandleClick = (msg) => {
+		setErrMessage(msg);
+		setErrOpen(true);
+	}
+
+	const closeHandleClick = () => {
+		setErrOpen(false);
+		history.goBack();
+	}
+
+	const confHandleClick = () => {
+		setErrOpen(false);
+		history.goBack();
+	}
 
 	return (
 		<Fragment>
@@ -314,6 +335,24 @@ import {useStyles} from './styles';
 				</div>
 			</Dialog>
 			{/* Diallog Area END */}
+
+			<Dialog
+				open={errOpen}
+				onClose={() => closeHandleClick()}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						{errMessage}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => confHandleClick()} color="primary" autoFocus>
+						확인
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</Fragment>
 	);
 }

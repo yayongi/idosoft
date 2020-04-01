@@ -2,8 +2,19 @@ import React, { Fragment, useEffect } from 'react';
 import Filter from './component/Filter'
 import Body from './component/Body'
 import Paper from '@material-ui/core/Paper';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+
 import Axios from 'axios';
 import ko from "date-fns/locale/ko";
+
 import Moment from "moment";
 import { processErrCode, isEmpty } from '../../../../js/util'
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
@@ -29,8 +40,17 @@ export default function  List(props) {
     const [ page, setPage ] = React.useState(0);                 // 초기페이지가 0부터 시작
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
 	const [isAdmin, setIsAdmin] = React.useState("0");
+	const [isNoN, setIsNoN] = React.useState(false);
+	const [emptyMessage, setEmptyMessage] = React.useState("");
+	// alert 
+	const [isOpen, setIsOpen] = React.useState(false);
+	const [errMessage, setErrMessage] = React.useState("");
 	// 로딩바
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false);    //loading bar
+	// 검색어 표시
+	const [openSnackBar, setOpenSnackBar] = React.useState(false); 
+	const [snackBarMessage, setSnackBarMessage] = React.useState(false);
+	
 	useEffect(() => {
 		setShowLoadingBar(true);
 		Axios({
@@ -55,7 +75,8 @@ export default function  List(props) {
 				setTotalAmount(response.data.totalAmount);
 				setFirstRender(true);
 			} else {
-				alert("결재 권한이 없는 직원입니다.", history.back());
+				setIsNoN(isNoN);
+				openHandleClick("결재 권한이 없는 직원입니다.");
 			}
 
 			setShowLoadingBar(false);
@@ -66,6 +87,25 @@ export default function  List(props) {
 		});
 		
 	}, []);
+
+	const openHandleClick = (msg) => {
+		setErrMessage(msg);
+		setIsOpen(true);
+	}
+
+	const closeHandleClick = () => {
+		setIsOpen(false);
+		history.back();
+	}
+
+	const confHandleClick = () => {
+		setIsOpen(false);
+		history.back();
+	}
+
+	const snackBarClose = () => {
+		setOpenSnackBar(false);
+	}
 
 	return (
 		<Fragment>
@@ -82,8 +122,15 @@ export default function  List(props) {
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							setPage={setPage} setRowsPerPage={setRowsPerPage}
 							setShowLoadingBar={setShowLoadingBar}
+							setIsNoN={setIsNoN}
+							setEmptyMessage={setEmptyMessage}
+							setOpenSnackBar={setOpenSnackBar} 
+							setSnackBarMessage={setSnackBarMessage}
 							/>
 					</Fragment>
+					{isNoN ?
+					<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} ><h3 style={{paddingTop:"100px"}}> {emptyMessage} </h3></Paper>
+					:
 					<Paper>
 						<Body 
 							rows={rows} 
@@ -99,8 +146,42 @@ export default function  List(props) {
 							setShowLoadingBar={setShowLoadingBar}
 						/>
 					</Paper>
+					}
 				</>
 				}
+				<Dialog
+					open={isOpen}
+					onClose={() => closeHandleClick()}
+					aria-labelledby="alert-dialog-title"
+					aria-describedby="alert-dialog-description"
+				>
+					<DialogContent>
+						<DialogContentText id="alert-dialog-description">
+							{errMessage}
+						</DialogContentText>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={() => confHandleClick()} color="primary" autoFocus>
+							확인
+						</Button>
+					</DialogActions>
+				</Dialog>
+				<Snackbar
+					anchorOrigin={{
+						vertical: 'top',
+						horizontal: 'center',
+					}}
+					onClose={snackBarClose}
+					open={openSnackBar}
+					message={snackBarMessage}
+					action={
+						<React.Fragment>
+							<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
+								<CloseIcon fontSize="small" />
+							</IconButton>
+						</React.Fragment>
+					}
+				/>
 		</Fragment>
 		);
 }
