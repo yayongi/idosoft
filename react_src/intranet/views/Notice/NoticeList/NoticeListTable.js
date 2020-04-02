@@ -68,6 +68,20 @@ const useStyles = makeStyles(theme => ({
   margin: {
     // margin: theme.spacing(1),
   },
+  overflowCon : {
+		whiteSpace:"nowrap",
+		overflow:"hidden",
+		textOverflow:"ellipsis"
+  },
+  textBold : {
+		fontWeight:600
+  },
+  webMaxWidth : {
+		maxWidth : "550px"
+  },
+  appMaxWidth : {
+    maxWidth : "120px"
+  }
 }));
 
 function NoticeListTable(props) {
@@ -211,6 +225,12 @@ function NoticeListTable(props) {
 
   const nowDate = Moment(new Date()).format('YYYYMMDD');
 
+  //중요공지로 보여줄지 여부
+  const isShowMajor = (majorYn, majorPeriodDate) => {
+    if(majorYn === 1 && eval(nowDate <= majorPeriodDate)) return classes.textBold;
+    else return null;
+  }
+
 	const dateStr = (date) => {
 		return date.substr(0,4)+date.substr(5,2)+date.substr(8,2);
 	}
@@ -221,7 +241,7 @@ function NoticeListTable(props) {
       <ContentModal props={openModal} closeModal={handleCloseModal}/>
       <Paper className={classes.root}>
         <TableContainer className={classes.container}>
-        {!isEmpty(noticeData) &&
+        {!isEmpty(noticeData) ?
         <>
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
@@ -311,22 +331,32 @@ function NoticeListTable(props) {
                     {isWidthUp('md', props.width) &&
                     <>
                     <TableCell align="center" component="th" id={labelId} scope="row" padding="none"
-                                onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)} >
-                              {row.major_yn && eval(nowDate <= row.major_period_date) ? '[중요]' : row.board_no}
+                                className={`${isShowMajor(row.major_yn, row.major_period_date)}`}
+                                onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)} 
+                    >
+                              {row.major_yn && eval(nowDate <= row.major_period_date) ? '[중요]' : count-(index+page*rowsPerPage)}
                     </TableCell>
                     </>
                     }
-                    <TableCell align="center" width={isWidthUp('md', props.width) ? '45%' : '25%'} onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
+                    <TableCell align="center" width={isWidthUp('md', props.width) ? '45%' : '25%'} 
+                                className={`${classes.overflowCon} ${isShowMajor(row.major_yn, row.major_period_date)} 
+                                ${isWidthUp('md', props.width) ? classes.webMaxWidth:classes.appMaxWidth}`}
+                                 onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)
+                    }>
                       {row.title}
                     </TableCell>
                     {isWidthUp('md', props.width) &&
                     <>
-                    <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
+                    <TableCell align="center"  className={`${isShowMajor(row.major_yn, row.major_period_date)}`}
+                                  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}
+                    >
                       {row.reg_datetime}
                     </TableCell>
                     </>
                     }
-                    <TableCell align="center"  onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}>
+                    <TableCell align="center"  className={`${isShowMajor(row.major_yn, row.major_period_date)}`}
+                                      onClick={event => openContentModal(row.title, row.content, row.writer, row.reg_datetime)}
+                    >
                       {row.writer}
                     </TableCell>
                     {/* 관리자의 경우 */}
@@ -359,6 +389,11 @@ function NoticeListTable(props) {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
         </>
+          :(<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} >
+                <h3 style={{paddingTop:"100px"}}> 
+                    현재 공지사항 목록이 없습니다.
+                </h3>
+            </Paper>)
         }
         </TableContainer>
       </Paper>

@@ -38,7 +38,7 @@ const NoticeList = () => {
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-	const [memberNo, setMemberNo] = useState(loginData.member_NO);
+	const [memberNo, setMemberNo] = useState("");
 
 	const [isShowLoadingBar, setShowLoadingBar] = useState(true);//로딩바
 
@@ -68,6 +68,8 @@ const NoticeList = () => {
 				setIsAdmin(response.data.isAdmin);
 				setCount(response.data.count);
 				setShowLoadingBar(false);
+
+				setMemberNo(loginData.member_NO);
 			}).catch(e => {
 				setShowLoadingBar(false);
 				console.log(e);

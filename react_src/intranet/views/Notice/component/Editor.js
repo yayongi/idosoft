@@ -9,7 +9,7 @@ import '../css/ck_editor.sass';
 
 const useStyles = makeStyles(theme => ({
   root: {
-	width:'100%',
+    width:'100%',
   },
 }));
 
@@ -39,8 +39,7 @@ const Editor = ({defaultValue, onChildChange}) =>{
                 onChange={ ( event, editor ) => {
                     const data = editor.getData();
                     // console.log( { event, editor, data } );
-                    console.log(data);
-                    setContent(data);
+                    if(data.length <= 21,845) setContent(data); //입력방지x / 입력된 데이터가 21845글자가 넘으면 상위컴포넌트 갱신 x
                 } }
                 onBlur={ ( event, editor ) => {
                     console.log( 'Blur.', editor );

@@ -9,8 +9,7 @@ import './css/ck_editor.sass';
 
 const useStyles = makeStyles(theme => ({
   root: {
-	width:'100%',
-	border : '0px'
+    width:'100%',
   },
 }));
 
@@ -39,5 +38,4 @@ const Viewer = ({defaultValue}) =>{
         </div>
   );
 }
-
 export default Viewer;

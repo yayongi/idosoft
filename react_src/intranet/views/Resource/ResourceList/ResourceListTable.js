@@ -315,7 +315,8 @@ function ResourceListTable(props) {
                       {isWidthUp('md', props.width) &&
                       <>
                       <TableCell align="center" component="th" id={labelId} scope="row" padding="none" onClick={event=>openContentModal(row)}>
-                        {row.res_no}
+                        {/* {row.res_no} */}
+                        {count-(index+page*rowsPerPage)}
                       </TableCell>
                       <TableCell align="center" onClick={event=>openContentModal(row)}>{row.res_code}</TableCell>
                       </>

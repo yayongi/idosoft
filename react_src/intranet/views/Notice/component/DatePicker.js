@@ -37,6 +37,9 @@ export default function YearMonthPicker(props) {
       <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
         <Grid container justify="space-around">
           <KeyboardDatePicker
+            InputProps={{
+                        readOnly: true,
+            }}
             locale='ko' 
             margin="normal"
             id="date-picker-dialog"
@@ -48,6 +51,7 @@ export default function YearMonthPicker(props) {
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
+            // helperText={new Date() > selectedDate ? "중요공지로 설정하신 기간이 종료되었습니다." : null}
           />
         </Grid>
       </MuiPickersUtilsProvider>
