@@ -51,10 +51,13 @@ public class fileController {
 		String uploadPath = "";
 		String detailPath = multiparthttpservletrequest.getParameter("path"); // 파일 업로드 경로
 		String preFileName = multiparthttpservletrequest.getParameter("prefilename"); // 기종 파일 명
-		String dateTime = multiparthttpservletrequest.getParameter("dateTime");
+		String savedName = multiparthttpservletrequest.getParameter("savedName");
 		String original = mf.getOriginalFilename(); // 업로드하는 파일 name
+		
+		
+		logger.debug("savedName : " + savedName);
 
-		uploadPath = path+detailPath+dateTime+"_"+original; // 파일 업로드 경로 + 파일 이름
+		uploadPath = path+detailPath+savedName; // 파일 업로드 경로 + 파일 이름
 		
 		logger.debug("업로드 파일 경로 : " + uploadPath);
 		

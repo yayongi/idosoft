@@ -472,7 +472,7 @@ const MemberMod_admin = (props) => {
                     height:'100%'
                   }}>
                     <div style={{textAlign:'-webkit-center'}}>
-                      <Avatar src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + state.profile : ""} className={classes.large} />
+                      <img src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + row.photo_path : ""} className={classes.large} />
                     </div>
                     <div style={{textAlign:'center'}}>
                       <Typography>
@@ -507,6 +507,12 @@ const MemberMod_admin = (props) => {
                           <input type="hidden" value={infoState.memberData.schoolFile}/> 
                                                   증명서 다운로드
                         </Button>
+                      </div>
+                      <div style={{textAlign:'center'}}>
+                        <img id="certImg" src={row.certfile_job_path != undefined ? getRootPath() + "/resources" + pathItcert + row.certfile_job_path : ""} className={classes.large}/>
+                      </div>   
+                      <div style={{textAlign:'center'}}>
+                        <img id="schoolImg" src={row.certfile_school_path != undefined ? getRootPath() + "/resources" + pathSchoolcert + row.certfile_school_path : ""} className={classes.large}/>
                       </div>
                     </div>
                   </CardContent>

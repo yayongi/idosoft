@@ -123,13 +123,13 @@ export function isValidNum(){
 
 }
 // 파일 업로드
-export function uploadFile(event,path,prefilename,dateTime){
+export function uploadFile(event,path,prefilename,savedName){
   const formData = new FormData();
 
   formData.append('file', event.files[0]);
   formData.append('path', path);
   formData.append('prefilename',prefilename);
-  formData.append('dateTime',dateTime);
+  formData.append('savedName',savedName);
 
   const property = {
     url : '/intranet/fileUpload',
