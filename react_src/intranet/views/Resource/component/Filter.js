@@ -52,7 +52,10 @@ const useToolbarStyles = makeStyles(theme => ({
 	},
 	button: {
 		marginRight: '10px',
-	}
+	},
+	router_link: {
+		textDecoration: 'none',
+	},
 }));
 
 // Select로 구성할 년월 목록
@@ -269,10 +272,10 @@ export default function  Filter(props) {
 						</Button>
 						{isAdmin &&
 						<>
-						<RouterLink button="true" to="/resource/regist">
-						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
-							자원등록
-						</Button>
+						<RouterLink button="true" to="/resource/regist" className={classes.router_link}>
+							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
+								자원등록
+							</Button>
 						</RouterLink>
 						<Button variant="contained" color="secondary" size="small" onClick={handleSelectDelete} startIcon={<DeleteIcon />}>
 							자원삭제

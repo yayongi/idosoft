@@ -18,6 +18,8 @@ import DatePicker from '../component/DatePicker';
 
 import CommonDialog from '../../../js/CommonDialog';
 
+import { getRootPath } from '../../../js/util';
+
 import Moment from "moment"
 
 import axios from 'axios';
@@ -31,34 +33,37 @@ import Editor from '../component/Editor';
 
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  },
-  btn: {
-	  marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  title: {
-    // align: "left",
-    flex : '1'
-  },
-  textArea: {
-    width: '100%',
-    minHeight: '200px'
-  },
-  editorRoot: {
-    width: '100%',
-    // minHeight: '600px'
-  },
-  editor:{
-    minHeight: '600px'
-  }
+    root: {
+      flexGrow: 1,
+    },
+    paper: {
+      padding: theme.spacing(2),
+      textAlign: 'center',
+      color: theme.palette.text.secondary,
+    },
+    btn: {
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      marginBottom: theme.spacing(1),
+    },
+    title: {
+      // align: "left",
+      flex : '1'
+    },
+    textArea: {
+      width: '100%',
+      minHeight: '200px'
+    },
+    editorRoot: {
+      width: '100%',
+      // minHeight: '600px'
+    },
+    editor:{
+      minHeight: '600px'
+    },
+    router_link: {
+      textDecoration: 'none',
+    },
 }));
 
 const getUrlParams = function (url, paramName) {
@@ -153,8 +158,15 @@ export default function NoticeRegistLayout() {
     setNoticeData({...noticeData, major_yn:event.target.checked} );
   };
   const handleInputChange = event => {
-    setNoticeData({...noticeData, [event.target.name]:event.target.value});
-    setValidation(initValidation);
+    const inputValue = event.target.value;
+    //최대 글자수 64글자로 제한
+    if(inputValue.length >= 65) {
+      event.preventdefault();
+      return;
+    }else{
+      setNoticeData({...noticeData, [event.target.name]:event.target.value});
+    }
+    // setValidation(initValidation);
   }
   const handleChildChange = date => {
     setNoticeData({...noticeData, major_period_date:date});
@@ -213,7 +225,7 @@ export default function NoticeRegistLayout() {
 					console.log(e);
 			});
 		}
-		return location.href="/#/notice";
+		return location.href= getRootPath()+"/#/notice";
   }
   
   const validationCheck = (noticeData) => {
@@ -267,7 +279,7 @@ export default function NoticeRegistLayout() {
               <Toolbar>
               <Typography className={classes.title} variant="h6" id="tableTitle">공지사항</Typography>
               <div>
-                <RouterLink button="true" to="/notice">
+                <RouterLink button="true" to="/notice" className={classes.router_link}>
                   <Button className={classes.btn} variant="contained" color="primary" onClick={handleHistoryBack}>
                     목록
                   </Button>
@@ -297,6 +309,9 @@ export default function NoticeRegistLayout() {
                 onChange = {handleInputChange}
                 error = {validation.title}
                 helperText = {validation.titleHelperText}
+                multiline={true}  //TextArea로 사용 여부
+                rows={1}          //처음 보여줄 TexArea 행수
+                rowsMax = {5}     //최대호 보여줄 TextArea 행수
               />
             </Grid>
             <Grid item xs={6} sm={3}>

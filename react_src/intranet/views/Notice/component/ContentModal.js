@@ -9,11 +9,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+// import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 import Viewer from '../../../common/Viewer/Viewer';
 
@@ -32,22 +28,25 @@ const styles = theme => ({
 });
 
 const useStyles = makeStyles(theme => ({
-  root: {
-	  width:'100%',
+  appRoot: {
+    width:'100%',
+  },
+  webRoot: {
+    minWidth:'600px'
   },
   tableRoot: {
     width: '100%',
   },
   tableCell: {
     borderBottom : '0px'
-  }
+  },
 }));
 
 const DialogTitle = withStyles(styles)(props => {
   const { children, classes, onClose, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
+      <Typography style={{width:'90%'}} variant="h6">{children}</Typography>
       {onClose ? (
         <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
           <CloseIcon />
@@ -60,17 +59,17 @@ const DialogTitle = withStyles(styles)(props => {
 const DialogContent = withStyles(theme => ({
   root: {
     padding: theme.spacing(2),
-    minWidth: '400px',
-    minHeight: '500px',
+    // minWidth: '400px',
+    // minHeight: '500px',
   },
 }))(MuiDialogContent);
 
-const DialogActions = withStyles(theme => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
-}))(MuiDialogActions);
+// const DialogActions = withStyles(theme => ({
+//   root: {
+//     margin: 0,
+//     padding: theme.spacing(1),
+//   },
+// }))(MuiDialogActions);
 
 //다이얼 로그
 const ContentModal = ({props, closeModal}) => {
@@ -93,7 +92,7 @@ const ContentModal = ({props, closeModal}) => {
         </DialogTitle>
         <DialogContent dividers>
           {`작성자 : ${props.writer}`} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {`작성일 : ${props.reg_datetime}`}
-          <div className={classes.root}>
+          <div className={classes.appRoot}>
             <Viewer defaultValue={props.content}/>
           </div>
         </DialogContent>

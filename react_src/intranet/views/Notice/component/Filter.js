@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -52,7 +52,10 @@ const useToolbarStyles = makeStyles(theme => ({
 	},
 	button: {
 		marginRight: '10px',
-	}
+	},
+	router_link: {
+		textDecoration: 'none',
+	},
 }));
 
 // 자원 유형 Select 값
@@ -67,8 +70,10 @@ const searchType = [
 const initDialogState = {
 	searchType: '1',
 	search: "",
-	stDt: null,
-	edDt: null,
+	stDt : Moment().format('YYYY')+'01',
+	edDt : Moment().format('YYYYMM'),
+	// stDt: null,
+	// edDt: null,
 };
 
 // Select로 구성할 년월 목록
@@ -107,10 +112,11 @@ export default function  Filter(props) {
 			count,
 			setCount
 	} = props;
-	const [open, setOpen] = React.useState(false);
-	const [isDelete, setIsDelete] = React.useState(false);
-	const [confirm, setConfirm] = React.useState({});
-	const [dialogState, setDialogState] = React.useState(initDialogState); // 검색 버튼 클릭 전, 임시로 값 저장
+	const [open, setOpen] = useState(false);
+	const [isDelete, setIsDelete] = useState(false);
+	const [confirm, setConfirm] = useState({});
+	const [dialogState, setDialogState] = useState(initDialogState); // 검색 버튼 클릭 전, 임시로 값 저장
+	const [searchTypeLabel, setSearchTypeLabel] = useState("전체");
 
 
 	const handleClickOpen = () => {
@@ -195,8 +201,10 @@ export default function  Filter(props) {
 	}
 	// Dialog에서 취소버튼 클릭 시
 	const handleClickCancel = () => {
+		//검색조건 초기화, 스낵바 닫아줌.
 		setDialogState(initDialogState);
 		handleClose();
+		setOpenSnackBar(false);
 	}
 	// Dialog에서 검색버튼 클릭 시
 	// 상위 컴포넌트의 state를 갱신 처리 해줌
@@ -211,6 +219,15 @@ export default function  Filter(props) {
 		});
 		handleClose();
 		setOpenSnackBar(true);
+
+		searchType.filter((item)=>{
+			if(item['id'] === dialogState.searchType){
+				setSearchTypeLabel(item.label);
+				return;
+			} 
+		});
+
+		console.log(state);
 	}
 
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);
@@ -227,17 +244,18 @@ export default function  Filter(props) {
 
 			<CommonDialog props={confirm} closeCommonDialog={handleCloseConfirm}/>
 
-			{/* <Snackbar
+			<Snackbar
 			anchorOrigin={{
 				vertical: 'top',
 				horizontal: 'center',
 			}}
 			onClose={snackBarClose}
 			open={openSnackBar}
-			autoHideDuration={6000}
+			// autoHideDuration={6000}
 			message={
-						(state.searchType === '1' ? "전체 : " : state.searchType + " : ") +
-						state.search 
+						`검색타입 : ${searchTypeLabel}
+						, 검색기간 : ${Moment(state.stDt+'01').format('YYYY년 MM월')} ~ ${Moment(state.edDt+'01').format('YYYY년 MM월')}
+						, 검색어 : ${state.search}`
 					}
 			action={
 				<React.Fragment>
@@ -246,7 +264,7 @@ export default function  Filter(props) {
 					</IconButton>
 				</React.Fragment>
 			}
-			/> */}
+			/>
 
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} variant="h6" >					
@@ -257,11 +275,10 @@ export default function  Filter(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button}>
 							검색
 						</Button>
-						
-						<RouterLink button="true" to="/notice/regist">
-						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
-							공지사항 등록
-						</Button>
+						<RouterLink button="true" to="/notice/regist" className={classes.router_link}>
+							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
+								공지사항 등록
+							</Button>
 						</RouterLink>
 						{isAdmin&&
 						<Button variant="contained" color="secondary" size="small" onClick={handleSelectDelete} startIcon={<DeleteIcon />}>
@@ -325,7 +342,7 @@ export default function  Filter(props) {
 								InputLabelProps={{
 									shrink: true,
 								}}
-								value={dialogState.name}
+								value={dialogState.search}
 								type="search"
 								onChange={handleChange}
 								fullWidth
@@ -337,6 +354,9 @@ export default function  Filter(props) {
 							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
 								<Grid container justify="space-around">
 									<KeyboardDatePicker
+										InputProps={{
+            								readOnly: true,
+          								}}
 										locale='ko' 
 										margin="normal"
 										id="stDt"
@@ -345,10 +365,11 @@ export default function  Filter(props) {
 										views={["year", "month"]}
 										format="yyyy/MM" 
 										maxDate={new Date()}
-										value={	dialogState.stDt !== null 
-												?new Date(dialogState.stDt.slice(0, 4), Number(dialogState.stDt.slice(4, 6))-1)
-												:null
-											  }
+										// value={	dialogState.stDt !== null 
+										// 		?new Date(dialogState.stDt.slice(0, 4), Number(dialogState.stDt.slice(4, 6))-1)
+										// 		:null
+										// 	  }
+										value= { new Date(dialogState.stDt.slice(0,4), Number(dialogState.stDt.slice(4,6))-1) } 
 										onChange={handleChangeStDt}
 										KeyboardButtonProps={{
 											'aria-label': 'change date',
@@ -362,6 +383,9 @@ export default function  Filter(props) {
 							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
 								<Grid container justify="space-around">
 									<KeyboardDatePicker
+										InputProps={{
+            								readOnly: true,
+          								}}
 										locale='ko' 
 										margin="normal"
 										id="edDt"
@@ -370,10 +394,11 @@ export default function  Filter(props) {
 										views={["year", "month"]}
 										format="yyyy/MM" 
 										maxDate={new Date()}
-										value={	dialogState.edDt !== null 
-												?new Date(dialogState.edDt.slice(0, 4), Number(dialogState.edDt.slice(4, 6))-1)
-												:null
-											  }
+										// value={	dialogState.edDt !== null 
+										// 		?new Date(dialogState.edDt.slice(0, 4), Number(dialogState.edDt.slice(4, 6))-1)
+										// 		:null
+										// 	  }
+										value = { new Date(dialogState.edDt.slice(0,4), Number(dialogState.edDt.slice(4,6))-1) } 
 										onChange={handleChangeEdDt}
 										KeyboardButtonProps={{
 											'aria-label': 'change date',

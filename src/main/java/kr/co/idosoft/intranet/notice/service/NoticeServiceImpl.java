@@ -87,7 +87,12 @@ public class NoticeServiceImpl implements NoticeService{
 		for(String str : searchData.keySet()) {
 			if("search".equals(str)) {
 				List<String> searchList = StringUtils.arStrRegexMultiSpace(StringUtils.StringReplace((String) searchData.get(str)));
-				
+				logger.debug("############################################################");
+				logger.debug("검색어 리스트화 : "+searchList.toString());
+				logger.debug("############################################################");
+				//검색어가 존재하고 검색어를 정규화, 공백으로 나눈 리스트 사이즈가 0이면 0반환
+				if( ((String) searchData.get(str)).length() != 0 && searchList.size() == 0) return 0;
+					
 				if("".equals(searchList.get(0))) newMap.put("searchList", null);
 				else newMap.put("searchList", searchList);
 			}else {

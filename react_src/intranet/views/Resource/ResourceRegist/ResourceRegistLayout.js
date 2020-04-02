@@ -16,78 +16,81 @@ import SelectType from '../component/SelectType';
 import CommonDialog from '../../../js/CommonDialog';
 
 import {MacAddrCheck, getUrlParams} from '../uitl/ResUtil';
-
+import { getRootPath } from '../../../js/util';
 import axios from 'axios';
 
 const useToolbarStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
-  },
-  highlight:
-    theme.palette.type === 'light'
-      ? {
-          color: theme.palette.primary.main,
-          backgroundColor: lighten(theme.palette.primary.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.primary.dark,
-        },
-  title: {
-    flex: '1 1 100%',
-  },
+	root: {
+		paddingLeft: theme.spacing(2),
+		paddingRight: theme.spacing(1),
+	},
+	highlight:
+		theme.palette.type === 'light'
+		? {
+			color: theme.palette.primary.main,
+			backgroundColor: lighten(theme.palette.primary.light, 0.85),
+			}
+		: {
+			color: theme.palette.text.primary,
+			backgroundColor: theme.palette.primary.dark,
+			},
+	title: {
+		flex: '1 1 100%',
+	},
 }));
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    width: '100%',
-  },
-  paper: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 750,
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
-  },
-  formRoot: {
-    '& > *': {
-      margin: theme.spacing(1),
-      width: 200,
-    },
-  },
-  gridRoot: {
-    flexGrow: 1,
-  },
-  inputRoot: {
-	minWidth: 250,
-  },
-  title: {
-	flex: '1 1 100%',
-	textAlign: 'left'
-  },
-  btn: {
-	marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  cardRoot: {
-	  width: '100%',
-  },
-  btnArea: {
-	  flex:'1',
-  }
+	root: {
+		width: '100%',
+	},
+	paper: {
+		width: '100%',
+		marginBottom: theme.spacing(2),
+	},
+	table: {
+		minWidth: 750,
+	},
+	visuallyHidden: {
+		border: 0,
+		clip: 'rect(0 0 0 0)',
+		height: 1,
+		margin: -1,
+		overflow: 'hidden',
+		padding: 0,
+		position: 'absolute',
+		top: 20,
+		width: 1,
+	},
+	formRoot: {
+		'& > *': {
+		margin: theme.spacing(1),
+		width: 200,
+		},
+	},
+	gridRoot: {
+		flexGrow: 1,
+	},
+	inputRoot: {
+		minWidth: 250,
+	},
+	title: {
+		flex: '1 1 100%',
+		textAlign: 'left'
+	},
+	btn: {
+		marginLeft: theme.spacing(1),
+		marginRight: theme.spacing(1),
+		marginBottom: theme.spacing(1),
+	},
+	cardRoot: {
+		width: '100%',
+	},
+	btnArea: {
+		flex:'1',
+	},
+	router_link: {
+		textDecoration: 'none',
+	},
 }));
 
 
@@ -259,7 +262,7 @@ function RegistGrid() {
 			});
 		}
 
-		return location.href="/#/resource";
+		return location.href=getRootPath()+"/#/resource";
 	}
 	// 등록, 수정버튼 Click Handler
 	const handleButtonClick = (event) => {
@@ -404,7 +407,7 @@ function RegistGrid() {
 				<Toolbar>
 				<Typography className={classes.btnArea} variant="h6" id="tableTitle"></Typography>
 				<div>
-					<RouterLink button="true" to="/resource">
+					<RouterLink button="true" to="/resource" className={classes.router_link}>
 						<Button variant="contained" color="primary" className={classes.btn} onClick={handleHistoryBack}>
 							목록
 						</Button>
