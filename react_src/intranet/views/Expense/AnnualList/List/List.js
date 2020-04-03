@@ -8,7 +8,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Axios from 'axios';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
-import { processErrCode, isEmpty } from '../../../../js/util'
+import { processErrCode, isEmpty, getSessionStrogy } from '../../../../js/util'
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
 export default function  List(props) {
 	const [state, setState] = React.useState({
@@ -37,15 +37,42 @@ export default function  List(props) {
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
 	useEffect(() => {
 		setShowLoadingBar(true);
-		Axios({
-			url: '/intranet/getAnnaualList.exp',
-			method: 'post',
-			data: {
+
+		// 임시 데이터 저장소
+		let data = {};
+
+		// 세션스토리지 검색 정보 가죠오기(EXPENSE_ANN)
+		const sessionData = getSessionStrogy("EXPENSE_ANN");
+
+		// 세션스토리지 공백 여부 확인
+		if(sessionData == ""){
+			data = {
 				currentPage : '1',
 				limit : '10',
 				payStDt: Moment().format('YYYY')+'01',
 				payEdDt: Moment().format('YYYYMM'),
-			},
+			}
+		} else {
+			console.log(`sessionData : ${JSON.stringify(sessionData)}`);
+
+			data = sessionData;
+			// currentPage 1 초과하고 rows가 비어있는 경우,
+
+			console.log(`isEmpty(rows) : ${isEmpty(rows)}`);
+
+			if(Number(sessionData.currentPage) > 1 && isEmpty(rows)){ 
+				data = {
+					...sessionData,
+					isAddList : 'true', // 리스트 추가 요청 
+				}
+			} 
+
+		}
+
+		Axios({
+			url: '/intranet/getAnnaualList.exp',
+			method: 'post',
+			data: data,
 			headers: {
 				'Content-Type': 'application/json'
 			},
@@ -57,21 +84,29 @@ export default function  List(props) {
 				setPaging(JSON.parse(response.data.result));
 				setTotalAmount(response.data.totalAmount);
 				setFirstRender(true);
+
+				const result = JSON.parse(response.data.result);
+
+				/* 페이징 관련 state */
+				setPaging(result);
+				setHoldUp(Number(result.currentPage)-1);
+				setRowsPerPage(Number(result.limit));
+				setPage(Number(result.currentPage)-1);
+
 			} else {
 				setFirstRender(true);
 				setIsNoN(isNoN);
 				setEmptyMessage("현재 경비 목록이 없습니다.");
-				// 빈화면 처리
 			}
 
 			setShowLoadingBar(false);
 		}).catch(e => {
-			processErrCode(e);
-			console.log(e);
 			setShowLoadingBar(false);
+			//processErrCode(e);
+			console.log(e);
 		});
 		
-	}, []);
+	}, [state]);
 
 	const snackBarClose = () => {
 		setOpenSnackBar(false);
