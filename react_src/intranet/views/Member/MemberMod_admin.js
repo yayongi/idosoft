@@ -522,10 +522,8 @@ const MemberMod_admin = (props) => {
                                                   증명서 다운로드
                         </Button>
                       </div>
-                      <div style={{textAlign:'center'}}>
+                      <div>
                         <img id="certImg" src={row.certfile_job_path != undefined ? getRootPath() + "/resources" + pathItcert + row.certfile_job_path : ""} className={classes.large}/>
-                      </div>   
-                      <div style={{textAlign:'center'}}>
                         <img id="schoolImg" src={row.certfile_school_path != undefined ? getRootPath() + "/resources" + pathSchoolcert + row.certfile_school_path : ""} className={classes.large}/>
                       </div>
                     </div>

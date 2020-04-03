@@ -441,7 +441,7 @@ const MemberReg = (props) => {
                   height:'100%'
                 }}>
                   <div style={{textAlign:'center'}}>
-                    <img id="profileImg" className={classes.large} style={{borderRadius: "70%"}}/>
+                    <img id="profileImg" src={getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
@@ -463,12 +463,8 @@ const MemberReg = (props) => {
                       </Button>
                     </div>
                     <div>
-                      <div style={{textAlign:'center'}}>
-                        <img id="certImg" className={classes.large}/>
-                      </div>   
-                      <div style={{textAlign:'center'}}>
-                        <img id="schoolImg" className={classes.large}/>
-                      </div>                   
+                      <img id="certImg" src={getRootPath() + "/resources/img/noImg.jpg"} className={classes.large}/>
+                      <img id="schoolImg" src={getRootPath() + "/resources/img/noImg.jpg"} className={classes.large}/>
                     </div>
                   </div>
                 </CardContent>
