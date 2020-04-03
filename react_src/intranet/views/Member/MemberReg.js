@@ -519,7 +519,7 @@ const MemberReg = (props) => {
                     <TextField autoComplete="off" style={{width:'34%'}} id="email" size="small" label="이메일" variant="outlined" onClick={defaultValidation} error={validation.email.error} helperText={validation.email.helperText} onBlur={isValidEmail} placeholder="" InputLabelProps={{
                       shrink: true,
                     }}/>
-                    <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" variant="outlined" placeholder="" onKeyUp={isValidNum} InputLabelProps={{
+                    <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" variant="outlined" placeholder="" onKeyUp={() => isValidNum("phone_num")} InputLabelProps={{
                       shrink: true,
                     }}/>
                   </div>

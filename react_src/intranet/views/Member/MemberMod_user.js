@@ -528,7 +528,7 @@ const MemberMod_user = (props) => {
                       )}
                     </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
-                      <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" onKeyUp={isValidNum} defaultValue={phoneFormatter(row.phone_num)} variant="outlined" InputProps={{
+                      <TextField autoComplete="off" style={{width:'34%'}} id="phone_num" size="small" label="휴대전화" onKeyUp={() => isValidNum("phone_num")} defaultValue={phoneFormatter(row.phone_num)} variant="outlined" InputProps={{
                         readOnly: !state.isIdentified,
                       }}/>
                     </div>

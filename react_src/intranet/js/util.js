@@ -112,13 +112,15 @@ export function dataCalculator(param){
 }
 
 // 전화번호 자릿수 
-export function isValidNum(){
-    var regexp = /[^0-9]{11}/g;  
-    document.getElementById("phone_num").value = unFormatter(document.getElementById("phone_num").value).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") 
+export function isValidNum(target){
+    var regexp = /^(\d{1,10}|\d{1,11})$/  
 
-    if (regexp.test(unFormatter(document.getElementById("phone_num").value))) {   
-      document.getElementById("phone_num").value = unFormatter(document.getElementById("phone_num").value).substring(0,11).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+    if (regexp.test(unFormatter(document.getElementById(target).value))) {   
+      document.getElementById(target).value = unFormatter(document.getElementById(target).value).substring(0,11).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
       return false;   
+    }else{
+      document.getElementById(target).value = unFormatter(document.getElementById(target).value).substring(0,unFormatter(document.getElementById(target).value).length-1).replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+      return false; 
     }  
 
 }
