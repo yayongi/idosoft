@@ -56,7 +56,9 @@ function Body(props) {
             , paging, setPaging, state, setState
             , holdUp, setHoldUp 
             , page, setPage, rowsPerPage, setRowsPerPage
-            , isAdmin, setIsAdmin, setShowLoadingBar} = props;
+            , isAdmin, setIsAdmin, setShowLoadingBar
+            , firSelected ,setFirSelected
+						,	selected ,setSelected} = props;
 
     const handleChangePage = (event, newPage) => {
        // 페이징내용 세션스토리지 저장
@@ -155,14 +157,18 @@ function Body(props) {
     // 선택 항목 배열
     const handleSelectClick = (e, seq, status) => {
       
+      console.log(`seq : ${seq} status : ${status}`);
+
       let selecteds = [];
 
-      if(status ==='SS0000'){
-        selecteds = [...state.firSelected];
+      if(status === 'SS0000'){
+        selecteds = [...firSelected];
       } else { // status === 'SS0001'
-        selecteds = [...state.selected];
+        selecteds = [...selected];
       }
       
+      console.log(`e.target.checked : ${e.target.checked}`);
+
       if (e.target.checked) {
         selecteds.push(seq);
       } else {
@@ -171,16 +177,12 @@ function Body(props) {
       }
 
       if(status ==='SS0000'){
-        setState({
-          ...state,
-          firSelected : selecteds
-        });
+        
+        setFirSelected(selecteds);
+        
       } else { // status === 'SS0001'
-        setState({
-          ...state,
-          selected : selecteds
-        });
-      }
+        setSelected(selecteds);  
+    }
     };
     
     // 버튼 여부  활성화
