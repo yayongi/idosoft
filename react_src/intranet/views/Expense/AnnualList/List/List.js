@@ -10,6 +10,7 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import { processErrCode, isEmpty, getSessionStrogy } from '../../../../js/util'
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
+
 export default function  List(props) {
 	const [state, setState] = React.useState({
 		name: "",
@@ -24,7 +25,6 @@ export default function  List(props) {
 	const [totalAmount, setTotalAmount] = React.useState(0);
 	const [paging, setPaging] = React.useState({listCount : 0});
 	const [holdUp, setHoldUp ] = React.useState(0);					// 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
-	const [firstRender, setFirstRender ] = React.useState(false);
 	const [isNoN, setIsNoN] = React.useState(false);
 	const [emptyMessage, setEmptyMessage] = React.useState(false);
 	// 검색어 표시
@@ -35,14 +35,29 @@ export default function  List(props) {
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
 	
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
+
+	// 공백일 경우 세션 데이터 저장
+
+	// 세션스토리지 검색 정보 가죠오기(EXPENSE_ANN)
+	const sessionData = getSessionStrogy("EXPENSE_ANN");
+	useEffect(() => {
+	if(sessionData != ""){  
+		setState({
+			name: sessionData.name,
+			expenseType: sessionData.expenseType,
+			payStDt: sessionData.payStDt,
+			payEdDt: sessionData.payEdDt,
+			status: sessionData.status,
+			memo: sessionData.memo,
+		});
+	}
+	}, []);
+
 	useEffect(() => {
 		setShowLoadingBar(true);
 
 		// 임시 데이터 저장소
 		let data = {};
-
-		// 세션스토리지 검색 정보 가죠오기(EXPENSE_ANN)
-		const sessionData = getSessionStrogy("EXPENSE_ANN");
 
 		// 세션스토리지 공백 여부 확인
 		if(sessionData == ""){
@@ -53,8 +68,12 @@ export default function  List(props) {
 				payEdDt: Moment().format('YYYYMM'),
 			}
 		} else {
+			console.log(`sessionData : ${JSON.stringify(sessionData)}`);
+
 			data = sessionData;
 			// currentPage 1 초과하고 rows가 비어있는 경우,
+
+			console.log(`isEmpty(rows) : ${isEmpty(rows)}`);
 
 			if(Number(sessionData.currentPage) > 1 && isEmpty(rows)){ 
 				data = {
@@ -79,7 +98,6 @@ export default function  List(props) {
 				setRows(JSON.parse(response.data.list));
 				setPaging(JSON.parse(response.data.result));
 				setTotalAmount(response.data.totalAmount);
-				setFirstRender(true);
 
 				const result = JSON.parse(response.data.result);
 
@@ -89,20 +107,7 @@ export default function  List(props) {
 				setRowsPerPage(Number(result.limit));
 				setPage(Number(result.currentPage)-1);
 
-				// 공백일 경우 세션 데이터 저장
-				if(sessionData != ""){  
-					setState({
-						name: data.name,
-						expenseType: data.expenseType,
-						payStDt: data.payStDt,
-						payEdDt: data.payEdDt,
-						status: data.status,
-						memo: data.memo,
-					});
-				}
-
 			} else {
-				setFirstRender(true);
 				setIsNoN(isNoN);
 				setEmptyMessage("현재 경비 목록이 없습니다.");
 			}
@@ -114,7 +119,7 @@ export default function  List(props) {
 			console.log(e);
 		});
 		
-	}, [firstRender]);
+	}, [state]);
 
 	const snackBarClose = () => {
 		setOpenSnackBar(false);
@@ -122,8 +127,9 @@ export default function  List(props) {
 
 	return (
 		<Fragment>
+		{rows.length != 0 &&
+			<> 
 				<LoadingBar openLoading={isShowLoadingBar}/>
-				{firstRender &&
 					<Fragment>
 						<Filter 
 							filterRows={rows} filterSetRows={setRows}
@@ -137,10 +143,9 @@ export default function  List(props) {
 							setIsNoN={setIsNoN} setEmptyMessage={setEmptyMessage}
 							setOpenSnackBar={setOpenSnackBar} 
 							setSnackBarMessage={setSnackBarMessage}
-							setFirstRender={setFirstRender}
 						/>
 					</Fragment>
-				}
+				
 				{isNoN ? 
 					<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} ><h3 style={{paddingTop:"100px"}}> {emptyMessage} </h3></Paper>
 					: 
@@ -158,7 +163,8 @@ export default function  List(props) {
 						/>
 					</Paper>
 				}
-
+				</>
+	}
 				<Snackbar
 					anchorOrigin={{
 						vertical: 'top',

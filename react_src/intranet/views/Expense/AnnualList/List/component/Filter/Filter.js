@@ -64,7 +64,6 @@ export default function  Filter(props) {
 		setShowLoadingBar,
 		setIsNoN, setEmptyMessage,
 		setOpenSnackBar, setSnackBarMessage,
-		setFirstRender
 	} = props;
 
 	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
@@ -240,7 +239,7 @@ export default function  Filter(props) {
 		});
 
 		// 검색기록 초기화 후, 렌더링 하기위해 사용
-		setFirstRender(false); 
+
 
 		handleClose();
 		setOpenSnackBar(true);
