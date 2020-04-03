@@ -12,6 +12,8 @@ import {EnhancedTableHead, stableSort, getComparator} from 'common/EnhancedTable
 
 import Axios from 'axios';
 
+import {setSessionStrogy} from '../../../../../../js/util';
+
 const useStyles = makeStyles({
   root: {
     width: '100%',
@@ -54,21 +56,27 @@ function Body(props) {
             , setShowLoadingBar} = props;
 
     const handleChangePage = (event, newPage) => {
+      
+      const data = {
+        currentPage : String(Number(newPage)+1),
+          limit : String(rowsPerPage),
+          name: state.name,
+          expenseType: state.expenseType,
+          payStDt: state.payStDt,
+          payEdDt: state.payEdDt,
+          status: state.status,
+          memo: state.memo,
+      }
+
+      // 페이징내용 세션스토리지 저장
+      setSessionStrogy("EXPENSE_ANN",data);
+      
       if(holdUp < newPage){ // 이미 가지고 있는 페이지를 다시 호출하는 것을 막기 위해 사용
         setShowLoadingBar(true);
         Axios({
           url: '/intranet/getAnnaualList.exp',
           method: 'post',
-          data: {
-            currentPage : String(Number(newPage)+1),
-            limit : String(rowsPerPage),
-            name: state.name,
-            expenseType: state.expenseType,
-            payStDt: state.payStDt,
-            payEdDt: state.payEdDt,
-            status: state.status,
-            memo: state.memo,
-          },
+          data: data,
           headers: {
             'Content-Type': 'application/json'
           },
@@ -82,9 +90,9 @@ function Body(props) {
           setHoldUp(Number(result.currentPage)-1);
           setShowLoadingBar(false);
         }).catch(e => {
+          setShowLoadingBar(false);
           processErrCode(e);
           console.log(e);
-          setShowLoadingBar(false);
         });
       } else {
         setRowsPerPage(rowsPerPage);
@@ -94,19 +102,25 @@ function Body(props) {
 
     const handleChangeRowsPerPage = event => {
       setShowLoadingBar(true);
+
+      const data = {
+        currentPage : '1',
+        limit : String(event.target.value),
+        name: state.name,
+        expenseType: state.expenseType,
+        payStDt: state.payStDt,
+        payEdDt: state.payEdDt,
+        status: state.status,
+        memo: state.memo,
+      }
+
+      // 페이징내용 세션스토리지 저장
+      setSessionStrogy("EXPENSE_ANN",data);
+
       Axios({
         url: '/intranet/getAnnaualList.exp',
         method: 'post',
-        data: {
-          currentPage : '1',
-          limit : String(event.target.value),
-          name: state.name,
-          expenseType: state.expenseType,
-          payStDt: state.payStDt,
-          payEdDt: state.payEdDt,
-          status: state.status,
-          memo: state.memo,
-        },
+        data: data,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -122,9 +136,9 @@ function Body(props) {
 
         setShowLoadingBar(false);
       }).catch(e => {
+        setShowLoadingBar(false);
         processErrCode(e);
         console.log(e);
-        setShowLoadingBar(false);
       });
     };
 

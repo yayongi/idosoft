@@ -26,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.mustachejava.PragmaHandler;
 
 import kr.co.idosoft.common.util.CollectionsUtil;
 import kr.co.idosoft.common.util.JsonUtils;
@@ -79,6 +80,9 @@ public class AnnualListController {
 		String payEdDt 			= (String)params.get("payEdDt");				// 종료 날짜
 		String status 			= (String)params.get("status");					// 결재 상태
 		String memo 			= (String)params.get("memo");					// 내용
+		// currentPage 1 초과하고 rows가 비어있는 경우,
+	// 리스트 추가 요청시, true
+		String isAddList 		= (String) params.getOrDefault("isAddList", "false");
 		
 		LOG.debug("#####################################################################################");
 		LOG.debug("# SEARCH DATA ");
@@ -88,6 +92,7 @@ public class AnnualListController {
 		LOG.debug("# payEdDt 		: " + payEdDt);
 		LOG.debug("# status 		: " + status);
 		LOG.debug("# memo 			: " + memo);
+		LOG.debug("# isAddList 		: " + isAddList);
 		LOG.debug("#####################################################################################");
 		
 		// -1 전체로 들어왔을  경우, null로 변환
@@ -127,36 +132,70 @@ public class AnnualListController {
 		int limit			= temp == null ? 10 : temp;; 				// 페이지 당 목록 개수
 		int listCount 		= annalListService.getlistCount(data);		// 전체 목록 개수
 		
+		int tempLimit = 0;
 		// 목록이 없는 경우,
 		if(listCount == 0) {
 			mv.addObject("isNoN", "true");
 			return mv;
 		}
 		
+		// 페이징 유지시, limit 검색조건을 현재페이지 * 제한페이지로 해서 현재페이지의 데이터를 요청한다.
+		if("true".equals(isAddList)) {
+			tempLimit = currentPage * limit; 
+		} else {
+			tempLimit = limit;
+		}
+		
 		int maxPage 		= (int)((double)listCount / limit + 0.9);					// 최대 페이지
-		int startPage 		= ((int)((double)currentPage / limit + 0.9) - 1)*limit + 1;	// 시작 페이지
+		int startPage 		= ((int)((double)currentPage / limit + 0.9) - 1)*tempLimit + 1;	// 시작 페이지
 		int endPage 		= (int) startPage + limit -1;								// 종료 페이지
 		
 		if(maxPage<endPage){
 			endPage = maxPage;
 		}
+		
+		/* 검색 및 페이징 처리 유지를 위해 추가 start */
+		int tempCurrentPage = 0;
+		int tempMaxPage 	= 0;
+		int tempStartPage	= 0;
+		int tempEndPage		= 0;
+
+		if(tempLimit != limit) {
+			tempCurrentPage	= 1;
+			tempMaxPage 	= (int)((double)listCount / tempLimit + 0.9);
+			tempStartPage	= 1;
+			tempEndPage		= (int) tempStartPage + tempLimit -1;
+			
+			if(tempMaxPage<tempEndPage){
+				tempEndPage = tempMaxPage;
+			}
+			
+		} else {
+			tempCurrentPage	= currentPage;
+			tempMaxPage		= maxPage;
+			tempStartPage	= startPage;
+			tempEndPage		= endPage;
+		}
+		
+		/* 검색 및 페이징 처리 유지를 위해 추가 end */
+		
 		LOG.debug("#################################################################################");
 		LOG.debug("# PAGE - INFO ");
-		LOG.debug("# currentPage 	: " + currentPage);
+		LOG.debug("# currentPage 	: " + tempCurrentPage);
 		LOG.debug("# limit 			: " + limit);
 		LOG.debug("# listCount 		: " + listCount);
-		LOG.debug("# startPage 		: " + startPage);
-		LOG.debug("# endPage 		: " + endPage);
+		LOG.debug("# startPage 		: " + tempStartPage);
+		LOG.debug("# endPage 		: " + tempEndPage);
 		LOG.debug("#################################################################################");
 		
 		PageInfo pi = new PageInfo(); // 페이지 정보
 		
-		pi.setCurrentPage(currentPage);
-		pi.setEndPage(endPage);
-		pi.setLimit(limit);
+		pi.setCurrentPage(tempCurrentPage);
+		pi.setEndPage(tempEndPage);
+		pi.setLimit(tempLimit);
 		pi.setListCount(listCount);
-		pi.setMaxPage(maxPage);
-		pi.setStartPage(startPage);
+		pi.setMaxPage(tempMaxPage);
+		pi.setStartPage(tempStartPage);
 		
 		data.putAll(CollectionsUtil.beanToMap(pi));
 		
@@ -169,6 +208,12 @@ public class AnnualListController {
 		
 		data.remove("MEMBER_NO");		// 사원번호 제거
 		data.remove("isAdmin");			// 관리자 여부 제거
+		
+		data.put("limit", limit);				// limit 초기화
+		data.put("currentPage", currentPage);	// maxPage 초기화
+		data.put("tempMaxPage", tempMaxPage);	// maxPage 초기화
+		data.put("startPage", startPage);		// startPage 초기화
+		data.put("endPage", endPage);			// endPage 초기화
 		
 		ObjectMapper mapper = new ObjectMapper();
 		

@@ -228,18 +228,50 @@ export function excelExport(json){
     });
   }
   
-    //  개발미흡 alert
+  //  개발미흡 alert
   //  작성자 : 유기환
   export function expectedDevelopment(resPassSign){
     alert("개발 진행중입니다.");
   }
   
 
-//현재 경로가 개발인지 여부에 따라 /intranet 을 붙여줄지 여부에 따라 rootPath를 리턴해줌
-//개발이면 /intranet이 X 
-//운영이면 /intranet이 O
-export function getRootPath(){
- return location.host.includes("localhost") || location.host.includes("127.0.0.1") ? "" : "/intranet";
+  //현재 경로가 개발인지 여부에 따라 /intranet 을 붙여줄지 여부에 따라 rootPath를 리턴해줌
+  //개발이면 /intranet이 X 
+  //운영이면 /intranet이 O
+  export function getRootPath(){
+  return location.host.includes("localhost") || location.host.includes("127.0.0.1") ? "" : "/intranet";
 }
+   // 세션스토리지 이름으로 JSON Object 가져오기
+   // 작성자 : 유기환
+   // used name - 중복되지 않도록 주의해주세요!
+   // EXPENSE_ANN 경비관리
+   // EXPENSE_APP 경비결재관리
 
+  export function setSessionStrogy(name, data){
+
+    sessionStorage.setItem(name, ""); // 초기화
+
+    return sessionStorage.setItem(name, JSON.stringify(data));
+  }
+  // 세션스토리지 이름으로 JSON Object 가져오기
+  //  작성자 : 유기환
+
+  export function getSessionStrogy(name){
+    const data = sessionStorage.getItem(name);
+
+    console.log(``);
+
+    if(isEmpty(data)){ // 비어있는 경우, return ""
+      return "";
+    } else {
+      return JSON.parse(data);
+    }
+
+  }
+
+  // 세션스토리지 이름으로 초기화 처리
+  //  작성자 : 유기환
+  export function resetSessionStrogy(name){
+    sessionStorage.removeItem(name); // 초기화
+  }
 

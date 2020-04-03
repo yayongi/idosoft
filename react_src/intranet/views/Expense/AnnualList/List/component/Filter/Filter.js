@@ -22,7 +22,7 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import Axios from 'axios';
 
-import {processErrCode, isEmpty, expectedDevelopment} from '../../../../../../js/util'
+import {processErrCode, isEmpty, expectedDevelopment, setSessionStrogy, resetSessionStrogy} from '../../../../../../js/util'
  
 import {
   MuiPickersUtilsProvider,
@@ -82,7 +82,7 @@ export default function  Filter(props) {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			
+
 			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
 			const payTypeList 		= JSON.parse(response.data.payTypeList);
 
@@ -115,18 +115,9 @@ export default function  Filter(props) {
 		routeProps.history.push(`${routeProps.match.url}/new`);
 	}
 
-	// Dialog 값 상위 컴포넌트의 state값으로 초기화
-	const initDialogState = {
-		name: state.name,
-		expenseType: state.expenseType,
-		payStDt: state.payStDt,
-		payEdDt: state.payEdDt,
-		status: state.status,
-		memo: state.memo,
-	};
 	// Dialog에서 취소버튼 클릭 시
 	const handleClickCancel = () => {
-		setDialogState(initDialogState);
+		setDialogState(state);
 		handleClose();
 	}
 	// Dialog에서 검색버튼 클릭 시
@@ -142,25 +133,29 @@ export default function  Filter(props) {
 		const status 		= document.getElementsByName("status")[0].value;
 		const memo 			= document.getElementsByName("memo")[0].value.trim();
 
+		const searchData = {
+			currentPage : '1',
+			limit : '10',
+			name: name,
+			expenseType: expenseType,
+			payStDt: payStDt,
+			payEdDt: payEdDt,
+			status: status,
+			memo: memo
+		}
+
 		Axios({
 			url: '/intranet/getAnnaualList.exp',
 			method: 'post',
-			data: {
-				currentPage : '1',
-				limit : '10',
-				name: name,
-				expenseType: expenseType,
-				payStDt: payStDt,
-				payEdDt: payEdDt,
-				status: status,
-				memo: memo
-			},
+			data: searchData,
 			headers: {
 				'Content-Type': 'application/json'
 			},
 
 		}).then(response => {
-			
+			// 검색내용 세션스토리지 저장
+			setSessionStrogy("EXPENSE_ANN",searchData);
+
 			const isNoN = response.data.isNoN;
 
 			if(isNoN == "false"){
@@ -230,9 +225,31 @@ export default function  Filter(props) {
 		});
 	}
 
+	const handleClickResat = () => {
+		resetSessionStrogy("EXPENSE_ANN");
+
+		setState({
+			name: "",
+			expenseType: "-1",
+			payStDt: Moment().format('YYYY')+'01',
+			payEdDt: Moment().format('YYYYMM'),
+			status: "-1",
+			memo: "",
+		});
+
+		handleClose();
+		setOpenSnackBar(true);
+		setSnackBarMessage(`검색조건이 초기화 되었습니다.`);
+			
+	}
 	
 	// 검색 버튼 클릭 전, 임시로 값 저장
-	const [dialogState, setDialogState] = React.useState(initDialogState);
+	const [dialogState, setDialogState] = React.useState(state);
+
+	// state 변경시 마다, 검색창 dialogState 변경 처리
+	useEffect(() => {
+		setDialogState(state);
+	}, [state]);
 
 	// Dialog 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {
@@ -419,6 +436,9 @@ export default function  Filter(props) {
 				}
 				</DialogContent>
 				<DialogActions>
+					<Button onClick={handleClickResat} color="primary">
+						초기화
+					</Button>
 					<Button onClick={handleClickCancel} color="primary">
 						취소
 					</Button>
