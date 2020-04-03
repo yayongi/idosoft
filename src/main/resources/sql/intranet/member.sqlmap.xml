@@ -8,7 +8,32 @@
 	<!-- 사원 정보 리스트 -->
 	<select id="selectMemberList" resultMap="MemberVO">
 		SELECT 
-			*,
+			A.MEMBER_NO,
+			A.EMAIL ,
+			A.NAME ,
+			A.POSITION, 
+			A.ADDRESS_1 ,
+			A.ADDRESS_2 ,
+			A.ZIP_CODE ,
+			A.PHONE_NUM ,
+			A.BIRTH_DATE ,
+			A.MARRIAGE_DATE ,
+			A.CAREER_DATE ,
+			A.ENTRY_DATE ,
+			A.SCHOOL_MAJOR ,
+			A.SCHOOL_CAREER ,
+			A.MOONCAL_YN ,
+			A.CERT_YN ,
+			A.MANAGER_YN ,
+			A.APPROVAL_YN ,
+			A.PHOTO_PATH ,
+			A.CERTFILE_JOB_PATH, 
+			A.CERTFILE_SCHOOL_PATH ,
+			A.UPD_DATE ,
+			A.RET_DATE ,
+			A.UPD_ID, 
+			A.NOTE ,
+			A.TEMP_COLUM ,
 			B.CODE_NAME
 		FROM TB_MEMBER A
 		INNER JOIN TB_CODE B
@@ -24,7 +49,32 @@
 		FROM 
 		(
 			SELECT	
-				*
+				MEMBER_NO,			
+				EMAIL,				
+				NAME,				
+				POSITION,			
+				ADDRESS_1,			
+				ADDRESS_2,
+				ZIP_CODE,			
+				PHONE_NUM,			
+				BIRTH_DATE,			
+				MARRIAGE_DATE,		
+				CAREER_DATE,			
+				ENTRY_DATE,			
+				SCHOOL_MAJOR,		
+				SCHOOL_CAREER,		
+				MOONCAL_YN,			
+				CERT_YN,				
+				MANAGER_YN,			
+				APPROVAL_YN,		
+				PHOTO_PATH,			
+				CERTFILE_JOB_PATH,	
+				CERTFILE_SCHOOL_PATH,
+				REG_DATETIME,		
+				REG_ID,				
+				RET_DATE,			
+				NOTE,				
+				TEMP_COLUM
 			FROM TB_MEMBER
 			WHERE MEMBER_NO=#{member_no}
 		) A

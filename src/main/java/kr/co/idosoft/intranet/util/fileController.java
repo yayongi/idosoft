@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
@@ -35,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartRequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -50,75 +52,63 @@ public class fileController {
 	@ResponseBody
 	public void uploadFile(@RequestParam HashMap<String, Object> param, MultipartHttpServletRequest multipartservletrequest, HttpServletRequest request){
 		
+		String path = request.getSession().getServletContext().getRealPath("/")+"resources";
+		
 		try{
-			logger.debug("1");
-			//logger .debug("list : " + paramList);
+			ObjectMapper mapper = new ObjectMapper();
+			List<HashMap<String, String>> tempList = mapper.readValue((String)param.get("paramData"), List.class);
 			
+			int index = 0;
+			String uploadPath = "";
+			String detailPath = ""; // 파일 업로드 경로 
+	        String preFileName = ""; // 기종 파일 명 
+	        String savedName = ""; // 저장할 파일명
 			
 			
 			Iterator<String> iter = multipartservletrequest.getFileNames(); 
-			logger.debug("2");
 		    MultipartFile mfile = null; 
-		    logger.debug("3");
 		    String fieldName = "";
-		    logger.debug("4");
 		    while (iter.hasNext()) { 
 		        fieldName = (String) iter.next(); //파일이름, 위에서 file1과 file2로 보냈으니 file1, file2로 나온다.
 		        mfile = multipartservletrequest.getFile(fieldName);  //저장된 파일 객체
 		        logger.debug("file : " + mfile.getOriginalFilename());
+		        
+		        HashMap<String, String> tempMap = new HashMap<String, String>();
+		    	tempMap = tempList.get(index);
+		        detailPath = tempMap.get("path"); // 파일 업로드 경로 
+		        preFileName = tempMap.get("prefilename"); // 기종 파일 명 
+		        savedName = tempMap.get("savedName"); // 저장할 파일명
+		        logger.debug("path : " + detailPath);
+		        logger.debug("preFileName : " + preFileName);
+		        logger.debug("savedName : " + savedName);
+		        
+		        uploadPath = path+detailPath+savedName; // 파일 업로드 경로 + 파일 이름
+		        
+		        logger.debug("업로드 파일 경로 : " + uploadPath);
+		        
+		        File file = new File(uploadPath);
+		        
+		        try {
+		        	// 경로가 없으면 경로를 만든다.
+		        	if(!file.exists()) { 
+		        		file.mkdirs(); 
+		        	} 
+		        	
+		        	mfile.transferTo(file); // 파일을 위에 지정 경로로 업로드
+		        	
+		        	//기존 파일 삭제 로직 
+		        	if(!"".equals(preFileName) && preFileName != null) {
+		        		logger.debug("삭제 경로 : " + detailPath+preFileName);
+					  	deleteFile(preFileName,path+detailPath);
+					}
+		        }catch(Exception e) {
+		        	e.printStackTrace();
+		        }
+		        index++;
 		    }
-		    logger.debug("5");
-			
-		
-		    logger.debug("test : " + param.get("paramData"));
-		    
-		   // List<HashMap<String, Object>> paramList = new ArrayList<HashMap<String,Object>>();
-		    //paramList =  (List<HashMap<String, Object>>) param.get("paramData");
-//			 for(int i = 0; i < paramList.size();i++) { 
-//				 HashMap<String,Object> tempMap = new HashMap<String,Object>(); 
-//				 tempMap = paramList.get(i); 
-//				 String file =(String) tempMap.get("path"); 
-//				 logger.debug("name : " + file); 
-//			 };
-			 
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		/*
-		 * String path =
-		 * request.getSession().getServletContext().getRealPath("/")+"resources";
-		 * 
-		 * MultipartFile mf = multiparthttpservletrequest.getFile("file"); // jsp file
-		 * name mapping
-		 * 
-		 * String uploadPath = ""; String detailPath =
-		 * multiparthttpservletrequest.getParameter("path"); // 파일 업로드 경로 String
-		 * preFileName = multiparthttpservletrequest.getParameter("prefilename"); // 기종
-		 * 파일 명 String savedName =
-		 * multiparthttpservletrequest.getParameter("savedName"); String original =
-		 * mf.getOriginalFilename(); // 업로드하는 파일 name
-		 * 
-		 * 
-		 * logger.debug("savedName : " + savedName);
-		 * 
-		 * uploadPath = path+detailPath+savedName; // 파일 업로드 경로 + 파일 이름
-		 * 
-		 * logger.debug("업로드 파일 경로 : " + uploadPath);
-		 * 
-		 * File file = new File(uploadPath);
-		 * 
-		 * try { if(!file.exists()) { file.mkdirs(); } mf.transferTo(file); // 파일을 위에 지정
-		 * 경로로 업로드
-		 * 
-		 * //기존 파일 삭제 로직 if(!"".equals(preFileName) && preFileName != null) {
-		 * 
-		 * logger.debug("삭제 경로 : " + detailPath+preFileName);
-		 * deleteFile(preFileName,path+detailPath); } } catch (IllegalStateException e)
-		 * { // TODO Auto-generated catch block e.printStackTrace(); } catch
-		 * (IOException e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 */
-
 	}
 	//파일삭제
 	public void deleteFile(String fileName,String filePath) {

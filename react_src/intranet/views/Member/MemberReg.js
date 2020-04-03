@@ -231,14 +231,6 @@ const MemberReg = (props) => {
           return;
         }
 
-        // state에 업로드 파일 올려 놓기
-        setState({
-          ...state,
-          profile : document.getElementById("myFileProfile").files.length != 0 ?document.getElementById("myFileProfile") : null,
-          certFile : document.getElementById("myFileItcert").files.length != 0 ?document.getElementById("myFileItcert") : null,
-          schoolFile :document.getElementById("myFileSchoolcert").files.length != 0 ? document.getElementById("myFileSchoolcert") : null
-        })
-
         let dateTime = new Date().getTime();
 
         setInfoState({
@@ -261,9 +253,9 @@ const MemberReg = (props) => {
             approval_yn : document.getElementById("approval_yn").checked ? 1:0,
             mooncal_yn : document.getElementById("mooncal_yn").checked ? 1:0,
             career_date : document.getElementById("career_date").value != "" ? document.getElementById("career_date").value.replace(/\-/gi,""):null,
-            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+"_"+state.profile.files[0].name : null,
-            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+"_"+state.certFile.files[0].name : null,
-            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+"_"+state.schoolFile.files[0].name : null,
+            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+"_"+document.getElementById("myFileProfile").files[0].name : null,
+            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileItcert").files[0].name : null,
+            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileSchoolcert").files[0].name : null,
             reg_id : JSON.parse(sessionStorage.getItem("loginSession")).member_no
           }
         })
@@ -330,18 +322,10 @@ const MemberReg = (props) => {
         },
         }).then(response => {
           //db 데이터 등록 성공 시 , 파일 업로드
-          if(document.getElementById("myFileProfile").files.length != 0){
-             uploadImg(state.profile,pathProfile,"",infoState.memberData.photo_path);
-          }
-          if(document.getElementById("myFileItcert").files.length != 0){
-            uploadImg(state.certFile,pathItcert,"",infoState.memberData.certfile_job_path);
-          }
-          if(document.getElementById("myFileSchoolcert").files.length != 0){
-            uploadImg(state.schoolFile,pathSchoolcert,"",infoState.memberData.certfile_school_path);
-          }
+          fileUpload();
         }).catch(e => {
         });
-        return location.href= getRootPath() + "/#/member/";
+        return;
       }else{
         return;
       }
@@ -389,32 +373,36 @@ const MemberReg = (props) => {
     }
   }
 
-  const fileUpload =() => {
-
+  const fileUpload = () => {
     //업로드 파일 json만들기
-    let profileObj = new Object();
-    let certObj = new Object();
-    let schoolObj = new Object();
-
-    profileObj.path_0 = pathProfile;
-    profileObj.savedName_0 = infoState.photo_path;
-
-    certObj.path_1 = pathItcert;
-    certObj.savedName_1 = infoState.certfile_job_path;
-
-    schoolObj.path_2 =  pathSchoolcert;
-    schoolObj.savedName_2 = infoState.certfile_school_path;
-
     let list = [];
-    list.push(profileObj);
-    list.push(certObj);
-    list.push(schoolObj);
+
+    if(document.getElementById("myFileProfile").files[0] != undefined){
+      let profileObj = new Object();
+      profileObj.path = document.getElementById("myFileProfile").files[0] != undefined ?  pathProfile : null;
+      profileObj.savedName = document.getElementById("myFileProfile").files[0] != undefined ?  infoState.memberData.photo_path : null;
+      list.push(profileObj);
+    }
+    
+    if(document.getElementById("myFileItcert").files[0] != undefined){
+      let certObj = new Object();
+      certObj.path1 = document.getElementById("myFileItcert").files[0] != undefined ?  pathItcert : null;
+      certObj.savedName = document.getElementById("myFileItcert").files[0] != undefined ?  infoState.memberData.certfile_job_path : null;
+      list.push(certObj);
+    }
+    
+    if(document.getElementById("myFileSchoolcert").files[0] != undefined){
+      let schoolObj = new Object();
+      schoolObj.path =  document.getElementById("myFileSchoolcert").files[0] != undefined ?  pathSchoolcert : null;
+      schoolObj.savedName = document.getElementById("myFileSchoolcert").files[0] != undefined ?  infoState.memberData.certfile_school_path : null;
+      list.push(schoolObj);
+    }
 
     const formData = new FormData();
     formData.append("file0",document.getElementById("myFileProfile").files[0])
     formData.append("file1",document.getElementById("myFileItcert").files[0])
     formData.append("file2",document.getElementById("myFileSchoolcert").files[0])
-    formData.append("paramData", list);
+    formData.append("paramData", JSON.stringify(list));
 
     const property = {
       url : '/intranet/fileUpload',
@@ -426,6 +414,7 @@ const MemberReg = (props) => {
     }
     
     axios(property).then(response => {
+      return location.href= getRootPath() + "/#/member/";
       }).catch(e => {
         processErrCode(e)
       });
