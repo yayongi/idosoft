@@ -27,9 +27,11 @@ export default function  List(props) {
 		payEdDt: Moment().format('YYYYMM'),
 		status: "-1",
 		memo: "",
-		firSelected : [],
-		selected : [],
 	});
+
+	// 다중 결재 체크 Array
+	const [firSelected, setFirSelected] = React.useState([]);
+	const [selected, setSelected] = React.useState([]);
 
 	const [rows, setRows] = React.useState([]);
 	const [totalAmount, setTotalAmount] = React.useState(0);
@@ -188,6 +190,8 @@ export default function  List(props) {
 							setEmptyMessage={setEmptyMessage}
 							setOpenSnackBar={setOpenSnackBar} 
 							setSnackBarMessage={setSnackBarMessage}
+							firSelected={firSelected} setFirSelected={setFirSelected}
+							selected={selected} setSelected={setSelected}
 							/>
 					</Fragment>
 					{isNoN == "true" ?
@@ -206,6 +210,8 @@ export default function  List(props) {
 							rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
 							isAdmin={isAdmin} setIsAdmin={setIsAdmin}
 							setShowLoadingBar={setShowLoadingBar}
+							firSelected={firSelected} setFirSelected={setFirSelected}
+							selected={selected} setSelected={setSelected}
 						/>
 					</Paper>
 					}

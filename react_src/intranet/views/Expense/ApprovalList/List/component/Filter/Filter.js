@@ -65,7 +65,9 @@ export default function  Filter(props) {
 		setPage ,setRowsPerPage,
 		setShowLoadingBar,
 		setIsNoN, setEmptyMessage,
-		setOpenSnackBar, setSnackBarMessage
+		setOpenSnackBar, setSnackBarMessage,
+		firSelected ,setFirSelected,
+		selected ,setSelected
 	} = props;
 
 	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
@@ -272,7 +274,7 @@ export default function  Filter(props) {
 	const [errMsg, setErrMsg]	= React.useState('');
 
 	const appHandleClickOpen = () => {
-		if(!isEmpty(state.selected) || !isEmpty(state.firSelected)){ // Object 비었을 경우 true
+		if(!isEmpty(selected) || !isEmpty(firSelected)){ // Object 비었을 경우 true
 			return setAppOpen(true);
 		} else{
 			setErrMsg('결재할 항목이 없습니다.');
@@ -291,9 +293,6 @@ export default function  Filter(props) {
 	const handleClickApprove =() => {
 		
 		setShowLoadingBar(true);
-
-		const firSelected = state.firSelected;
-		const selected = state.selected;
 
 		Axios({
 			url: '/intranet/multiplexApproval.exp',
@@ -336,10 +335,8 @@ export default function  Filter(props) {
 				});
 				filterSetRows(dataList);
 
-				setState({
-				...state,
-				selected :[]
-				});
+				setSelected([]);
+				setFirSelected([]);
 				
 				setAppOpen(false);
 
