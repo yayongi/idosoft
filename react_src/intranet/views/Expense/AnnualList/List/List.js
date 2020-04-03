@@ -23,7 +23,7 @@ export default function  List(props) {
 	const [rows, setRows] = React.useState([]);
 	const [totalAmount, setTotalAmount] = React.useState(0);
 	const [paging, setPaging] = React.useState({listCount : 0});
-	const [ holdUp, setHoldUp ] = React.useState(0);					// 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
+	const [holdUp, setHoldUp ] = React.useState(0);					// 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
 	const [firstRender, setFirstRender ] = React.useState(false);
 	const [isNoN, setIsNoN] = React.useState(false);
 	const [emptyMessage, setEmptyMessage] = React.useState(false);
@@ -53,12 +53,8 @@ export default function  List(props) {
 				payEdDt: Moment().format('YYYYMM'),
 			}
 		} else {
-			console.log(`sessionData : ${JSON.stringify(sessionData)}`);
-
 			data = sessionData;
 			// currentPage 1 초과하고 rows가 비어있는 경우,
-
-			console.log(`isEmpty(rows) : ${isEmpty(rows)}`);
 
 			if(Number(sessionData.currentPage) > 1 && isEmpty(rows)){ 
 				data = {
@@ -93,6 +89,18 @@ export default function  List(props) {
 				setRowsPerPage(Number(result.limit));
 				setPage(Number(result.currentPage)-1);
 
+				// 공백일 경우 세션 데이터 저장
+				if(sessionData != ""){  
+					setState({
+						name: data.name,
+						expenseType: data.expenseType,
+						payStDt: data.payStDt,
+						payEdDt: data.payEdDt,
+						status: data.status,
+						memo: data.memo,
+					});
+				}
+
 			} else {
 				setFirstRender(true);
 				setIsNoN(isNoN);
@@ -106,7 +114,7 @@ export default function  List(props) {
 			console.log(e);
 		});
 		
-	}, [state]);
+	}, [firstRender]);
 
 	const snackBarClose = () => {
 		setOpenSnackBar(false);
@@ -129,6 +137,7 @@ export default function  List(props) {
 							setIsNoN={setIsNoN} setEmptyMessage={setEmptyMessage}
 							setOpenSnackBar={setOpenSnackBar} 
 							setSnackBarMessage={setSnackBarMessage}
+							setFirstRender={setFirstRender}
 						/>
 					</Fragment>
 				}

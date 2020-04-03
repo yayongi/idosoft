@@ -63,7 +63,8 @@ export default function  Filter(props) {
 		setPage ,setRowsPerPage,
 		setShowLoadingBar,
 		setIsNoN, setEmptyMessage,
-		setOpenSnackBar, setSnackBarMessage
+		setOpenSnackBar, setSnackBarMessage,
+		setFirstRender
 	} = props;
 
 	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
@@ -225,6 +226,7 @@ export default function  Filter(props) {
 		});
 	}
 
+	// 검색기록 초기화 
 	const handleClickResat = () => {
 		resetSessionStrogy("EXPENSE_ANN");
 
@@ -236,6 +238,9 @@ export default function  Filter(props) {
 			status: "-1",
 			memo: "",
 		});
+
+		// 검색기록 초기화 후, 렌더링 하기위해 사용
+		setFirstRender(false); 
 
 		handleClose();
 		setOpenSnackBar(true);

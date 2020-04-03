@@ -81,7 +81,7 @@ public class AnnualListController {
 		String status 			= (String)params.get("status");					// 결재 상태
 		String memo 			= (String)params.get("memo");					// 내용
 		// currentPage 1 초과하고 rows가 비어있는 경우,
-	// 리스트 추가 요청시, true
+		// 리스트 추가 요청시, true
 		String isAddList 		= (String) params.getOrDefault("isAddList", "false");
 		
 		LOG.debug("#####################################################################################");
@@ -132,7 +132,6 @@ public class AnnualListController {
 		int limit			= temp == null ? 10 : temp;; 				// 페이지 당 목록 개수
 		int listCount 		= annalListService.getlistCount(data);		// 전체 목록 개수
 		
-		int tempLimit = 0;
 		// 목록이 없는 경우,
 		if(listCount == 0) {
 			mv.addObject("isNoN", "true");
@@ -140,6 +139,7 @@ public class AnnualListController {
 		}
 		
 		// 페이징 유지시, limit 검색조건을 현재페이지 * 제한페이지로 해서 현재페이지의 데이터를 요청한다.
+		int tempLimit = 0;
 		if("true".equals(isAddList)) {
 			tempLimit = currentPage * limit; 
 		} else {
