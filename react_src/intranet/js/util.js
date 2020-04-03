@@ -267,8 +267,6 @@ export function excelExport(json){
   export function getSessionStrogy(name){
     const data = sessionStorage.getItem(name);
 
-    console.log(``);
-
     if(isEmpty(data)){ // 비어있는 경우, return ""
       return "";
     } else {
