@@ -89,7 +89,8 @@ const MemberList = (props) => {
 		hiddenMemberList : null,
 		manager_yn : 1,		// 관리자 여부
 		showAll : true,
-		showAllValue : 0
+		showAllValue : 0,
+		user : JSON.parse(sessionStorage.getItem("loginSession")).member_NO
 	});
 
 	const [openModal, setOpenModal] = React.useState({
@@ -109,9 +110,9 @@ const MemberList = (props) => {
 	});
 
 	const[searchState, setSearchState] = React.useState({
-		category : "",
-		searchword : "",
-		flag :false
+		category : sessionStorage.getItem("memberFilter") != undefined ? JSON.parse(sessionStorage.getItem("memberFilter")).category : null ,
+		searchword : sessionStorage.getItem("memberFilter") != undefined ? JSON.parse(sessionStorage.getItem("memberFilter")).searchword : null,
+		flag :sessionStorage.getItem("memberFilter") != undefined ? JSON.parse(sessionStorage.getItem("memberFilter")).flag : false
 	})
 
 	const [openFilter, setOpenFilter] = React.useState({
@@ -127,6 +128,10 @@ const MemberList = (props) => {
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
 	useEffect(() => {
+		callList();
+	},[])
+
+	const callList = () =>{
 		axios({
 			url: '/intranet/member/memberlist',
 			method: 'post',
@@ -152,8 +157,7 @@ const MemberList = (props) => {
 		}).catch(e => {
 			setShowLoadingBar(false);
 		});
-		
-	},[])
+	}
 
 	const openContentModal = (datum) => {
 		return setOpenModal({
@@ -206,7 +210,7 @@ const MemberList = (props) => {
 		});
 	};
 
-	if(searchState.flag){
+	if(state.memberList !=null && searchState.flag){
 		let temp = null;
 
 		if(state.showAllValue == 0){
@@ -232,6 +236,8 @@ const MemberList = (props) => {
 			...searchState,
 			flag : false
 		});
+
+		sessionStorage.setItem("memberFilter",JSON.stringify(searchState));
 
 		setOpenSnackBar(true);
 	}
@@ -417,7 +423,7 @@ const MemberList = (props) => {
 	return (
 		<div>
 			<ContentModal props={openModal} closeModal={handleCloseModal}/>
-			<FilterModal props={openFilter}  state = {searchState} setState = {setSearchState} closeModal={handleClickClose}/>
+			<FilterModal props={openFilter} callList={callList} state={state} setState={setState} setOpenSnackBar={setOpenSnackBar} searchState = {searchState} setSearchState = {setSearchState} closeModal={handleClickClose}/>
 			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<LoadingBar openLoading={isShowLoadingBar}/>
 
@@ -562,11 +568,13 @@ const MemberList = (props) => {
 													<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,state.manager_yn)}>
 														수정
 													</Button>
-													<RouterLink button="true" to="/project/history" className={classes.router_link}>
-														<Button variant="contained" color="primary">
-															개인이력
-														</Button>
-													</RouterLink>
+													{(state.manager_yn || (state.user == row.member_no)) && (
+														<RouterLink button="true" to="/project/history" className={classes.router_link}>
+															<Button variant="contained" color="primary">
+																개인이력
+															</Button>
+														</RouterLink>
+													)}
 												</TableCell>
 											</TableRow>
 										))}
@@ -610,11 +618,13 @@ const MemberList = (props) => {
 														<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,state.manager_yn)}>
 															수정
 														</Button>
-														<RouterLink button="true" to="/project/history" className={classes.router_link}>
-															<Button variant="contained" color="primary">
-																이력
-															</Button>
-														</RouterLink>
+														{(state.manager_yn || (state.user == row.member_no)) && (
+															<RouterLink button="true" to="/project/history" className={classes.router_link}>
+																<Button variant="contained" color="primary">
+																	이력
+																</Button>
+															</RouterLink>
+														)}
 													</TableCell>
 												</TableRow>
 											))

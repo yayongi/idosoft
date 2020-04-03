@@ -18,16 +18,13 @@ const DialogContent = withStyles(theme => ({
 }))(MuiDialogContent);
 
 //다이얼 로그
-const FilterModal = ({props,state,setState,closeModal}) => {
+const FilterModal = ({props,searchState,setSearchState,setOpenSnackBar,callList,closeModal}) => {
 	const [open, setOpen] = React.useState(false);
-
-	const searchState = state;
-	const setSearchState = setState;
 
 	// 검색 버튼 클릭 전, 임시로 값 저장
 	const [dialogState, setDialogState] = React.useState({
-		category : state.category != "" ? state.category: 0,
-		searchword : state.searchword
+		category : searchState.category != "" ? searchState.category: 0,
+		searchword : searchState.searchword
 	});
 
 	// Dialog 필드 값 변경 시, 임시로 값 저장
@@ -61,6 +58,19 @@ const FilterModal = ({props,state,setState,closeModal}) => {
 			flag : true
 		});
 		handleClose();
+	}
+
+	//검색 초기화
+	const resetFilter = () => {
+		setSearchState({
+			...searchState,
+			category : "",
+			searchword : "",
+			flag : false
+		});
+		sessionStorage.removeItem("memberFilter");
+		handleClose();
+		setOpenSnackBar(false);
 	}
 	
 	return (
@@ -98,12 +108,14 @@ const FilterModal = ({props,state,setState,closeModal}) => {
 							type="search"
 							onChange={handleChange}
 							fullWidth
-							// helperText="직책을 포함하여 넣어주세요."
 						/>
 					</Grid>
 				</Grid>
 			</DialogContent>
 			<DialogActions>
+				<Button onClick={resetFilter} color="primary">
+					검색초기화
+				</Button>
 				<Button onClick={handleClickCancel} color="primary">
 					취소
 				</Button>

@@ -442,7 +442,7 @@ const MemberMod_user = (props) => {
                     height:'100%'
                   }}>
                     <div style={{textAlign:'-webkit-center'}}>
-                      <img id="profileImg" src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + row.photo_path : ""} className={classes.large} style={{borderRadius: "70%"}}/>
+                      <img id="profileImg" src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + row.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
                     </div>
                     <div style={{textAlign:'center'}}>
                       <Typography>
@@ -462,10 +462,12 @@ const MemberMod_user = (props) => {
                                                       프로필 업로드
                           </Button>
                         )}
-                        <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
-                          <input type="hidden" value={row.photo_path}/> 
-                                                  프로필 다운로드
-                        </Button>
+                        {(row.photo_path != undefined) && (
+                          <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
+                            <input type="hidden" value={row.photo_path}/> 
+                                                    프로필 다운로드
+                          </Button>
+                        )}
                       </div>
                       <div className={classes.textfield}>
                         {state.isIdentified == true && (
@@ -473,10 +475,12 @@ const MemberMod_user = (props) => {
                                                   자격증 업로드
                         </Button>
                         )}
-                        <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
-                          <input type="hidden" value={row.certfile_job_path}/> 
-                                                  자격증 다운로드
-                        </Button>
+                        {(row.certfile_job_path != undefined) && (
+                          <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
+                            <input type="hidden" value={row.certfile_job_path}/> 
+                                                    자격증 다운로드
+                          </Button>
+                        )}
                       </div>
                       <div className={classes.textfield}>
                         {state.isIdentified == true && (
@@ -484,14 +488,16 @@ const MemberMod_user = (props) => {
                                                   증명서 업로드
                         </Button>
                          )}
-                        <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
-                          <input type="hidden" value={row.certfile_school_path}/> 
-                                                  증명서 다운로드
-                        </Button>
+                        {(row.certfile_school_path != undefined) && (
+                          <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
+                            <input type="hidden" value={row.certfile_school_path}/> 
+                                                    증명서 다운로드
+                          </Button>
+                        )}
                       </div>
                       <div>
-                        <img id="certImg" src={row.certfile_job_path != undefined ? getRootPath() + "/resources" + pathItcert + row.certfile_job_path : ""} className={classes.large}/>
-                        <img id="schoolImg" src={row.certfile_school_path != undefined ? getRootPath() + "/resources" + pathSchoolcert + row.certfile_school_path : ""} className={classes.large}/>
+                        <img id="certImg" src={row.certfile_job_path != undefined ? getRootPath() + "/resources" + pathItcert + row.certfile_job_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large}/>
+                        <img id="schoolImg" src={row.certfile_school_path != undefined ? getRootPath() + "/resources" + pathSchoolcert + row.certfile_school_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large}/>
                       </div>
                     </div>
                   </CardContent>
