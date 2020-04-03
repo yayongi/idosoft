@@ -29,10 +29,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartRequest;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import kr.co.idosoft.intranet.member.vo.MemberVO;
 
@@ -44,32 +48,38 @@ public class fileController {
 
 	@RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
 	@ResponseBody
-	public void uploadFile(HashMap<String, Object> param, MultipartHttpServletRequest multipartservletrequest, HttpServletRequest request){
+	public void uploadFile(@RequestParam HashMap<String, Object> param, MultipartHttpServletRequest multipartservletrequest, HttpServletRequest request){
 		
 		try{
+			logger.debug("1");
 			//logger .debug("list : " + paramList);
 			
 			
 			
 			Iterator<String> iter = multipartservletrequest.getFileNames(); 
+			logger.debug("2");
 		    MultipartFile mfile = null; 
-		    
+		    logger.debug("3");
 		    String fieldName = "";
+		    logger.debug("4");
 		    while (iter.hasNext()) { 
 		        fieldName = (String) iter.next(); //파일이름, 위에서 file1과 file2로 보냈으니 file1, file2로 나온다.
 		        mfile = multipartservletrequest.getFile(fieldName);  //저장된 파일 객체
-		        logger.debug("file : " + mfile);
+		        logger.debug("file : " + mfile.getOriginalFilename());
 		    }
+		    logger.debug("5");
 			
 		
-		    List<HashMap<String, Object>> paramList = new ArrayList<HashMap<String,Object>>();
-		    paramList = (List<HashMap<String, Object>>) param.get("list");
-			 for(int i = 0; i < paramList.size();i++) { 
-				 HashMap<String,Object> tempMap = new HashMap<String,Object>(); 
-				 tempMap = paramList.get(i); 
-				 String file =(String) tempMap.get("path"); 
-				 logger.debug("name : " + file); 
-			 };
+		    logger.debug("test : " + param.get("paramData"));
+		    
+		   // List<HashMap<String, Object>> paramList = new ArrayList<HashMap<String,Object>>();
+		    //paramList =  (List<HashMap<String, Object>>) param.get("paramData");
+//			 for(int i = 0; i < paramList.size();i++) { 
+//				 HashMap<String,Object> tempMap = new HashMap<String,Object>(); 
+//				 tempMap = paramList.get(i); 
+//				 String file =(String) tempMap.get("path"); 
+//				 logger.debug("name : " + file); 
+//			 };
 			 
 		}catch(Exception e) {
 			e.printStackTrace();
