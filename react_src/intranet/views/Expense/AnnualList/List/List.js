@@ -10,9 +10,8 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import { processErrCode, isEmpty, getSessionStrogy } from '../../../../js/util'
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
-
 export default function  List(props) {
-	const [state, setState] = React.useState({
+	let [state, setState] = React.useState({
 		name: "",
 		expenseType: "-1",
 		payStDt: Moment().format('YYYY')+'01',
@@ -24,8 +23,9 @@ export default function  List(props) {
 	const [rows, setRows] = React.useState([]);
 	const [totalAmount, setTotalAmount] = React.useState(0);
 	const [paging, setPaging] = React.useState({listCount : 0});
-	const [holdUp, setHoldUp ] = React.useState(0);					// 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
-	const [isNoN, setIsNoN] = React.useState(false);
+	const [ holdUp, setHoldUp ] = React.useState(0);					// 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
+	const [firstRender, setFirstRender ] = React.useState(false);
+	const [isNoN, setIsNoN] = React.useState("true");
 	const [emptyMessage, setEmptyMessage] = React.useState(false);
 	// 검색어 표시
 	const [openSnackBar, setOpenSnackBar] = React.useState(false); 
@@ -35,37 +35,57 @@ export default function  List(props) {
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
 	
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
-
-	// 공백일 경우 세션 데이터 저장
-
-	// 세션스토리지 검색 정보 가죠오기(EXPENSE_ANN)
-	const sessionData = getSessionStrogy("EXPENSE_ANN");
+	
 	useEffect(() => {
-	if(sessionData != ""){  
-		setState({
-			name: sessionData.name,
-			expenseType: sessionData.expenseType,
-			payStDt: sessionData.payStDt,
-			payEdDt: sessionData.payEdDt,
-			status: sessionData.status,
-			memo: sessionData.memo,
-		});
-	}
-	}, []);
+		let data;
+
+		console.log(`default useEffect`);
+
+		// 세션스토리지 검색 정보 가져오기(EXPENSE_ANN)
+		const sessionData = getSessionStrogy("EXPENSE_ANN");
+
+		// 세션스토리지 공백 여부 확인
+		if(sessionData == ""){
+			
+			data = {
+				currentPage : '1',
+				limit : '10',
+				expenseType: "-1",
+				payStDt: Moment().format('YYYY')+'01',
+				payEdDt: Moment().format('YYYYMM'),
+				status: "-1",
+				memo: "",
+			}
+		} else {
+			data = sessionData;
+		}
+
+		setState(data);
+		
+	},[]);
 
 	useEffect(() => {
+		
+		console.log(`setate useEffect`);
+
 		setShowLoadingBar(true);
 
 		// 임시 데이터 저장소
 		let data = {};
+
+		// 세션스토리지 검색 정보 가져오기(EXPENSE_ANN)
+		const sessionData = getSessionStrogy("EXPENSE_ANN");
 
 		// 세션스토리지 공백 여부 확인
 		if(sessionData == ""){
 			data = {
 				currentPage : '1',
 				limit : '10',
+				expenseType: "-1",
 				payStDt: Moment().format('YYYY')+'01',
 				payEdDt: Moment().format('YYYYMM'),
+				status: "-1",
+				memo: "",
 			}
 		} else {
 			console.log(`sessionData : ${JSON.stringify(sessionData)}`);
@@ -93,11 +113,17 @@ export default function  List(props) {
 			},
 		}).then(response => {
 			const isNoN = response.data.isNoN;
+			
+			console.log(`isNoN : ${isNoN}`);
 
 			if(isNoN == "false"){
+
+				setIsNoN(isNoN);
+
 				setRows(JSON.parse(response.data.list));
 				setPaging(JSON.parse(response.data.result));
 				setTotalAmount(response.data.totalAmount);
+				setFirstRender(true);
 
 				const result = JSON.parse(response.data.result);
 
@@ -109,6 +135,9 @@ export default function  List(props) {
 
 			} else {
 				setIsNoN(isNoN);
+
+				setRows([]);
+				setFirstRender(true);
 				setEmptyMessage("현재 경비 목록이 없습니다.");
 			}
 
@@ -121,15 +150,15 @@ export default function  List(props) {
 		
 	}, [state]);
 
+
 	const snackBarClose = () => {
 		setOpenSnackBar(false);
 	}
 
 	return (
 		<Fragment>
-		{rows.length != 0 &&
-			<> 
 				<LoadingBar openLoading={isShowLoadingBar}/>
+				{firstRender &&
 					<Fragment>
 						<Filter 
 							filterRows={rows} filterSetRows={setRows}
@@ -145,8 +174,9 @@ export default function  List(props) {
 							setSnackBarMessage={setSnackBarMessage}
 						/>
 					</Fragment>
-				
-				{isNoN ? 
+				}
+
+				{isNoN == "true" ? 
 					<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} ><h3 style={{paddingTop:"100px"}}> {emptyMessage} </h3></Paper>
 					: 
 					<Paper>
@@ -163,8 +193,6 @@ export default function  List(props) {
 						/>
 					</Paper>
 				}
-				</>
-	}
 				<Snackbar
 					anchorOrigin={{
 						vertical: 'top',

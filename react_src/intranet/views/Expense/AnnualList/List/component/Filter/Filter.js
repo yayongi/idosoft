@@ -22,7 +22,7 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 import Axios from 'axios';
 
-import {processErrCode, isEmpty, expectedDevelopment, setSessionStrogy, resetSessionStrogy} from '../../../../../../js/util'
+import {processErrCode, isEmpty, expectedDevelopment, setSessionStrogy, resetSessionStrogy, getSessionStrogy} from '../../../../../../js/util'
  
 import {
   MuiPickersUtilsProvider,
@@ -63,11 +63,36 @@ export default function  Filter(props) {
 		setPage ,setRowsPerPage,
 		setShowLoadingBar,
 		setIsNoN, setEmptyMessage,
-		setOpenSnackBar, setSnackBarMessage,
+		setOpenSnackBar, setSnackBarMessage
 	} = props;
 
 	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
 	const [statuses, setStatuses] 			= React.useState([]);
+	
+	// 세션스토리지 검색 정보 가져오기(EXPENSE_ANN)
+	const sessionData = getSessionStrogy("EXPENSE_ANN");
+
+	let data = {};
+
+	const initData = {
+		expenseType: "-1",
+			payStDt: Moment().format('YYYY')+'01',
+			payEdDt: Moment().format('YYYYMM'),
+			status: "-1",
+			memo: "",
+	}
+
+	// 세션스토리지 공백 여부 확인
+	if(sessionData == ""){
+		
+		data = initData;
+	} else {
+		data = sessionData;
+	}
+
+	// 검색 버튼 클릭 전, 임시로 값 저장
+
+	const [dialogState, setDialogState] = React.useState(data);
 
 	useEffect(() => {
 		setShowLoadingBar(true);
@@ -85,6 +110,15 @@ export default function  Filter(props) {
 
 			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
 			const payTypeList 		= JSON.parse(response.data.payTypeList);
+
+			/* setState({
+				name: "",
+				expenseType: "-1",
+				payStDt: Moment().format('YYYY')+'01',
+				payEdDt: Moment().format('YYYYMM'),
+				status: "-1",
+				memo: "",
+			}); */
 
 			setExpenseTypes(exPenseTypeList);
 			setStatuses(payTypeList);
@@ -170,14 +204,7 @@ export default function  Filter(props) {
 				setRowsPerPage(Number(result.limit));
 				setPage(Number(result.currentPage)-1);
 
-				setState({
-					name: name,
-					expenseType: expenseType,
-					payStDt: payStDt,
-					payEdDt: payEdDt,
-					status: status,
-					memo: memo
-				});
+				setState(searchData);
 				
 				} else { // 빈화면 처리
 				setIsNoN(isNoN);
@@ -225,36 +252,22 @@ export default function  Filter(props) {
 		});
 	}
 
-	// 검색기록 초기화 
 	const handleClickResat = () => {
 		resetSessionStrogy("EXPENSE_ANN");
 
-		setState({
-			name: "",
-			expenseType: "-1",
-			payStDt: Moment().format('YYYY')+'01',
-			payEdDt: Moment().format('YYYYMM'),
-			status: "-1",
-			memo: "",
-		});
-
-		// 검색기록 초기화 후, 렌더링 하기위해 사용
-
+		// 내용 초기화
+		setDialogState(initData);
+		
+		// state 초기화
+		setState(initData);
 
 		handleClose();
 		setOpenSnackBar(true);
 		setSnackBarMessage(`검색조건이 초기화 되었습니다.`);
-			
+		
+		
 	}
 	
-	// 검색 버튼 클릭 전, 임시로 값 저장
-	const [dialogState, setDialogState] = React.useState(state);
-
-	// state 변경시 마다, 검색창 dialogState 변경 처리
-	useEffect(() => {
-		setDialogState(state);
-	}, [state]);
-
 	// Dialog 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {
 		setDialogState({
