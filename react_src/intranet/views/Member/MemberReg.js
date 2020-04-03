@@ -234,9 +234,9 @@ const MemberReg = (props) => {
         // state에 업로드 파일 올려 놓기
         setState({
           ...state,
-          profile : document.getElementById("myFileProfile"),
-          certFile : document.getElementById("myFileItcert"),
-          schoolFile :document.getElementById("myFileSchoolcert")
+          profile : document.getElementById("myFileProfile").files.length != 0 ?document.getElementById("myFileProfile") : null,
+          certFile : document.getElementById("myFileItcert").files.length != 0 ?document.getElementById("myFileItcert") : null,
+          schoolFile :document.getElementById("myFileSchoolcert").files.length != 0 ? document.getElementById("myFileSchoolcert") : null
         })
 
         let dateTime = new Date().getTime();
@@ -261,9 +261,9 @@ const MemberReg = (props) => {
             approval_yn : document.getElementById("approval_yn").checked ? 1:0,
             mooncal_yn : document.getElementById("mooncal_yn").checked ? 1:0,
             career_date : document.getElementById("career_date").value != "" ? document.getElementById("career_date").value.replace(/\-/gi,""):null,
-            photo_path : dateTime+"_"+state.profile.files[0].name,
-            certfile_job_path : dateTime+"_"+state.certFile.files[0].name,
-            certfile_school_path : dateTime+"_"+state.schoolFile.files[0].name,
+            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+"_"+state.profile.files[0].name : null,
+            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+"_"+state.certFile.files[0].name : null,
+            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+"_"+state.schoolFile.files[0].name : null,
             reg_id : JSON.parse(sessionStorage.getItem("loginSession")).member_no
           }
         })
@@ -330,10 +330,15 @@ const MemberReg = (props) => {
         },
         }).then(response => {
           //db 데이터 등록 성공 시 , 파일 업로드
-          uploadImg(state.profile,pathProfile,"",infoState.memberData.photo_path);
-          uploadImg(state.certFile,pathItcert,"",infoState.memberData.certfile_job_path);
-          uploadImg(state.schoolFile,pathSchoolcert,"",infoState.memberData.certfile_school_path);
-
+          if(document.getElementById("myFileProfile").files.length != 0){
+             uploadImg(state.profile,pathProfile,"",infoState.memberData.photo_path);
+          }
+          if(document.getElementById("myFileItcert").files.length != 0){
+            uploadImg(state.certFile,pathItcert,"",infoState.memberData.certfile_job_path);
+          }
+          if(document.getElementById("myFileSchoolcert").files.length != 0){
+            uploadImg(state.schoolFile,pathSchoolcert,"",infoState.memberData.certfile_school_path);
+          }
         }).catch(e => {
         });
         return location.href= getRootPath() + "/#/member/";
@@ -382,6 +387,48 @@ const MemberReg = (props) => {
     
     reader.readAsDataURL(event.target.files[0]);
     }
+  }
+
+  const fileUpload =() => {
+
+    //업로드 파일 json만들기
+    let profileObj = new Object();
+    let certObj = new Object();
+    let schoolObj = new Object();
+
+    profileObj.path_0 = pathProfile;
+    profileObj.savedName_0 = infoState.photo_path;
+
+    certObj.path_1 = pathItcert;
+    certObj.savedName_1 = infoState.certfile_job_path;
+
+    schoolObj.path_2 =  pathSchoolcert;
+    schoolObj.savedName_2 = infoState.certfile_school_path;
+
+    let list = [];
+    list.push(profileObj);
+    list.push(certObj);
+    list.push(schoolObj);
+
+    const formData = new FormData();
+    formData.append("file0",document.getElementById("myFileProfile").files[0])
+    formData.append("file1",document.getElementById("myFileItcert").files[0])
+    formData.append("file2",document.getElementById("myFileSchoolcert").files[0])
+    formData.append("paramData", list);
+
+    const property = {
+      url : '/intranet/fileUpload',
+      method : 'post',
+      data : formData,
+      header : {
+        'enctype': 'multipart/form-data'
+      }
+    }
+    
+    axios(property).then(response => {
+      }).catch(e => {
+        processErrCode(e)
+      });
   }
 
 	return (
@@ -723,6 +770,9 @@ const MemberReg = (props) => {
                     </Button>
                     <Button variant="contained" color="primary" onClick={() => location.href = getRootPath() + '/#/member'}>
                             뒤로가기
+                    </Button>
+                        <Button variant="contained" color="primary" onClick={() => fileUpload()}>
+                            파일업로드
                     </Button>
                   </div>
                 </CardContent>

@@ -26,11 +26,13 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartRequest;
 
 import kr.co.idosoft.intranet.member.vo.MemberVO;
 
@@ -42,46 +44,70 @@ public class fileController {
 
 	@RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
 	@ResponseBody
-	public void uploadFile(MultipartHttpServletRequest multiparthttpservletrequest,HttpServletRequest request) throws IOException {
+	public void uploadFile(HashMap<String, Object> param, MultipartHttpServletRequest multipartservletrequest, HttpServletRequest request){
 		
-		String path = request.getSession().getServletContext().getRealPath("/")+"resources";
-		
-		MultipartFile mf = multiparthttpservletrequest.getFile("file"); // jsp file name mapping
-
-		String uploadPath = "";
-		String detailPath = multiparthttpservletrequest.getParameter("path"); // 파일 업로드 경로
-		String preFileName = multiparthttpservletrequest.getParameter("prefilename"); // 기종 파일 명
-		String savedName = multiparthttpservletrequest.getParameter("savedName");
-		String original = mf.getOriginalFilename(); // 업로드하는 파일 name
-		
-		
-		logger.debug("savedName : " + savedName);
-
-		uploadPath = path+detailPath+savedName; // 파일 업로드 경로 + 파일 이름
-		
-		logger.debug("업로드 파일 경로 : " + uploadPath);
-		
-		File file = new File(uploadPath);
-
-		try {
-			if(!file.exists()) {
-				file.mkdirs();
-			}
-			mf.transferTo(file); // 파일을 위에 지정 경로로 업로드
+		try{
+			//logger .debug("list : " + paramList);
 			
-			//기존 파일 삭제 로직
-			if(!"".equals(preFileName) && preFileName != null) {
-				
-				logger.debug("삭제 경로 : " + detailPath+preFileName);
-				deleteFile(preFileName,path+detailPath);
-			}
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
+			
+			Iterator<String> iter = multipartservletrequest.getFileNames(); 
+		    MultipartFile mfile = null; 
+		    
+		    String fieldName = "";
+		    while (iter.hasNext()) { 
+		        fieldName = (String) iter.next(); //파일이름, 위에서 file1과 file2로 보냈으니 file1, file2로 나온다.
+		        mfile = multipartservletrequest.getFile(fieldName);  //저장된 파일 객체
+		        logger.debug("file : " + mfile);
+		    }
+			
+		
+		    List<HashMap<String, Object>> paramList = new ArrayList<HashMap<String,Object>>();
+		    paramList = (List<HashMap<String, Object>>) param.get("list");
+			 for(int i = 0; i < paramList.size();i++) { 
+				 HashMap<String,Object> tempMap = new HashMap<String,Object>(); 
+				 tempMap = paramList.get(i); 
+				 String file =(String) tempMap.get("path"); 
+				 logger.debug("name : " + file); 
+			 };
+			 
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+		/*
+		 * String path =
+		 * request.getSession().getServletContext().getRealPath("/")+"resources";
+		 * 
+		 * MultipartFile mf = multiparthttpservletrequest.getFile("file"); // jsp file
+		 * name mapping
+		 * 
+		 * String uploadPath = ""; String detailPath =
+		 * multiparthttpservletrequest.getParameter("path"); // 파일 업로드 경로 String
+		 * preFileName = multiparthttpservletrequest.getParameter("prefilename"); // 기종
+		 * 파일 명 String savedName =
+		 * multiparthttpservletrequest.getParameter("savedName"); String original =
+		 * mf.getOriginalFilename(); // 업로드하는 파일 name
+		 * 
+		 * 
+		 * logger.debug("savedName : " + savedName);
+		 * 
+		 * uploadPath = path+detailPath+savedName; // 파일 업로드 경로 + 파일 이름
+		 * 
+		 * logger.debug("업로드 파일 경로 : " + uploadPath);
+		 * 
+		 * File file = new File(uploadPath);
+		 * 
+		 * try { if(!file.exists()) { file.mkdirs(); } mf.transferTo(file); // 파일을 위에 지정
+		 * 경로로 업로드
+		 * 
+		 * //기존 파일 삭제 로직 if(!"".equals(preFileName) && preFileName != null) {
+		 * 
+		 * logger.debug("삭제 경로 : " + detailPath+preFileName);
+		 * deleteFile(preFileName,path+detailPath); } } catch (IllegalStateException e)
+		 * { // TODO Auto-generated catch block e.printStackTrace(); } catch
+		 * (IOException e) { // TODO Auto-generated catch block e.printStackTrace(); }
+		 */
 
 	}
 	//파일삭제

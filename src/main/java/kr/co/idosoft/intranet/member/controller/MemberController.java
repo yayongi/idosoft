@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +58,7 @@ public class MemberController {
 	// 사원정보 등록하기
 	@RequestMapping(value="/member/memberinst", method=RequestMethod.POST)
 	@ResponseBody
-	public boolean insMemberInfo(Model model, @RequestBody MemberVO memberVo,HttpServletRequest request){
-		
+	public boolean insMemberInfo(Model model, @RequestBody MemberVO memberVo ,HttpServletRequest request){
 		String path = request.getSession().getServletContext().getRealPath("/")+"resources";
 				
 		try {
@@ -82,6 +82,10 @@ public class MemberController {
 			//초기 비밀번호 암호화
 			memberVo.setPwd(shaPasswordEncoder.encode(INITPASSWORD));
 			logger.debug("결과 : " + memberService.registerMember(memberVo));
+			
+			
+			
+			
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();

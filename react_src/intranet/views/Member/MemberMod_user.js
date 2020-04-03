@@ -225,6 +225,15 @@ const MemberMod_user = (props) => {
             return;
           }
 
+          setState({
+            ...state,
+            profile : document.getElementById("myFileProfile").files.length != 0 ? document.getElementById("myFileProfile") : null,
+            certFile : document.getElementById("myFileItcert").files.length != 0 ? document.getElementById("myFileItcert") : null,
+            schoolFile :document.getElementById("myFileSchoolcert").files.length != 0 ? document.getElementById("myFileSchoolcert") : null
+          })
+
+          let dateTime = new Date().getTime();
+
         setInfoState({
           memberData:{
             member_no : row.member_no,
@@ -246,9 +255,9 @@ const MemberMod_user = (props) => {
             approval_yn : row.approval_yn,
             mooncal_yn : document.getElementById("mooncal_yn").checked? 1:0,
             career_date : unFormatter(document.getElementById("career_date").value != "" ? document.getElementById("career_date").value.replace(/\-/gi,""):null),
-            photo_path : state.profile,
-            certfile_job_path : state.certFile,
-            certfile_school_path : state.schoolFile,
+            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+"_"+state.profile.files[0].name : row.photo_path,
+            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+"_"+state.certFile.files[0].name : row.certfile_job_path,
+            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+"_"+state.schoolFile.files[0].name : row.certfile_school_path,
             upd_id : JSON.parse(sessionStorage.getItem("loginSession")).member_no
           }
         });
@@ -315,6 +324,17 @@ const MemberMod_user = (props) => {
           'Content-Type': 'application/json;charset=UTF-8'
         },
         }).then(response => {
+
+          if(document.getElementById("myFileProfile").files.length != 0){
+             uploadImg(state.profile,pathProfile,row.photo_path,infoState.memberData.photo_path);
+          }
+          if(document.getElementById("myFileItcert").files.length != 0){
+            uploadImg(state.certFile,pathItcert,row.certfile_job_path,infoState.memberData.certfile_job_path);
+          }
+          if(document.getElementById("myFileSchoolcert").files.length != 0){
+            uploadImg(state.schoolFile,pathSchoolcert,row.certfile_school_path,infoState.memberData.certfile_school_path);
+          }
+
           return location.href= getRootPath() + "/#/member/";
         }).catch(e => {
         });
@@ -324,54 +344,8 @@ const MemberMod_user = (props) => {
     }
 	}
   
-  const uploadProfileImg = (event,pathProfile,preFileName) => {
-    let dateTime = new Date().getTime();
-    uploadFile(event,pathProfile,preFileName,dateTime);
-    setState({
-      ...state,
-      profile : dateTime+"_"+event.target.files[0].name
-    })
-
-    setInfoState({
-      memberData : {
-      ...infoState.memberData,
-      photo_path : dateTime+"_"+event.target.files[0].name
-      }
-    })
-  }
-
-  const uploadCertImg = (event,pathItcert,preFileName) => {
-    let dateTime = new Date().getTime();
-    uploadFile(event,pathItcert,preFileName,dateTime);
-
-    setState({
-      ...state,
-      certFile : dateTime+"_"+event.target.files[0].name
-    })
-
-    setInfoState({
-      memberData : {
-        ...infoState.memberData,
-        certfile_job_path : dateTime+"_"+event.target.files[0].name
-      }
-    })
-  }
-
-  const uploadSchoolImg = (event,pathSchoolcert,preFileName) => {
-    let dateTime = new Date().getTime();
-    uploadFile(event,pathSchoolcert,preFileName,dateTime);
-
-    setState({
-      ...state,
-      schoolFile : dateTime+"_"+event.target.files[0].name
-    })
-
-    setInfoState({
-      memberData : {
-        ...infoState.memberData,
-        certfile_school_path : dateTime+"_"+event.target.files[0].name
-      }
-    })
+  const uploadImg = (event,pathProfile,preFileName,savedName) => {
+    uploadFile(event,pathProfile,preFileName,savedName);
   }
 
   const getCarDate = (date) => {
@@ -399,6 +373,18 @@ const MemberMod_user = (props) => {
     })
   }
   
+  const readUrl = (event,path) => {
+    if (event.target.files && event.target.files[0]) {
+    var reader = new FileReader();
+    
+    reader.onload = function (e) {
+      document.getElementById(path).setAttribute('src',e.target.result);  
+    }
+    
+    reader.readAsDataURL(event.target.files[0]);
+    }
+  }
+
 	return (
 		<div>
       <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
@@ -421,7 +407,7 @@ const MemberMod_user = (props) => {
                     height:'100%'
                   }}>
                     <div style={{textAlign:'-webkit-center'}}>
-                      <Avatar src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + state.profile : ""} className={classes.large} />
+                      <img id="profileImg" src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + row.photo_path : ""} className={classes.large} style={{borderRadius: "70%"}}/>
                     </div>
                     <div style={{textAlign:'center'}}>
                       <Typography>
@@ -433,16 +419,16 @@ const MemberMod_user = (props) => {
                     </div>
                     <div style={{textAlign:'center'}}>
                       <div className={classes.textfield}>
-                        <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => uploadProfileImg(event,pathProfile,state.profile)}/>
-                        <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => uploadCertImg(event,pathItcert,state.certFile)}/>
-                        <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => uploadSchoolImg(event,pathSchoolcert,state.schoolFile)}/>
+                        <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => readUrl(event,"profileImg")}/>
+                        <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => readUrl(event,"certImg")}/>
+                        <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => readUrl(event,"schoolImg")}/>
                         {state.isIdentified == true && (
                           <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
                                                       프로필 업로드
                           </Button>
                         )}
                         <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathProfile)}>
-                          <input type="hidden" value={infoState.memberData.photo_path}/> 
+                          <input type="hidden" value={row.photo_path}/> 
                                                   프로필 다운로드
                         </Button>
                       </div>
@@ -453,7 +439,7 @@ const MemberMod_user = (props) => {
                         </Button>
                         )}
                         <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathItcert)}>
-                          <input type="hidden" value={infoState.memberData.certFile}/> 
+                          <input type="hidden" value={row.certFile}/> 
                                                   자격증 다운로드
                         </Button>
                       </div>
@@ -464,9 +450,15 @@ const MemberMod_user = (props) => {
                         </Button>
                          )}
                         <Button variant="contained" color="primary" onClick={() => downloadFile(event,pathSchoolcert)}>
-                          <input type="hidden" value={infoState.memberData.schoolFile}/> 
+                          <input type="hidden" value={row.schoolFile}/> 
                                                   증명서 다운로드
                         </Button>
+                      </div>
+                       <div style={{textAlign:'center'}}>
+                        <img id="certImg" src={row.certfile_job_path != undefined ? getRootPath() + "/resources" + pathItcert + row.certfile_job_path : ""} className={classes.large}/>
+                      </div>   
+                      <div style={{textAlign:'center'}}>
+                        <img id="schoolImg" src={row.certfile_school_path != undefined ? getRootPath() + "/resources" + pathSchoolcert + row.certfile_school_path : ""} className={classes.large}/>
                       </div>
                     </div>
                   </CardContent>
