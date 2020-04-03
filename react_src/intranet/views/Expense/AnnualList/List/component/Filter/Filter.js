@@ -111,15 +111,6 @@ export default function  Filter(props) {
 			const exPenseTypeList 	= JSON.parse(response.data.expenseTypeList);
 			const payTypeList 		= JSON.parse(response.data.payTypeList);
 
-			/* setState({
-				name: "",
-				expenseType: "-1",
-				payStDt: Moment().format('YYYY')+'01',
-				payEdDt: Moment().format('YYYYMM'),
-				status: "-1",
-				memo: "",
-			}); */
-
 			setExpenseTypes(exPenseTypeList);
 			setStatuses(payTypeList);
 
@@ -191,7 +182,7 @@ export default function  Filter(props) {
 			setSessionStrogy("EXPENSE_ANN",searchData);
 
 			const isNoN = response.data.isNoN;
-
+			setIsNoN(isNoN);
 			if(isNoN == "false"){
 				filterSetRows(JSON.parse(response.data.list));
 				setTotalAmount(response.data.totalAmount);
@@ -205,9 +196,7 @@ export default function  Filter(props) {
 				setPage(Number(result.currentPage)-1);
 
 				setState(searchData);
-				
 				} else { // 빈화면 처리
-				setIsNoN(isNoN);
 				setEmptyMessage("검색 목록이 없습니다.");
 			}
 			// 검색어 화면에 띄어주기 위한 로직 처리 START /////////////////////////////
@@ -264,7 +253,6 @@ export default function  Filter(props) {
 		handleClose();
 		setOpenSnackBar(true);
 		setSnackBarMessage(`검색조건이 초기화 되었습니다.`);
-		
 		
 	}
 	

@@ -65,8 +65,6 @@ export default function  List(props) {
 	},[]);
 
 	useEffect(() => {
-		
-		console.log(`setate useEffect`);
 
 		setShowLoadingBar(true);
 
@@ -88,12 +86,9 @@ export default function  List(props) {
 				memo: "",
 			}
 		} else {
-			console.log(`sessionData : ${JSON.stringify(sessionData)}`);
 
 			data = sessionData;
 			// currentPage 1 초과하고 rows가 비어있는 경우,
-
-			console.log(`isEmpty(rows) : ${isEmpty(rows)}`);
 
 			if(Number(sessionData.currentPage) > 1 && isEmpty(rows)){ 
 				data = {
@@ -113,8 +108,6 @@ export default function  List(props) {
 			},
 		}).then(response => {
 			const isNoN = response.data.isNoN;
-			
-			console.log(`isNoN : ${isNoN}`);
 
 			if(isNoN == "false"){
 
@@ -144,7 +137,7 @@ export default function  List(props) {
 			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
-			//processErrCode(e);
+			processErrCode(e);
 			console.log(e);
 		});
 		

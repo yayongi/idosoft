@@ -23,12 +23,14 @@ import Moment from "moment";
 
 import Axios from 'axios';
 
+
+
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 
-import { processErrCode, isEmpty, expectedDevelopment} from '../../../../../../js/util';
+import { processErrCode, isEmpty, expectedDevelopment, setSessionStrogy, getSessionStrogy, resetSessionStrogy} from '../../../../../../js/util';
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
 		// justifyContent: 'flex-end',
@@ -68,6 +70,31 @@ export default function  Filter(props) {
 
 	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
 	const [statuses, setStatuses] 			= React.useState([]);
+
+	// 세션스토리지 검색 정보 가져오기(EXPENSE_APP)
+	const sessionData = getSessionStrogy("EXPENSE_APP");
+
+	let data = {};
+
+	const initData = {
+		expenseType: "-1",
+			payStDt: Moment().format('YYYY')+'01',
+			payEdDt: Moment().format('YYYYMM'),
+			status: "-1",
+			memo: "",
+	}
+
+	// 세션스토리지 공백 여부 확인
+	if(sessionData == ""){
+		
+		data = initData;
+	} else {
+		data = sessionData;
+	}
+
+	// 검색 버튼 클릭 전, 임시로 값 저장
+
+	const [dialogState, setDialogState] = React.useState(data);
 
 	useEffect(() => {
 		setShowLoadingBar(true);
@@ -137,27 +164,31 @@ export default function  Filter(props) {
 		const status 		= document.getElementsByName("status")[0].value;
 		const memo 			= document.getElementsByName("memo")[0].value;
 
+		const searchData = {
+			currentPage : '1',
+			limit : '10',
+			name: name,
+			expenseType: expenseType,
+			payStDt: payStDt,
+			payEdDt: payEdDt,
+			status: status,
+			memo: memo
+		}
+
 		Axios({
 			url: '/intranet/getAnnaualList.exp',
 			method: 'post',
-			data: {
-				currentPage : '1',
-				limit : '10',
-				name: name,
-				expenseType: expenseType,
-				payStDt: payStDt,
-				payEdDt: payEdDt,
-				status: status,
-				memo: memo
-			},
+			data: searchData,
 			headers: {
 				'Content-Type': 'application/json'
 			},
 
 		}).then(response => {
+			// 검색내용 세션스토리지 저장
+			setSessionStrogy("EXPENSE_APP",searchData);
 
 			const isNoN = response.data.isNoN;
-
+			setIsNoN(isNoN);
 			if(isNoN == "false"){
 				filterSetRows(JSON.parse(response.data.list));
 				setTotalAmount(response.data.totalAmount);
@@ -170,16 +201,8 @@ export default function  Filter(props) {
 				setRowsPerPage(Number(result.limit));
 				setPage(Number(result.currentPage)-1);
 
-				setState({
-					name: name,
-					expenseType: expenseType,
-					payStDt: payStDt,
-					payEdDt: payEdDt,
-					status: status,
-					memo: memo
-				});
+				setState(searchData);
 			} else { // true
-				setIsNoN(isNoN);
 				setEmptyMessage("검색 목록이 없습니다.");
 			}
 
@@ -225,6 +248,23 @@ export default function  Filter(props) {
 
 		
 	}
+
+	// 검색기록 초기화 
+	const handleClickResat = () => {
+		resetSessionStrogy("EXPENSE_APP");
+
+		// 내용 초기화
+		setDialogState(initData);
+		
+		// state 초기화
+		setState(initData);
+
+		handleClose();
+		setOpenSnackBar(true);
+		setSnackBarMessage(`검색조건이 초기화 되었습니다.`);
+			
+	}
+
 	// 다중 결재 처리 
 
 	const [appOpen, setAppOpen] = React.useState(false);
@@ -312,9 +352,6 @@ export default function  Filter(props) {
 			console.log(e);
 		});
 	}
-
-	// 검색 버튼 클릭 전, 임시로 값 저장
-	const [dialogState, setDialogState] = React.useState(initDialogState);
 
 	// Dialog 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {
@@ -501,6 +538,9 @@ export default function  Filter(props) {
 					</Grid>
 				</DialogContent>
 				<DialogActions>
+					<Button onClick={handleClickResat} color="primary">
+						초기화
+					</Button>
 					<Button onClick={handleClickCancel} color="primary">
 						취소
 					</Button>

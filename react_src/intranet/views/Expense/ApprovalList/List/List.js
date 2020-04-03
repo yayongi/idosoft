@@ -16,7 +16,7 @@ import Axios from 'axios';
 import ko from "date-fns/locale/ko";
 
 import Moment from "moment";
-import { processErrCode, isEmpty } from '../../../../js/util'
+import { processErrCode, isEmpty, getSessionStrogy } from '../../../../js/util'
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
 
 export default function  List(props) {
@@ -40,7 +40,7 @@ export default function  List(props) {
     const [ page, setPage ] = React.useState(0);                 // 초기페이지가 0부터 시작
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
 	const [isAdmin, setIsAdmin] = React.useState("0");
-	const [isNoN, setIsNoN] = React.useState(false);
+	const [isNoN, setIsNoN] = React.useState("true");
 	const [emptyMessage, setEmptyMessage] = React.useState("");
 	// alert 
 	const [isOpen, setIsOpen] = React.useState(false);
@@ -52,41 +52,103 @@ export default function  List(props) {
 	const [snackBarMessage, setSnackBarMessage] = React.useState(false);
 	
 	useEffect(() => {
+		let data;
+
+		// 세션스토리지 검색 정보 가져오기(EXPENSE_APP)
+		const sessionData = getSessionStrogy("EXPENSE_APP");
+
+		// 세션스토리지 공백 여부 확인
+		if(sessionData == ""){
+			
+			data = {
+				currentPage : '1',
+				limit : '10',
+				expenseType: "-1",
+				payStDt: Moment().format('YYYY')+'01',
+				payEdDt: Moment().format('YYYYMM'),
+				status: "-1",
+				memo: "",
+			}
+		} else {
+			data = sessionData;
+		}
+
+		setState(data);
+		
+	},[]);
+
+	useEffect(() => {
 		setShowLoadingBar(true);
+
+		// 임시 데이터 저장소
+		let data = {};
+
+		// 세션스토리지 검색 정보 가져오기(EXPENSE_APP)
+		const sessionData = getSessionStrogy("EXPENSE_APP");
+
+		// 세션스토리지 공백 여부 확인
+		if(sessionData == ""){
+			data = {
+				currentPage : '1',
+				limit : '10',
+				expenseType: "-1",
+				payStDt: Moment().format('YYYY')+'01',
+				payEdDt: Moment().format('YYYYMM'),
+				status: "-1",
+				memo: "",
+			}
+		} else {
+
+			data = sessionData;
+			// currentPage 1 초과하고 rows가 비어있는 경우,
+
+			if(Number(sessionData.currentPage) > 1 && isEmpty(rows)){ 
+				data = {
+					...sessionData,
+					isAddList : 'true', // 리스트 추가 요청 
+				}
+			} 
+		}
+
 		Axios({
 			url: '/intranet/getApprovalList.exp',
 			method: 'post',
-			data: {
-				currentPage : '1',
-				limit : '10',
-				payStDt: Moment().format('YYYY')+'01',
-				payEdDt: Moment().format('YYYYMM'),
-			},
+			data: data,
 			headers: {
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
 
 			const isNoN = response.data.isNoN;
+			setIsNoN(isNoN);
 			if(isNoN == "false"){
 				setIsAdmin(response.data.isAdmin);
 				setRows(JSON.parse(response.data.list));
 				setPaging(JSON.parse(response.data.result));
 				setTotalAmount(response.data.totalAmount);
 				setFirstRender(true);
+
+				const result = JSON.parse(response.data.result);
+
+				/* 페이징 관련 state */
+				setPaging(result);
+				setHoldUp(Number(result.currentPage)-1);
+				setRowsPerPage(Number(result.limit));
+				setPage(Number(result.currentPage)-1);
 			} else {
-				setIsNoN(isNoN);
+				setRows([]);
+				setFirstRender(true);
 				openHandleClick("결재 권한이 없는 직원입니다.");
 			}
 
 			setShowLoadingBar(false);
 		}).catch(e => {
+			setShowLoadingBar(false);
 			processErrCode(e);
 			console.log(e);
-			setShowLoadingBar(false);
 		});
 		
-	}, []);
+	}, [state]);
 
 	const openHandleClick = (msg) => {
 		setErrMessage(msg);
@@ -128,7 +190,7 @@ export default function  List(props) {
 							setSnackBarMessage={setSnackBarMessage}
 							/>
 					</Fragment>
-					{isNoN ?
+					{isNoN == "true" ?
 					<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} ><h3 style={{paddingTop:"100px"}}> {emptyMessage} </h3></Paper>
 					:
 					<Paper>
