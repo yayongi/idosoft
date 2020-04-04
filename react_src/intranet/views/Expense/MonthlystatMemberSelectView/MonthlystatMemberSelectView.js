@@ -58,7 +58,9 @@ import {useStyles} from './styles';
 	const [totalAmount, setTotalAmount] = React.useState(0);
 	const [indiExpenseInfo, setIndiExpenseInfo] = React.useState([]);
 	const [indiTotalAmount, setIndiTotalAmount] = React.useState(0);
-
+	const [indiName, setIndiName] = React.useState(""); 
+	const [indiPosition, setIndiiPosition] = React.useState("");
+	
 	const [open, setOpen] = React.useState(false);
 	const [errOpen, setErrOpen] = React.useState(false);
 	const [errMessage, setErrMessage] = React.useState("");
@@ -134,7 +136,7 @@ import {useStyles} from './styles';
 
 	}
 
-	const handleClickOpen = (MEMBER_NO) => {
+	const handleClickOpen = (row) => {
 		
 		setShowLoadingBar(true);
 
@@ -143,7 +145,7 @@ import {useStyles} from './styles';
 			method: 'post',
 			data: {
 				regDate : Moment(selectedDate).format('YYYYMM'),
-				MEMBER_NO : MEMBER_NO
+				MEMBER_NO : row.MEMBER_NO
 			},
 			headers: {
 				'Content-Type': 'application/json'
@@ -151,9 +153,11 @@ import {useStyles} from './styles';
 		}).then(response => {
 			const list = JSON.parse(response.data.list);
 			const total_amount = response.data.totalAmount;
-			
+			//POSITION
 			setIndiExpenseInfo(list);
 			setIndiTotalAmount(total_amount);
+			setIndiName(row.NAME);
+			setIndiiPosition(row.POSITION);
 			setOpen(true);
 			
 			setShowLoadingBar(false);
@@ -257,7 +261,7 @@ import {useStyles} from './styles';
 										</TableHead>
 										<TableBody>
 										{members.map(row => (
-											<TableRow key={row.MEMBER_NO} onClick={() => handleClickOpen(row.MEMBER_NO)}>
+											<TableRow key={row.MEMBER_NO} onClick={() => handleClickOpen(row)}>
 											<TableCell align="center">{row.NAME}</TableCell>
 											<TableCell align="center">{row.POSITION}</TableCell>
 											<TableCell align="center">{Number(row.TOTAL_AMOUNT).toLocaleString()} 원</TableCell>
@@ -286,6 +290,11 @@ import {useStyles} from './styles';
 				</AppBar>
 				<div className={classes.margin_1}>
 					<div style={{height : 20}}></div>
+					<Grid container spacing={3}>
+						<Typography className={classes.title} variant="h3">					
+							{indiName}({indiPosition})
+						</Typography>
+					</Grid>
 					<Grid container spacing={3}>
 						<Toolbar className={classes.root}>
 							<Typography className={classes.title} color="secondary" variant="subtitle2">					

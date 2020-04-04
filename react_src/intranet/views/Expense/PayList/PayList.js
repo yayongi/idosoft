@@ -22,6 +22,7 @@ import Paper from '@material-ui/core/Paper';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
 import { Divider, Button, Hidden } from '@material-ui/core';
 
 import {useStyles} from './styles';

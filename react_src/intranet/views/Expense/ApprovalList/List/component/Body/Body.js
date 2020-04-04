@@ -27,7 +27,7 @@ function Body(props) {
   const classes = useStyles();
 
     const columnsUp = [
-      { id: 'seq', label: '번호', minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'rnum', label: '번호', minWidth: 100, align: 'center', paddingLeft : 50},
       { id: 'expenseTypeText', label: '경비유형', minWidth: 100, align: 'center', paddingLeft : 50 },
       { id: 'memo', label: '내용', minWidth: 100, align: 'center', paddingLeft : 50 },
       { id: 'statusText', label: '진행상태', minWidth: 100, align: 'center', paddingLeft : 50 },
@@ -47,7 +47,9 @@ function Body(props) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
+      console.log(`order : ${order} property : ${property}`);
+      const isAsc = orderBy === property && order === 'asc';
+
       setOrder(isAsc ? 'desc' : 'asc');
       setOrderBy(property);
     };
@@ -269,7 +271,7 @@ function Body(props) {
                       {columns.map(column => {
                         const value = row[column.id];
                         return (
-                          <TableCell key={row.seq + column.id} 
+                          <TableCell key={row.rnum + column.id} 
                             id={labelId}
                             align={column.align} 
                             className={column.className} 
