@@ -36,7 +36,7 @@ import Axios from 'axios';
 import Moment from "moment";
 Moment.locale('ko'); // 한국 시간
 
-import {processErrCode, phoneFormatter, isEmpty} from "../../../../js/util"; 
+import {processErrCode, phoneFormatter, isEmpty, pathtoFileName} from "../../../../js/util"; 
 
 import { LoadingBar } from "../../../../common/LoadingBar/LoadingBar";
 
@@ -97,6 +97,8 @@ export default function  View(props) {
 	const classes = useStyles();
 	
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
+
+	const [contextPath, setContextPath] = React.useState(false); // contextPath 경로
 
 	// step 처리 
 	const getStepInfo = (row) => {
@@ -159,6 +161,7 @@ export default function  View(props) {
 			setExpenseTypes(exPenseTypeList);
 			setActiveStep(stepInfo.activeStep);
 			setIsAdmin(response.data.isAdmin);
+			setContextPath(response.data.contextPath);
 			const isNoN = response.data.isNoN;
 
 			if(isNoN == "false"){
@@ -540,7 +543,7 @@ export default function  View(props) {
 											<CardContent>
 												<div name="image">
 													<img
-														src={dataState.filePath}
+														src={contextPath + pathtoFileName(dataState.filePath)}
 														title="image"
 														id="image"
 														style={{maxWidth : 200}}

@@ -252,8 +252,8 @@ public class AnnualListController {
 	public ModelAndView resisterExpense(MultipartHttpServletRequest mutipartRequest
 										, HttpServletRequest request) {
 		
-		String path = request.getSession().getServletContext().getContextPath() + "/resources/expense/";
-		
+		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
+				
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/resister.exp // path : " + path);
 		}
@@ -312,6 +312,8 @@ public class AnnualListController {
 			mv.addObject("errMessage","File Upload Error");
 			return mv;
 		}
+		
+		//DB 저장 path
 		
 		data.put("EXPENS_ATCHMNF_ID", uploadPath);
 		/* 파일업로드 처리 EMD */
@@ -396,6 +398,7 @@ public class AnnualListController {
 		// ModelAndView 초기값 셋팅
 		mv.setViewName("jsonView");
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("contextPath", request.getSession().getServletContext().getContextPath() + "/resources/expense/");
 		
 		Map<String, Object> data = new HashMap<>();
 		
@@ -511,7 +514,7 @@ public class AnnualListController {
 	public ModelAndView updateExpense(MultipartHttpServletRequest mutipartRequest
 										, HttpServletRequest request) {
 		
-		String path = request.getSession().getServletContext().getContextPath() + "/resources/expense/";
+		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/update.exp // path : " + path);
@@ -637,7 +640,7 @@ public class AnnualListController {
 	public ModelAndView deleteExpense(MultipartHttpServletRequest mutipartRequest
 										, HttpServletRequest request) {
 		
-		String path = request.getSession().getServletContext().getContextPath() + "/resources/expense/";
+		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/delete.exp // path : " + path);
@@ -702,7 +705,7 @@ public class AnnualListController {
 	public ModelAndView Proceed(MultipartHttpServletRequest mutipartRequest
 										, HttpServletRequest request) {
 		
-		String path = request.getSession().getServletContext().getContextPath() + "/resources/expense/";;
+		String path = request.getSession().getServletContext().getRealPath("/") + "resources/expense/";
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/Proceed.exp // path : " + path);

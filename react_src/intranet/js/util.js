@@ -283,3 +283,8 @@ export function excelExport(json){
     sessionStorage.removeItem(name); // 초기화
   }
 
+// path 파일명 추출
+	export function pathtoFileName(path){
+		const pathArr = path.split('/');
+		return pathArr[pathArr.length-1];
+	}

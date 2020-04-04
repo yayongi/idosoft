@@ -367,7 +367,7 @@ public class ApprovalListController {
 		mv.setViewName("jsonView");
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");				// 비어있는 경우,
-		
+		mv.addObject("contextPath", request.getSession().getServletContext().getContextPath() + "/resources/expense/");
 		Map<String, Object> data = new HashMap<>();
 		
 		data.put("TYPE", EXPENSE_TYPE); // 경비 유형

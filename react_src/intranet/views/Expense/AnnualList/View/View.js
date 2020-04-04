@@ -30,7 +30,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
 
-import { processErrCode, getUrlParams, isEmpty } from "../../../../js/util";
+import { processErrCode, getUrlParams, isEmpty, pathtoFileName } from "../../../../js/util";
 
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar'; 
 
@@ -115,7 +115,7 @@ export default function  View(props) {
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
 
 	const classes = useStyles();
-	
+
 	const loginSession = JSON.parse(sessionStorage.getItem("loginSession"));
 	// step 처리 
 	const getStepInfo = (row) => {
@@ -212,14 +212,16 @@ export default function  View(props) {
 				const isNoN = response.data.isNoN;
 				
 				data = JSON.parse(response.data.result);
-
+				
 				if(response.data.isAdmin != '1'){ // 관리자는 접근 가능
 					if(data.mno != loginSession.member_NO){ // 로그인 세션의 사번과 경비 정보에 등록된 사번을 비교한다.
 						return stateOpenEvent("권한이 없는 직원입니다.");
 					}
 				}
 
-				setFiles([{preview : data.filePath, name: data.filePath}]);
+				const contextPath = response.data.contextPath;
+
+				setFiles([{preview : contextPath+pathtoFileName(data.filePath), name: data.filePath}]);
 				setDataState(data);
 				
 			} else {
@@ -230,7 +232,7 @@ export default function  View(props) {
 		})
 		.catch(e => {
 			setShowLoadingBar(false);
-			processErrCode(e);
+			//processErrCode(e);
 			console.log(e);
 		});
 	}, []);
@@ -404,7 +406,7 @@ export default function  View(props) {
 
 		const params = match.params;
 
-		if(dataState.filePath != files[0].preview){
+		if(dataState.filePath != files[0].name){
 			formData.append('file',files[0]);
 		}
 
@@ -437,7 +439,7 @@ export default function  View(props) {
 
 		const params = match.params;
 
-		if(dataState.filePath != files[0].preview){
+		if(dataState.filePath != files[0].name){
 			formData.append('file',files[0]);
 		}
 
