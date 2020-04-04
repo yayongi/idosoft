@@ -1,7 +1,9 @@
 package kr.co.idosoft.intranet.login.model.dao;
 
+import java.util.Date;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +33,7 @@ public class LoginDaoImpl implements LoginDao {
 	@Override
 	public SessionVO selectMemberInfo(LoginVO loginInfo) {
 		
-		return sqlTemplate.selectOne("selectMemberInfo", loginInfo);
+		return sqlTemplate.selectOne("login.selectMemberInfo", loginInfo);
 	}
 	/**
 	 * 비밀번호 변경 
@@ -41,7 +43,7 @@ public class LoginDaoImpl implements LoginDao {
 	public Boolean updateResetPassword(Map<String, Object> data) {
 		
 		LOG.debug("# updateResetPassword START ###########################");
-		Integer result = sqlTemplate.update("updateResetPassword", data);
+		Integer result = sqlTemplate.update("login.updateResetPassword", data);
 		LOG.debug("# IsUpdate :: " + result);
 		LOG.debug("# updateResetPassword END #############################");
 		
@@ -51,5 +53,26 @@ public class LoginDaoImpl implements LoginDao {
 			return false;
 		}
 
+	}
+	
+	/**
+	 * 로그인 유지 처리
+	 * @return Boolean
+	 */
+	@Override
+	public void keepLogin(Map<String, Object> data) {
+		
+		sqlTemplate.update("login.keepLogin", data);
+		
+	}
+	
+	/**
+	 * 세션키 검증
+	 * @return Boolean
+	 */
+	@Override
+	public SessionVO checkUserWithSessionKey(Map<String, Object> data) {
+		
+		return sqlTemplate.selectOne("login.checkUserWithSessionKey", data);
 	}
 }

@@ -1,10 +1,13 @@
 package kr.co.idosoft.intranet.login.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -16,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.WebUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import kr.co.idosoft.common.util.CommandMap;
 import kr.co.idosoft.common.util.SHAPasswordEncoder;
 import kr.co.idosoft.intranet.login.model.service.LoginService;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
@@ -47,7 +52,8 @@ public class LoginController {
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> login(Model model, @RequestBody LoginVO loginVo, HttpServletRequest request) {
+	public Map<String, Object> login(Model model, @RequestBody LoginVO loginVo
+									, HttpServletRequest request, HttpServletResponse response, CommandMap commandMap) {
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/login");
@@ -86,6 +92,8 @@ public class LoginController {
 				LOG.debug("# 초기비밀번호 입니다. 비밀번호 재설정화면으로 이동합니다. ");
 				data.put("resPassSign", "true"); 
 			}
+			
+				
 			// 세션 저장
 			session.setAttribute("IS_ADMIN", sessionVo.getMANAGER_YN());
 
@@ -93,22 +101,51 @@ public class LoginController {
 			sessionVo.setPWD("");
 			sessionVo.setMANAGER_YN("");
 			
+			// 로그인 세션 생성
 			session.setAttribute("SESSION_DATA", sessionVo);
+			session.setMaxInactiveInterval(60 * 30);
 			
-			LOG.debug("# session : " + session.getAttribute("SESSION_DATA").toString());
-			LOG.debug("# sessionVO : " + sessionVo);
-
+			LOG.debug("# 로그인 유지를 선택했을 경우 START                                  #");
+			// 로그인 쿠키 생성 유무 판단
+			
+			LOG.debug("loginVo.getIsKeepLogin() : " + loginVo.getIsKeepLogin());
+			
+			if("Y".equals(loginVo.getIsKeepLogin())) {
+				
+				// 쿠키를 생성하고 생성한 세션의 id를 쿠키에 저장한다
+				Cookie cookie = new Cookie("loginCookie", session.getId());
+				
+				// 쿠키를 찾을 경로를 컨텍스트 경로로 변경한다.
+				cookie.setPath("/");
+				// 7일로 유효기간을 설정한다.
+				cookie.setMaxAge(60*60*24*7);
+				// 쿠키를 response객체에 담는다.
+				response.addCookie(cookie);
+				
+				int amount = 60 * 60 * 24 * 7;
+				Date sessionLimit = new Date(System.currentTimeMillis() + (1000 * amount));
+				
+				data.put("MEMBER_NO", sessionVo.getMEMBER_NO());
+				data.put("sessionId", session.getId());
+				data.put("sessionLimit", sessionLimit);
+				
+				loginService.keepLogin(data);
+			}
+			
+			LOG.debug("# 로그인 유지를 선택했을 경우 END                                    #");
+			LOG.debug("##########################################################");
+			
+			// 비밀번호 일치 여부 확인  END ////////////////////////////////////////////////////
+		
 			// 로그인 
 			data.put("loginSign", "true");
 			LOG.debug("# LOGIN FINISH ");
 
-		} else {
 			
 		}
 		
-		// 비밀번호 일치 여부 확인  END ////////////////////////////////////////////////////
-		LOG.debug("##########################################################");
-
+		
+		
 		return data;
 	}
 	
@@ -120,17 +157,46 @@ public class LoginController {
 	 */
 	@RequestMapping(value="/logout", method=RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> logout(Model model, HttpServletRequest request) {
+	public Map<String, Object> logout(Model model, HttpServletRequest request, HttpServletResponse response) {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("/logout");
 		}
 		
 		HttpSession session = request.getSession();
+		
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		
+		Cookie loginCookie = WebUtils.getCookie(request, "loginCookie");
+		
+		// 쿠기 정보가 존재할 경우,
+		if(loginCookie != null) {
+			LOG.debug(" 쿠키가 존재합니다.");
+			loginCookie.setPath("/");
+			
+			// 쿠키는 없앨 때 유효시간을 0으로 설정함으로써 없앨 수 있다.
+			loginCookie.setMaxAge(0);
+			
+			response.addCookie(loginCookie);
+			
+			Date sessionLimit = new Date(System.currentTimeMillis());
+			
+			// 직원 테이블 유효기간을 현재기간으로 재설정한다.
+			data.put("MEMBER_NO", sessionVo.getMEMBER_NO());
+			data.put("sessionId", session.getId());
+			data.put("sessionLimit", sessionLimit);
+			
+			loginService.keepLogin(data);
+		} else {
+			LOG.debug(" 쿠키가 존재하지 않습니다.");
+		}
+		
+		// 입력 데이터 제거
+		data.clear();
 		// 세션 비우기
 		session.invalidate();
-
+		
 		return data;
 	}
 	
@@ -226,6 +292,55 @@ public class LoginController {
 		} else {
 			mv.addObject("isError", "true");
 			mv.addObject("errMessage", "비밀번호 재설정 오류가 발생했습니다. 관리자에게 문의해주세요.");
+		}
+		
+		return mv;
+	}
+	
+	/**
+	 * 자동 로그인 처리
+	 * @param model
+	 * @param loginVo
+	 * @param request
+	 * @param response
+	 * @return mv
+	 */
+	@RequestMapping(value="/autoLogin", method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView autoLogin(Model model, @RequestBody LoginVO loginVo
+								, HttpServletRequest request, HttpServletResponse response) {
+		
+		ModelAndView mv = new ModelAndView();
+		
+		mv.setViewName("jsonView");
+		
+		mv.addObject("isAutoLogin", "false");
+		
+		HttpSession session = request.getSession();
+		
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");
+		
+		if (sessionVo != null && sessionVo.getMEMBER_NO() != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			String jsonSessionInfoObject = null;
+			
+			try {
+				jsonSessionInfoObject = mapper.writeValueAsString(sessionVo);
+			} catch (JsonProcessingException e) {
+				LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
+			}
+			
+			LOG.debug("#######################################################################");
+			LOG.debug("# SESSION OBJECT : " + session.getAttribute("SESSION_DATA"));
+			LOG.debug("# SESSION JSON OBJECT : " + jsonSessionInfoObject);
+			LOG.debug("#######################################################################");
+
+			// 세션 데이터 저장
+			mv.addObject("SESSION_DATA", jsonSessionInfoObject);
+			
+			LOG.debug("### 로그인 되어있는 직원입니다.");
+			mv.addObject("isAutoLogin", "true");
 		}
 		
 		return mv;

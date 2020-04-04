@@ -10,6 +10,9 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CommonDialog from '../../../../js/CommonDialog';
 import { getRootPath } from '../../../../js/util';
 
+// Server
+import Axios from 'axios';
+
 export default function Top(props) {
 	const {classes, handleDrawerOpen} = props;
 
@@ -39,8 +42,18 @@ export default function Top(props) {
 	const handleCloseDialog = (title,result) => {
 	setDialog({title:'', content:'', onOff:false, isConfirm:false});
 		if(result){
-			sessionStorage.removeItem("loginSession");
-			location.href = getRootPath() +'/#/signIn';
+			// 로그아웃 처리
+			Axios({
+				url: '/intranet/logout',
+				method: 'post',
+				data: {}
+			}).then(response => {
+				sessionStorage.removeItem("loginSession");
+				location.href = getRootPath() +'/#/signIn';
+			}).catch(e => {
+				console.log(e);
+			});
+
 		}else{
 			return;
 		}

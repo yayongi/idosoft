@@ -28,6 +28,15 @@ public class LoginServiceImpl implements LoginService {
 		
 		return loginDao.updateResetPassword(data);
 	}
+	@Override
+	public void keepLogin(Map<String, Object> data) {
+		loginDao.keepLogin(data);
+	}
+	@Override
+	public SessionVO checkUserWithSessionKey(Map<String, Object> data) {
+		// TODO Auto-generated method stub
+		return loginDao.checkUserWithSessionKey(data);
+	}
 
 
 }

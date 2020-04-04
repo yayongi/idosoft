@@ -18,7 +18,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import {getSessionMemberInfo} from '../../../js/util';
 
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
-import { getRootPath } from '../../../js/util';
+import { getRootPath, setSessionStrogy } from '../../../js/util';
 
 // Server
 import axios from 'axios';
@@ -37,11 +37,30 @@ class SignIn extends Component {
 			password: '',
 			errors: [],
 			open: false,
-			isShowLoadingBar: false
+			isShowLoadingBar: false,
+			isKeepLogin : false
 		}
 
 	}
 	
+	componentWillMount() {
+		// 자동 로그인 처리
+		axios({
+			url: '/intranet/autoLogin',
+			method: 'post',
+			data: {}
+		}).then(response => {
+			console.log(JSON.stringify(response.data.SESSION_DATA));
+
+			setSessionStrogy("loginSession",response.data.SESSION_DATA);
+
+			location.href=getRootPath();
+
+		}).catch(e => {
+			console.log(e);
+		});
+	}
+
 	setShowLoadingBar(param){
 		this.setState({
 			...this.state,
@@ -112,12 +131,15 @@ class SignIn extends Component {
 		
 		if(email != "" && password != "") {
 			
+			alert("this.isKeepLogin" + this.state.isKeepLogin);
+
 			axios({
 				url: '/intranet/login',
 				method: 'post',
 				data: {
 					email : email,
-					password : password
+					password : password,
+					isKeepLogin : this.state.isKeepLogin ? "Y" : "N",
 				}
 			}).then(response => {
 				
@@ -139,7 +161,19 @@ class SignIn extends Component {
 			});
 
 		}
+
+		setShowLoadingBar(false);
 	} 
+
+	handleChange = (event) => {
+		console.log("event.target.checked : " + event.target.checked);
+
+		this.setState({
+			...this.state,
+			isKeepLogin : event.target.checked
+		})
+
+	};
 
 	useStyles = makeStyles(theme => ({
 				paper: {
@@ -215,7 +249,18 @@ class SignIn extends Component {
 								onChange={this.pwHandleChange.bind(this)}
 							/>
 							{passwordErr ? <Alert severity="error">{passwordErr}</Alert> : ""}
-							<div style={{height : 40}}/>
+							<FormControlLabel
+								control={
+								<Checkbox
+									checked={this.state.isKeepLogin}
+									onChange={this.handleChange.bind(this)}
+									name="isKeepLogin"
+									color="primary"
+								/>
+								}
+								label="자동 로그인"
+							/>
+							
 							<Button
 								type="button"
 								fullWidth

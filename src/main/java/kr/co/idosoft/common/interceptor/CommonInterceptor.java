@@ -3,21 +3,27 @@ package kr.co.idosoft.common.interceptor;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.ModelAndViewDefiningException;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.util.WebUtils;
 
+import kr.co.idosoft.intranet.login.model.service.LoginService;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 
 public class CommonInterceptor extends  HandlerInterceptorAdapter {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CommonInterceptor.class);
+	
+	@Autowired
+	LoginService loginService;
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -34,16 +40,43 @@ public class CommonInterceptor extends  HandlerInterceptorAdapter {
 			HttpSession session = request.getSession();
 			
 			sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");
-			LOG.debug("sessionVo : " + sessionVo.toString());
 			
 			if (sessionVo != null && sessionVo.getMEMBER_NO() != null) {
-				LOG.debug("return : true");
+				LOG.debug("sessionVo : " + sessionVo.toString());
+				LOG.debug("### 로그인 되어있는 직원입니다.");
 				return true;
-			} else {
-				LOG.debug("return : false");
+			} else { // 로그인 상태 여부 판단 
+				LOG.debug("### 로그인 되어있지 않은 직원입니다.");
+				// 세션정보가 없으면 쿠키 정보를 확인한다.
+				Cookie loginCookie = WebUtils.getCookie(request, "loginCookie");
 				
-				response.sendError(400); // 세션 만료 에러
-				return false;
+				if(loginCookie != null) {
+					LOG.debug("### 쿠키가 존재합니다. 자동로그인 처리 합니다.");
+					HashMap<String, Object> sessionMap = new HashMap<String, Object>();
+					// 쿠키에서 세션 ID를 꺼낸다.
+					sessionMap.put("sessionId", loginCookie.getValue());
+					
+					// 세션 ID값을 기준으로 검색하여 로그인 정보를 가져온다.
+					sessionVo = loginService.checkUserWithSessionKey(sessionMap);
+					
+					if(sessionVo != null) { // 로그인 여부 존재 여부 판단
+						session.setAttribute("SESSION_DATA", sessionVo);
+						session.setMaxInactiveInterval(60 * 30);
+						
+						return true;
+					} else {
+						LOG.debug("# 세션 정보가 없습니다.");
+						
+						response.sendError(400); // 세션 만료 에러
+						return false;
+					}
+				} else {
+					LOG.debug("# 세션 정보가 없습니다.");
+					
+					response.sendError(400); // 세션 만료 에러
+					return false;
+				}
+				
 			}
 		} catch (Exception e) {
 			LOG.debug("Exception : " + e.getMessage());
@@ -60,43 +93,6 @@ public class CommonInterceptor extends  HandlerInterceptorAdapter {
 			ModelAndView modelAndView) throws Exception {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("===================        END        ===================\n");
-		}
-		
-		SessionVO sessionVo = null;
-		HttpSession session = request.getSession();
-		String requestURI = request.getRequestURI();
-		try {
-			if (!requestURI.equals("/index.do")) {
-				sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");
-	
-				if (sessionVo != null && sessionVo.getMEMBER_NO() != null) {
-					HashMap<String, Object> menuAuthMap = (HashMap<String, Object>) modelAndView.getModel().get("menuAuth");
-					/*
-					 * String sessUserAuth = sessionVo.getMANAGER_YN(); String menuCode =
-					 * String.valueOf(menuAuthMap.get("menuCode")); boolean authCheck = false;
-					 * StringTokenizer st = new StringTokenizer(sessUserAuth, ",");
-					 * 
-					 * while (st.hasMoreTokens()) { String authCode = st.nextToken(); if
-					 * (menuCode.equals(authCode)) { authCheck = true; } }
-					 * 
-					 * if (!authCheck) { ModelAndView mav = new
-					 * ModelAndView("redirect:/forward.do"); mav.addObject("msgCode", "권한이 없습니다.");
-					 * mav.addObject("returnUrl", "/index.do"); throw new
-					 * ModelAndViewDefiningException(mav); }
-					 */
-				} else { // 세션이 없으면 로그인 페이지로 이동
-					ModelAndView mav = new ModelAndView("redirect:/#/signIn");
-					mav.addObject("msgCode", "세션이 만료되어 로그아웃 되었습니다. 다시 로그인 해주세요.");
-					mav.addObject("returnUrl", "/login.do");
-					throw new ModelAndViewDefiningException(mav);
-				}
-			}
-		} catch (Exception e) { // 그 외 예외사항은 index로 이동
-			/*
-			 * ModelAndView mav = new ModelAndView("redirect:/forward.do");
-			 * mav.addObject("msgCode", "권한이 없습니다."); mav.addObject("returnUrl",
-			 * "/index.do"); throw new ModelAndViewDefiningException(mav);
-			 */
 		}
 	}
 }
