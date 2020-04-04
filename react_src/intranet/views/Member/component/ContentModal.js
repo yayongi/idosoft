@@ -11,10 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import Toolbar from '@material-ui/core/Toolbar';
-import { Link as RouterLink, } from 'react-router-dom';
-import { positionFormatter } from '../../../js/util';
-
-const pathProfile = "C:\\Users\\SeongwooKang\\git\\idosoft_br\\react_src\\intranet\\img\\profile\\";
+import { getRootPath } from '../../../js/util';
 
 const styles = theme => ({
   root: {
@@ -111,7 +108,7 @@ const ContentModal = ({props, closeModal}) => {
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
                     <div style={{textAlign:'-webkit-center'}}>
-                      <Avatar src={props.photo_path != undefined ? pathProfile + props.photo_path : ""} className={classes.large} />
+                      <img id="profileImg" src={props.photo_path != null ? getRootPath() + "/resources/profile/" + props.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
                     </div>
                   </Grid>
                   <Grid item xs={6}>
@@ -139,7 +136,7 @@ const ContentModal = ({props, closeModal}) => {
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
                     <div style={{textAlign:'-webkit-center'}}>
-                      <Avatar src={props.photo_path != undefined ? pathProfile + props.photo_path : ""} className={classes.large} />
+                      <img id="profileImg" src={props.photo_path != null ? getRootPath() + "/resources/profile/" + props.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
                     </div>
                   </Grid>
                   <Grid item xs={12}>
