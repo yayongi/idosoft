@@ -4,6 +4,8 @@ import Typography from '@material-ui/core/Typography';
 import Title from '../Title';
 import { getLunarDate } from '../../../../js/LunarCalendar';
 
+import {processErrCode } from '../../../../js/util';
+
 const Anniversary = () => {
 	const [state, setState] =  React.useState(null);
 	
@@ -23,6 +25,7 @@ const Anniversary = () => {
 		}).then(response => {
 			setState(response.data)
 ;		}).catch(e => {
+			processErrCode(e, false);
 		});
 	},[])
 

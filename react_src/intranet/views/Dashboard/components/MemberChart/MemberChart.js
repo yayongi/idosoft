@@ -4,6 +4,8 @@ import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid,ResponsiveContainer } from 'recharts';
 import Title from '../Title';
 
+import {processErrCode } from '../../../../js/util';
+
 export default function MemberChart(){
 	const theme = useTheme();
 
@@ -23,6 +25,7 @@ export default function MemberChart(){
 				data : temp
 			});
 ;		}).catch(e => {
+			processErrCode(e, false);
 		});
 	},[])
 

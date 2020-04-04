@@ -207,34 +207,34 @@ export function excelExport(json){
   //  axios 공통 에러 코드 처리 프로세스
   //  작성자 : 유기환
 
-  export function processErrCode(e){
+  export function processErrCode(e, isMsg){
 
     const errCode = e.response.status;
 
     if(errCode == 400){
-      alert("세션이 만료되어 로그아웃 되었습니다. 다시 로그인 해주세요.");
+      if(isMsg == false){
+        /* alert 창 표시 한함  */
+      } else {
+        alert("세션이 만료되어 로그아웃 되었습니다. 다시 로그인 해주세요.");
+      }
       location.href = getRootPath() + "/#/signIn";
     } else {
+
     }
   }
 
   //  로그인 회원정보 세션데이터 가져오기
   //  작성자 : 유기환
-  export function getSessionMemberInfo(resPassSign){
+  export function getSessionMemberInfo(){
     axios({
       url: '/intranet/getSession',
       method: 'get',
       data: {}
     }).then(response => {
       sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
-      if(resPassSign == 'true'){
-        location.href= getRootPath() +"/#/resPassword";
-      } else {
-        location.href= getRootPath() +"/#/";
-      }
+      
     }).catch(e => {
       processErrCode(e);
-      return null;
     });
   }
   

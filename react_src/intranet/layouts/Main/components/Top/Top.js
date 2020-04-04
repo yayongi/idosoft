@@ -22,8 +22,6 @@ export default function Top(props) {
 	if(sessionStorage.getItem("loginSession") != null){
 		isLogin = true
 		session = JSON.parse(sessionStorage.getItem("loginSession"));
-	}else{
-		location.href = getRootPath() + '/#/signIn';
 	}
 
 	// confirm, alert 창 함수
@@ -51,6 +49,7 @@ export default function Top(props) {
 				sessionStorage.removeItem("loginSession");
 				location.href = getRootPath() +'/#/signIn';
 			}).catch(e => {
+				processErrCode(e);
 				console.log(e);
 			});
 

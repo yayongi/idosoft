@@ -28,7 +28,6 @@
 			<mapping path="/**" />
 			<exclude-mapping path="/" />
 			<exclude-mapping path="/login" />
-			<exclude-mapping path="/logout" />
 			<exclude-mapping path="/resources/**" />
 			<beans:bean id="commonInterceptor"
 				class="kr.co.idosoft.common.interceptor.CommonInterceptor" />

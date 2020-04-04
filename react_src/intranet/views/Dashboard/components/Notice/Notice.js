@@ -15,6 +15,8 @@ import ContentModal from "./ContentModal";
 import Title from '../Title';
 import { data } from './data';
 
+import {processErrCode } from '../../../../js/util';
+
 const useStyles = makeStyles(theme => ({
 	alignCenter : {
 		textAlign:"center"
@@ -47,6 +49,7 @@ const Notice = () => {
 		}).then(response => {
 			setState(response.data)
 ;		}).catch(e => {
+			processErrCode(e, false);
 		});
 	},[])
 

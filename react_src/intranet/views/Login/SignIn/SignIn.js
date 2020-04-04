@@ -15,8 +15,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 
-import {getSessionMemberInfo} from '../../../js/util';
-
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 import { getRootPath, setSessionStrogy } from '../../../js/util';
 
@@ -130,8 +128,6 @@ class SignIn extends Component {
 		} 
 		
 		if(email != "" && password != "") {
-			
-			alert("this.isKeepLogin" + this.state.isKeepLogin);
 
 			axios({
 				url: '/intranet/login',
@@ -148,7 +144,11 @@ class SignIn extends Component {
 
 				if(loginSign == 'true'){
 					//로그인 후 세션 등록
-					getSessionMemberInfo(resPassSign);
+					if(resPassSign == 'true'){
+						location.href= getRootPath() +"/#/resPassword";
+					} else {
+						location.href= getRootPath() +"/#/";
+					}
 				} else {
 					const errorArartOpen = this.errorArartOpen.bind(this);
 					errorArartOpen();
@@ -156,7 +156,7 @@ class SignIn extends Component {
 				}
 
 			}).catch(e => {
-				console.log(e);66
+				console.log(e);
 				setShowLoadingBar(false);
 			});
 
