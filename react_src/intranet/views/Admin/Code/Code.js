@@ -7,7 +7,8 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { LoadingBar } from '../component/utils';
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
+import { processErrCode } from '../../../js/util';
 
 import axios from 'axios';
 
@@ -140,8 +141,8 @@ export default function CodeView(props) {
       setRebuildSortedData(getRebuildSortedData(result));
 
     }).catch(e => {
-      console.log(e);
       setShowLoadingBar(false);
+      processErrCode(e);
     });
   }
   useEffect(() => {

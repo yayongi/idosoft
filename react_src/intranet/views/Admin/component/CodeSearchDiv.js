@@ -186,12 +186,13 @@ export default function CodeSearchDiv(props) {
 							<TextField
 								id="searchType"
 								name="searchType"
-								select
 								margin="dense"
 								placeholder="검색조건"
 								label="검색조건"
 								value={dialogState.searchType}
+								defaultValue={searchTypes[0].value}
 								onChange={handleTypeChange}
+								select
 								fullWidth>
 								{searchTypes.map(option => (
 									<MenuItem key={option.value} value={option.value}>

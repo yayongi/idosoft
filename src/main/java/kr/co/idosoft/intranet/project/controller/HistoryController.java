@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.project.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,9 +48,11 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		
 		
 		ArrayList<Map<String, Object>> history_list = new ArrayList<Map<String, Object>>();
+		List<MemberVO> member_list = new ArrayList<MemberVO>();
 		try {
 			if(isAdmin) {
 				member_no = "";
+				member_list = historyService.selectMemberList();
 			}
 			history_list = (ArrayList<Map<String, Object>>)historyService.selectHistory(member_no);
 			
@@ -58,6 +61,7 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		}
 		
 		
+		mv.addObject("member_list", member_list);
 		mv.addObject("history_list", history_list);
 		return mv;
 	}
@@ -80,7 +84,7 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		
 		
 		List<MemberVO> member_list = new ArrayList<MemberVO>();
-		List<Map<String, Object>> hist_list = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> proj_list = new ArrayList<Map<String, Object>>();
 		List<String> inputCodeList = (List<String>)params.get("CODE_ID");
 		List<Map<String, Object>> code_list = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
@@ -88,19 +92,118 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 			if(isAdmin) {
 				member_list = historyService.selectMemberList();
 			}
-			hist_list = historyService.selectAllList();
+			proj_list = historyService.selectAllList();
 			code_list = historyService.getLowCodeList(inputCodeList.get(0));
 			role_list = historyService.getLowCodeList(inputCodeList.get(1));
 		} catch (Exception e) {
 			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
 		}
 		
-		
+		mv.addObject("isAdmin", isAdmin);
 		mv.addObject("member_list", member_list);
-		mv.addObject("hist_list", hist_list);
+		mv.addObject("proj_list", proj_list);
 		mv.addObject("code_list", code_list);
 		mv.addObject("role_list", role_list);
 		return mv;
 	}
+	
+	
+	@RequestMapping(value="/historyInsert",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView historyInsert(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		HttpSession session = request.getSession();
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String member_no = sessionVo.getMEMBER_NO();
+		params.put("reg_id", member_no);
+		boolean db_result = false;
+		try {
+			historyService.insert((HashMap<String, Object>) params);
+		}catch(Exception e) {
+			db_result = true;
+		}
+		mv.addObject("isDBError", db_result);
+		return mv;
+	}
+	
+	@RequestMapping(value="/detailInfo",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView detailInfo(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		String mem_hist_no = (String)params.get("MEM_HIST_NO");
+		List<Map<String, Object>> proj_list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> detailInfo = new HashMap<String, Object>();
+		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
+		boolean db_result = false;
+		try {
+			detailInfo = (Map<String, Object>) historyService.selectDetailHistory(mem_hist_no);
+			role_list = historyService.getLowCodeList((String) params.get("CODE_ID"));
+			proj_list = historyService.selectAllList();
+		}catch(Exception e) {
+			db_result = true;
+		}
+		mv.addObject("isDBError", db_result);
+		mv.addObject("proj_list", proj_list);
+		mv.addObject("role_list", role_list);
+		mv.addObject("detailInfo", detailInfo);
+		return mv;
+	}
 
+	@RequestMapping(value="/removeHistory",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView removeHistory(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		String mem_hist_no = (String)params.get("MEM_HIST_NO").toString();
+		boolean db_result = false;
+		try {
+			historyService.removeHistory(mem_hist_no);
+		}catch(Exception e) {
+			db_result = true;
+		}
+		mv.addObject("isDBError", db_result);
+		return mv;
+	}
+	
+	@RequestMapping(value="/updateHistory",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView updateHistory(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		HttpSession session = request.getSession();
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String member_no = sessionVo.getMEMBER_NO();
+		params.put("upd_id", member_no);
+		
+		boolean db_result = false;
+		try {
+			historyService.update((HashMap<String, Object>)params);
+		}catch(Exception e) {
+			db_result = true;
+		}
+		mv.addObject("isDBError", db_result);
+		return mv;
+	}
 }

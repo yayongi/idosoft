@@ -13,7 +13,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { LoadingBar } from '../../Admin/component/utils';
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 
 import axios from 'axios';
 
@@ -147,8 +147,8 @@ export default function CodeInfo(props) {
 			}
 				setShowLoadingBar(false);
 		}).catch(e => {
-			console.log(e);
 			setShowLoadingBar(false);
+			processErrCode(e);
 		});
 	};
 
@@ -173,8 +173,8 @@ export default function CodeInfo(props) {
 			}
 			setShowLoadingBar(false);
 		}).catch(e => {
-			console.log(e);
 			setShowLoadingBar(false);
+			processErrCode(e);
 		});
 	}
 
@@ -199,8 +199,8 @@ export default function CodeInfo(props) {
 			}
 			setShowLoadingBar(false);
 		}).catch(e => {
-			console.log(e);
 			setShowLoadingBar(false);
+			processErrCode(e);
 		});
 
 

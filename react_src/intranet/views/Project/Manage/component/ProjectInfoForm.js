@@ -22,7 +22,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CreateIcon from '@material-ui/icons/Create';
 
-import { LoadingBar } from '../../../Admin/component/utils';
+import { LoadingBar }  from '../../../../common/LoadingBar/LoadingBar';
 
 import axios from 'axios';
 
@@ -141,8 +141,8 @@ function ProjectInfoForm(props) {
 				setRole(response.data.role_list);
 				setShowLoadingBar(false);
 			}).catch(e => {
-				console.log(e);
 				setShowLoadingBar(false);
+				processErrCode(e);
 			});
 		}else if(screenType == "modify"){
 			axios({
@@ -167,8 +167,8 @@ function ProjectInfoForm(props) {
 				setMemDataState([...proMemList]);
 				setShowLoadingBar(false);
 			}).catch(e => {
-				console.log(e);
 				setShowLoadingBar(false);
+				processErrCode(e);
 			});
 		}
 	}, [renderWant]);
@@ -257,8 +257,8 @@ function ProjectInfoForm(props) {
 			}
 			setShowLoadingBar(false);
 		}).catch(e => {
-			console.log(e);
 			setShowLoadingBar(false);
+			processErrCode(e);
 		});
 	}
 
@@ -286,8 +286,8 @@ function ProjectInfoForm(props) {
 				history.goBack();
 			}
 		}).catch(e => {
-			console.log(e);
 			setShowLoadingBar(false);
+			processErrCode(e);
 		});
 	}
 	const handleClickRemoveProject = () => {
@@ -305,8 +305,8 @@ function ProjectInfoForm(props) {
 				history.goBack();
 			}
 		}).catch(e => {
-			console.log(e);
 			setShowLoadingBar(false);
+			processErrCode(e);
 		});
 	}
 
@@ -328,8 +328,8 @@ function ProjectInfoForm(props) {
 				setRenderWant(!renderWant);
 			}
 		}).catch(e => {
-			console.log(e);
 			setShowLoadingBar(false);
+			processErrCode(e);
 		});
 	}
 	

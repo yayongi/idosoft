@@ -16,17 +16,13 @@ const mainStyles = makeStyles(theme => ({
 }));
 
 
+
 export default function HistoryView(props) {
 	const classes = mainStyles();
-	const [historyOriginInfo, setHistoryOriginInfo ] = useState([], []);
 	const [historyInfo, setHistoryInfo] = useState([]);
 	const [memberlist, setMemberList] = useState([]);
 	const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
 	const userInfo = JSON.parse(sessionStorage.getItem("loginSession"));
-	
-	
-	console.log("getSessionMemberInfo : ");
-	console.log(userInfo);
 	
 	useEffect(() => {
 		axios({
@@ -34,11 +30,19 @@ export default function HistoryView(props) {
 			method: 'post',
 			data: {}
 		}).then(response => {
-			console.log(response);
+			var member_list = response.data.member_list;
+			if(member_list.length > 0){
+				setMemberList(member_list);
+			}else{
+				var list = [];
+				list.push({"MEMBER_NO" : userInfo["member_NO"], "MEMBER_NAME":userInfo["name"]})
+				setMemberList([...list]);
+			}
 			setHistoryInfo(response.data.history_list);
 			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
+			processErrCode(e);
 		});
 	}, []);
 
@@ -50,7 +54,7 @@ export default function HistoryView(props) {
 			<Grid container spacing={2}>
 			<Grid item xs={12}>
 				<Paper className={classes.paper}>
-					<HistoryInfoTable historyInfo={ historyInfo } routeProps={props.routeProps}/>
+					<HistoryInfoTable historyOriginalInfo={ historyInfo } memberlist={ memberlist } routeProps={props.routeProps}/>
 				</Paper>
 			</Grid>
 			</Grid>

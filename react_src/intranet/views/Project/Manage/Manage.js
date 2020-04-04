@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ProjectSearchDiv from './component/ProjectSearchDiv';
 import ProjectInfoTable from './component/ProjectInfoTable';
 import ProjectGraph from './component/ProjectGraph';
-import { LoadingBar } from '../../Admin/component/utils';
+import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 
 import axios from 'axios';
 
@@ -52,8 +52,8 @@ export default function ManageView(props) {
       setProjectInfo(result);
       setShowLoadingBar(false);
     }).catch(e => {
-      console.log(e);
       setShowLoadingBar(false);
+      processErrCode(e);
     });
   }, []);
 

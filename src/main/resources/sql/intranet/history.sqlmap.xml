@@ -9,8 +9,8 @@
 			ROLE_CODE, CHRG_JOB, USE_LANG, REG_DATETIME, UPD_DATETIME, REG_ID,
 			UPD_ID, NOTE, TEMP_COLUM)		
 		VALUES 
-			(#{MEMBER_NO}, #{PROJECT_NO}, #{PROJECT_NM}, #{INSTT_CODE}, #{INSTT_NM}, #{INPT_BGNDE}, #{INPT_ENDDE}, #{ROLE_CODE}, #{CHRG_JOB}, #{USE_LANG}
-			, DATE_FORMAT(NOW(),'%Y%m%d'), null, #{REG_ID}, null, "", "")
+			(#{member_no}, #{project_no}, #{project_nm}, #{instt_code}, #{instt_nm}, #{inpt_bgnde}, #{inpt_endde}, #{role_code}, #{chrg_job}, #{use_lang}
+			, DATE_FORMAT(NOW(),'%Y%m%d'), null, #{reg_id}, null, "", "")
 	</insert>
 	
 	<!-- 이력 수정 -->
@@ -18,18 +18,18 @@
 		UPDATE
 			TB_MEM_HIST
 		SET
-			, PROJECT_NM = #{PROJECT_NM}
-			, INSTT_CODE = #{INSTT_CODE}
-			, INSTT_NM = #{INSTT_NM}
-			, INPT_BGNDE = #{INPT_BGNDE}
-			, INPT_ENDDE = #{INPT_ENDDE}
-			, ROLE_CODE = #{ROLE_CODE}
-			, CHRG_JOB = #{CHRG_JOB}
-			, USE_LANG = #{USE_LANG}
+			PROJECT_NM = #{project_nm}
+			, INSTT_CODE = #{instt_code}
+			, INSTT_NM = #{instt_nm}
+			, INPT_BGNDE = #{inpt_bgnde}
+			, INPT_ENDDE = #{inpt_endde}
+			, ROLE_CODE = #{role_code}
+			, CHRG_JOB = #{chrg_job}
+			, USE_LANG = #{use_lang}
 			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
-			, UPD_ID = #{UPD_ID}
+			, UPD_ID = #{upd_id}
 		WHERE
-			MEM_HIST_NO = #{MEMBER_NO}
+			MEM_HIST_NO = #{mem_hist_no}
 	</update>
 	
 	
@@ -44,6 +44,7 @@
         , HIST.INSTT_NM
         , HIST.INPT_BGNDE
         , HIST.INPT_ENDDE
+        , CONCAT(date_format(HIST.INPT_BGNDE,'%Y-%m-%d'), "~" , date_format(HIST.INPT_ENDDE,'%Y-%m-%d')) AS TERM
         , HIST.ROLE_CODE
         , HIST.CHRG_JOB
         , HIST.USE_LANG
@@ -60,6 +61,41 @@
 		<if test="MEMBER_NO != ''">
 			AND HIST.MEMBER_NO like #{MEMBER_NO}
 		</if>
-		ORDER BY HIST.INPT_BGNDE DESC
+		ORDER BY HIST.MEMBER_NO DESC, INPT_BGNDE DESC
+	</select>
+	
+	<!-- 이력 상세 조회 -->
+	<select id="selectDetailHistory" parameterType="String"  resultType="hashMap">
+		SELECT
+			HIST.MEM_HIST_NO
+        , HIST.MEMBER_NO
+        , HIST.PROJECT_NO
+        , HIST.PROJECT_NM
+        , HIST.INSTT_CODE
+        , HIST.INSTT_NM
+        , HIST.INPT_BGNDE
+        , HIST.INPT_ENDDE
+        , CONCAT(date_format(HIST.INPT_BGNDE,'%Y-%m-%d'), "~" , date_format(HIST.INPT_ENDDE,'%Y-%m-%d')) AS TERM
+        , HIST.ROLE_CODE
+        , HIST.CHRG_JOB
+        , HIST.USE_LANG
+        , HIST.REG_DATETIME
+        , HIST.UPD_DATETIME
+        , HIST.REG_ID
+        , HIST.UPD_ID
+        , HIST.NOTE
+        , HIST.TEMP_COLUM
+        , MEM.NAME AS MEMBER_NAME
+		FROM TB_MEM_HIST AS HIST
+		LEFT JOIN TB_MEMBER AS MEM ON MEM.MEMBER_NO = HIST.MEMBER_NO 
+		WHERE HIST.MEM_HIST_NO like #{MEM_HIST_NO}
+	</select>
+	
+	<!-- 이력 삭제 -->
+	<select id="removeHistory" parameterType="String">
+		DELETE FROM
+			TB_MEM_HIST
+		WHERE
+			MEM_HIST_NO = #{MEM_HIST_NO}
 	</select>
 </mapper>

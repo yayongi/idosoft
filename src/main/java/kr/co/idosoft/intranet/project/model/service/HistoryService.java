@@ -20,4 +20,8 @@ public interface HistoryService {
 	
 	//코드 정보 조회
 	List<Map<String, Object>> getLowCodeList(String code_id);
+	
+	Map<String, Object> selectDetailHistory(String mem_hist_no);
+	
+	void removeHistory(String mem_hist_no);
 }

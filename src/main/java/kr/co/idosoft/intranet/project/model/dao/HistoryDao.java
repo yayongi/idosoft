@@ -13,8 +13,10 @@ import java.util.Map;
 public interface HistoryDao {
 	void insert(HashMap<String, Object> insert);
 	void update(HashMap<String, Object> update);
+	
 	List<Map<String, Object>> selectHistory(String member_no);
+	Map<String, Object> selectDetailHistory(String mem_hist_no);
 	
-	
+	void removeHistory(String mem_hist_no);
 }
 

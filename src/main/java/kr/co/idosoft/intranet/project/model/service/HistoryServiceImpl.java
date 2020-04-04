@@ -58,4 +58,16 @@ public class HistoryServiceImpl implements HistoryService {
 		return code_dao.getLowCodeList(code_id);
 	}
 
+	@Override
+	public Map<String, Object> selectDetailHistory(String mem_hist_no) {
+		// TODO Auto-generated method stub
+		return hist_dao.selectDetailHistory(mem_hist_no);
+	}
+
+	@Override
+	public void removeHistory(String mem_hist_no) {
+		// TODO Auto-generated method stub
+		hist_dao.removeHistory(mem_hist_no);
+	}
+
 }
