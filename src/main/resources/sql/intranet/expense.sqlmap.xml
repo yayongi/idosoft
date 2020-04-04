@@ -489,7 +489,7 @@
 	<!-- 경비 월 통계 개인 내역 -->
 	<select id="getMonthlyExpenseRecode" parameterType="hashmap" resultType="hashmap">
 	SELECT 
-		@rownum := @rownum-1 EXPENSE_NO
+		@rownum := @rownum+1 EXPENSE_NO
 		, A.MEMBER_NO MEMBER_NO
 		, D.CODE_NAME
 		, A.USE_CN USE_CN
@@ -504,7 +504,7 @@
 		ON B.POSITION = C.CODE_ID
 	LEFT JOIN TB_CODE D
 		ON A.EXPENS_TY_CODE = D.CODE_ID
-	JOIN (SELECT @rownum := #{listCount}+1) R
+	JOIN (SELECT @rownum := 0) R
 	<where>
 		AND A.MEMBER_NO = #{MEMBER_NO}
 		AND DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
@@ -512,6 +512,7 @@
 				AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
 		AND A.SANCTN_STTUS_CODE = 'SS0002'
 	</where> 
+	ORDER BY A.REG_DATETIME ASC 
 	</select>
 	
 	<select id="getMonthTotalAmount" parameterType="hashmap" resultType="int">
