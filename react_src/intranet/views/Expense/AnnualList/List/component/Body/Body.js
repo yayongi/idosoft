@@ -25,7 +25,7 @@ function Body(props) {
     const classes = useStyles();
 
     const columnsUp = [
-      { id: 'seq', label: '번호', minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'rnum', label: '번호', minWidth: 100, align: 'center', paddingLeft : 50},
       { id: 'expenseTypeText', label: '경비유형', minWidth: 100, align: 'center', paddingLeft : 50 },
       { id: 'memo', label: '내용', minWidth: 100, align: 'center', paddingLeft : 50 },
       { id: 'statusText', label: '진행상태', minWidth: 100, align: 'center', paddingLeft : 50 },
@@ -184,13 +184,13 @@ function Body(props) {
                   <TableRow hover 
                       role="checkbox" 
                       tabIndex={-1} 
-                      key={row.seq} 
+                      key={row.rnum} 
                       onClick={() => handleClickView(event, row)} // react router의 상세
                   >
                       {columns.map(column => {
                         const value = row[column.id];
                         return (
-                          <TableCell key={row.seq + column.id} align={column.align} className={column.className}>
+                          <TableCell key={row.rnum + column.id} align={column.align} className={column.className}>
                             {column.format && typeof value === 'number' ? column.format(value) : value}
                           </TableCell>
                         );

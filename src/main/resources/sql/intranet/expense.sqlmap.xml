@@ -60,7 +60,9 @@
 	<!-- 경비관리목록리스트 -->
 	<select id="getAnnalList" parameterType="hashmap"
 		resultType="hashmap">
-		SELECT A.EXPENS_NO seq
+		SELECT 
+		@rownum := @rownum-1 AS rnum
+		, A.EXPENS_NO seq
 		, C.CODE_NAME expenseTypeText
 		, A.USE_CN memo
 		, A.SANCTN_STTUS_CODE status
@@ -84,6 +86,7 @@
 		ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
 		LEFT JOIN TB_MEMBER F
 		ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
+		JOIN (SELECT @rownum := #{listCount}+1) R
 		<where>
 			<if test="isAdmin != 1">
 				AND A.MEMBER_NO = #{MEMBER_NO}
@@ -102,7 +105,7 @@
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 		</where>
-		ORDER BY A.EXPENS_NO DESC
+		ORDER BY A.SANCTN_STTUS_CODE ASC, A.EXPENS_NO DESC
 	</select>
 	<!-- 경비관리목록 총 개수 -->
 	<select id="getAnnalListCount" parameterType="hashmap"
@@ -297,7 +300,9 @@
 	
 	<!-- 경비결재목록리스트 -->
 	<select id="getApprovalList" parameterType="hashmap" resultType="hashmap">
-		SELECT A.EXPENS_NO seq
+		SELECT 
+		@rownum := @rownum-1 AS rnum
+		, A.EXPENS_NO seq
 		, C.CODE_NAME expenseTypeText
 		, A.USE_CN memo
 		, A.SANCTN_STTUS_CODE status
@@ -323,6 +328,7 @@
 		ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
 		LEFT JOIN TB_MEMBER F
 		ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
+		JOIN (SELECT @rownum := #{listCount}+1) R
 		<where>
 			<if test="isAdmin != 1">
 				<if test="MEMBER_NO != null">
@@ -346,7 +352,7 @@
 			</if>
 			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
 		</where>
-		ORDER BY A.EXPENS_NO DESC
+		ORDER BY A.SANCTN_STTUS_CODE ASC, A.EXPENS_NO DESC
 	</select>
 	<!-- 경비 총금액 -->
 	<select id="getAppTotalAmount" parameterType="hashmap" resultType="int">
@@ -476,13 +482,14 @@
 			DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
 				BETWEEN DATE_FORMAT(#{REG_START_DATE}, '%Y-%m-%d') 
 				AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
+			AND A.SANCTN_STTUS_CODE = 'SS0002'
 		GROUP BY A.MEMBER_NO
 		ORDER BY B.NAME ASC
 	</select>
 	<!-- 경비 월 통계 개인 내역 -->
 	<select id="getMonthlyExpenseRecode" parameterType="hashmap" resultType="hashmap">
 	SELECT 
-		 A.EXPENS_NO EXPENSE_NO
+		@rownum := @rownum-1 EXPENSE_NO
 		, A.MEMBER_NO MEMBER_NO
 		, D.CODE_NAME
 		, A.USE_CN USE_CN
@@ -497,11 +504,13 @@
 		ON B.POSITION = C.CODE_ID
 	LEFT JOIN TB_CODE D
 		ON A.EXPENS_TY_CODE = D.CODE_ID
+	JOIN (SELECT @rownum := #{listCount}+1) R
 	<where>
 		AND A.MEMBER_NO = #{MEMBER_NO}
 		AND DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
 			BETWEEN DATE_FORMAT(#{REG_START_DATE}, '%Y-%m-%d') 
 				AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
+		AND A.SANCTN_STTUS_CODE = 'SS0002'
 	</where> 
 	</select>
 	
@@ -513,6 +522,7 @@
 		DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
 			BETWEEN DATE_FORMAT(#{REG_START_DATE}, '%Y-%m-%d') 
 			AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
+			AND A.SANCTN_STTUS_CODE = 'SS0002'
 	</select>
 	
 	<select id="getIndiMonthTotalAmount" parameterType="hashmap" resultType="int">
@@ -524,6 +534,7 @@
 		BETWEEN DATE_FORMAT(#{REG_START_DATE}, '%Y-%m-%d') 
 		AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
 	AND MEMBER_NO = #{MEMBER_NO}
+	AND A.SANCTN_STTUS_CODE = 'SS0002'
 	</where>
 				
 	</select>
