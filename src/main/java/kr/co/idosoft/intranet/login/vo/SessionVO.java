@@ -38,8 +38,8 @@ public class SessionVO implements Serializable{
 	private String REG_ID;						// 등록계정
 	private String UPD_ID;						// 수정일
 	private String RET_DATE;					// 퇴사일
-	private String NOTE;						// 비고
-	private String TEMP_COLUM;					// 남는컬럼
+	private String NOTE;						// SESSION_KEY(자동로그인 - session id 기록)
+	private Date TEMP_COLUM;					// SESSION_LIMIT(자동로그인 유효시간 기록)
 	
 	public SessionVO() {
 		super();
@@ -49,7 +49,7 @@ public class SessionVO implements Serializable{
 			String cAREER_DATE, String eNTRY_DATE, String sCHOOL_MAJOR, String sCHOOL_CAREER, String cERT_YN,
 			String mANAGER_YN, String aPPROVAL_YN, String pHOTO_PATH, String cERTFILE_JOB_PATH,
 			String cERTFILE_SCHOOL_PATH, Date rEG_DATETIME, Date uPD_DATE, String rEG_ID, String uPD_ID,
-			String rET_DATE, String nOTE, String tEMP_COLUM) {
+			String rET_DATE, String nOTE, Date tEMP_COLUM) {
 		super();
 		MEMBER_NO = mEMBER_NO;
 		EMAIL = eMAIL;
@@ -242,10 +242,10 @@ public class SessionVO implements Serializable{
 	public void setNOTE(String nOTE) {
 		NOTE = nOTE;
 	}
-	public String getTEMP_COLUM() {
+	public Date getTEMP_COLUM() {
 		return TEMP_COLUM;
 	}
-	public void setTEMP_COLUM(String tEMP_COLUM) {
+	public void setTEMP_COLUM(Date tEMP_COLUM) {
 		TEMP_COLUM = tEMP_COLUM;
 	}
 	public static long getSerialversionuid() {

@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.login.model.dao;
 
+import java.util.Date;
 import java.util.Map;
 
 import kr.co.idosoft.intranet.login.vo.LoginVO;
@@ -20,5 +21,9 @@ public interface LoginDao {
 	public SessionVO selectMemberInfo(LoginVO loginInfo);
 
 	public Boolean updateResetPassword(Map<String, Object> data);
+
+	public void keepLogin(Map<String, Object> data);
+
+	public SessionVO checkUserWithSessionKey(Map<String, Object> data);
 }
 

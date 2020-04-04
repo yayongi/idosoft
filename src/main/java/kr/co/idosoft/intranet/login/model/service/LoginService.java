@@ -22,4 +22,20 @@ public interface LoginService {
 	 */
 	 public Boolean updateResetPassword(Map<String, Object> data);
 	
+	 /**
+	 * 
+	 * @author 유기환
+	 * @since 2020.04.04
+	 * @content 로그인 유지 처리 
+	 */
+	 public void keepLogin(Map<String, Object> data);
+	
+	 /**
+	 * 
+	 * @author 유기환
+	 * @since 2020.04.04
+	 * @content 세션키 검증 
+	 */
+	 public SessionVO checkUserWithSessionKey(Map<String, Object> data);
+
 }

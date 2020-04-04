@@ -18,4 +18,18 @@
 		SET PWD=#{PWD}, UPD_DATE=NOW() 
 		WHERE MEMBER_NO=#{MEMBER_NO}
 	</update>
+	
+	<!--  -->
+	<update id="keepLogin" parameterType="hashmap">
+		UPDATE TB_MEMBER 
+		SET NOTE=#{sessionId}
+		, TEMP_COLUM=#{sessionLimit}
+		WHERE MEMBER_NO=#{MEMBER_NO}
+	</update>
+	
+	<select id="checkUserWithSessionKey" parameterType="hashmap" resultMap="SessionVO">
+		SELECT *
+		FROM TB_MEMBER
+		WHERE NOTE=#{sessionId}
+	</select>
 </mapper>
