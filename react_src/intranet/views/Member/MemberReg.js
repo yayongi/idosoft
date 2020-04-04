@@ -441,7 +441,7 @@ const MemberReg = (props) => {
                   height:'100%'
                 }}>
                   <div style={{textAlign:'center'}}>
-                    <img id="profileImg" src={getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
+                    <img id="profileImg" src={getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%",border:"1px solid black"}}/>
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>

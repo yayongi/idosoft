@@ -442,7 +442,7 @@ const MemberMod_user = (props) => {
                     height:'100%'
                   }}>
                     <div style={{textAlign:'-webkit-center'}}>
-                      <img id="profileImg" src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + row.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
+                      <img id="profileImg" src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + row.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%",border:"1px solid black"}}/>
                     </div>
                     <div style={{textAlign:'center'}}>
                       <Typography>

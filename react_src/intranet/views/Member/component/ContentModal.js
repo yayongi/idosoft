@@ -108,7 +108,7 @@ const ContentModal = ({props, closeModal}) => {
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
                     <div style={{textAlign:'-webkit-center'}}>
-                      <img id="profileImg" src={props.photo_path != null ? getRootPath() + "/resources/profile/" + props.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
+                      <img id="profileImg" src={props.photo_path != null ? getRootPath() + "/resources/profile/" + props.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%",border:"1px solid black"}}/>
                     </div>
                   </Grid>
                   <Grid item xs={6}>
