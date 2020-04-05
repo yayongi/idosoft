@@ -44,13 +44,14 @@ export default function  List(props) {
 	const [ holdUp, setHoldUp ] = React.useState(0);     // 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
 	const [firstRender, setFirstRender ] = React.useState(false);
 	// 페이징
-    const [ page, setPage ] = React.useState(0);                 // 초기페이지가 0부터 시작
+	const [ page, setPage ] = React.useState(0);                 // 초기페이지가 0부터 시작
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
 	const [isAdmin, setIsAdmin] = React.useState("0");
 	const [isNoN, setIsNoN] = React.useState("true");
 	const [emptyMessage, setEmptyMessage] = React.useState("");
 	// alert 
-	const [isOpen, setIsOpen] = React.useState(false);
+	const [isOpen, setIsOpen] = React.useState(false); 
+	const [nonHistoryBack, setNonHistoryBack] = React.useState(false); 
 	const [errMessage, setErrMessage] = React.useState("");
 	// 로딩바
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false);    //loading bar
@@ -150,7 +151,8 @@ export default function  List(props) {
 			} else {
 				setRows([]);
 				setFirstRender(true);
-				openHandleClick("결재 권한이 없는 직원입니다.");
+				setEmptyMessage("결재 권한이 있는 목록이 없습니다.");
+				//openHandleClick("결재 권한이 없는 직원입니다.");
 			}
 
 			setShowLoadingBar(false);
@@ -169,12 +171,20 @@ export default function  List(props) {
 
 	const closeHandleClick = () => {
 		setIsOpen(false);
-		history.back();
+		if(!nonHistoryBack){
+			history.back();
+		}
+
+		setNonHistoryBack(false);
 	}
 
 	const confHandleClick = () => {
 		setIsOpen(false);
-		history.back();
+		if(!nonHistoryBack){
+			history.back();
+		}
+
+		setNonHistoryBack(false);
 	}
 
 	const snackBarClose = () => {
@@ -201,12 +211,14 @@ export default function  List(props) {
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							setPage={setPage} setRowsPerPage={setRowsPerPage}
 							setShowLoadingBar={setShowLoadingBar}
-							setIsNoN={setIsNoN}
+							isNoN={isNoN} setIsNoN={setIsNoN}
 							setEmptyMessage={setEmptyMessage}
 							setOpenSnackBar={setOpenSnackBar} 
 							setSnackBarMessage={setSnackBarMessage}
 							firSelected={firSelected} setFirSelected={setFirSelected}
 							selected={selected} setSelected={setSelected}
+							setNonHistoryBack={setNonHistoryBack}
+							setIsOpen={setIsOpen} setErrMessage={setErrMessage}
 							/>
 					</Fragment>
 					{isNoN == "true" ?

@@ -5,6 +5,13 @@ import Paper from '@material-ui/core/Paper';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+
 import Axios from 'axios';
 import ko from "date-fns/locale/ko";
 import Moment from "moment";
@@ -41,6 +48,10 @@ export default function  List(props) {
 	
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
 	
+	// alert 
+	const [isOpen, setIsOpen] = React.useState(false); 
+	const [errMessage, setErrMessage] = React.useState("");
+
 	useEffect(() => {
 		let data;
 
@@ -153,6 +164,18 @@ export default function  List(props) {
 		
 	}, [state]);
 
+	const openHandleClick = (msg) => {
+		setErrMessage(msg);
+		setIsOpen(true);
+	}
+
+	const closeHandleClick = () => {
+		setIsOpen(false);
+	}
+
+	const confHandleClick = () => {
+		setIsOpen(false);
+	}
 
 	const snackBarClose = () => {
 		setOpenSnackBar(false);
@@ -177,9 +200,12 @@ export default function  List(props) {
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							setPage={setPage} setRowsPerPage={setRowsPerPage}
 							setShowLoadingBar={setShowLoadingBar} 
-							setIsNoN={setIsNoN} setEmptyMessage={setEmptyMessage}
+							isNoN={isNoN} setIsNoN={setIsNoN} 
+							setEmptyMessage={setEmptyMessage}
 							setOpenSnackBar={setOpenSnackBar} 
 							setSnackBarMessage={setSnackBarMessage}
+
+							setIsOpen={setIsOpen} setErrMessage={setErrMessage}
 						/>
 					</Fragment>
 				}
@@ -195,12 +221,31 @@ export default function  List(props) {
 							routeProps={props.routeProps} 
 							paging={paging} setPaging={setPaging} 
 							holdUp={holdUp} setHoldUp={setHoldUp}
-							page={page} setPage={setPage}
+							page={page} setPage={setPage} 
 							rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
 							setShowLoadingBar={setShowLoadingBar} 
 						/>
 					</Paper>
 				}
+
+				<Dialog
+					open={isOpen}
+					onClose={() => closeHandleClick()}
+					aria-labelledby="alert-dialog-title"
+					aria-describedby="alert-dialog-description"
+				>
+					<DialogContent>
+						<DialogContentText id="alert-dialog-description">
+							{errMessage}
+						</DialogContentText>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={() => confHandleClick()} color="primary" autoFocus>
+							확인
+						</Button>
+					</DialogActions>
+				</Dialog>
+
 				<Snackbar
 					anchorOrigin={{
 						vertical: 'top',

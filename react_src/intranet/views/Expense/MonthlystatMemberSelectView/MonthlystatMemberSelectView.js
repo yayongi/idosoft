@@ -66,6 +66,7 @@ import {useStyles} from './styles';
 	const [open, setOpen] = React.useState(false);
 	const [errOpen, setErrOpen] = React.useState(false);
 	const [errMessage, setErrMessage] = React.useState("");
+	const [nonHistoryBack, setNonHistoryBack] = React.useState(false); 
 
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); 
 
@@ -174,49 +175,54 @@ import {useStyles} from './styles';
 
 	const excelExport = (fileCode) => {
 
-		let fileName = "";
-		let searchData = {};
+		if(!isEmpty(members)){
+			let fileName = "";
+			let searchData = {};
 
-		if(fileCode == "EXCEL0001"){
-			fileName = "EXPENSE";
-			searchData = {
-						regDate : Moment(selectedDate).format('YYYYMM'),
-						MEMBER_NO : indiNo
-					}
-		} else { // EXCEL0002
-			fileName = "EXPENSE";
-			searchData = {
-						regDate : Moment(selectedDate).format('YYYYMM'),
-					}
+			if(fileCode == "EXCEL0001"){
+				fileName = "EXPENSE";
+				searchData = {
+							regDate : Moment(selectedDate).format('YYYYMM'),
+							MEMBER_NO : indiNo
+						}
+			} else { // EXCEL0002
+				fileName = "EXPENSE";
+				searchData = {
+							regDate : Moment(selectedDate).format('YYYYMM'),
+						}
+			}
+
+			Axios({
+				url: '/intranet/downloadExcelFile',
+				method: 'post',
+				data : {
+					fileCode : fileCode,
+					fileName : fileName,
+					searchData : searchData,
+				},
+				responseType: 'blob',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}).then(response => {
+
+				console.log(JSON.stringify(response));
+
+				const fileName = response.headers.filename;
+
+				const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+				const link = document.createElement('a');
+				link.href = url;
+				link.setAttribute('download', fileName);
+				document.body.appendChild(link);
+				link.click();
+			}).catch(e => {
+				console.log(e);
+			});
+		} else {
+			setNonHistoryBack(true);
+			openHandleClick("목록이 없으면 엑셀을 내보내실 수 없습니다.");
 		}
-
-		Axios({
-			url: '/intranet/downloadExcelFile',
-			method: 'post',
-			data : {
-				fileCode : fileCode,
-				fileName : fileName,
-				searchData : searchData,
-			},
-			responseType: 'blob',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		}).then(response => {
-
-			console.log(JSON.stringify(response));
-
-			const fileName = response.headers.filename;
-
-			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
-			const link = document.createElement('a');
-			link.href = url;
-			link.setAttribute('download', fileName);
-			document.body.appendChild(link);
-			link.click();
-		}).catch(e => {
-			console.log(e);
-		});
 		
 	}
 
@@ -231,12 +237,18 @@ import {useStyles} from './styles';
 
 	const closeHandleClick = () => {
 		setErrOpen(false);
-		history.goBack();
+		if(!nonHistoryBack){
+			history.goBack();
+		}
+		setNonHistoryBack(false);
 	}
 
 	const confHandleClick = () => {
 		setErrOpen(false);
-		history.goBack();
+		if(!nonHistoryBack){
+			history.goBack();
+		}
+		setNonHistoryBack(false);
 	}
 
 	return (
