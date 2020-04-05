@@ -245,7 +245,7 @@ export default function  Filter(props) {
 			
 		}).catch(e => {
 			setShowLoadingBar(false);
-			processErrCode(e);
+			//processErrCode(e);
 			console.log(e);
 		});
 	}
