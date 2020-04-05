@@ -34,7 +34,7 @@ export default function Top(props) {
 				})
 			}
 		}).catch(e => {
-			processErrCode(e);
+			processErrCode(e, false);
 		});
 	},[])
 
@@ -63,7 +63,7 @@ export default function Top(props) {
 				sessionStorage.removeItem("loginSession");
 				location.href = getRootPath() +'/#/signIn';
 			}).catch(e => {
-				processErrCode(e);
+				processErrCode(e, false);
 				console.log(e);
 			});
 

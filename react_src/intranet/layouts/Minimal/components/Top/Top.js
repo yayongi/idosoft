@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -22,7 +22,7 @@ export default function Top(props) {
 	});
 
 	useEffect(() => {
-		axios({
+		Axios({
 			url: '/intranet/getSession',
 			method: 'get'
 		}).then(response => {
@@ -34,7 +34,7 @@ export default function Top(props) {
 				})
 			}
 		}).catch(e => {
-			processErrCode(e);
+			processErrCode(e, false);
 		});
 	},[])
 
@@ -63,7 +63,7 @@ export default function Top(props) {
 				sessionStorage.removeItem("loginSession");
 				location.href = getRootPath() +'/#/signIn';
 			}).catch(e => {
-				processErrCode(e);
+				processErrCode(e, false);
 				console.log(e);
 			});
 		}else{
@@ -77,7 +77,7 @@ export default function Top(props) {
 				<Typography variant="h6" noWrap className={classes.title}>
 					IDO-SOFT 인트라넷
 				</Typography>
-				{isLogin == true? (
+				{sessionState.isLogin == true? (
 					<IconButton color="inherit" onClick={() => handleOpenDialog(...confirmData)}>
 						<ExitToAppIcon />
 					</IconButton>
