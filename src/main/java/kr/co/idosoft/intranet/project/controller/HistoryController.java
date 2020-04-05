@@ -49,10 +49,18 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		
 		ArrayList<Map<String, Object>> history_list = new ArrayList<Map<String, Object>>();
 		List<MemberVO> member_list = new ArrayList<MemberVO>();
+		
+		
+		String select_member = (String)params.get("select_member");
+		
 		try {
-			if(isAdmin) {
-				member_no = "";
-				member_list = historyService.selectMemberList();
+			if("".equals(select_member)) {
+				if(isAdmin) {
+					member_no = "";
+					member_list = historyService.selectMemberList();
+				}
+			}else {
+				member_no = select_member;
 			}
 			history_list = (ArrayList<Map<String, Object>>)historyService.selectHistory(member_no);
 			

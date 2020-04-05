@@ -17,18 +17,27 @@ const mainStyles = makeStyles(theme => ({
 
 
 
+function initCheck(match){
+	return typeof(match.params.member_no) == "undefined" ? "" : match.params.member_no;
+}
 export default function HistoryView(props) {
 	const classes = mainStyles();
+	
+	const { match, location, history } = props.routeProps;
 	const [historyInfo, setHistoryInfo] = useState([]);
 	const [memberlist, setMemberList] = useState([]);
 	const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
 	const userInfo = JSON.parse(sessionStorage.getItem("loginSession"));
 	
 	useEffect(() => {
+		var select_member_no = initCheck(match);
+		
+		var sendData = {"select_member": select_member_no};
+		
 		axios({
 			url: '/intranet/allHistory',
 			method: 'post',
-			data: {}
+			data: sendData
 		}).then(response => {
 			var member_list = response.data.member_list;
 			if(member_list.length > 0){
