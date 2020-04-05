@@ -159,6 +159,7 @@
 	<!-- 엑셀 -->
 	<select id="exportExcel" parameterType="HashMap" resultType="java.util.LinkedHashMap">
 		SELECT
+			CONVERT((@rownum := @rownum+1), CHAR) AS 번호, 
 			A.CODE_NAME AS 자원종류,
 			TB_RESOURCE.MODEL_NM AS 모델명, 
 			B.CODE_NAME AS 제조사,
@@ -173,6 +174,7 @@
 			LEFT OUTER JOIN TB_CODE B ON TB_RESOURCE.MARK_CODE = B.CODE_ID
 			LEFT OUTER JOIN TB_CODE C ON TB_RESOURCE.DISPLAY_SIZE_CODE = C.CODE_ID
 			LEFT OUTER JOIN TB_MEMBER D ON TB_RESOURCE.HOLDER = D.MEMBER_NO
+		JOIN (SELECT @rownum := 0) R
 		<where>
 			<if test='holder != null and holder !=""'>
 				AND D.NAME LIKE CONCAT('%',#{holder},'%')

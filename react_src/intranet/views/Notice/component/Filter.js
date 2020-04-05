@@ -200,6 +200,17 @@ export default function  Filter(props) {
 			edDt: Moment(date).format('YYYYMM')
 		});
 	}
+	//검색 초기화
+	const handleClickReset = () => {
+		setState(initDialogState);
+		setDialogState(initDialogState);
+		handleClose();
+
+		setOpenSnackBar(true);
+		setSnackBarMessage(`검색조건이 초기화 되었습니다.`);
+	}
+
+
 	// Dialog에서 취소버튼 클릭 시
 	const handleClickCancel = () => {
 		//검색조건 초기화, 스낵바 닫아줌.
@@ -219,7 +230,7 @@ export default function  Filter(props) {
 					?null:Moment(document.getElementsByName("edDt")[0].value).format('YYYYMM')
 		});
 		handleClose();
-		setOpenSnackBar(true);
+		// setOpenSnackBar(true);
 
 		searchType.filter((item)=>{
 			if(item['id'] === dialogState.searchType){
@@ -228,10 +239,14 @@ export default function  Filter(props) {
 			} 
 		});
 
-		// console.log(state);
+		setSnackBarMessage(`검색타입 : ${searchTypeLabel}
+						, 검색기간 : ${Moment(state.stDt+'01').format('YYYY년 MM월')} ~ ${Moment(state.edDt+'01').format('YYYY년 MM월')}
+						, 검색어 : ${state.search}`);
+		setOpenSnackBar(true);
 	}
 
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);
+	const [snackBarMessage , setSnackBarMessage] = React.useState('');
 	const snackBarClose = (event, reason) => {
 		if (reason === 'clickaway') {
 		return;
@@ -253,10 +268,7 @@ export default function  Filter(props) {
 			onClose={snackBarClose}
 			open={openSnackBar}
 			// autoHideDuration={6000}
-			message={
-						`검색타입 : ${searchTypeLabel}
-						, 검색기간 : ${Moment(state.stDt+'01').format('YYYY년 MM월')} ~ ${Moment(state.edDt+'01').format('YYYY년 MM월')}
-						, 검색어 : ${state.search}`
+			message={	snackBarMessage
 					}
 			action={
 				<React.Fragment>
@@ -412,6 +424,9 @@ export default function  Filter(props) {
 					</Grid>
 				</DialogContent>
 				<DialogActions>
+					<Button onClick={handleClickReset} color="primary">
+						초기화
+					</Button>
 					<Button onClick={handleClickCancel} color="primary">
 						취소
 					</Button>

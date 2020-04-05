@@ -229,6 +229,17 @@ export default function  Filter(props) {
 			edDt: Moment(date).format('YYYYMM')
 		});
 	}
+
+	//검색 초기화
+	const handleClickReset = () => {
+		setState(initDialogState);
+		setDialogState(initDialogState);
+		handleClose();
+
+		setOpenSnackBar(true);
+		setSnackBarMessage(`검색조건이 초기화 되었습니다.`);
+	}
+
 	// Dialog에서 취소버튼 클릭 시
 	const handleClickCancel = () => {
 		setDialogState(initDialogState);
@@ -249,8 +260,6 @@ export default function  Filter(props) {
 		setPage(0);
 		handleClose();
 
-		setOpenSnackBar(true);
-
 		resType.filter((item)=>{
 			if(item['id'] === dialogState.resType){
 				setResTypeLabel(item.label);
@@ -258,10 +267,14 @@ export default function  Filter(props) {
 			} 
 		});
 
-		// console.log(state);
+		setSnackBarMessage(`검색타입 : ${resTypeLabel}
+						, 구입년월 : ${Moment(state.stDt+'01').format('YYYY년 MM월')} ~ ${Moment(state.edDt+'01').format('YYYY년 MM월')}
+						, 보유자 : ${state.holder === null ? "" : state.holder.replace(/(\s*)/g, "")}`);
+		setOpenSnackBar(true);
 	}
 
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);
+	const [snackBarMessage , setSnackBarMessage] = React.useState('');
 	const snackBarClose = (event, reason) => {
 		if (reason === 'clickaway') {
 		return;
@@ -283,11 +296,7 @@ export default function  Filter(props) {
 			onClose={snackBarClose}
 			open={openSnackBar}
 			// autoHideDuration={6000}
-			message={
-						`검색타입 : ${resTypeLabel}
-						, 구입년월 : ${Moment(state.stDt+'01').format('YYYY년 MM월')} ~ ${Moment(state.edDt+'01').format('YYYY년 MM월')}
-						, 보유자 : ${state.holder === null ? "" : state.holder.replace(/(\s*)/g, "")}`
-					}
+			message={snackBarMessage}
 			action={
 				<React.Fragment>
 					<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
@@ -448,6 +457,9 @@ export default function  Filter(props) {
 					</Grid>
 				</DialogContent>
 				<DialogActions>
+					<Button onClick={handleClickReset} color="primary">
+						초기화
+					</Button>
 					<Button onClick={handleClickCancel} color="primary">
 						취소
 					</Button>
