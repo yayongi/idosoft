@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
@@ -8,6 +8,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 // import AccountTreeIcon from '@material-ui/icons/AccountTree';
+
+// Server
+import axios from 'axios';
 
 import { menus } from './data';
 
@@ -33,6 +36,7 @@ let menuCss = {};
 export default function MenuList(props) {
 	const classes = useStyles();
 	const [active, setActive] = useState({});
+	const [isAdmin, setIsAdmin] = useState(false);
 	const {routeProps, handleDrawerClose} = props;		// handleDrawerClose : 메뉴바 열기/닫기 이벤트
 	const {match} = routeProps;
 	
@@ -63,9 +67,41 @@ export default function MenuList(props) {
 		
 	}
 	
-	React.useEffect(()=>{
+	const menuListView = (item) => {
+		
+		console.log('isAdmin : ' + isAdmin);
+		console.log('item.isAdminMenu : ' + item.isAdminMenu);
+		
+
+		if(isAdmin){
+			return true;
+		} else {
+			if(item.isAdminMenu){
+				return false;
+			}
+			return true;
+		}
+	}
+	useEffect(()=>{
 		urlMatch();
 		setActive(match.url);	// URL이 변경될 때, 상태 변경을 한다.
+
+		axios({
+			url: '/intranet/getIsAdmin',
+			method: 'post',
+			data: {}
+		}).then(response => {
+			console.log(`response.data.isAdmin : ${response.data.isAdmin}`);
+
+			if(response.data.isAdmin == "true"){
+				setIsAdmin(true);
+			} else {
+				setIsAdmin(false);
+			}
+		}).catch(e => {
+			console.log(e);
+		});
+
 	});
 	
 	
@@ -73,7 +109,6 @@ export default function MenuList(props) {
 		<>
 			<List>
 				{menus.map((item, idx) => {
-
 					
 					if(item.submenu != undefined && item.submenu.length > 0) {
 						{/* 2Depth를 포함하는 메뉴 출력 */}
@@ -91,8 +126,9 @@ export default function MenuList(props) {
 								<List component="div" disablePadding>
 									{
 										item.submenu.map((subItem, subIdx) => (
+											(menuListView(subItem)) &&
 											<ListItem key={subIdx} button 
-												className={classes.nested} component={RouterLink} to={subItem.href} onClick={handleDrawerClose}>
+											className={classes.nested} component={RouterLink} to={subItem.href} onClick={handleDrawerClose}>
 												<ListItemIcon className={menuCss[subItem.title]}>
 													{subItem.icon}
 												</ListItemIcon>
@@ -106,15 +142,8 @@ export default function MenuList(props) {
 					} else {
 						{/* 1Depth 메뉴 출력 */}
 						return (
+							(menuListView(item)) &&
 							<Fragment key={idx}>
-								{	// 관리자인 경우 => 관리자 메뉴가 늘어나면 이부분이 1번만 호출되도록 추가 개발이 필요!!!
-									item.admin && (
-										<Fragment key={'admin' + idx}>
-											<Divider key={'adminDevider' + idx} />
-											<ListSubheader key={'listSubHeader' + idx} inset>Administrator</ListSubheader>
-										</Fragment>
-									)
-								}
 								<ListItem key={'listItem' + idx} button 
 									component={RouterLink} to={item.href} onClick={handleDrawerClose}>
 									<ListItemIcon className={menuCss[item.title]}>

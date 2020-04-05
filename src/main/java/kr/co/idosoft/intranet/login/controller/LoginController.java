@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kr.co.idosoft.common.util.CommandMap;
 import kr.co.idosoft.common.util.SHAPasswordEncoder;
+import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.login.model.service.LoginService;
 import kr.co.idosoft.intranet.login.vo.LoginVO;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
@@ -341,6 +342,36 @@ public class LoginController {
 			
 			LOG.debug("### 로그인 되어있는 직원입니다.");
 			mv.addObject("isAutoLogin", "true");
+		}
+		
+		return mv;
+	}
+	
+	/**
+	 * 관리자 여부
+	 * @param model
+	 * @param loginVo
+	 * @param request
+	 * @param response
+	 * @return mv
+	 */
+	@RequestMapping(value="/getIsAdmin", method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getIsAdmin(Model model, @RequestBody LoginVO loginVo
+								, HttpServletRequest request, HttpServletResponse response) {
+		
+		ModelAndView mv = new ModelAndView();
+		
+		mv.setViewName("jsonView");
+		
+		mv.addObject("isAdmin", "false");
+		
+		HttpSession session = request.getSession();
+		
+		if (commonUtil.isAdmin(session)) {
+			
+			// 세션 데이터 저장
+			mv.addObject("isAdmin", "true");
 		}
 		
 		return mv;
