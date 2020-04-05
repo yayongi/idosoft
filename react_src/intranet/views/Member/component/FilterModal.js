@@ -18,7 +18,7 @@ const DialogContent = withStyles(theme => ({
 }))(MuiDialogContent);
 
 //다이얼 로그
-const FilterModal = ({props,searchState,setSearchState,setOpenSnackBar,callList,closeModal}) => {
+const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenSnackBar,closeModal}) => {
 	const [open, setOpen] = React.useState(false);
 
 	// 검색 버튼 클릭 전, 임시로 값 저장
@@ -68,6 +68,11 @@ const FilterModal = ({props,searchState,setSearchState,setOpenSnackBar,callList,
 			searchword : "",
 			flag : false
 		});
+
+		setState({
+			...state,
+			showAll : true
+		})
 		sessionStorage.removeItem("memberFilter");
 		handleClose();
 		setOpenSnackBar(false);

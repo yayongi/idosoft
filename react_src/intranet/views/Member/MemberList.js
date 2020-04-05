@@ -129,10 +129,6 @@ const MemberList = (props) => {
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
 	useEffect(() => {
-		callList();
-	},[])
-
-	const callList = () =>{
 		axios({
 			url: '/intranet/member/memberlist',
 			method: 'post',
@@ -158,7 +154,7 @@ const MemberList = (props) => {
 		}).catch(e => {
 			setShowLoadingBar(false);
 		});
-	}
+	},[searchState])
 
 	const openContentModal = (datum) => {
 		return setOpenModal({
@@ -426,7 +422,7 @@ const MemberList = (props) => {
 	return (
 		<div>
 			<ContentModal props={openModal} closeModal={handleCloseModal}/>
-			<FilterModal props={openFilter} callList={callList} state={state} setState={setState} setOpenSnackBar={setOpenSnackBar} searchState = {searchState} setSearchState = {setSearchState} closeModal={handleClickClose}/>
+			<FilterModal props={openFilter} state={state} setState={setState} setOpenSnackBar={setOpenSnackBar} searchState = {searchState} setSearchState = {setSearchState} closeModal={handleClickClose}/>
 			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<LoadingBar openLoading={isShowLoadingBar}/>
 
