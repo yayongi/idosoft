@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.util;
 
 import java.io.BufferedOutputStream;
+import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -221,7 +223,11 @@ public class fileController {
 		    
 		    //Key 값을 헤더에 넣어 준다.
 		    while(iterator.hasNext()){
+		    	
 				String key = (String)iterator.next();
+				
+				logger.debug("#KEY[" + cellNo + "]" +  " : " + key);
+				
 				cell = row.createCell(cellNo++);
 				cell.setCellStyle(headStyle);
 				cell.setCellValue(key);
@@ -265,14 +271,141 @@ public class fileController {
 			e.printStackTrace();
 		}
 	}
+	public void exportExcel(List<LinkedHashMap<String, Object>> list1, List<LinkedHashMap<String, Object>> list2,
+			String title, HttpServletResponse response) {
+		try {
+			HSSFWorkbook workbook = new HSSFWorkbook();
+			
+			Sheet sheet = workbook.createSheet("sheet");	//해당 파일이 생성 될 Sheet명
+		    Row row = null;									//행 ->
+		    Cell cell = null; 								// 행안에 한칸한칸
+		    int rowNo = 0;
+		    int cellNo = 0;
+		    
+		    //헤더 클자 Bold
+		    Font font = workbook.createFont();
+		    font.setBold(true);
+		    
+		    // 테이블 헤더용 스타일
+		    CellStyle headStyle = workbook.createCellStyle();
+
+		    headStyle.setBorderTop(BorderStyle.THIN);
+		    headStyle.setBorderBottom(BorderStyle.THIN);
+		    headStyle.setBorderLeft(BorderStyle.THIN);
+		    headStyle.setBorderRight(BorderStyle.THIN);
+		    headStyle.setFont(font);
+		    
+		    // 헤더 생성
+		    LinkedHashMap<String, Object> headerData = list1.get(0);
+		    
+		    // 이터레이터 이용해서 key 값으로 헤더 만들기
+		    Set<String> set = headerData.keySet();
+		    Iterator<String> iterator = set.iterator();
+
+		    //0번 row
+		    row = sheet.createRow(rowNo++);
+		    
+		    // 데이터 맵핑용 리스트
+		    List<String> tempList = new ArrayList<String>();
+		    
+		    //Key 값을 헤더에 넣어 준다.
+		    while(iterator.hasNext()){
+				String key = (String)iterator.next();
+				
+				logger.debug("#KEY[" + cellNo + "]" +  " : " + key);
+				
+				cell = row.createCell(cellNo++);
+				cell.setCellStyle(headStyle);
+				cell.setCellValue(key);
+				tempList.add(key);
+	    	}
+		    // 데이터 부분 생성
+		    LinkedHashMap<String, Object> data1 = new LinkedHashMap<String, Object>();
+		    LinkedHashMap<String, Object> data2 = new LinkedHashMap<String, Object>();
+		    
+		    for(int i=0; i<list1.size(); i++) {
+		    	data1 = list1.get(i);
+		    	data2 = list2.get(i);
+		    	
+		    	row = sheet.createRow(rowNo++);
+		    	for(int j=0; j<data1.size(); j++) {
+		    		cell = row.createCell(j);
+		    		
+		    		Object tempData = data1.get(tempList.get(j));
+		    		
+		    		if(j == 3) {
+		    			cell.setCellValue("통신비");
+		    		} else {
+		    			if(j > 3) {
+		    				if(tempData instanceof String){
+		    					cell.setCellValue(Integer.parseInt((String)tempData));
+		    				} else {
+		    					cell.setCellValue((Integer)tempData);
+		    				}
+		    			} else {
+		    				// 객체 타입에 따른 처리
+		    				if(tempData instanceof Boolean) {
+		    					cell.setCellValue((Boolean)tempData);
+		    				} else if(tempData instanceof String){
+		    					cell.setCellValue((String)tempData);
+		    				} else if(tempData instanceof Integer) {
+		    					cell.setCellValue((Integer)tempData);
+		    				} else if(tempData instanceof Double){
+		    					cell.setCellValue((Double)tempData);
+		    				}
+		    			}
+		    		}
+		    		
+		    		
+		    	}
+		    	row = sheet.createRow(rowNo++);
+		    	for(int j=0; j<data1.size(); j++) {
+		    		cell = row.createCell(j);
+		    		
+		    		if(j == 3) {
+		    			cell.setCellValue("교통비");
+		    		} else {
+		    			Object tempData = data2.get(tempList.get(j));
+		    			
+		    			logger.debug("#tempData [" + j +"] : " + tempData);
+		    			
+		    			// 객체 타입에 따른 처리
+		    			if(tempData instanceof Boolean) {
+		    				cell.setCellValue((Boolean)tempData);
+		    			} else if(tempData instanceof String){
+		    				cell.setCellValue((String)tempData);
+		    			} else if(tempData instanceof Integer) {
+		    				cell.setCellValue((Integer)tempData);
+		    			} else if(tempData instanceof Double){
+		    				cell.setCellValue((Double)tempData);
+		    			}
+		    		}
+		    	}
+		    	
+		    	//셀 병합
+		    	sheet.addMergedRegion(new CellRangeAddress(rowNo-2,rowNo-1,0,0)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
+		    	sheet.addMergedRegion(new CellRangeAddress(rowNo-2,rowNo-1,1,1)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
+		    	sheet.addMergedRegion(new CellRangeAddress(rowNo-2,rowNo-1,2,2)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
+		    	sheet.addMergedRegion(new CellRangeAddress(rowNo-2,rowNo-1,17,17)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
+		    }
+		    
+		    //LinkedHashMap<String, Object> data = new LinkedHashMap<String, Object>();
+	    	//data = memberData.get(0);
+		    // CELL 크기 자동 조정
+		    //for(int k = 0;k < data.size();k++) {
+		    	//sheet.autoSizeColumn(k);
+		    //}
+		    // 컨텐츠 타입과 파일명 지정
+		    response.setContentType("application/download;charset=utf-8");
+		    response.setHeader("Content-Disposition", "attachment;filename="+new String(title.getBytes("utf-8"),"8859_1"));
+			response.setHeader("Content-Transfer-Encoding", "binary");
+			//response.setHeader("filename", new String(title.getBytes("utf-8"),"8859_1"));
+		    
+		    // 엑셀 출력
+		    workbook.write(response.getOutputStream());
+		    workbook.close();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
-
-
-
-
-
-
-
-
-
-

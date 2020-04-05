@@ -58,6 +58,8 @@ import {useStyles} from './styles';
 	const [totalAmount, setTotalAmount] = React.useState(0);
 	const [indiExpenseInfo, setIndiExpenseInfo] = React.useState([]);
 	const [indiTotalAmount, setIndiTotalAmount] = React.useState(0);
+
+	const [indiNo, setIndiNo] = React.useState("");
 	const [indiName, setIndiName] = React.useState(""); 
 	const [indiPosition, setIndiiPosition] = React.useState("");
 	
@@ -156,6 +158,7 @@ import {useStyles} from './styles';
 			//POSITION
 			setIndiExpenseInfo(list);
 			setIndiTotalAmount(total_amount);
+			setIndiNo(row.MEMBER_NO);
 			setIndiName(row.NAME);
 			setIndiiPosition(row.POSITION);
 			setOpen(true);
@@ -169,8 +172,52 @@ import {useStyles} from './styles';
 		
 	};
 
-	const excelExport = () => {
-		expectedDevelopment();
+	const excelExport = (fileCode) => {
+
+		let fileName = "";
+		let searchData = {};
+
+		if(fileCode == "EXCEL0001"){
+			fileName = "EXPENSE";
+			searchData = {
+						regDate : Moment(selectedDate).format('YYYYMM'),
+						MEMBER_NO : indiNo
+					}
+		} else { // EXCEL0002
+			fileName = "EXPENSE";
+			searchData = {
+						regDate : Moment(selectedDate).format('YYYYMM'),
+					}
+		}
+
+		Axios({
+			url: '/intranet/downloadExcelFile',
+			method: 'post',
+			data : {
+				fileCode : fileCode,
+				fileName : fileName,
+				searchData : searchData,
+			},
+			responseType: 'blob',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}).then(response => {
+
+			console.log(JSON.stringify(response));
+
+			const fileName = response.headers.filename;
+
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', fileName);
+			document.body.appendChild(link);
+			link.click();
+		}).catch(e => {
+			console.log(e);
+		});
+		
 	}
 
 	const handleClose = () => {
@@ -200,12 +247,12 @@ import {useStyles} from './styles';
 					</Typography>
 					<div className={classes.container}>
 						<Hidden smDown>
-							<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={excelExport} className={classes.button}>
+							<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={() => excelExport("EXCEL0002")} className={classes.button}>
 								엑셀 내보내기
 							</Button>
 						</Hidden>
 						<Hidden mdUp>
-							<IconButton color="primary" onClick={excelExport} className={classes.button}>
+							<IconButton color="primary" onClick={() => excelExport("EXCEL0002")} className={classes.button}>
 								<SaveIcon />
 							</IconButton>
 						</Hidden>
@@ -302,12 +349,12 @@ import {useStyles} from './styles';
 							</Typography>
 							<div className={classes.container}>
 								<Hidden smDown>
-									<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon  />} onClick={excelExport} className={classes.button}>
+									<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon  />} onClick={() => excelExport('EXCEL0001')} className={classes.button}>
 										엑셀 내보내기
 									</Button>
 								</Hidden>
 								<Hidden mdUp>
-									<IconButton color="primary" onClick={excelExport} className={classes.button}>
+									<IconButton color="primary" onClick={() => excelExport('EXCEL0001')} className={classes.button}>
 										<SaveIcon />
 									</IconButton>
 								</Hidden>

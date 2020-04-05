@@ -38,7 +38,7 @@ import Axios from 'axios';
 export default function PayList() {
 	const classes = useStyles();	// styles.js에 상수로 선언되어 있음. 
 
-	const [year , setYear] = React.useState([]);					// 선택년도
+	const [year , setYear] = React.useState(Moment(new Date()).format('YYYY'));					// 선택년도
 	const [commList, setCommList] = React.useState([]);				// 통신비 통계 내역
 	const [transList, setTransList] = React.useState([]);			// 교통비  통계 내역
 	
@@ -85,7 +85,40 @@ export default function PayList() {
 	}
 	
 	const excelExport = (e) => {
-		expectedDevelopment();
+		
+		const fileCode 		= "EXCEL0005";
+		const fileName 		= "EXPENSE";
+		const searchData 	= {
+			YEAR : year
+		};
+
+		Axios({
+			url: '/intranet/downloadExcelFile',
+			method: 'post',
+			data : {
+				fileCode : fileCode,
+				fileName : fileName,
+				searchData : searchData,
+			},
+			responseType: 'blob',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}).then(response => {
+
+			console.log(JSON.stringify(response));
+
+			const fileName = response.headers.filename;
+
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', fileName);
+			document.body.appendChild(link);
+			link.click();
+		}).catch(e => {
+			console.log(e);
+		});
 	}
 
 
