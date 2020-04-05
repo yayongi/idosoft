@@ -22,13 +22,17 @@ const useStyles = makeStyles({
 function ProjectInfo(props) {
   const classes = useStyles();
   const { projectInfo, routeProps } = props;
+  const [count, setCount] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(0);
+  const [page, setPage] = useState(0);
+  
   
 
   const makeTableFormInfo = () => {
     var result = [].concat(projectInfo);
     for(var i=0; i < result.length; i++){
       result[i]["YEAR"] = result[i]["BGNDE"].slice(0,4);
-      result[i]["TERM"] = result[i]["BGNDE"] + " ~ " + result[i]["ENDDE"];
+      //result[i]["TERM"] = result[i]["BGNDE"] + " ~ " + result[i]["ENDDE"];
     }
     return result;
   }
@@ -62,10 +66,28 @@ function ProjectInfo(props) {
   const handleClickDetailView = (event, row) => {
     routeProps.history.push(`${routeProps.match.url}/view/${row.PROJECT_NO}`);
   };
+  
+  const handleChangePage = ()=> {
+	  
+  }
+  
+  const handleChangeRowsPerPage = () => {
+	  
+  }
 
   return (
     <Paper className={classes.root}>
       <TableContainer className={classes.container}>
+	      <TablePagination
+		    rowsPerPageOptions={[10, 25, 100]}
+		    component="div"
+		    count={count}
+		    rowsPerPage={rowsPerPage}
+		    page={page}
+		    onChangePage={handleChangePage}
+		    onChangeRowsPerPage={handleChangeRowsPerPage}
+		  />
+      
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -108,6 +130,16 @@ function ProjectInfo(props) {
             })}
           </TableBody>
         </Table>
+        <TablePagination
+		    rowsPerPageOptions={[10, 25, 100]}
+		    component="div"
+		    // count={rows.length}
+		    count={count}
+		    rowsPerPage={rowsPerPage}
+		    page={page}
+		    onChangePage={handleChangePage}
+		    onChangeRowsPerPage={handleChangeRowsPerPage}
+		  />
       </TableContainer>
     </Paper>
   );

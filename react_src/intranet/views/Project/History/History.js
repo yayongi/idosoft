@@ -26,14 +26,22 @@ export default function HistoryView(props) {
 	const { match, location, history } = props.routeProps;
 	const [historyInfo, setHistoryInfo] = useState([]);
 	const [memberlist, setMemberList] = useState([]);
+	const [searchData, setSearchData] = useState("", []);
 	const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
 	const userInfo = JSON.parse(sessionStorage.getItem("loginSession"));
 	
 	useEffect(() => {
 		var select_member_no = initCheck(match);
 		
-		var sendData = {"select_member": select_member_no};
+		if(searchData != "") {
+			if(searchData != -1){
+				select_member_no = searchData;
+			}else{
+				select_member_no = "";
+			}
+		}
 		
+		var sendData = {"select_member": select_member_no};
 		axios({
 			url: '/intranet/allHistory',
 			method: 'post',
@@ -41,7 +49,7 @@ export default function HistoryView(props) {
 		}).then(response => {
 			var member_list = response.data.member_list;
 			if(member_list.length > 0){
-				setMemberList(member_list);
+				setMemberList([...member_list]);
 			}else{
 				var list = [];
 				list.push({"MEMBER_NO" : userInfo["member_NO"], "MEMBER_NAME":userInfo["name"]})
@@ -53,13 +61,44 @@ export default function HistoryView(props) {
 			setShowLoadingBar(false);
 			processErrCode(e);
 		});
-	}, []);
+	}, [searchData]);
+	
+	
+	const excelDownLoad = () => {
+		Axios({
+			url: '/intranet/downloadExcelFile',
+			method: 'post',
+			data : {
+				fileCode : fileCode,
+				fileName : fileName,
+				searchData : searchData,
+			},
+			responseType: 'blob',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}).then(response => {
+
+			console.log(JSON.stringify(response));
+
+			const fileName = response.headers.filename;
+
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', fileName);
+			document.body.appendChild(link);
+			link.click();
+		}).catch(e => {
+			console.log(e);
+		});
+	}
 
 
 	return (
 		<>
 			<LoadingBar openLoading={isShowLoadingBar}/>
-			<HistorySearchDiv username={userInfo["name"]} />
+			<HistorySearchDiv username={userInfo["name"]} excelDownLoad={excelDownLoad} setSearchData={setSearchData} memberlist={memberlist}/>
 			<Grid container spacing={2}>
 			<Grid item xs={12}>
 				<Paper className={classes.paper}>

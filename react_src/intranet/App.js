@@ -122,7 +122,7 @@ export default function App() {
 						</MainLayout>
 					} />
 					{/* 이력 등록 */}
-					<Route exact path='/project/history/new' render={(props) =>
+					<Route exact path='/project/history_new/' render={(props) =>
 						<MainLayout routeProps={props}>
 							<ModifyHistory routeProps={props} />
 						</MainLayout>

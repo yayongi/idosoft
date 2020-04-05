@@ -37,7 +37,7 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		HttpSession session = request.getSession();
 		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
 		boolean isAdmin = commonUtil.isAdmin(session);
-		String member_no = sessionVo.getMEMBER_NO();
+		String member_no = "";
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -54,13 +54,17 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		String select_member = (String)params.get("select_member");
 		
 		try {
-			if("".equals(select_member)) {
-				if(isAdmin) {
-					member_no = "";
-					member_list = historyService.selectMemberList();
+			//관리자면 멤버 전체를 가져온다.
+			if(isAdmin) {
+				member_list = historyService.selectMemberList();
+				//선택된 계정이 없으면 전체를 가져온다.
+				if("".equals(select_member)) {
+					member_no = null;
+				}else {
+					member_no = select_member;
 				}
 			}else {
-				member_no = select_member;
+				member_no = sessionVo.getMEMBER_NO();
 			}
 			history_list = (ArrayList<Map<String, Object>>)historyService.selectHistory(member_no);
 			
@@ -212,6 +216,25 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 			db_result = true;
 		}
 		mv.addObject("isDBError", db_result);
+		return mv;
+	}
+	
+	
+	@RequestMapping(value="/getIsAdmin",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getIsAdmin(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		HttpSession session = request.getSession();
+		// 세션 VO에 세션 값 저장
+		String isAdmin = (String) session.getAttribute("IS_ADMIN");
+		
+		mv.addObject("isAdmin", isAdmin);
 		return mv;
 	}
 }
