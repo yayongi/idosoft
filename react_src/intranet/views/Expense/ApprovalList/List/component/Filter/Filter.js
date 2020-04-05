@@ -141,7 +141,39 @@ export default function  Filter(props) {
 	};
 
 	const excelExport = () => {
-		expectedDevelopment();
+		const fileName = "EXPENSE";
+		const fileCode = "EXCEL0004";
+		const searchData = {
+						...state
+		}
+
+		Axios({
+			url: '/intranet/downloadExcelFile',
+			method: 'post',
+			data : {
+				fileCode : fileCode,
+				fileName : fileName,
+				searchData : searchData,
+			},
+			responseType: 'blob',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}).then(response => {
+
+			console.log(JSON.stringify(response));
+
+			const fileName = response.headers.filename;
+
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', fileName);
+			document.body.appendChild(link);
+			link.click();
+		}).catch(e => {
+			console.log(e);
+		});
 	}
 
 	// Dialog 값 상위 컴포넌트의 state값으로 초기화

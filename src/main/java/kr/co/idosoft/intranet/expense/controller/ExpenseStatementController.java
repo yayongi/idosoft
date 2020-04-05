@@ -234,7 +234,7 @@ public class ExpenseStatementController {
 		data.remove("MEMBER_NO");		// 사원번호
 		
 		// Month KEY Array
-		String[] monthArray = {"Jan", "Fab", "Mar", "Apr", "May", "June", "Aug", "Sept", "Oct", "Nov", "Dec"};
+		String[] monthArray = {"Jan", "Fab", "Mar", "Apr", "May", "June", "July","Aug", "Sept", "Oct", "Nov", "Dec"};
 		
 		// 통신비 & 교통비 합계 
 		

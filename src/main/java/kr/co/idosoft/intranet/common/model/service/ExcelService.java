@@ -1,5 +1,6 @@
-package kr.co.idosoft.intranet.common.service;
+package kr.co.idosoft.intranet.common.model.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,10 +18,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 public interface ExcelService {
 	
-	/**
-	 *  엑셀 워크북 객체로 생성 
-	 * @param list
-	 * @return SXSSFWorkbook
-	 */
-	public SXSSFWorkbook commonExcelWorkbook(String title,List<Map<String,Object>> list);
+	List<LinkedHashMap<String, Object>> getCodetoList(Map<String, Object> data);
+
 }

@@ -138,8 +138,43 @@ export default function  Filter(props) {
 
 	// 엑셀 내보내기
 	const excelExport = () => {
-		expectedDevelopment();
+	
+		const fileName = "EXPENSE";
+		const fileCode = "EXCEL0003";
+		const searchData = {
+						...state
+		}
+
+		Axios({
+			url: '/intranet/downloadExcelFile',
+			method: 'post',
+			data : {
+				fileCode : fileCode,
+				fileName : fileName,
+				searchData : searchData,
+			},
+			responseType: 'blob',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}).then(response => {
+
+			console.log(JSON.stringify(response));
+
+			const fileName = response.headers.filename;
+
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', fileName);
+			document.body.appendChild(link);
+			link.click();
+		}).catch(e => {
+			console.log(e);
+		});
+	
 	}
+
 	// 경비 신청 화면
 	const handleClickNew = () => {
 		routeProps.history.push(`${routeProps.match.url}/new`);
