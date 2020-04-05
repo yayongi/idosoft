@@ -32,7 +32,7 @@ import kr.co.idosoft.intranet.util.fileController;
 public class MemberController {
 	private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 	
-	private static final String INITPASSWORD = "idosoft1234"; // 초기비밀번호
+	private static final String INITPASSWORD = "idosoft1234"; // 珥덇린鍮꾨�踰덊샇
 	
 	@Resource MemberService memberService;
 	
@@ -40,7 +40,7 @@ public class MemberController {
 	fileController file;
 	
 	
-	// 사원리스트 불러오기
+	// �궗�썝由ъ뒪�듃 遺덈윭�삤湲�
 	@RequestMapping(value="/member/memberlist", method=RequestMethod.POST)
 	@ResponseBody
 	public LinkedHashMap<String, Object> getMemberList(Model model, HttpServletRequest request,HttpSession session){
@@ -55,7 +55,7 @@ public class MemberController {
 		}
 	}
 	
-	// 사원정보 등록하기
+	// �궗�썝�젙蹂� �벑濡앺븯湲�
 	@RequestMapping(value="/member/memberinst", method=RequestMethod.POST)
 	@ResponseBody
 	public boolean insMemberInfo(Model model, @RequestBody MemberVO memberVo ,HttpServletRequest request){
@@ -79,9 +79,9 @@ public class MemberController {
 			memberVo.setCertfile_school_path(memberVo.getCertfile_school_path());
 			memberVo.setCertfile_job_path(memberVo.getCertfile_job_path());
 
-			//초기 비밀번호 암호화
+			//珥덇린 鍮꾨�踰덊샇 �븫�샇�솕
 			memberVo.setPwd(shaPasswordEncoder.encode(INITPASSWORD));
-			logger.debug("결과 : " + memberService.registerMember(memberVo));
+			logger.debug("寃곌낵 : " + memberService.registerMember(memberVo));
 			
 			
 			
@@ -93,7 +93,7 @@ public class MemberController {
 		}
 	}
 	
-	// 사원정보 불러오기
+	// �궗�썝�젙蹂� 遺덈윭�삤湲�
 	@RequestMapping(value="/member/membersel/", method=RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String, Object> getMemberInfo(Model model, @RequestBody MemberVO memberVo,HttpServletRequest request){
@@ -109,7 +109,7 @@ public class MemberController {
 		}
 	}
 	
-	// 사원정보 수정
+	// �궗�썝�젙蹂� �닔�젙
 	@RequestMapping(value="/member/memberupd/", method=RequestMethod.POST)
 	@ResponseBody
 	public boolean updMemberInfo(Model model, @RequestBody MemberVO memberVo,HttpServletRequest request){
@@ -122,7 +122,7 @@ public class MemberController {
 		}
 	}
 	
-	// 사원정보 수정
+	// �궗�썝�젙蹂� �닔�젙
 	@RequestMapping(value="/member/initiallizepassword/", method=RequestMethod.POST)
 	@ResponseBody
 	public int initializePassword(Model model, @RequestBody MemberVO memberVo,HttpServletRequest request){
@@ -130,7 +130,7 @@ public class MemberController {
 			SHAPasswordEncoder shaPasswordEncoder = new SHAPasswordEncoder(512); // SHA512
 			shaPasswordEncoder.setEncodeHashAsBase64(true);
 			
-			//초기 비밀번호 암호화
+			//珥덇린 鍮꾨�踰덊샇 �븫�샇�솕
 			memberVo.setPwd(shaPasswordEncoder.encode(INITPASSWORD));
 			
 			return memberService.initializePassword(memberVo);
@@ -140,7 +140,7 @@ public class MemberController {
 		}
 	}
 	
-	// 사원정보 삭제
+	// �궗�썝�젙蹂� �궘�젣
 	@RequestMapping(value="/member/memberdel", method=RequestMethod.POST)
 	@ResponseBody
 	public boolean deleteMemberInfo(Model model, @RequestBody List<String> member_no_list,HttpServletRequest request){
@@ -153,7 +153,7 @@ public class MemberController {
 		}
 	}
 	
-	//직급 정보 가져오기
+	//吏곴툒 �젙蹂� 媛��졇�삤湲�
 	@RequestMapping(value="/member/code", method=RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String, Object> getPosition(Model model, @RequestBody HashMap<String, String> code, HttpServletRequest request){
@@ -168,7 +168,7 @@ public class MemberController {
 		}
 	}
 	
-	//요일 관련 기념일 가져오기
+	//�슂�씪 愿��젴 湲곕뀗�씪 媛��졇�삤湲�
 	@RequestMapping(value="/member/getdate", method=RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String, Object> getDate(Model model, @RequestBody HashMap<String, String> date, HttpServletRequest request){
@@ -188,7 +188,7 @@ public class MemberController {
 		}
 	}
 	
-	//중복 이메일 중복 확인
+	//以묐났 �씠硫붿씪 以묐났 �솗�씤
 	@RequestMapping(value="/member/checkemail", method=RequestMethod.POST)
 	@ResponseBody
 	public int checkemail(Model model, @RequestBody MemberVO memberVo, HttpServletRequest request){
@@ -200,17 +200,17 @@ public class MemberController {
 		}
 	}
 	
-	//사원 정보 엑셀 출력
+	//�궗�썝 �젙蹂� �뿊�� 異쒕젰
 	@RequestMapping(value="/member/exportexcel", method=RequestMethod.POST)
 	@ResponseBody
 	public void exportExcel(Model model, @RequestBody HashMap<String,Object> data, HttpServletRequest request,HttpServletResponse response){
 		try {
-			List<MemberVO> memberVoList = (List<MemberVO>)data.get("memeberList");
-			// 선택된 직원 정보 가져오기
+			List<LinkedHashMap<String, Object>> memberVoList = (List<LinkedHashMap<String, Object>>)data.get("memeberList");
+			// �꽑�깮�맂 吏곸썝 �젙蹂� 媛��졇�삤湲�
 			List<LinkedHashMap<String,Object>> tempList =  memberService.exportExcelList(memberVoList);
 			logger.debug("data : " + tempList);
 			
-			//엑셍 파일 만들어서 다운로드
+			//�뿊�뀓 �뙆�씪 留뚮뱾�뼱�꽌 �떎�슫濡쒕뱶
 			file.exportExcel(tempList,(String)data.get("title"),response);
 		}catch(Exception e) {
 			e.printStackTrace();

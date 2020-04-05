@@ -60,45 +60,45 @@ public class fileController {
 			
 			int index = 0;
 			String uploadPath = "";
-			String detailPath = ""; // 파일 업로드 경로 
-	        String preFileName = ""; // 기종 파일 명 
-	        String savedName = ""; // 저장할 파일명
+			String detailPath = ""; // �뙆�씪 �뾽濡쒕뱶 寃쎈줈 
+	        String preFileName = ""; // 湲곗쥌 �뙆�씪 紐� 
+	        String savedName = ""; // ���옣�븷 �뙆�씪紐�
 			
 			
 			Iterator<String> iter = multipartservletrequest.getFileNames(); 
 		    MultipartFile mfile = null; 
 		    String fieldName = "";
 		    while (iter.hasNext()) { 
-		        fieldName = (String) iter.next(); //파일이름, 위에서 file1과 file2로 보냈으니 file1, file2로 나온다.
-		        mfile = multipartservletrequest.getFile(fieldName);  //저장된 파일 객체
+		        fieldName = (String) iter.next(); //�뙆�씪�씠由�, �쐞�뿉�꽌 file1怨� file2濡� 蹂대깉�쑝�땲 file1, file2濡� �굹�삩�떎.
+		        mfile = multipartservletrequest.getFile(fieldName);  //���옣�맂 �뙆�씪 媛앹껜
 		        logger.debug("file : " + mfile.getOriginalFilename());
 		        
 		        HashMap<String, String> tempMap = new HashMap<String, String>();
 		    	tempMap = tempList.get(index);
-		        detailPath = tempMap.get("path"); // 파일 업로드 경로 
-		        preFileName = tempMap.get("prefilename"); // 기종 파일 명 
-		        savedName = tempMap.get("savedName"); // 저장할 파일명
+		        detailPath = tempMap.get("path"); // �뙆�씪 �뾽濡쒕뱶 寃쎈줈 
+		        preFileName = tempMap.get("prefilename"); // 湲곗쥌 �뙆�씪 紐� 
+		        savedName = tempMap.get("savedName"); // ���옣�븷 �뙆�씪紐�
 		        logger.debug("path : " + detailPath);
 		        logger.debug("preFileName : " + preFileName);
 		        logger.debug("savedName : " + savedName);
 		        
-		        uploadPath = path+detailPath+savedName; // 파일 업로드 경로 + 파일 이름
+		        uploadPath = path+detailPath+savedName; // �뙆�씪 �뾽濡쒕뱶 寃쎈줈 + �뙆�씪 �씠由�
 		        
-		        logger.debug("업로드 파일 경로 : " + uploadPath);
+		        logger.debug("�뾽濡쒕뱶 �뙆�씪 寃쎈줈 : " + uploadPath);
 		        
 		        File file = new File(uploadPath);
 		        
 		        try {
-		        	// 경로가 없으면 경로를 만든다.
+		        	// 寃쎈줈媛� �뾾�쑝硫� 寃쎈줈瑜� 留뚮뱺�떎.
 		        	if(!file.exists()) { 
 		        		file.mkdirs(); 
 		        	} 
 		        	
-		        	mfile.transferTo(file); // 파일을 위에 지정 경로로 업로드
+		        	mfile.transferTo(file); // �뙆�씪�쓣 �쐞�뿉 吏��젙 寃쎈줈濡� �뾽濡쒕뱶
 		        	
-		        	//기존 파일 삭제 로직 
+		        	//湲곗〈 �뙆�씪 �궘�젣 濡쒖쭅 
 		        	if(!"".equals(preFileName) && preFileName != null) {
-		        		logger.debug("삭제 경로 : " + detailPath+preFileName);
+		        		logger.debug("�궘�젣 寃쎈줈 : " + detailPath+preFileName);
 					  	deleteFile(preFileName,path+detailPath);
 					}
 		        }catch(Exception e) {
@@ -110,7 +110,7 @@ public class fileController {
 			e.printStackTrace();
 		}
 	}
-	//파일삭제
+	//�뙆�씪�궘�젣
 	public void deleteFile(String fileName,String filePath) {
 
 		logger.debug(filePath+fileName);
@@ -118,17 +118,17 @@ public class fileController {
 		File file = new File(filePath+fileName); 
 		if( file.exists() ){ 
 			if(file.delete()){ 
-				System.out.println("파일삭제 성공"); 
+				System.out.println("�뙆�씪�궘�젣 �꽦怨�"); 
 			}else{ 
-				System.out.println("파일삭제 실패"); 
+				System.out.println("�뙆�씪�궘�젣 �떎�뙣"); 
 			} 
 		}else{ 
-			System.out.println("파일이 존재하지 않습니다."); 
+			System.out.println("�뙆�씪�씠 議댁옱�븯吏� �븡�뒿�땲�떎."); 
 		} 
 
 	}
 
-	//파일 다운로드
+	//�뙆�씪 �떎�슫濡쒕뱶
 	@RequestMapping(value = "/fileDownload", method = RequestMethod.POST)
 	@ResponseBody
 	public void downloadFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -137,7 +137,7 @@ public class fileController {
 		try{
 		
 			String fileName = request.getParameter("filename"); 
-			//인터넷 익스플로러 구분
+			//�씤�꽣�꽬 �씡�뒪�뵆濡쒕윭 援щ텇
 			if(request.getHeader("user-agent").indexOf("MSIE") == -1) {
 				fileName = new String(fileName.getBytes("UTF-8"),"8859_1");
 			}else {
@@ -145,9 +145,9 @@ public class fileController {
 			}
 			String filePath = request.getParameter("path");
 			String fileFullPath = path + filePath + fileName;
-			logger.debug("경로 : "+path);
+			logger.debug("寃쎈줈 : "+path);
 		
-			logger.debug("파일 경로 : " + fileFullPath);
+			logger.debug("�뙆�씪 寃쎈줈 : " + fileFullPath);
 			
 			File file = new File(fileFullPath);
 			if(file.exists()) {
@@ -171,33 +171,33 @@ public class fileController {
 				fileinputstream.close();
 				bufferedoutputstream.flush();
 				bufferedoutputstream.close();
-				logger.debug("파일 다운로드가 완료 되었습니다.");
+				logger.debug("�뙆�씪 �떎�슫濡쒕뱶媛� �셿猷� �릺�뿀�뒿�땲�떎.");
 			}else {
-				logger.debug("파일이 존재하지 않습니다.");
+				logger.debug("�뙆�씪�씠 議댁옱�븯吏� �븡�뒿�땲�떎.");
 			}
 		}
 		catch (Exception e){
-			logger.debug("파일다운로드에 실패하였습니다.");
+			logger.debug("�뙆�씪�떎�슫濡쒕뱶�뿉 �떎�뙣�븯���뒿�땲�떎.");
 			e.printStackTrace();
 		}
 	}
 	
-	// 엑셀 파일 생성 출력
+	// �뿊�� �뙆�씪 �깮�꽦 異쒕젰
 	public void exportExcel(List<LinkedHashMap<String,Object>> memberData, String title,HttpServletResponse response){
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 			
-			Sheet sheet = workbook.createSheet("sheet");	//해당 파일이 생성 될 Sheet명
-		    Row row = null;									//행 ->
-		    Cell cell = null; 								// 행안에 한칸한칸
+			Sheet sheet = workbook.createSheet("sheet");	//�빐�떦 �뙆�씪�씠 �깮�꽦 �맆 Sheet紐�
+		    Row row = null;									//�뻾 ->
+		    Cell cell = null; 								// �뻾�븞�뿉 �븳移명븳移�
 		    int rowNo = 0;
 		    int cellNo = 0;
 		    
-		    //헤더 클자 Bold
+		    //�뿤�뜑 �겢�옄 Bold
 		    Font font = workbook.createFont();
 		    font.setBold(true);
 		    
-		    // 테이블 헤더용 스타일
+		    // �뀒�씠釉� �뿤�뜑�슜 �뒪���씪
 		    CellStyle headStyle = workbook.createCellStyle();
 
 		    headStyle.setBorderTop(BorderStyle.THIN);
@@ -206,20 +206,20 @@ public class fileController {
 		    headStyle.setBorderRight(BorderStyle.THIN);
 		    headStyle.setFont(font);
 		    
-		    // 헤더 생성
+		    // �뿤�뜑 �깮�꽦
 		    LinkedHashMap<String, Object> headerData = memberData.get(0);
 		    
-		    // 이터레이터 이용해서 key 값으로 헤더 만들기
+		    // �씠�꽣�젅�씠�꽣 �씠�슜�빐�꽌 key 媛믪쑝濡� �뿤�뜑 留뚮뱾湲�
 		    Set<String> set = headerData.keySet();
 		    Iterator<String> iterator = set.iterator();
 
-		    //0번 row
+		    //0踰� row
 		    row = sheet.createRow(rowNo++);
 		    
-		    // 데이터 맵핑용 리스트
+		    // �뜲�씠�꽣 留듯븨�슜 由ъ뒪�듃
 		    List<String> tempList = new ArrayList<String>();
 		    
-		    //Key 값을 헤더에 넣어 준다.
+		    //Key 媛믪쓣 �뿤�뜑�뿉 �꽔�뼱 以��떎.
 		    while(iterator.hasNext()){
 				String key = (String)iterator.next();
 				cell = row.createCell(cellNo++);
@@ -227,7 +227,7 @@ public class fileController {
 				cell.setCellValue(key);
 				tempList.add(key);
 	    	}
-		    // 데이터 부분 생성
+		    // �뜲�씠�꽣 遺�遺� �깮�꽦
 		    for(int i = 0; i < memberData.size();i++) {
 		    	LinkedHashMap<String, Object> data = new LinkedHashMap<String, Object>();
 		    	data = memberData.get(i);
@@ -237,10 +237,17 @@ public class fileController {
 		    		
 		    		Object tempData = data.get(tempList.get(j));
 		    		
-		    		// 객체 타입에 따른 처리
+		    		//null 처리
+		    		if(tempData == null) {
+		    			tempData = "";
+		    		}
+		    		
+		    		// 媛앹껜 ���엯�뿉 �뵲瑜� 泥섎━
 		    		if(tempData instanceof Boolean) {
 		    			cell.setCellValue((Boolean)tempData);
 		    		}else if(tempData instanceof String){
+		    			cell.setCellValue((String)tempData);
+		    		}else if(tempData instanceof Integer) {
 		    			cell.setCellValue((String)tempData);
 		    		}
 		    	}
@@ -248,17 +255,17 @@ public class fileController {
 		    
 		    //LinkedHashMap<String, Object> data = new LinkedHashMap<String, Object>();
 	    	//data = memberData.get(0);
-		    // CELL 크기 자동 조정
+		    // CELL �겕湲� �옄�룞 議곗젙
 		    //for(int k = 0;k < data.size();k++) {
 		    	//sheet.autoSizeColumn(k);
 		    //}
-		    // 컨텐츠 타입과 파일명 지정
+		    // 而⑦뀗痢� ���엯怨� �뙆�씪紐� 吏��젙
 		    response.setContentType("application/download;charset=utf-8");
 		    response.setHeader("Content-Disposition", "attachment;filename="+new String(title.getBytes("utf-8"),"8859_1"));
 			response.setHeader("Content-Transfer-Encoding", "binary");
 			//response.setHeader("filename", new String(title.getBytes("utf-8"),"8859_1"));
 		    
-		    // 엑셀 출력
+		    // �뿊�� 異쒕젰
 		    workbook.write(response.getOutputStream());
 		    workbook.close();
 		}catch(Exception e) {

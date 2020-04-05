@@ -8,28 +8,28 @@ import kr.co.idosoft.intranet.member.vo.MemberVO;
 
 public interface MemberService {
 
-	// 사원 리스트 호출
+	// �궗�썝 由ъ뒪�듃 �샇異�
 	public List<MemberVO> selectMemberList();
-	// 사원 정보 호출
+	// �궗�썝 �젙蹂� �샇異�
 	public MemberVO selectMember(String member_no);
-	// 사원 정보 등록
+	// �궗�썝 �젙蹂� �벑濡�
 	public int registerMember(MemberVO memberInfo);
-	// 사원 정보 수정
+	// �궗�썝 �젙蹂� �닔�젙
 	public int updateMember(MemberVO memberInfo);
-	// 사원 정보 삭제
+	// �궗�썝 �젙蹂� �궘�젣
 	public int deleteMember(List<String> member_no_list);
-	// 코드 정보 가져오기
+	// 肄붾뱶 �젙蹂� 媛��졇�삤湲�
 	public List<Object> getCodeInfo(String code_id);
-	// 생일 가져오기
+	// �깮�씪 媛��졇�삤湲�
 	public List<String> getBirthDate(HashMap<String, String> date);
-	// 결혼기념일 가져오기
+	// 寃고샎湲곕뀗�씪 媛��졇�삤湲�
 	public List<String> getMarriageDate(String date);
-	// 이메일 중복 체크
+	// �씠硫붿씪 以묐났 泥댄겕
 	public int checkemail(MemberVO memberInfo);
-	// 동일 연도 사번 검색
+	// �룞�씪 �뿰�룄 �궗踰� 寃��깋
 	public String findMemberNo(String member_no);
-	// 사원정보 엑셀 출력
-	public List<LinkedHashMap<String, Object>> exportExcelList(List<MemberVO> memberVoList); 
-	// 사원 비밀번호 초기화
+	// �궗�썝�젙蹂� �뿊�� 異쒕젰
+	public List<LinkedHashMap<String, Object>> exportExcelList(List<LinkedHashMap<String, Object>> memberVoList); 
+	// �궗�썝 鍮꾨�踰덊샇 珥덇린�솕
 	public int initializePassword(MemberVO memberVo);
 }

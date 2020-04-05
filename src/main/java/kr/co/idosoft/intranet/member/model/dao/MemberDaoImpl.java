@@ -20,31 +20,31 @@ public class MemberDaoImpl implements MemberDao {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MemberDaoImpl.class);
 	
-	// 사원 정보 리스트 가져오기
+	// �궗�썝 �젙蹂� 由ъ뒪�듃 媛��졇�삤湲�
 	@Override
 	public List<MemberVO> selectMemberList() {
 		return sqlTemplate.selectList("selectMemberList");
 	}
 
-	// 사원 정보 가져오기
+	// �궗�썝 �젙蹂� 媛��졇�삤湲�
 	@Override
 	public MemberVO selectMember(String member_no) {
 		return sqlTemplate.selectOne("getMemberInfo", member_no);
 	}
 
-	// 사원 정보 등록하기
+	// �궗�썝 �젙蹂� �벑濡앺븯湲�
 	@Override
 	public int registerMember(MemberVO memberInfo) {
 		return sqlTemplate.insert("registerMemberInfo", memberInfo);
 	}
 	
-	// 사원 정보 수정하기
+	// �궗�썝 �젙蹂� �닔�젙�븯湲�
 	@Override
 	public int updateMember(MemberVO memberInfo) {
 		return sqlTemplate.update("updateMemberInfo", memberInfo);
 	}
 	
-	// 사원 정보 삭제하기
+	// �궗�썝 �젙蹂� �궘�젣�븯湲�
 	@Override
 	public int deleteMember(List<String> member_no_list) {
 		return sqlTemplate.delete("deleteMemberInfo", member_no_list);
@@ -76,7 +76,7 @@ public class MemberDaoImpl implements MemberDao {
 	}
 
 	@Override
-	public List<LinkedHashMap<String, Object>> exportExcelList(List<MemberVO> memberVoList) {
+	public List<LinkedHashMap<String, Object>> exportExcelList(List<LinkedHashMap<String, Object>> memberVoList) {
 		return sqlTemplate.selectList("exportExcelList",memberVoList);
 	}
 

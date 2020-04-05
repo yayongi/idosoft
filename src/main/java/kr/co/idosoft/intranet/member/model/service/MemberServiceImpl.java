@@ -18,37 +18,37 @@ public class MemberServiceImpl implements MemberService {
 	private static final Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
 	@Resource MemberDao memberDao;
 	
-	// 사원 정보 리스트 
+	// �궗�썝 �젙蹂� 由ъ뒪�듃 
 	@Override
 	public List<MemberVO> selectMemberList() {
 		return memberDao.selectMemberList() ;
 	}
 
-	// 사원 정보 호출
+	// �궗�썝 �젙蹂� �샇異�
 	@Override
 	public MemberVO selectMember(String member_no) {
 		return memberDao.selectMember(member_no);
 	}
 
-	// 사원 정보 등록
+	// �궗�썝 �젙蹂� �벑濡�
 	@Override
 	public int registerMember(MemberVO memberInfo) {
 		return memberDao.registerMember(memberInfo);
 	}
 
-	// 사원 정보 수정
+	// �궗�썝 �젙蹂� �닔�젙
 	@Override
 	public int updateMember(MemberVO memberInfo) {
 		return memberDao.updateMember(memberInfo);
 	}
 
-	// 사원 정보 삭제
+	// �궗�썝 �젙蹂� �궘�젣
 	@Override
 	public int deleteMember(List<String> member_no_list) {
 		return memberDao.deleteMember(member_no_list);
 	}
 	
-	// 코드 정보 가져오기
+	// 肄붾뱶 �젙蹂� 媛��졇�삤湲�
 	@Override
 	public List<Object> getCodeInfo(String code_id) {
 		return memberDao.getCodeInfo(code_id);
@@ -75,7 +75,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public List<LinkedHashMap<String, Object>> exportExcelList(List<MemberVO> memberVoList) {
+	public List<LinkedHashMap<String, Object>> exportExcelList(List<LinkedHashMap<String, Object>> memberVoList) {
 		return memberDao.exportExcelList(memberVoList);
 	}
 
