@@ -255,6 +255,110 @@
 			AND A.SANCTN_STTUS_CODE = 'SS0002'
 		</where>
 	</select>
+	<!-- 경비 진행상태 총금액 -->
+	<select id="getTotalProgAmount" parameterType="hashmap" resultType="int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				AND A.MEMBER_NO = #{MEMBER_NO}
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND A.SANCTN_STTUS_CODE = 'SS0000'
+		</where>
+	</select>
+	<!-- 경비 1차결재 총금액 --> 
+	<select id="getTotalFirAppAmount" parameterType="hashmap" resultType="int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				AND A.MEMBER_NO = #{MEMBER_NO}
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND A.SANCTN_STTUS_CODE = 'SS0001'
+		</where>
+	</select>
+	<!-- 경비 완료 총금액 --> 
+	<select id="getTotalCompAmount" parameterType="hashmap" resultType="int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				AND A.MEMBER_NO = #{MEMBER_NO}
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND A.SANCTN_STTUS_CODE = 'SS0002'
+		</where>
+	</select>
+	<!-- 경비 반려 총금액 --> 
+	<select id="getTotalReturnAmount" parameterType="hashmap" resultType="int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				AND A.MEMBER_NO = #{MEMBER_NO}
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND A.SANCTN_STTUS_CODE = 'SS0003'
+		</where>
+	</select>
 	<!-- 결재처리 -->
 	<update id="updateProcessApproval" parameterType="hashmap">
 		UPDATE TB_EXPENSE

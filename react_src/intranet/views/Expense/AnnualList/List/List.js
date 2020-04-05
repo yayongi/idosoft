@@ -21,7 +21,12 @@ export default function  List(props) {
 	});
 
 	const [rows, setRows] = React.useState([]);
-	const [totalAmount, setTotalAmount] = React.useState(0);
+	
+	const [totalProgAmount, setTotalProgAmount] = React.useState(0);
+	const [totalFirAmount, setTotalFirAmount] = React.useState(0);
+	const [totalCompAmount, setTotalCompAmount] = React.useState(0);
+	const [totalReturnAmount, setTotalReturnAmount] = React.useState(0);
+
 	const [paging, setPaging] = React.useState({listCount : 0});
 	const [ holdUp, setHoldUp ] = React.useState(0);					// 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
 	const [firstRender, setFirstRender ] = React.useState(false);
@@ -115,7 +120,12 @@ export default function  List(props) {
 
 				setRows(JSON.parse(response.data.list));
 				setPaging(JSON.parse(response.data.result));
-				setTotalAmount(response.data.totalAmount);
+				
+				setTotalProgAmount(response.data.totalProgAmount);
+				setTotalFirAmount(response.data.totalFirAmount);
+				setTotalCompAmount(response.data.totalCompAmount);
+				setTotalReturnAmount(response.data.totalReturnAmount);
+
 				setFirstRender(true);
 
 				const result = JSON.parse(response.data.result);
@@ -137,7 +147,7 @@ export default function  List(props) {
 			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
-			processErrCode(e);
+			//processErrCode(e);
 			console.log(e);
 		});
 		
@@ -158,7 +168,12 @@ export default function  List(props) {
 							paging={paging} setPaging={setPaging}
 							state={state} setState={setState}
 							routeProps={props.routeProps}
-							totalAmount={totalAmount} setTotalAmount={setTotalAmount}
+							
+							totalProgAmount={totalProgAmount} totalFirAmount={totalFirAmount}
+							totalCompAmount={totalCompAmount} totalReturnAmount={totalReturnAmount}
+							setTotalProgAmount={setTotalProgAmount} setTotalFirAmount={setTotalFirAmount}
+							setCompAmount={setTotalCompAmount} setTotalReturnAmount={setTotalReturnAmount}
+
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							setPage={setPage} setRowsPerPage={setRowsPerPage}
 							setShowLoadingBar={setShowLoadingBar} 

@@ -174,5 +174,32 @@ public class AnnalListDaoImpl implements AnnalListDao {
 			return false;
 		}
 	}
+	@Override
+	public String getTotalProgAmount(Map<String, Object> data) {
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getTotalProgAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
+	}
+	
+	@Override
+	public String getTotalFirAppAmount(Map<String, Object> data) {
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getTotalFirAppAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
+	}
+	
+	@Override
+	public String getTotalCompAmount(Map<String, Object> data) {
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getTotalCompAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
+	}
+	
+	@Override
+	public String getTotalReturnAmount(Map<String, Object> data) {
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getTotalReturnAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
+	}
 	
 }
