@@ -127,5 +127,23 @@ public class AnnalListServiceImpl implements AnnalListService {
 	public boolean Proceed(Map<String, Object> data) {
 		return dao.Proceed(data);
 	}
+	@Override
+	public String getTotalProgAmount(Map<String, Object> data) {
+		return dao.getTotalProgAmount(data);
+	}
+	@Override
+	public String getTotalFirAppAmount(Map<String, Object> data) {
+		return dao.getTotalFirAppAmount(data);
+	}
+	@Override
+	public String getTotalCompAmount(Map<String, Object> data) {
+		// TODO Auto-generated method stub
+		return dao.getTotalCompAmount(data);
+	}
+	@Override
+	public String getTotalReturnAmount(Map<String, Object> data) {
+		// TODO Auto-generated method stub
+		return dao.getTotalReturnAmount(data);
+	}
 	
 }

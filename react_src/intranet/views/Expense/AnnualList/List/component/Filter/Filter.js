@@ -58,7 +58,12 @@ export default function  Filter(props) {
 		filterRows, filterSetRows,
 		state, setState,
 		paging, setPaging,
-		totalAmount, setTotalAmount,
+		
+		totalProgAmount, totalFirAmount,
+		totalCompAmount,totalReturnAmount, 
+		setTotalProgAmount, setTotalFirAmount,
+		setTotalCompAmount, setTotalReturnAmount,
+
 		routeProps, setHoldUp,
 		setPage ,setRowsPerPage,
 		setShowLoadingBar,
@@ -185,8 +190,12 @@ export default function  Filter(props) {
 			setIsNoN(isNoN);
 			if(isNoN == "false"){
 				filterSetRows(JSON.parse(response.data.list));
-				setTotalAmount(response.data.totalAmount);
-
+				
+				setTotalProgAmount(response.data.totalProgAmount);
+				setTotalFirAmount(response.data.totalFirAmount);
+				setTotalCompAmount(response.data.totalCompAmount);
+				setTotalReturnAmount(response.data.totalReturnAmount);
+				
 				const result = JSON.parse(response.data.result);
 
 				/* 페이징 관련 state */
@@ -281,8 +290,11 @@ export default function  Filter(props) {
 	return (
 		<Fragment>
 			<Toolbar className={classes.root}>
-				<Typography className={classes.title} color="secondary" variant="subtitle2">					
-					총금액 : {Number(totalAmount).toLocaleString()} 원
+				<Typography className={classes.title} color="secondary" variant="subtitle2">
+					총 금액(진행) : {Number(totalProgAmount).toLocaleString()} 원 <br/>
+					총 금액(1차결재) : {Number(totalFirAmount).toLocaleString()} 원 <br/>
+					총 금액(완료) : {Number(totalCompAmount).toLocaleString()} 원 <br/>
+					총 금액(반려) : {Number(totalReturnAmount).toLocaleString()} 원 <br/>
 				</Typography>
 				<div className={classes.container}>
 					<Hidden smDown>

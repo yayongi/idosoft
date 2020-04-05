@@ -70,6 +70,26 @@ public interface AnnalListDao {
 	 * @return String
 	 */
 	boolean Proceed(Map<String, Object> data);
+	/**
+	 * 총금액 진행상태 합계
+	 * @return String
+	 */
+	String getTotalProgAmount(Map<String, Object> data);
+	/**
+	 * 총금액 1차결재 합계
+	 * @return String
+	 */
+	String getTotalFirAppAmount(Map<String, Object> data);
+	/**
+	 * 총금액 완료 합계
+	 * @return String
+	 */
+	String getTotalCompAmount(Map<String, Object> data);
+	/**
+	 * 총금액 반려 합계
+	 * @return String
+	 */
+	String getTotalReturnAmount(Map<String, Object> data);
 	
 }
 

@@ -202,7 +202,10 @@ public class AnnualListController {
 		LOG.debug("data : " + data);
 		
 		// 경비 총금액
-		String totalAmount = annalListService.getTotalAmount(data);
+		String totalProgAmount 		= annalListService.getTotalProgAmount(data);
+		String totalFirAmount 		= annalListService.getTotalFirAppAmount(data);	
+		String totalCompAmount 		= annalListService.getTotalCompAmount(data);
+		String totalReturnAmount	= annalListService.getTotalReturnAmount(data);
 		// 목록 조회
 		List<Map<String, Object>> list = annalListService.getlist(data);
 		
@@ -230,13 +233,18 @@ public class AnnualListController {
 		LOG.debug("# RETURN JSON ");
 		LOG.debug("# jsonArrayList : " + jsonArrayList);
 		LOG.debug("# jsonObjectData : " + jsonObjectData);
-		LOG.debug("# totalAmount : " + totalAmount);
+		LOG.debug("# totalProgAmount : " + totalProgAmount);
+		LOG.debug("# totalFirAmount : " + totalFirAmount);
+		LOG.debug("# totalCompAmount : " + totalCompAmount);
+		LOG.debug("# totalReturnAmount : " + totalReturnAmount);
 		LOG.debug("#################################################################################");
 		
 		mv.addObject("list", jsonArrayList);
 		mv.addObject("result", jsonObjectData);
-		mv.addObject("totalAmount", totalAmount);
-		
+		mv.addObject("totalProgAmount", totalProgAmount);
+		mv.addObject("totalFirAmount", totalFirAmount);
+		mv.addObject("totalCompAmount", totalCompAmount);
+		mv.addObject("totalReturnAmount", totalReturnAmount);
 		return mv;
 	}
 	

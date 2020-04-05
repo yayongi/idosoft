@@ -66,5 +66,25 @@ public interface AnnalListService {
 	 * @return boolean
 	 */
 	boolean Proceed(Map<String, Object> data);
+	/**
+	 * 경비 진행상태 총합계
+	 * @return String
+	 */
+	String getTotalProgAmount(Map<String, Object> data);
+	/**
+	 * 경비 1차결재 총합계
+	 * @return String
+	 */
+	String getTotalFirAppAmount(Map<String, Object> data);
+	/**
+	 * 경비 완료 총합계
+	 * @return String
+	 */
+	String getTotalCompAmount(Map<String, Object> data);
+	/**
+	 * 경비 반려 총합계
+	 * @return String
+	 */
+	String getTotalReturnAmount(Map<String, Object> data);
 	
 }
