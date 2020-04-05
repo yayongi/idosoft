@@ -28,6 +28,8 @@
 			<mapping path="/**" />
 			<exclude-mapping path="/" />
 			<exclude-mapping path="/login" />
+			<exclude-mapping path="/notice/dashboardList" />
+			<exclude-mapping path="/member/getdate" />
 			<exclude-mapping path="/resources/**" />
 			<beans:bean id="commonInterceptor"
 				class="kr.co.idosoft.common.interceptor.CommonInterceptor" />
