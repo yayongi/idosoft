@@ -214,7 +214,7 @@ public class ExcelController {
 		try {
 			//엑셀 파일 생성 및 다운로드
 			if("EXCEL0005".equals(fileCode)) {
-				fileController.exportExcel(list1, list2, fileName, response);
+				fileController.exportExceptionExcel(list1, list2, fileName, response);
 			} else {
 				fileController.exportExcel(list1, fileName, response);
 			}

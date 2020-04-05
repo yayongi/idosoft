@@ -46,7 +46,7 @@
 		<mvc:argument-resolvers>
 			<beans:bean class="kr.co.idosoft.common.util.CustomMapArgumentResolver" />
 		</mvc:argument-resolvers>
-		</mvc:annotation-driven>
+	</mvc:annotation-driven>
 		
 	<beans:bean id="jsonView"
 		class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">

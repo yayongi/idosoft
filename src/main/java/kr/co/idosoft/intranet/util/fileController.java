@@ -278,7 +278,7 @@ public class fileController {
 			e.printStackTrace();
 		}
 	}
-	public void exportExcel(List<LinkedHashMap<String, Object>> list1, List<LinkedHashMap<String, Object>> list2,
+	public void exportExceptionExcel(List<LinkedHashMap<String, Object>> list1, List<LinkedHashMap<String, Object>> list2,
 			String title, HttpServletResponse response) {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
