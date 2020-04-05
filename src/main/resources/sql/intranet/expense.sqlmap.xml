@@ -1077,7 +1077,7 @@
 	ON A.PROJECT_NO = C.PROJECT_NO
 	<where>
 		<if test="isAdmin != 1">
-			AND A.MEMBER_NO = #{MEMBER_NO}
+			AND B.MEMBER_NO = #{MEMBER_NO}
 		</if>
 		AND B.MEMBER_NO != '99999999'
 	</where>
