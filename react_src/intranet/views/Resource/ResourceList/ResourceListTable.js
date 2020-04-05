@@ -81,6 +81,14 @@ const useStyles = makeStyles(theme => ({
   margin: {
     // margin: theme.spacing(1),
   },
+  overflowCon : {
+		whiteSpace:"nowrap",
+		overflow:"hidden",
+		textOverflow:"ellipsis"
+  },
+  maxWidth : {
+		maxWidth : "120px"
+  },
 }));
 
 function ResourceListTable(props) {
@@ -268,9 +276,7 @@ function ResourceListTable(props) {
                         {headCell.label}
                     </TableCell>
                   ))}
-                  {/* {(isAdmin || memberNo === row.reg_id) && */}
-                  <TableCell align={'center'}>수정 / 삭제</TableCell>
-                  {/* }  */}
+                  <TableCell align={'center'} width={'130px'}>수정 / 삭제</TableCell>
                   </>
                 }
                 {!isWidthUp('md', props.width) &&
@@ -286,7 +292,7 @@ function ResourceListTable(props) {
                       </TableCell>
                     ))}
                     {/* {isAdmin && */}
-                    <TableCell align={'center'}>수정 / 삭제</TableCell> 
+                    <TableCell align={'center'} width={'130px'}>수정 / 삭제</TableCell> 
                     {/* } */}
                   </>
                 }
@@ -327,7 +333,11 @@ function ResourceListTable(props) {
                       <TableCell align="center" onClick={event=>openContentModal(row)}>{row.res_code}</TableCell>
                       </>
                       }
-                      <TableCell align="center" onClick={event=>openContentModal(row)}>{row.model_nm}</TableCell>
+                      <TableCell align="center" onClick={event=>openContentModal(row)} width={isWidthUp('md', props.width) ? '12%' : '30%'} 
+                                className={`${classes.maxWidth}${classes.overflowCon}`}
+                      >
+                        {row.model_nm}
+                      </TableCell>
                       {isWidthUp('md', props.width) &&
                       <>
                       <TableCell align="center" onClick={event=>openContentModal(row)}>{row.mark_code}</TableCell>
@@ -338,7 +348,11 @@ function ResourceListTable(props) {
                           {isEmpty(row.purchase_mtn)? "미설정" : row.purchase_mtn}
                       </TableCell>
                       <TableCell align="center" onClick={event=>openContentModal(row)}>{row.display_size_code}</TableCell>
-                      <TableCell align="center" onClick={event=>openContentModal(row)}>{row.serial_no}</TableCell>
+                      <TableCell align="center" onClick={event=>openContentModal(row)} width={'13%'} 
+                                className={`${classes.maxWidth}${classes.overflowCon}`}
+                      >
+                        {row.serial_no}
+                      </TableCell>
                       <TableCell align="center" onClick={event=>openContentModal(row)}>
                                           {isEmpty(row.mac_addr)? "미설정" : row.mac_addr}
                       </TableCell>

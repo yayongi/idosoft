@@ -213,7 +213,35 @@ function RegistGrid() {
 	// Input Change Handler
 	const handleInputChange = (event) => {
 		setValidation(initValidation);
-		setResData({...resData, [event.target.name] : event.target.value});
+
+		const inputValue = event.target.value;
+
+		if(event.target.name ==="model_nm"){
+			//모델명 16글자(영문,한글,숫자,특수문자)
+			if(inputValue.length > 16) {
+				event.preventdefault(); 
+				return;
+			}else{
+				setResData({...resData, [event.target.name] : event.target.value});
+			} 
+		}else if(event.target.name ==="serial_no"){
+			//시리얼번호 20글자(영문 대소문자, 숫자)
+			if(inputValue.length > 20) {
+				event.preventdefault(); 
+				return;
+			}else{
+				setResData({...resData, [event.target.name] : event.target.value});
+			} 
+		}else if(event.target.name ==="mac_addr"){
+			//시리얼번호 17글자(영문 대문자, 숫자, 하이푼)
+			if(inputValue.length > 17) {
+				event.preventdefault(); 
+				return;
+			}else{
+				setResData({...resData, [event.target.name] : event.target.value});
+			} 
+		}
+		// setResData({...resData, [event.target.name] : event.target.value});
 	}
 
 	// Dialog Open Handler
@@ -338,6 +366,9 @@ function RegistGrid() {
 										id="outlined-basic" label="모델명" variant="outlined"
 										onChange={handleInputChange} name="model_nm"
 										value={resData.model_nm} error={validation.model_nm}
+										multiline={true}  //TextArea로 사용 여부
+										rows={1}          //처음 보여줄 TexArea 행수
+										rowsMax = {5}     //최대호 보여줄 TextArea 행수
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
@@ -382,6 +413,9 @@ function RegistGrid() {
 								id="outlined-basic" label="시리얼번호" variant="outlined"
 								onChange={handleInputChange} name="serial_no"
 								value={resData.serial_no} error={validation.serial_no}
+								multiline={true}  //TextArea로 사용 여부
+								rows={1}          //처음 보여줄 TexArea 행수
+								rowsMax = {5}     //최대호 보여줄 TextArea 행수
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
