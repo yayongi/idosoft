@@ -20,7 +20,7 @@ import axios from 'axios';
 
 import CommonDialog from '../../../js/CommonDialog';
 import ContentModal from '../component/ContentModal';
-import { isEmpty } from '../../../js/util';
+import { isEmpty, processErrCode } from '../../../js/util';
 
 const headCells = [
   { id: 'res_no', label: '번호'},
@@ -88,6 +88,7 @@ function ResourceListTable(props) {
 
   const {
           isAdmin,
+          memberNo,
           count,
           setCount, 
           resData, 
@@ -142,17 +143,18 @@ function ResourceListTable(props) {
     }
     setSelected(newSelected);
     selectedResNo(newSelected);
+    // console.log(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
-    console.log('newPage : '+newPage)
+    // console.log('newPage : '+newPage)
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-    console.log("RowerPerPage : "+parseInt(event.target.value, 10));
+    // console.log("RowerPerPage : "+parseInt(event.target.value, 10));
   };
 
   //개별 삭제 handler
@@ -165,7 +167,7 @@ function ResourceListTable(props) {
 		return setConfirm({title:title, content:content, onOff:true, isConfirm:isConfirm});
 	}
 	// confirm Close Handler
-	const handleCloseConfirm = (result) => {
+	const handleCloseConfirm = (title, result) => {
 		//엑셀, 선택삭제 처리
 		setConfirm({title:'', content:'', onOff:false, isConfirm:false});
 		return resDelete(result);
@@ -185,10 +187,10 @@ function ResourceListTable(props) {
           res_no : deleteRow
         },
 				}).then(response => {
-          console.log(response.data);
+          // console.log(response.data);
           setCount(count-1);
 				}).catch(e => {
-					console.log(e);
+					processErrCode(e);
       });
       
 			const upStreamData = resData.filter((row) => {
@@ -220,7 +222,7 @@ function ResourceListTable(props) {
     <ContentModal props={openModal} closeModal={handleCloseModal}/>
     <Paper className={classes.root}>
       <TableContainer className={classes.container}>
-       {!isEmpty(resData) &&
+       {!isEmpty(resData) ?
        <>
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
@@ -242,6 +244,7 @@ function ResourceListTable(props) {
           >
             <TableHead>
               <TableRow>
+                {isAdmin &&
                 <TableCell padding="checkbox">
                     <Checkbox
                       // indeterminate={selected.length > 0 && resData.length < selected.length}
@@ -252,6 +255,7 @@ function ResourceListTable(props) {
                       //  style={{minWidth:'10px'}}
                     />
                 </TableCell>
+                }
                 {isWidthUp('md', props.width) &&
                   <>
                   {columns.map(headCell => (
@@ -264,9 +268,9 @@ function ResourceListTable(props) {
                         {headCell.label}
                     </TableCell>
                   ))}
-                  {isAdmin &&
+                  {/* {(isAdmin || memberNo === row.reg_id) && */}
                   <TableCell align={'center'}>수정 / 삭제</TableCell>
-                  } 
+                  {/* }  */}
                   </>
                 }
                 {!isWidthUp('md', props.width) &&
@@ -281,9 +285,9 @@ function ResourceListTable(props) {
                           {headCell.label}
                       </TableCell>
                     ))}
-                    {isAdmin &&
+                    {/* {isAdmin && */}
                     <TableCell align={'center'}>수정 / 삭제</TableCell> 
-                    }
+                    {/* } */}
                   </>
                 }
               </TableRow>
@@ -304,6 +308,7 @@ function ResourceListTable(props) {
                       key={`row${index}`}
                       // selected={isItemSelected}
                     >
+                      {isAdmin &&
                       <TableCell padding="checkbox">
                           <Checkbox
                             checked={isItemSelected}
@@ -312,6 +317,7 @@ function ResourceListTable(props) {
                             onClick={event => handleClick(event, row.res_no)}
                           />
                       </TableCell>
+                      }
                       {isWidthUp('md', props.width) &&
                       <>
                       <TableCell align="center" component="th" id={labelId} scope="row" padding="none" onClick={event=>openContentModal(row)}>
@@ -340,18 +346,20 @@ function ResourceListTable(props) {
                     }
                       <TableCell align="center" onClick={event=>openContentModal(row)}>{row.holder}</TableCell>
                       {/* 관리자의 경우 */}
-                      {isAdmin &&
                       <TableCell align="center">
-                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.res_no)}>
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
+                      {(isAdmin || memberNo === row.reg_id) &&
+                      <>
                         <RouterLink button="true" to={"/resource/regist/?id="+row.res_no}>
                           <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.res_no)}>
                             <CreateIcon fontSize="small" />
                           </IconButton>
                         </RouterLink>
-                      </TableCell>
+                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.res_no)}>
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </>
                       }
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -368,6 +376,11 @@ function ResourceListTable(props) {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
         </>
+          :   (<Paper style={{minHeight : "300px", width:"100%", textAlign:"center"}} elevation={0} >
+                  <h3 style={{paddingTop:"100px"}}> 
+                      현재 자원 목록이 없습니다.
+                  </h3>
+              </Paper>)
       }
       </TableContainer>
       </Paper>

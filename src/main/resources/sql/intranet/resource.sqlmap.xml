@@ -50,7 +50,7 @@
 			TB_RESOURCE
 		WHERE
 			TB_RESOURCE.RES_NO IN
-			<foreach collection="resNoList" item="resNo"  open="(" close=")" separator=",">
+			<foreach collection="res_no" item="resNo"  open="(" close=")" separator=",">
 				#{resNo}
 			</foreach>
 	</delete>
@@ -74,6 +74,7 @@
 			DATE_FORMAT(STR_TO_DATE(TB_RESOURCE.PURCHASE_MTN, '%Y%m'),'%Y-%m ') AS PURCHASE_MTN,
 			TB_RESOURCE.SERIAL_NO, 
 			TB_RESOURCE.MAC_ADDR,
+			TB_RESOURCE.REG_ID,
 			A.CODE_NAME AS RES_CODE,
 			B.CODE_NAME AS MARK_CODE,
 			C.CODE_NAME AS DISPLAY_SIZE_CODE,
@@ -148,11 +149,16 @@
 			MEMBER_NO AS id, NAME AS label
 		FROM
 			TB_MEMBER
+		<where>
+			TB_MEMBER.MEMBER_NO != "99999999"
+			<if test=' memberNo != null'>
+			AND	TB_MEMBER.MEMBER_NO = #{memberNo}
+			</if>
+		</where>
 	</select>
 	<!-- 엑셀 -->
-	<select id="exportExcel" parameterType="String" resultType="java.util.LinkedHashMap">
+	<select id="exportExcel" parameterType="HashMap" resultType="java.util.LinkedHashMap">
 		SELECT
-			CAST(TB_RESOURCE.RES_NO AS CHAR(10)) AS 번호, 
 			A.CODE_NAME AS 자원종류,
 			TB_RESOURCE.MODEL_NM AS 모델명, 
 			B.CODE_NAME AS 제조사,
@@ -167,10 +173,23 @@
 			LEFT OUTER JOIN TB_CODE B ON TB_RESOURCE.MARK_CODE = B.CODE_ID
 			LEFT OUTER JOIN TB_CODE C ON TB_RESOURCE.DISPLAY_SIZE_CODE = C.CODE_ID
 			LEFT OUTER JOIN TB_MEMBER D ON TB_RESOURCE.HOLDER = D.MEMBER_NO
-		WHERE
-			TB_RESOURCE.RES_NO IN
-	    <foreach collection="list" item="res_no"  open="(" close=")" separator=",">
-	        #{res_no}
-	    </foreach>
+		<where>
+			<if test='holder != null and holder !=""'>
+				AND D.NAME LIKE CONCAT('%',#{holder},'%')
+			</if>
+			<if test='resType != "1" and resType !="" '>
+				AND TB_RESOURCE.RES_CODE = #{resType}
+			</if>
+			<if test='stDt != null and stDt !=""'>
+				<![CDATA[ 
+				AND CAST(#{stDt} as unsigned) <= CAST(TB_RESOURCE.PURCHASE_MTN as unsigned)
+				]]>
+			</if>
+			<if test='edDt != null and edDt !=""'>
+				<![CDATA[ 
+				AND CAST(#{edDt} as unsigned) >= CAST(TB_RESOURCE.PURCHASE_MTN as unsigned)
+				]]>
+			</if>
+		</where>	
 	</select>
 </mapper>

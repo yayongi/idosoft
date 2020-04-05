@@ -23,6 +23,7 @@ const Viewer = ({defaultValue}) =>{
   return (
           <div className={classes.root}>
             <CKEditor
+                className="viewer"
                 ref={ref}
 				        disabled = {true}
 				        isReadOnly={true}
@@ -32,7 +33,7 @@ const Viewer = ({defaultValue}) =>{
                 } }
                 config = {{
 				          toolbar : [],
-				          isReadOnly : true,
+                  isReadOnly : true,
                 }}
             />
         </div>

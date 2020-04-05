@@ -41,6 +41,9 @@ export default function YearMonthPicker(props) {
     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
       <Grid container justify="space-around">
         <KeyboardDatePicker
+          InputProps={{
+                        readOnly: true,
+          }}
           locale='ko' 
           margin="normal"
           id={`${props.resKey}-date-picker-dialog`}

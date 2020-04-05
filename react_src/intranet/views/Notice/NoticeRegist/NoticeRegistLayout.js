@@ -18,7 +18,7 @@ import DatePicker from '../component/DatePicker';
 
 import CommonDialog from '../../../js/CommonDialog';
 
-import { getRootPath } from '../../../js/util';
+import { getRootPath, processErrCode } from '../../../js/util';
 
 import Moment from "moment"
 
@@ -129,7 +129,7 @@ export default function NoticeRegistLayout() {
           },
           }).then(response => {
             //수정 데이터 설정
-            console.log(response);
+            // console.log(response);
             const data = response.data;
             setNoticeData( 
               {...noticeData, ['board_no']: data.board_no, ['title']:data.title, ['content'] : data.content,
@@ -137,13 +137,13 @@ export default function NoticeRegistLayout() {
               }
               );
           }).catch(e => {
-            console.log(e);
+            processErrCode(e);
         });
 		}
   }, []);
 
   React.useEffect(()=>{
-    console.log(noticeData);
+    // console.log(noticeData);
     setChecked(noticeData.major_yn);
   }, [noticeData]);
 
@@ -172,7 +172,7 @@ export default function NoticeRegistLayout() {
     setNoticeData({...noticeData, major_period_date:date});
   }
   const handleEditorChange = data => {
-    console.log(data);
+    // console.log(data);
     setNoticeData({...noticeData, content:data});
   }
 
@@ -185,17 +185,17 @@ export default function NoticeRegistLayout() {
 	const handleCloseDialog = (title, result) => {
     //등록 및 수정 처리
 		if(dialog.isConfirm*result){
-      console.log("등록처리")
+      // console.log("등록처리")
 			noticeDataRegist();
 		}
-    console.log("등록안됨");
+    // console.log("등록안됨");
 		setDialog({title:'', content:'', onOff:false, isConfirm:false});
     return setResultDialog(result);
 	}
 	
 	const noticeDataRegist = () => {
 		if(urlParams===undefined){
-      console.log(editorRef.current);
+      // console.log(editorRef.current);
       axios({
 				url: '/intranet/notice/register',
 				method : 'post',
@@ -204,10 +204,10 @@ export default function NoticeRegistLayout() {
 				},
 				data : {...noticeData, ['major_yn'] : (noticeData.major_yn===true?1:0)},
 				}).then(response => {
-					console.log(response);
+					// console.log(response);
 					console.log(response.data);
 				}).catch(e => {
-					console.log(e);
+					processErrCode(e);
 			});
 		}else{
 			//수정
@@ -219,10 +219,10 @@ export default function NoticeRegistLayout() {
 				},
 				data : {...noticeData, ['major_yn'] : (noticeData.major_yn===true?1:0)},
 				}).then(response => {
-					console.log(response);
-					console.log(response.data);
+					// console.log(response);
+					// console.log(response.data);
 				}).catch(e => {
-					console.log(e);
+					processErrCode(e);
 			});
 		}
 		return location.href= getRootPath()+"/#/notice";

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
@@ -29,6 +30,12 @@ import kr.co.idosoft.intranet.resource.service.ResourceServiceImpl;
 import kr.co.idosoft.intranet.resource.vo.ResourceVO;
 import kr.co.idosoft.intranet.util.fileController;
 
+/**
+ * 
+ * @author 김준선
+ * @since 2020.03.25
+ * @content Resource Controller
+ */
 @RestController
 @RequestMapping("/resource")
 public class ResourceController {
@@ -42,25 +49,23 @@ public class ResourceController {
 	private static final String MARK_CODE = "CD0005";			// 제조사 코드
 	private static final String DISPLAY_SIZE_CODE = "CD0006"; 	// 화면사이즈 코드
 	
-	//등록
+	/**
+	 * 자원 등록
+	 * @param request
+	 * @param ResourceVO resVO
+	 * @return boolean
+	 */
 	@PostMapping("/register")
 	public boolean registResource(@RequestBody ResourceVO resVO, HttpServletRequest request) {
-		//관리자 여부
-		boolean isAdmin = commonUtil.isAdmin(request.getSession());
-		if(!isAdmin) {
-			//관리자가 아니면 false
-			return false;
-		}
 		
-		
-		String path = request.getSession().getServletContext().getRealPath("/")+"resources";
+//		String path = request.getSession().getServletContext().getRealPath("/")+"resources";
 		
 		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
 		
 		resVO.setReg_id(sessionVO.getMEMBER_NO());
 		
 		logger.debug("###########################################################");
-		logger.debug("자원번호 : "+resVO.getHolder());
+		logger.debug("자원번호 : "+resVO);
 		logger.debug("###########################################################");
 		
 		try {
@@ -71,7 +76,12 @@ public class ResourceController {
 		}
 		return true;
 	}
-	//수정
+	/**
+	 * 자원 수정
+	 * @param request
+	 * @param ResourceVO resVO
+	 * @return boolean
+	 */
 	@PostMapping("/modify")
 	public boolean modifyResource(Model model, @RequestBody ResourceVO resVO, HttpServletRequest request) {
 		//관리자 여부
@@ -96,28 +106,37 @@ public class ResourceController {
 			return false;
 		}
 	}
-	//코드 및 사원번호 조회
+	/**
+	 * 자원관련 코드/코드명, 사원번호/사원명 조회
+	 * @param request
+	 * @return boolean
+	 */
 	@PostMapping("/get-restype")
-	public Map<String, List<Object>> getResType() {
+	public ModelAndView getResType(HttpServletRequest request) {
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
+		
 		Map<String, String> upper_codes = new HashMap<String, String>();
 		upper_codes.put("resTypeData", RES_CODE);
 		upper_codes.put("resProductData", MARK_CODE);
 		upper_codes.put("resDisplaySizeData", DISPLAY_SIZE_CODE);
 		
-		Map<String, List<Object>> resSelectType = resService.getSelectType(upper_codes);
-		return resSelectType;
+		Map<String, List<Object>> resSelectType = resService.getSelectType(upper_codes, isAdmin, (String)sessionVO.getMEMBER_NO());
+		
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("jsonView");
+		mv.addObject("resSelectType", resSelectType);
+		mv.addObject("isAdmin", isAdmin);
+		return mv;
 	}
-	//단일 삭제
+	/**
+	 * 자원 삭제
+	 * @param request
+	 * @param ResourceVO resVO
+	 * @return boolean
+	 */
 	@PostMapping("/delete")
 	public boolean deleteResource(@RequestBody ResourceVO resVO, HttpServletRequest request) {
-		
-		//관리자 여부
-		boolean isAdmin = commonUtil.isAdmin(request.getSession());
-		if(!isAdmin) {
-			//관리자가 아니면 false
-			return false;
-		}
-		
 		try {
 			if(0 < resService.deleteResource(resVO.getRes_no())) {
 				return true;
@@ -129,7 +148,12 @@ public class ResourceController {
 			return false;
 		}
 	}
-	//선택 삭제
+	/**
+	 * 자원 선택 삭제
+	 * @param request
+	 * @param Map<String, List<Integer>> res_no_list
+	 * @return boolean
+	 */
 	@PostMapping("/deletelist")
 	public boolean  deleteResourceList(@RequestBody Map<String, List<Integer>> res_no_list, HttpServletRequest request) {
 		//관리자 여부
@@ -138,23 +162,25 @@ public class ResourceController {
 			//관리자가 아니면 false
 			return false;
 		}
-		
-		
-		List<Integer> selectedResNo = (List<Integer>) res_no_list.get("res_no");
-		
 		try {
-			resService.deleteResourceList(selectedResNo);
+			resService.deleteResourceList(res_no_list);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
-	//리스트
+	/**
+	 * 자원 리스트 조회
+	 * @param request
+	 * @param Map<String, Object> data
+	 * @return Map<String, Object>
+	 */
 	@PostMapping("/findlist")
 	public Map<String, Object> findResourceList(HttpServletRequest request, @RequestBody Map<String, Object> data) {
 		//관리자 여부
 		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
 		
 		Map<String, Object> searchData = (Map<String, Object>) data.get("state");
 		logger.debug("#########################################################");
@@ -172,26 +198,42 @@ public class ResourceController {
 		}
 		
 		resultData.put("resData", resService.findResourceList(data));
+		resultData.put("memberNo", sessionVO.getMEMBER_NO());
 		
 		return resultData;
 	}
-	//단일 조회
+	/**
+	 * 자원 조회
+	 * @param ResourceVO resVO
+	 * @return ResourceVO
+	 */
 	@PostMapping("/find")
 	public ResourceVO findResourceInfo(@RequestBody ResourceVO resVO) {
 		return resService.findResource(resVO.getRes_no());
 	}
-	//자원종류 코드 조회
+	/**
+	 * 자원관련 코드조회
+	 * @param request
+	 * @return List<Object>
+	 */
 	@PostMapping("/get-restype-code")
 	public List<Object> getResTypeCode (HttpServletRequest request){
 		return resService.getCode(RES_CODE);
 	}
 	
-	//사원 정보 엑셀 출력
+	/**
+	 * 자원엑셀 출력용 리스트 조회
+	 * @param request
+	 * @param HashMap<String,Object> data
+	 * @param response
+	 * @return List<Object>
+	 */
 	@RequestMapping(value="/exportexcel", method=RequestMethod.POST)
-	public void exportExcel(Model model, @RequestBody HashMap<String,Object> data, HttpServletRequest request,HttpServletResponse response){
+	public void exportExcel(@RequestBody HashMap<String,Object> data, HttpServletRequest request, HttpServletResponse response){
 		try {
 			// 선택된 직원 정보 가져오기
-			List<LinkedHashMap<String,Object>> tempList =  resService.exportExcel((List<String>)data.get("selected"));
+//			List<LinkedHashMap<String,Object>> tempList =  resService.exportExcel((List<String>)data.get("selected"));
+			List<LinkedHashMap<String,Object>> tempList =  resService.exportExcel((HashMap<String, String>) data.get("searchState"));
 			logger.debug("data : " + tempList);
 			
 			//엑셍 파일 만들어서 다운로드

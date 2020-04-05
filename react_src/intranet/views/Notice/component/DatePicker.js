@@ -9,6 +9,8 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 
+const now = new Date();
+
 export default function YearMonthPicker(props) {
   // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = React.useState(new Date());
@@ -51,7 +53,8 @@ export default function YearMonthPicker(props) {
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
-            // helperText={new Date() > selectedDate ? "중요공지로 설정하신 기간이 종료되었습니다." : null}
+            helperText={eval(Moment(now).format('YYYYMMDD') > Moment(selectedDate).format('YYYYMMDD')) 
+                          ? "중요공지로 설정하신 기간이 종료되었습니다." : ""}
           />
         </Grid>
       </MuiPickersUtilsProvider>

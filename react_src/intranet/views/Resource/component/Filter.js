@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -18,6 +18,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
+
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
@@ -30,7 +33,7 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 
-import {excelExport} from '../../../js/util';
+import {excelExport, processErrCode} from '../../../js/util';
 
 import axios from 'axios';
 
@@ -82,8 +85,8 @@ export default function  Filter(props) {
 	const initDialogState = {
 		holder: null,
 		resType: '1',
-		stDt: null,
-		edDt: null,
+		stDt: Moment().format('YYYY')+'01',
+		edDt: Moment().format('YYYYMM'),
 	};
 	
 	const classes = useToolbarStyles();
@@ -99,11 +102,12 @@ export default function  Filter(props) {
 			selected,
 			setSelected
 	} = props;
-	const [open, setOpen] = React.useState(false);
-	const [isDelete, setIsDelete] = React.useState(false);
-	const [confirm, setConfirm] = React.useState({});
-	const [resType, setResType] = React.useState([{ id: '1', label: '전체'  }]);
-	const [dialogState, setDialogState] = React.useState(initDialogState);			// 검색 버튼 클릭 전, 임시로 값 저장
+	const [open, setOpen] = useState(false);
+	const [isDelete, setIsDelete] = useState(false);
+	const [confirm, setConfirm] = useState({});
+	const [resType, setResType] = useState([{ id: '1', label: '전체'  }]);
+	const [dialogState, setDialogState] = useState(initDialogState);			// 검색 버튼 클릭 전, 임시로 값 저장
+	const [resTypeLabel, setResTypeLabel] = useState("전체");
 
 	useEffect(()=>{
 		axios({
@@ -117,7 +121,7 @@ export default function  Filter(props) {
 		}).then(response=>{
 			setResType([...resType, ...response.data]);
 		}).catch(e=>{
-			console.log(e);
+			processErrCode(e);
 		});
 	},[]);
 
@@ -128,18 +132,11 @@ export default function  Filter(props) {
 		setOpen(false);
 	};
 	const handleExcelClick = () => {
-		// excelExport(
-		// 	resData.filter((row => {
-		// 		return selected.includes((row.res_no));
-		// 	}))
-		// );
-
-		// 사원정보 엑셀 출력
 		axios({
 			url: '/intranet/resource/exportexcel',
 			method: 'post',
 			data : {
-				selected : selected,
+				searchState : state,
 				title : 'resourceData.xls'
 			},
 			responseType: 'blob',
@@ -147,7 +144,7 @@ export default function  Filter(props) {
 				'Content-Type': 'application/json',
 			},
 		}).then(response => {
-			console.log("positionResult : " + JSON.stringify(response));
+			// console.log("positionResult : " + JSON.stringify(response));
 			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
 			const link = document.createElement('a');
 			link.href = url;
@@ -155,10 +152,9 @@ export default function  Filter(props) {
 			document.body.appendChild(link);
 			link.click();
 		}).catch(e => {
-			console.log(e);
+			processErrCode(e);
 		});
 
-		setSelected([]);
 		// alert("엑셀 내보내기");
 	}
 	// confirm Open Handler
@@ -166,7 +162,7 @@ export default function  Filter(props) {
 		return setConfirm({title:title, content:content, onOff:true, isConfirm:isConfirm});
 	}
 	// confirm Close Handler
-	const handleCloseConfirm = (result) => {
+	const handleCloseConfirm = (title, result) => {
 		//엑셀, 선택삭제 처리
 
 		setConfirm({title:'', content:'', onOff:false, isConfirm:false});
@@ -196,10 +192,11 @@ export default function  Filter(props) {
 					res_no : selected
 				},
 				}).then(response => {
-					console.log(response.data);
+					// console.log(response.data);
 					setCount(count-(selected.length));
+					setSelected([]);
 				}).catch(e => {
-					console.log(e);
+					processErrCode(e);
 			});
 			const upStreamData = resData.filter((row => {
 				return !selected.includes((row.res_no));
@@ -219,7 +216,7 @@ export default function  Filter(props) {
 	};
 	// 시작년월 
 	const handleChangeStDt = (date) => {
-		console.log(date);
+		// console.log(date);
 		setDialogState({
 			...dialogState,
 			stDt: Moment(date).format('YYYYMM')
@@ -242,7 +239,7 @@ export default function  Filter(props) {
 	const handleClickSearch = () => {
 		setState({
 			holder: document.getElementsByName("holder")[0].value === ""
-					 ?null:document.getElementsByName("holder")[0].value,
+					 ?null:(document.getElementsByName("holder")[0].value).replace(/(\s*)/g, ""),
 			resType: document.getElementsByName("resType")[0].value,
 			stDt: Moment(document.getElementsByName("stDt")[0].value).format('YYYYMM') === "Invalid date"
 					?null:Moment(document.getElementsByName("stDt")[0].value).format('YYYYMM'),
@@ -251,12 +248,54 @@ export default function  Filter(props) {
 		});
 		setPage(0);
 		handleClose();
+
+		setOpenSnackBar(true);
+
+		resType.filter((item)=>{
+			if(item['id'] === dialogState.resType){
+				setResTypeLabel(item.label);
+				return;
+			} 
+		});
+
+		// console.log(state);
 	}
+
+	const [openSnackBar, setOpenSnackBar] = React.useState(false);
+	const snackBarClose = (event, reason) => {
+		if (reason === 'clickaway') {
+		return;
+		}
+
+		setOpenSnackBar(false);
+	};
 
 	return (
 		<Fragment>
 
 			<CommonDialog props={confirm} closeCommonDialog={handleCloseConfirm}/>
+
+			<Snackbar
+			anchorOrigin={{
+				vertical: 'top',
+				horizontal: 'center',
+			}}
+			onClose={snackBarClose}
+			open={openSnackBar}
+			// autoHideDuration={6000}
+			message={
+						`검색타입 : ${resTypeLabel}
+						, 구입년월 : ${Moment(state.stDt+'01').format('YYYY년 MM월')} ~ ${Moment(state.edDt+'01').format('YYYY년 MM월')}
+						, 보유자 : ${state.holder === null ? "" : state.holder.replace(/(\s*)/g, "")}`
+					}
+			action={
+				<React.Fragment>
+					<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
+						<CloseIcon fontSize="small" />
+					</IconButton>
+				</React.Fragment>
+			}
+			/>
 
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} variant="h6" >					
@@ -270,13 +309,13 @@ export default function  Filter(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={handleExcelClick} className={classes.button}>
 							엑셀 내보내기
 						</Button>
-						{isAdmin &&
-						<>
 						<RouterLink button="true" to="/resource/regist" className={classes.router_link}>
 							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
 								자원등록
 							</Button>
 						</RouterLink>
+						{isAdmin &&
+						<>
 						<Button variant="contained" color="secondary" size="small" onClick={handleSelectDelete} startIcon={<DeleteIcon />}>
 							자원삭제
 						</Button>
@@ -290,13 +329,13 @@ export default function  Filter(props) {
 						<IconButton color="primary" onClick={handleExcelClick} className={classes.button}>
 							<SaveIcon />
 						</IconButton>
-						{isAdmin &&
-						<>
 						<RouterLink button="true" to="/resource/regist">
 							<IconButton color="primary" className={classes.button}>
 								<AddIcon />
 							</IconButton>
 						</RouterLink>
+						{isAdmin &&
+						<>
 						<IconButton color="secondary" onClick={handleSelectDelete}>
 							<DeleteIcon />
 						</IconButton>
@@ -342,7 +381,7 @@ export default function  Filter(props) {
 								InputLabelProps={{
 									shrink: true,
 								}}
-								value={dialogState.name}
+								value={dialogState.holder}
 								type="search"
 								onChange={handleChange}
 								fullWidth
@@ -354,6 +393,9 @@ export default function  Filter(props) {
 							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
 								<Grid container justify="space-around">
 									<KeyboardDatePicker
+										InputProps={{
+            								readOnly: true,
+          								}}
 										locale='ko' 
 										margin="normal"
 										id="stDt"
@@ -379,6 +421,9 @@ export default function  Filter(props) {
 							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
 								<Grid container justify="space-around">
 									<KeyboardDatePicker
+										InputProps={{
+            								readOnly: true,
+          								}}
 										locale='ko' 
 										margin="normal"
 										id="edDt"

@@ -19,7 +19,7 @@ import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 import CommonDialog from '../../../js/CommonDialog';
 import ContentModal from '../component/ContentModal';
-import { isEmpty } from '../../../js/util';
+import { isEmpty, processErrCode } from '../../../js/util';
 import Moment from "moment"
 
 import axios from 'axios';
@@ -174,7 +174,7 @@ function NoticeListTable(props) {
 		return setConfirm({title:title, content:content, onOff:true, isConfirm:isConfirm});
 	}
 	// confirm Close Handler
-	const handleCloseConfirm = (result) => {
+	const handleCloseConfirm = (title, result) => {
 	  //삭제 처리
 		setConfirm({title:'', content:'', onOff:false, isConfirm:false});
 		return noticeDelete(result);
@@ -192,10 +192,10 @@ function NoticeListTable(props) {
           board_no : deleteRow
         },
 				}).then(response => {
-					console.log(response.data);
+					// console.log(response.data);
           setCount(count-1);
 				}).catch(e => {
-					console.log(e);
+					processErrCode(e);
 			});
 
 			const upStreamData = noticeData.filter((row) => {
@@ -359,19 +359,18 @@ function NoticeListTable(props) {
                     >
                       {row.writer}
                     </TableCell>
-                    {/* 관리자의 경우 */}
                     <TableCell align="center">
-                    {(isAdmin || memberNo === row.reg_id) &&
-                      <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.board_no)}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    }
                     { memberNo === row.reg_id &&
                       <RouterLink button="true" to={"/notice/regist/?id="+row.board_no}>
                         <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.board_no)}>
                           <CreateIcon fontSize="small" />
                         </IconButton>
                       </RouterLink>
+                    }
+                    {(isAdmin || memberNo === row.reg_id) &&
+                      <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.board_no)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
                     }
                     </TableCell>
                   </TableRow>

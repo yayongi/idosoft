@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import NoticeListTable from './NoticeListTable';
 import Filter from '../component/Filter';
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
-
+import {processErrCode } from '../../../js/util';
 import Moment from "moment"
 
 import axios from 'axios';
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const loginData = JSON.parse(sessionStorage.getItem('loginSession'));
+// const loginData = JSON.parse(sessionStorage.getItem('loginSession'));
 
 const NoticeList = () => {
 
@@ -63,16 +63,17 @@ const NoticeList = () => {
 					page : page
 			},
 			}).then(response => {
-				console.log(response.data);
+				// console.log(response.data);
 				setNoticeData(response.data.noticeData);
 				setIsAdmin(response.data.isAdmin);
 				setCount(response.data.count);
+				setMemberNo(response.data.memberNo);
 				setShowLoadingBar(false);
 
-				setMemberNo(loginData.member_NO);
+				// setMemberNo(loginData.member_NO);
 			}).catch(e => {
 				setShowLoadingBar(false);
-				console.log(e);
+				processErrCode(e);
 		});
 	}, []);
 
@@ -92,20 +93,20 @@ const NoticeList = () => {
 					},
 					}).then(response => {
 						//페이지가 0이아니면 누적
-						console.log(response.data);
-						console.log('page : '+page);
+						// console.log(response.data);
+						// console.log('page : '+page);
 						if(page !== 0){
 							setNoticeData([...noticeData,...response.data.noticeData]);
 						}else{
 							setNoticeData(response.data.noticeData);
 						}
-						setIsAdmin(response.data.isAdmin);
+						// setIsAdmin(response.data.isAdmin);
 						setCount(response.data.count);
 						setTemp({...temp, ['state']:state, ['rowsPerPage']:rowsPerPage, ['page']:page});
 						setShowLoadingBar(false);
 					}).catch(e => {
 						setShowLoadingBar(false);
-						console.log(e);
+						processErrCode(e);
 				});
 		}
 	}, [state, page, rowsPerPage])
@@ -119,11 +120,6 @@ const NoticeList = () => {
 		<div className={classes.root}>
 			<LoadingBar openLoading={isShowLoadingBar}/>  
 			<Filter 
-				// noticeData={noticeData}
-				// state={state} 
-				// setState={setState}
-				// selected={selected}
-				// setNoticeData={setNoticeData}
 				isAdmin={isAdmin}
 				state={state} 
 				setState={setState}
@@ -137,9 +133,6 @@ const NoticeList = () => {
 			/>
 			<Card>
 				<NoticeListTable 
-					// setNoticeData={setNoticeData} 
-					// noticeData={noticeData} 
-					// selectedNoticeNo={handleSelectedNoticeNo}
 					memberNo={memberNo}
 					isAdmin={isAdmin}
 					count={count}

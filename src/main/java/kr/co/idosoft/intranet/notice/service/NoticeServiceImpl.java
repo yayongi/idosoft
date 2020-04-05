@@ -16,6 +16,12 @@ import kr.co.idosoft.common.util.StringUtils;
 import kr.co.idosoft.intranet.notice.dao.NoticeDao;
 import kr.co.idosoft.intranet.notice.vo.NoticeVO;
 
+/**
+ * 
+ * @author 김준선
+ * @since 2020.03.25
+ * @content NoticeDao Service implements
+ */
 @Service
 public class NoticeServiceImpl implements NoticeService{
 	
@@ -24,7 +30,9 @@ public class NoticeServiceImpl implements NoticeService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(NoticeServiceImpl.class);
 	
-	//공지등록
+	/**
+	 * 공지사항 등록
+	 */
 	@Override
 	public void inputNotice(NoticeVO noticeVO) {
 		Date date = new Date();
@@ -33,7 +41,10 @@ public class NoticeServiceImpl implements NoticeService{
 		
 		noticeDao.insert(noticeVO);
 	}
-	//공지수정
+	/**
+	 * 공지사항 수정
+	 * @return int
+	 */
 	@Override
 	public int modifyNotice(NoticeVO noticeVO) {
 		Date date = new Date();
@@ -42,25 +53,34 @@ public class NoticeServiceImpl implements NoticeService{
 		
 		return noticeDao.update(noticeVO);
 	}
-	//공지삭제
+	/**
+	 * 공지사항 삭제
+	 * @return int
+	 */
 	@Override
 	public int deleteNotice(int board_no) {
 		return noticeDao.delete(board_no);
 	}
-	//공지선택 삭제
+	/**
+	 * 공지사항 선택 삭제
+	 */
 	@Override
 	@Transactional
-	public void deleteNoticeList(List<Integer> selectedNoticeNo) {
-		for(int i : selectedNoticeNo) {
-			noticeDao.delete(i);
-		}
+	public void deleteNoticeList(Map<String, List<Integer>> selectedNoticeNo) {
+		noticeDao.deleteList(selectedNoticeNo);
 	}
-	//공지 조회
+	/**
+	 * 공지사항번호로 공지사항 조회
+	 * @return NoticeVO
+	 */
 	@Override
 	public NoticeVO findNotice(int board_no) {
 		return noticeDao.select(board_no);
 	}
-	//공지 리스트 조회
+	/**
+	 * 검색조건으로 공지사항리스트 조회
+	 * @return List<NoticeVO>
+	 */
 	@Override
 	public List<NoticeVO> findNoticeList(Map<String, Object> data){
 		Map<String, Object> searchData = (Map<String, Object>) data.get("state");
@@ -80,7 +100,10 @@ public class NoticeServiceImpl implements NoticeService{
 		
 		return noticeDao.selectList(newMap);
 	}
-	//공지 리스트 카운트
+	/**
+	 * 검색조건으로 공지사항 카운트
+	 * @return int
+	 */
 	@Override
 	public int getListCount(Map<String, Object> searchData) {
 		Map<String,Object> newMap =new HashMap<String,Object>();
@@ -88,7 +111,7 @@ public class NoticeServiceImpl implements NoticeService{
 			if("search".equals(str)) {
 				List<String> searchList = StringUtils.arStrRegexMultiSpace(StringUtils.StringReplace((String) searchData.get(str)));
 				logger.debug("############################################################");
-				logger.debug("검색어 리스트화 : "+searchList.toString());
+				logger.debug("검색어 : "+searchList.toString());
 				logger.debug("############################################################");
 				//검색어가 존재하고 검색어를 정규화, 공백으로 나눈 리스트 사이즈가 0이면 0반환
 				if( ((String) searchData.get(str)).length() != 0 && searchList.size() == 0) return 0;
@@ -103,7 +126,10 @@ public class NoticeServiceImpl implements NoticeService{
 		return noticeDao.count(newMap);
 	}
 	
-	// 대쉬보드용 리스트
+	/**
+	 * 대쉬보드용 리스트 가져오기
+	 * @return List<NoticeVO>
+	 */
 	@Override
 	public List<NoticeVO> selectListDashboard() {
 		return noticeDao.selectListDashboard();
