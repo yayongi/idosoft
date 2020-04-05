@@ -57,7 +57,7 @@ export default function HistorySearchDiv(props) {
 	
 	useEffect(() => {
 		axios({
-			url: '/intranet/getIsAdmin',
+			url: '/intranet/getIsCheckAdmin',
 			method: 'post',
 			data : {},
 		}).then(response => {

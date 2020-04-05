@@ -161,6 +161,15 @@ public class ExcelController {
 
 				searchData.put("MEMBER_NO", mno);		// 사원번호
 				searchData.put("isAdmin", isAdmin);	// 관리자 여부
+			} else if("EXCEL0006".equals(fileCode) ) {
+				//이력관리 엑셀 다운로드
+				String member_no = (String)searchData.get("select_member_no");
+				if("".equals(member_no)) {
+					searchData.put("MEMBER_NO", null);
+				}else {
+					searchData.put("MEMBER_NO", member_no);
+				}
+				
 			}
 			
 			data.put("SEARCH_DATA", searchData);

@@ -65,13 +65,27 @@ export default function HistoryView(props) {
 	
 	
 	const excelDownLoad = () => {
-		Axios({
+		
+		var select_member_no = initCheck(match);
+		
+		if(searchData != "") {
+			if(searchData != -1){
+				select_member_no = searchData;
+			}else{
+				select_member_no = "";
+			}
+		}
+		
+		const fileName = "HISTORY";
+		const fileCode = "EXCEL0006";
+		
+		axios({
 			url: '/intranet/downloadExcelFile',
 			method: 'post',
 			data : {
 				fileCode : fileCode,
 				fileName : fileName,
-				searchData : searchData,
+				searchData : {"select_member_no":select_member_no},
 			},
 			responseType: 'blob',
 			headers: {

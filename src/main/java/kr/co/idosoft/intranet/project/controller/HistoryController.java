@@ -220,9 +220,9 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 	}
 	
 	
-	@RequestMapping(value="/getIsAdmin",method=RequestMethod.POST)
+	@RequestMapping(value="/getIsCheckAdmin",method=RequestMethod.POST)
 	@ResponseBody
-	public ModelAndView getIsAdmin(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+	public ModelAndView getIsCheckAdmin(HttpServletRequest request, @RequestBody Map<String, Object> params ){
 		ModelAndView mv = new ModelAndView();
 		
 		// ModelAndView 초기값 셋팅

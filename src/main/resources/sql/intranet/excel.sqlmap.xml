@@ -520,4 +520,27 @@
 	
 	 -->
 	</select>
+	
+	
+	<!-- 이력 조회 -->
+	<select id="EXCEL0006" parameterType="hashmap" resultType="java.util.LinkedHashMap">
+		SELECT
+		CONCAT(MEM.NAME) '이름'
+        , CONCAT(HIST.MEMBER_NO) '사번'
+        , CONCAT(HIST.PROJECT_NM) '프로젝트명'
+        , CONCAT(HIST.INSTT_NM) '발주처명'
+        , CONCAT(HIST.INPT_BGNDE) '투입일'
+        , CONCAT(HIST.INPT_ENDDE) '철수일'
+        , CONCAT(HIST.CHRG_JOB) '담당업무'
+        , CONCAT(HIST.USE_LANG) '비고(사용언어)'
+		FROM TB_MEM_HIST AS HIST
+		LEFT JOIN TB_MEMBER AS MEM ON MEM.MEMBER_NO = HIST.MEMBER_NO 
+		WHERE 1 = 1
+		<if test="MEMBER_NO != null">
+			AND HIST.MEMBER_NO like #{MEMBER_NO}
+		</if>
+		ORDER BY HIST.MEMBER_NO DESC, INPT_BGNDE DESC
+	</select>
+	
+	
 </mapper>
