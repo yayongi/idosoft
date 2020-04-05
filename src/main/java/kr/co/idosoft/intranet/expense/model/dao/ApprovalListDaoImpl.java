@@ -158,4 +158,31 @@ public class ApprovalListDaoImpl implements ApprovalListDao {
 			return false;
 		}
 	}
+
+	@Override
+	public String getTotalProgAmount(Map<String, Object> data) {
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getTotalAppProgAmount", data); 
+		return String.valueOf(result != null ? result : 0);
+	}
+	
+	@Override
+	public String getTotalFirAppAmount(Map<String, Object> data) {
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getTotalAppFirAppAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
+	}
+	
+	@Override
+	public String getTotalCompAmount(Map<String, Object> data) {
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getTotalAppCompAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
+	}
+	
+	@Override
+	public String getTotalReturnAmount(Map<String, Object> data) {
+		Integer result = (Integer)sqlTemplate.selectOne("expense.getTotalAppReturnAmount", data);
+		
+		return String.valueOf(result != null ? result : 0);
+	}
 }

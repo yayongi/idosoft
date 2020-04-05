@@ -48,10 +48,7 @@ class SignIn extends Component {
 			method: 'post',
 			data: {}
 		}).then(response => {
-			console.log(JSON.stringify(response.data.SESSION_DATA));
-
 			location.href=getRootPath();
-
 		}).catch(e => {
 			console.log(e);
 		});
@@ -164,13 +161,10 @@ class SignIn extends Component {
 	} 
 
 	handleChange = (event) => {
-		console.log("event.target.checked : " + event.target.checked);
-
 		this.setState({
 			...this.state,
 			isKeepLogin : event.target.checked
 		})
-
 	};
 
 	useStyles = makeStyles(theme => ({

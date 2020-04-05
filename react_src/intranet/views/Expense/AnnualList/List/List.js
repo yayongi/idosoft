@@ -172,7 +172,7 @@ export default function  List(props) {
 							totalProgAmount={totalProgAmount} totalFirAmount={totalFirAmount}
 							totalCompAmount={totalCompAmount} totalReturnAmount={totalReturnAmount}
 							setTotalProgAmount={setTotalProgAmount} setTotalFirAmount={setTotalFirAmount}
-							setCompAmount={setTotalCompAmount} setTotalReturnAmount={setTotalReturnAmount}
+							setTotalCompAmount={setTotalCompAmount} setTotalReturnAmount={setTotalReturnAmount}
 
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							setPage={setPage} setRowsPerPage={setRowsPerPage}

@@ -458,6 +458,130 @@
 		</where>
 		ORDER BY A.SANCTN_STTUS_CODE ASC, A.EXPENS_NO DESC
 	</select>
+	<!-- 경비 결재 진행상태 총금액 -->
+	<select id="getTotalAppProgAmount" parameterType="hashmap" resultType="int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				<if test="MEMBER_NO != null">
+					AND (
+						A.FIR_SANCTENER_MEMBER_NO=#{MEMBER_NO} 
+						OR A.SANCTNER_MEMBER_NO=#{MEMBER_NO}
+					)
+				</if>
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND SANCTN_STTUS_CODE = 'SS0000'
+		</where>
+	</select>
+	<!-- 경비 결재 1차결재 상태 총금액 -->
+	<select id="getTotalAppFirAppAmount" parameterType="hashmap" resultType="int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				<if test="MEMBER_NO != null">
+					AND (
+						A.FIR_SANCTENER_MEMBER_NO=#{MEMBER_NO} 
+						OR A.SANCTNER_MEMBER_NO=#{MEMBER_NO}
+					)
+				</if>
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND SANCTN_STTUS_CODE = 'SS0001'
+		</where>
+	</select>
+	<!-- 경비 결재 완료상태 총금액 -->
+	<select id="getTotalAppCompAmount" parameterType="hashmap" resultType="int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				<if test="MEMBER_NO != null">
+					AND (
+						A.FIR_SANCTENER_MEMBER_NO=#{MEMBER_NO} 
+						OR A.SANCTNER_MEMBER_NO=#{MEMBER_NO}
+					)
+				</if>
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND SANCTN_STTUS_CODE = 'SS0002'
+		</where>
+	</select>
+	<!-- 경비 결재 반려상태 총금액 -->
+	<select id="getTotalAppReturnAmount" parameterType="hashmap" resultType="int">
+		SELECT SUM(USE_AMOUNT) 
+		FROM TB_EXPENSE A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		<where>
+			<if test="isAdmin != 1">
+				<if test="MEMBER_NO != null">
+					AND (
+						A.FIR_SANCTENER_MEMBER_NO=#{MEMBER_NO} 
+						OR A.SANCTNER_MEMBER_NO=#{MEMBER_NO}
+					)
+				</if>
+			</if>
+			<if test="name != null and name !=''">
+				AND B.NAME LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="expenseType != null">
+				AND A.EXPENS_TY_CODE = #{expenseType}
+			</if>
+			<if test="status != null">
+				AND A.SANCTN_STTUS_CODE = #{status}
+			</if>
+			<if test="memo != null and memo !=''">
+				AND A.USE_CN LIKE CONCAT('%',#{memo},'%')
+			</if>
+			AND DATE_FORMAT(A.USE_DATE, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{payStDt}, '%Y-%m-%d') AND DATE_FORMAT(#{payEdDt}, '%Y-%m-%d')
+			AND SANCTN_STTUS_CODE = 'SS0003'
+		</where>
+	</select>
 	<!-- 경비 총금액 -->
 	<select id="getAppTotalAmount" parameterType="hashmap" resultType="int">
 		SELECT SUM(USE_AMOUNT) 

@@ -137,4 +137,24 @@ public class ApprovalListServiceImpl implements ApprovalListService {
 			return false;
 		}
 	}
+
+	@Override
+	public String getTotalProgAmount(Map<String, Object> data) {
+		return dao.getTotalProgAmount(data);
+	}
+
+	@Override
+	public String getTotalFirAppAmount(Map<String, Object> data) {
+		return dao.getTotalFirAppAmount(data);
+	}
+
+	@Override
+	public String getTotalCompAmount(Map<String, Object> data) {
+		return dao.getTotalCompAmount(data);
+	}
+
+	@Override
+	public String getTotalReturnAmount(Map<String, Object> data) {
+		return dao.getTotalReturnAmount(data);
+	}
 }

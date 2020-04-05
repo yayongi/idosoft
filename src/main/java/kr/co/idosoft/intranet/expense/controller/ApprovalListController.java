@@ -193,7 +193,14 @@ public class ApprovalListController {
 		LOG.debug("data : " + data);
 		
 		// 경비 총금액
-		String totalAmount = approvalListService.getTotalAmount(data);
+		//String totalAmount = approvalListService.getTotalAmount(data);
+		
+		// 경비 총금액
+		String totalProgAmount 		= approvalListService.getTotalProgAmount(data);
+		String totalFirAmount 		= approvalListService.getTotalFirAppAmount(data);	
+		String totalCompAmount 		= approvalListService.getTotalCompAmount(data);
+		String totalReturnAmount	= approvalListService.getTotalReturnAmount(data);
+
 		// 목록 조회
 		List<Map<String, Object>> list = approvalListService.getlist(data);
 		
@@ -222,13 +229,19 @@ public class ApprovalListController {
 		LOG.debug("# RETURN JSON ");
 		LOG.debug("# jsonArrayList : " + jsonArrayList);
 		LOG.debug("# jsonObjectData : " + jsonObjectData);
-		LOG.debug("# totalAmount : " + totalAmount);
+		LOG.debug("# totalProgAmount : " + totalProgAmount);
+		LOG.debug("# totalFirAmount : " + totalFirAmount);
+		LOG.debug("# totalCompAmount : " + totalCompAmount);
+		LOG.debug("# totalReturnAmount : " + totalReturnAmount);
 		LOG.debug("# isAdmin : " + isAdmin);
 		LOG.debug("#################################################################################");
 		
 		mv.addObject("list", jsonArrayList);
 		mv.addObject("result", jsonObjectData);
-		mv.addObject("totalAmount", totalAmount);
+		mv.addObject("totalProgAmount", totalProgAmount);
+		mv.addObject("totalFirAmount", totalFirAmount);
+		mv.addObject("totalCompAmount", totalCompAmount);
+		mv.addObject("totalReturnAmount", totalReturnAmount);
 		mv.addObject("isAdmin", isAdmin);
 		
 		return mv;
