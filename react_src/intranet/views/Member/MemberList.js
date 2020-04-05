@@ -395,6 +395,15 @@ const MemberList = (props) => {
 		routeProps.history.push(url + member_no);
 	}
 
+	// 개인이력으로 넘어가기
+	const goStory = (member_no) =>{
+		let url = "";
+
+		url = "/project/history/";
+
+		routeProps.history.push(url + member_no);
+	}
+
 	// 맴버 엑셀 내보내기
 	const memberExcelExport = () =>{
 		axios({
@@ -568,11 +577,9 @@ const MemberList = (props) => {
 														수정
 													</Button>
 													{(state.manager_yn || (state.user == row.member_no)) && (
-														<RouterLink button="true" to="/project/history" className={classes.router_link}>
-															<Button variant="contained" color="primary">
-																개인이력
-															</Button>
-														</RouterLink>
+														<Button variant="contained" color="primary" onClick={() => goStory(row.member_no)}>
+															개인이력
+														</Button>
 													)}
 												</TableCell>
 											</TableRow>
@@ -618,11 +625,9 @@ const MemberList = (props) => {
 															수정
 														</Button>
 														{(state.manager_yn || (state.user == row.member_no)) && (
-															<RouterLink button="true" to="/project/history" className={classes.router_link}>
-																<Button variant="contained" color="primary">
-																	이력
-																</Button>
-															</RouterLink>
+															<Button variant="contained" color="primary" onClick={() => goStory(row.member_no)}>
+																이력
+															</Button>
 														)}
 													</TableCell>
 												</TableRow>

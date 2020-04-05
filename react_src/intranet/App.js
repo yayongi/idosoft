@@ -111,7 +111,12 @@ export default function App() {
 					{/* <Route path="/expense/approvalList" component={ApprovalList} />> */}
 					{/* 중첩 Router 적용*/}
 					{/* 이력관리 */}
-					<Route exact path='/project/history' render={(props) =>
+					<Route exact path='/project/history/' render={(props) =>
+						<MainLayout routeProps={props}>
+							<History routeProps={props} />
+						</MainLayout>
+					} />
+					<Route exact path='/project/history/:member_no' render={(props) =>
 						<MainLayout routeProps={props}>
 							<History routeProps={props} />
 						</MainLayout>
