@@ -51,9 +51,10 @@
 			<if test="EXPENS_TY_CODE != null">EXPENS_TY_CODE=#{EXPENS_TY_CODE},</if>
 			<if test="USE_DATE != null">USE_DATE=#{USE_DATE},</if>
 			<if test="USE_AMOUNT != null">USE_AMOUNT=#{USE_AMOUNT},</if>
-			<if test="UPD_DATETIME != null">UPD_DATETIME=NOW(),</if>
 			<if test="USE_CN != null">USE_CN=#{USE_CN},</if>
-			<if test="EXPENS_ATCHMNF_ID != null">EXPENS_ATCHMNF_ID=#{EXPENS_ATCHMNF_ID}</if>
+			<if test="EXPENS_ATCHMNF_ID != null">EXPENS_ATCHMNF_ID=#{EXPENS_ATCHMNF_ID},</if>
+			<if test="MEMBER_NO != null">UPD_ID=#{MEMBER_NO},</if>
+			UPD_DATETIME=NOW()
 		</set>
 		WHERE EXPENS_NO = #{EXPENS_NO}
 	</update>
