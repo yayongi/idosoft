@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import Toolbar from '@material-ui/core/Toolbar';
-import { getRootPath } from '../../../js/util';
+import { getRootPath, phoneFormatter } from '../../../js/util';
 
 const styles = theme => ({
   root: {

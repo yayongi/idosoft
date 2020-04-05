@@ -16,13 +16,27 @@ import Axios from 'axios';
 export default function Top(props) {
 	const {classes, handleDrawerOpen} = props;
 
-	let isLogin = false;
-	let session = '';
+	const [sessionState, setSessionState] = React.useState({
+		isLogin : false,
+		sessionName : null
+	});
 
-	if(sessionStorage.getItem("loginSession") != null){
-		isLogin = true
-		session = JSON.parse(sessionStorage.getItem("loginSession"));
-	}
+	useEffect(() => {
+		axios({
+			url: '/intranet/getSession',
+			method: 'get'
+		}).then(response => {
+			sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
+			if(sessionStorage.getItem("loginSession") != null){
+				setSessionState({
+					isLogin : true,
+					sessionName : JSON.parse(response.data.SESSION_DATA).name
+				})
+			}
+		}).catch(e => {
+			processErrCode(e);
+		});
+	},[])
 
 	// confirm, alert 창 함수
   	// 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.

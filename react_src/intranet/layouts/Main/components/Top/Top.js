@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -8,21 +8,35 @@ import MenuIcon from '@material-ui/icons/Menu';
 import FaceIcon from '@material-ui/icons/Face';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CommonDialog from '../../../../js/CommonDialog';
-import { getRootPath } from '../../../../js/util';
+import { getRootPath, processErrCode } from '../../../../js/util';
 
 // Server
-import Axios from 'axios';
+import axios from 'axios';
 
 export default function Top(props) {
 	const {classes, handleDrawerOpen} = props;
 
-	let isLogin = false;
-	let session = '';
+	const [sessionState, setSessionState] = React.useState({
+		isLogin : false,
+		sessionName : null
+	});
 
-	if(sessionStorage.getItem("loginSession") != null){
-		isLogin = true
-		session = JSON.parse(sessionStorage.getItem("loginSession"));
-	}
+	useEffect(() => {
+		axios({
+			url: '/intranet/getSession',
+			method: 'get'
+		}).then(response => {
+			sessionStorage.setItem("loginSession",response.data.SESSION_DATA);
+			if(sessionStorage.getItem("loginSession") != null){
+				setSessionState({
+					isLogin : true,
+					sessionName : JSON.parse(response.data.SESSION_DATA).name
+				})
+			}
+		}).catch(e => {
+			processErrCode(e);
+		});
+	},[])
 
 	// confirm, alert 창 함수
   	// 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
@@ -41,7 +55,7 @@ export default function Top(props) {
 	setDialog({title:'', content:'', onOff:false, isConfirm:false});
 		if(result){
 			// 로그아웃 처리
-			Axios({
+			axios({
 				url: '/intranet/logout',
 				method: 'post',
 				data: {}
@@ -75,9 +89,9 @@ export default function Top(props) {
 					IDO-SOFT 인트라넷
 				</Typography>
 				<Typography variant="h6" noWrap >
-					{session.name}님 환영합니다.
+					{sessionState.sessionName}님 환영합니다.
 				</Typography>
-				{isLogin == true? (
+				{sessionState.isLogin == true? (
 					<IconButton color="inherit" onClick={() => handleOpenDialog(...confirmData)}>
 						<ExitToAppIcon />
 					</IconButton>
