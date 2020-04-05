@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -16,7 +16,7 @@ import SelectType from '../component/SelectType';
 import CommonDialog from '../../../js/CommonDialog';
 
 import {MacAddrCheck, getUrlParams} from '../uitl/ResUtil';
-import { getRootPath } from '../../../js/util';
+import { getRootPath, processErrCode } from '../../../js/util';
 import axios from 'axios';
 
 const useToolbarStyles = makeStyles(theme => ({
@@ -147,14 +147,17 @@ function RegistGrid() {
 			resHolderData:[]
 	}
 
-	const [resData, setResData] = React.useState(initResData);
-	const [validation , setValidation] = React.useState(initValidation);
-	const [dialog, setDialog] = React.useState({});
-	const [resultDialog, setResultDialog] = React.useState(false);
-	const [urlParams, setUrlParams] = React.useState(getUrlParams(location.href, 'id'));
+	const [resData, setResData] = useState(initResData);
+	const [validation , setValidation] = useState(initValidation);
+	const [dialog, setDialog] = useState({});
+	const [resultDialog, setResultDialog] = useState(false);
+	const [urlParams, setUrlParams] = useState(getUrlParams(location.href, 'id'));
 
 	//셀렉트 박스 State
-	const [resSelectBoxData, setResSelectBoxData] = React.useState(initSelectBoxData);
+	const [resSelectBoxData, setResSelectBoxData] = useState(initSelectBoxData);
+
+	const [disabled, setDisabled] = useState(false);
+	// let disabled = false;
 
 	//수정시 데이터 설정
 	useEffect(()=>{
@@ -167,8 +170,15 @@ function RegistGrid() {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},
 			}).then(response => {
-				setResSelectBoxData(response.data);
-				console.log(response.data);
+				// console.log(response.data);
+				setResSelectBoxData(response.data.resSelectType);
+				// setIsAdmin(response.data.isAdmin);
+
+				if(!response.data.isAdmin){
+					//관리자가 아니면 [보유자] 본인으로만 등록가능
+					setResData({...resData, ['holder']:response.data.resSelectType.resHolderData[0]['id']});
+					setDisabled(true);
+				}
 
 				if(urlParams!==undefined){
 					axios({
@@ -184,19 +194,14 @@ function RegistGrid() {
 							//수정 데이터 설정
 							setResData(response.data);
 						}).catch(e => {
-							console.log(e);
+							processErrCode(e);
 					});
 				}
 			}).catch(e => {
-				console.log(e);
+				processErrCode(e);
 		});
 
-
-
 	}, []);
-
-	useEffect(()=>{
-	},[resSelectBoxData]);
 
 	// Child Component Click Handler
 	const handleChildClick = (obj) => {
@@ -238,11 +243,11 @@ function RegistGrid() {
 				},
 				data : resData,
 				}).then(response => {
-					console.log(response);
-					console.log(JSON.stringify(response));
-					console.log(response.data);
+					// console.log(response);
+					// console.log(JSON.stringify(response));
+					// console.log(response.data);
 				}).catch(e => {
-					console.log(e);
+					processErrCode(e);
 			});
 		}else{
 			// 수정
@@ -258,7 +263,7 @@ function RegistGrid() {
 					console.log(JSON.stringify(response));
 					console.log(response.data);
 				}).catch(e => {
-					console.log(e);
+					processErrCode(e);
 			});
 		}
 
@@ -394,7 +399,7 @@ function RegistGrid() {
 							<Typography className={classes.title} variant="h6" id="tableTitle">보유자*</Typography>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<SelectType defaultValue={resData.holder} 
+							<SelectType defaultValue={resData.holder} disabled={disabled}
 										label='보유자' resKey='holder' props={resSelectBoxData.resHolderData} 
 										onChildClick={handleChildClick} validation={validation.holder}
 							/> 

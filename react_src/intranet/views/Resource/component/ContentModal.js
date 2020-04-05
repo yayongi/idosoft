@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
 	  width:'100%',
   },
   tableRoot: {
-    width: '80%',
+    width: '100%',
     border: '1px'
   },
   tableCell: {

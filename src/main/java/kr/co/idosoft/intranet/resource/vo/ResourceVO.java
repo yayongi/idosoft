@@ -6,7 +6,7 @@ import java.io.Serializable;
  * 
  * @author 김준선
  * @since 2020.03.25
- * @content Resource
+ * @content Resource VO
  */
 public class ResourceVO implements Serializable{
 	/**

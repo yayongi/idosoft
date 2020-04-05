@@ -9,6 +9,7 @@ import Filter from '../component/Filter';
 import { useStaticState } from '@material-ui/pickers';
 
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
+import {processErrCode} from '../../../js/util';
 
 import axios from 'axios';
 
@@ -32,6 +33,7 @@ const ResourceList = () => {
 	const [resData, setResData] = useState([]);
 	const [selected, setSelected] = useState([]);
 	const [isAdmin, setIsAdmin] = useState(false);
+	const [memberNo, setMemberNo] = useState("");
 	const [count, setCount] = useState(0);
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -56,20 +58,21 @@ const ResourceList = () => {
 						page : page
 				},
 				}).then(response => {
-					console.log(response.data);
-					// console.log(JSON.stringify(response));
+					// console.log(response.data);
 					setResData(response.data.resData);
 					setIsAdmin(response.data.isAdmin);
 					setCount(response.data.count);
+					setMemberNo(response.data.memberNo);
 					setShowLoadingBar(false);
 				}).catch(e => {
-					console.log(e);
 					setShowLoadingBar(false);
+					processErrCode(e);
 			});
 	}, []);
 
 	useEffect(()=>{
 		if(temp.state !== state || temp.rowsPerPage !== rowsPerPage || temp.page < page){
+		setShowLoadingBar(true);
 			axios({
 					url: '/intranet/resource/findlist',
 					method : 'post',
@@ -83,8 +86,8 @@ const ResourceList = () => {
 					},
 					}).then(response => {
 						//페이지가 0이아니면 누적
-						console.log(response.data);
-						console.log('page : '+page);
+						// console.log(response.data);
+						// console.log('page : '+page);
 						if(page !== 0){
 							setResData([...resData,...response.data.resData]);
 						}else{
@@ -95,8 +98,8 @@ const ResourceList = () => {
 						setTemp({...temp, ['state']:state, ['rowsPerPage']:rowsPerPage, ['page']:page});
 						setShowLoadingBar(false);
 					}).catch(e => {
-						console.log(e);
 						setShowLoadingBar(false);
+						processErrCode(e);
 				});
 		}
 	}, [state, page, rowsPerPage]);
@@ -104,6 +107,7 @@ const ResourceList = () => {
 
 	const handleSelectedResNo = (selectedNo) => {
 		setSelected(selectedNo);
+		// console.log(selectedNo);
 	}
 
 	return (
@@ -125,6 +129,7 @@ const ResourceList = () => {
 			<Paper className={classes.root}>
 				<ResourceListTable 
 					isAdmin={isAdmin}
+					memberNo={memberNo}
 					count={count}
 					setCount={setCount} 
 					setResData={setResData} 

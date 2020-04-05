@@ -34,7 +34,7 @@ const Editor = ({defaultValue, onChildChange}) =>{
                 editor={ ClassicEditor }
                 data={defaultValue}
                 onInit={ editor => {
-                    console.log( 'Editor is ready to use!', editor );
+                    // console.log( 'Editor is ready to use!', editor );
                 } }
                 onChange={ ( event, editor ) => {
                     const data = editor.getData();
@@ -42,10 +42,10 @@ const Editor = ({defaultValue, onChildChange}) =>{
                     if(data.length <= 21,845) setContent(data); //입력방지x / 입력된 데이터가 21845글자가 넘으면 상위컴포넌트 갱신 x
                 } }
                 onBlur={ ( event, editor ) => {
-                    console.log( 'Blur.', editor );
+                    // console.log( 'Blur.', editor );
                 } }
                 onFocus={ ( event, editor ) => {
-                    console.log( 'Focus.', editor );
+                    // console.log( 'Focus.', editor );
                 } }
                 config = {{
                   toolbar : ["heading", "|", "bold","italic","link","bulletedList","numberedList",

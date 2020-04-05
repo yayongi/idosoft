@@ -26,7 +26,7 @@ import ko from "date-fns/locale/ko";
 import Moment from "moment";
 
 import CommonDialog from '../../../js/CommonDialog';
-
+import {processErrCode } from '../../../js/util';
 import axios from 'axios';
 
 import {
@@ -132,7 +132,7 @@ export default function  Filter(props) {
 		return setConfirm({title:title, content:content, onOff:true, isConfirm:isConfirm});
 	}
 	// confirm Close Handler
-	const handleCloseConfirm = (result) => {
+	const handleCloseConfirm = (title, result) => {
 		//엑셀, 선택삭제 처리
 
 		setConfirm({title:'', content:'', onOff:false, isConfirm:false});
@@ -164,8 +164,9 @@ export default function  Filter(props) {
 				},
 				}).then(response => {
 					setCount(count-(selected.length));
+					setSelected([]);
 				}).catch(e => {
-					// console.log(e);
+					processErrCode(e);
 			});
 
 			const upStreamData = noticeData.filter((row => {
@@ -227,7 +228,7 @@ export default function  Filter(props) {
 			} 
 		});
 
-		console.log(state);
+		// console.log(state);
 	}
 
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);

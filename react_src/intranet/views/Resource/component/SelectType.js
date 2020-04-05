@@ -1,16 +1,12 @@
-import React, {Component,} from 'react';
+import React, {Component, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import DateFnsUtils from '@date-io/date-fns';
-
-import {returnValue} from '../uitl/ResUtil';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
-    //margin: theme.spacing(1),
     minWidth: 250,
   },
   selectEmpty: {
@@ -18,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SelectType = ({label, resKey, props, onChildClick, defaultValue, validation}) => {
+const SelectType = ({label, resKey, props, onChildClick, defaultValue, validation, disabled}) => {
   const classes = useStyles();
   const [type, setType] = React.useState('');
 
@@ -27,17 +23,21 @@ const SelectType = ({label, resKey, props, onChildClick, defaultValue, validatio
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
-  React.useEffect(()=>{
+  useEffect(()=>{
     if(trigger && defaultValue!==undefined && defaultValue!==null && defaultValue!==""){
       setTrigger(false);
       setType(defaultValue);
       console.log(defaultValue);
     }
   }, [defaultValue]);
+
+  // useEffect(()=>{
+  //   console.log('disabled : '+disabled);
+  // }, [disabled])
 
   const handleChange = event => {
     setType(event.target.value);
@@ -50,17 +50,16 @@ const SelectType = ({label, resKey, props, onChildClick, defaultValue, validatio
           {label}
         </InputLabel>
         <Select
+          disabled={disabled!==undefined ? disabled : false}
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
           value={type}
-          // onChange={handleChange, handleClick}
           onChange={handleChange}
           labelWidth={labelWidth}
           error={validation}
         > 
           {
             props.map((row, idx) => (
-              // <MenuItem value={`${props.dataKey}_${row.key}`} key={idx}>{row.value}</MenuItem>
               <MenuItem value={row.id} key={idx}>{row.label}</MenuItem>
             ))
           }

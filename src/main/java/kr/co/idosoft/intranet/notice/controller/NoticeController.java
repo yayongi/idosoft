@@ -20,6 +20,12 @@ import kr.co.idosoft.intranet.login.vo.SessionVO;
 import kr.co.idosoft.intranet.notice.service.NoticeServiceImpl;
 import kr.co.idosoft.intranet.notice.vo.NoticeVO;
 
+/**
+ * 
+ * @author 김준선
+ * @since 2020.03.25
+ * @content Notice Controller
+ */
 @RestController
 @RequestMapping("/notice")
 public class NoticeController {
@@ -29,7 +35,12 @@ public class NoticeController {
 	@Autowired
 	private NoticeServiceImpl noticeService;
 	
-	//등록
+	/**
+	 * 공지사항 등록
+	 * @param request
+	 * @param NoticeVO noticeVO
+	 * @return boolean
+	 */
 	@PostMapping("/register")
 	public boolean registNotice(@RequestBody NoticeVO noticeVO, HttpServletRequest request) {
 		
@@ -55,9 +66,14 @@ public class NoticeController {
 		}
 		return true;
 	}
-	//수정
+	/**
+	 * 공지사항 수정
+	 * @param request
+	 * @param NoticeVO noticeVO
+	 * @return boolean
+	 */
 	@PostMapping("/modify")
-	public boolean modifyNotice(Model model, @RequestBody NoticeVO noticeVO, HttpServletRequest request) {
+	public boolean modifyNotice(@RequestBody NoticeVO noticeVO, HttpServletRequest request) {
 		SessionVO sessionVo = (SessionVO) request.getSession().getAttribute("SESSION_DATA");
 		String mNo = sessionVo.getMEMBER_NO();						// 회원번호
 		NoticeVO regedNotice = noticeService.findNotice(noticeVO.getBoard_no());
@@ -77,7 +93,12 @@ public class NoticeController {
 			return false;
 		}
 	}
-	//단일 삭제
+	/**
+	 * 공지사항 삭제
+	 * @param request
+	 * @param NoticeVO noticeVO
+	 * @return boolean
+	 */
 	@PostMapping("/delete")
 	public boolean deleteNotice(@RequestBody NoticeVO noticeVO, HttpServletRequest request) {
 		
@@ -101,24 +122,32 @@ public class NoticeController {
 			return false;
 		}
 	}
-	//선택 삭제
+	/**
+	 * 공지사항 선택 삭제
+	 * @param request
+	 * @param Map<String, List<Integer>> notice_no_list
+	 * @return boolean
+	 */
 	@PostMapping("/deletelist")
 	public boolean  deleteNoticeeList(@RequestBody Map<String, List<Integer>> notice_no_list, HttpServletRequest request) {
 		
 		boolean isAdmin = commonUtil.isAdmin(request.getSession());
 		if(!isAdmin) return false;
 		
-		List<Integer> selectedNoticeNo = (List<Integer>) notice_no_list.get("board_no");
-		
 		try {
-			noticeService.deleteNoticeList(selectedNoticeNo);
+			noticeService.deleteNoticeList(notice_no_list);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
-	//	리스트
+	/**
+	 * 공지사항 리스트 조회
+	 * @param request
+	 * @param Map<String, Object> data
+	 * @return Map<String, Object>
+	 */
 	@PostMapping("/findlist")
 	public Map<String, Object> findNoticeList(HttpServletRequest request, @RequestBody Map<String, Object> data) {
 		boolean isAdmin = commonUtil.isAdmin(request.getSession());
@@ -151,10 +180,17 @@ public class NoticeController {
 		
 		resultData.put("noticeData", noticeService.findNoticeList(data));
 		
+		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
+		resultData.put("memberNo", sessionVO.getMEMBER_NO());
+		
 		return resultData;
 		
 	}
-	//단일 조회
+	/**
+	 * 공지사항 조회
+	 * @param NoticeVO noticeVO
+	 * @return NoticeVO
+	 */
 	@PostMapping("/find")
 	public NoticeVO findNoticeInfo(@RequestBody NoticeVO noticeVO) {
 		return noticeService.findNotice(noticeVO.getBoard_no());
@@ -165,5 +201,4 @@ public class NoticeController {
 	public List<NoticeVO> selectListDashboard() {
 		return noticeService.selectListDashboard();
 	}
-		
 }

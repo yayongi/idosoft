@@ -54,6 +54,17 @@
 			BOARD_NO = #{board_no}
 	</delete>
 	
+	<!-- 공지사항 선택 삭제 -->
+	<delete id="deleteList" parameterType="hashmap">
+		DELETE FROM
+			TB_BOARD
+		WHERE
+			TB_BOARD.BOARD_NO IN
+			<foreach collection="board_no" item="boardNo"  open="(" close=")" separator=",">
+				#{boardNo}
+			</foreach>
+	</delete>
+	
 	<!-- 공지사항 조회  -->
 	<select id="selectInfo" resultMap="NoticeVO" parameterType="int">
 		SELECT	
