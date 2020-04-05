@@ -50,8 +50,6 @@ class SignIn extends Component {
 		}).then(response => {
 			console.log(JSON.stringify(response.data.SESSION_DATA));
 
-			setSessionStrogy("loginSession",response.data.SESSION_DATA);
-
 			location.href=getRootPath();
 
 		}).catch(e => {
