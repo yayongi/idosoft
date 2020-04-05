@@ -154,8 +154,6 @@ export default function  View(props) {
 	// 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {
 		
-		/** 임시 Code*/
-		
 		if(event.target.name == 'expenseType') {
 			setDataState({
 				...dataState,
@@ -165,6 +163,14 @@ export default function  View(props) {
 		} else {
 			if(event.target.name == 'pay') {	// 결제금액 특수문자 제거
 				event.target.value = event.target.value.replace(/[^0-9]/g, '');
+			} else if(event.target.name == 'memo') {
+				let inputValue = event.target.value;
+				//최대 글자수 50글자로 제한
+				if(inputValue.length >= 200) {
+					//alert("어림없지");
+					event.target.value = inputValue.slice(0, 200);
+					return;
+				}
 			}
 			
 			setDataState({
@@ -232,7 +238,7 @@ export default function  View(props) {
 		})
 		.catch(e => {
 			setShowLoadingBar(false);
-			//processErrCode(e);
+			processErrCode(e);
 			console.log(e);
 		});
 	}, []);
@@ -430,6 +436,7 @@ export default function  View(props) {
 		});
 
 	}
+
 	// 수정처리
 	const handleClickModify =() => {
 
@@ -616,7 +623,8 @@ export default function  View(props) {
 									value={dataState.pay}
 									onChange={handleChange}
 									InputProps={{
-									 	 readOnly: isReadOnly,
+										readOnly: isReadOnly,
+										maxLength: 10,
 									}}
 									variant="outlined"
 									decimalPlaces={0}
@@ -637,7 +645,7 @@ export default function  View(props) {
 									defaultValue={dataState.memo}
 									variant="outlined"
 									InputProps={{
-									 	 readOnly: isReadOnly,
+										readOnly: isReadOnly,
 									}}
 									multiline
 									fullWidth

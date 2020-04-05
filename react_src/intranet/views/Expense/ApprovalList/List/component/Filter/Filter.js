@@ -486,6 +486,7 @@ export default function  Filter(props) {
 								margin="dense"
 								InputLabelProps={{
 									shrink: true,
+									maxLength: 10,
 								}}
 								value={dialogState.name}
 								type="search"
@@ -569,6 +570,9 @@ export default function  Filter(props) {
 								placeholder=""
 								margin="dense"
 								type="search"
+								inputProps={{
+									maxLength: 20,
+								}}
 								value={dialogState.memo}
 								onChange={handleChange}
 								fullWidth

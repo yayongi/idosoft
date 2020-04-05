@@ -658,6 +658,9 @@ export default function  View(props) {
 						label="사유"
 						type="text"
 						fullWidth
+						inputProps={{
+							maxLength: 50,
+						}}
 						onChange={txtChangeHandle}
 					/>
 					</DialogContent>
