@@ -83,8 +83,8 @@
 		WHERE 1=1
 			<choose>
 				<when test="SELDATE != null and SELDATE != ''">
-					AND STR_TO_DATE(#{SELDATE}, '%Y-%m-%d') <![CDATA[>=]]> date_format(BGNDE,'%Y-%m-%d') 
-					AND STR_TO_DATE(#{SELDATE}, '%Y-%m-%d') <![CDATA[<=]]> date_format(ENDDE,'%Y-%m-%d')
+					AND #{SELDATE} <![CDATA[>=]]> BGNDE 
+					AND #{SELDATE} <![CDATA[<=]]> ENDDE
 					
 				</when>
 				<when test="SELYEAR != null and SELYEAR != ''">
@@ -171,7 +171,7 @@
 			LEFT JOIN TB_MEMBER AS C ON A.MEMBER_NO = C.MEMBER_NO
 		WHERE 
 			A.PROJECT_NO = #{PROJECT_NO}
-		ORDER BY MEMBER_NO ASC
+		ORDER BY ROLE_CODE ASC
 	</select>
 	
 	<!--  프로젝트 삭제 -->
@@ -239,9 +239,8 @@
 				WHERE 1=1
 			<choose>
 				<when test="SELDATE != null and SELDATE != ''">
-					
-					AND STR_TO_DATE(#{SELDATE}, '%Y-%m-%d') <![CDATA[>=]]> date_format(BGNDE,'%Y-%m-%d') 
-					AND STR_TO_DATE(#{SELDATE}, '%Y-%m-%d') <![CDATA[<=]]> date_format(ENDDE,'%Y-%m-%d'))
+					AND #{SELDATE} <![CDATA[>=]]> BGNDE 
+					AND #{SELDATE} <![CDATA[<=]]> ENDDE)
 					
 				</when>
 				<when test="SELYEAR != null and SELYEAR != ''">

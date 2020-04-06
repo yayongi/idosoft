@@ -96,14 +96,28 @@ function ProjectInfoForm(props) {
 	const [memDataState, setMemDataState] = React.useState([{
 		MEMBER_NO : "",
 		CHRG_JOB : "",
-		INPT_BGNDE : Moment(new Date()).format('YYYY-MM-DD'),
-		INPT_ENDDE : Moment(new Date()).format('YYYY-MM-DD'),
+		INPT_BGNDE : dataState.BGNDE,
+		INPT_ENDDE : dataState.ENDDE,
 		ROLE_CODE : "RL0001",
 		USE_LANG : "Java,Jsp,Javascript",
 	}]);	// state : 수정을 위한 데이터 관리
+	
+	const [validateCheck, setValidateCheck] = React.useState({
+		PROJECT_NM:{error:false, helperText:""},
+		INSTT_CODE:{error:false, helperText:""},
+		BGNDE:{error:false, helperText:""},
+		ENDDE:{error:false, helperText:""},
+		TRANSPORT_CT:{error:false, helperText:""},
+	});
 
-
-
+	const [validateMemCheck, setValidateMemCheck] = React.useState([{
+		MEMBER_NO:{error:false, helperText:""},
+		CHRG_JOB:{error:false, helperText:""},
+		INPT_BGNDE:{error:false, helperText:""},
+		INPT_ENDDE:{error:false, helperText:""},
+		ROLE_CODE:{error:false, helperText:""},
+		USE_LANG:{error:false, helperText:""},
+	}]);
 
 	const columnsUp = [
 		{ id: 'MEMBER_NO', label: '이름', minWidth: 100, align: 'center' },
@@ -177,14 +191,26 @@ function ProjectInfoForm(props) {
 		var member_defaultForm = {
 			MEMBER_NO : "",
 			CHRG_JOB : "",
-			INPT_BGNDE : Moment(new Date()).format('YYYY-MM-DD'),
-			INPT_ENDDE : Moment(new Date()).format('YYYY-MM-DD'),
+			INPT_BGNDE : dataState.BGNDE,
+			INPT_ENDDE : dataState.ENDDE,
 			ROLE_CODE : "RL0001",
 			USE_LANG : "Java,Jsp,Javascript",
 		}
 
 		memDataState.push(member_defaultForm)
 		setMemDataState([...memDataState]);
+		
+		
+		var validateMemCheck_defaultForm = {
+			MEMBER_NO:{error:false, helperText:""},
+			CHRG_JOB:{error:false, helperText:""},
+			INPT_BGNDE:{error:false, helperText:""},
+			INPT_ENDDE:{error:false, helperText:""},
+			ROLE_CODE:{error:false, helperText:""},
+			USE_LANG:{error:false, helperText:""},
+		}
+		validateMemCheck.push(validateMemCheck_defaultForm);
+		setValidateMemCheck([...validateMemCheck]);
 	}
 
 	// 필드 값 변경 시, 임시로 값 저장
@@ -230,25 +256,20 @@ function ProjectInfoForm(props) {
 	const handleClickAddProject = () => {
 		setShowLoadingBar(true);
 
-		//투입인원테이블에 PM도 추가
-		var mDataState = [{
-			MEMBER_NO : dataState["PM"],
-			CHRG_JOB : "PM",
-			INPT_BGNDE : dataState["BGNDE"],
-			INPT_ENDDE : dataState["ENDDE"],
-			ROLE_CODE : "RL0000",
-			USE_LANG : "PM",
-		}].concat(memDataState);
-
 		var instt = instt_list.filter((info) => (info.instt_code == dataState.instt_code))[0];
+		
+		console.log("dataState : ");
+		
+		dataState["PM"] = memDataState[0]["MEMBER_NO"];
+		
 		axios({
 			url: '/intranet/insertProject',
 			method: 'post',
-			data: {"dataState" : dataState, "memDataState": mDataState, "instt_name":instt["CODE_NAME"], "instt_code":instt["CODE_ID"]}
+			data: {"dataState" : dataState, "memDataState": memDataState, "instt_name":instt["CODE_NAME"], "instt_code":instt["CODE_ID"]}
 		}).then(response => {
 			if(!response.data.isDBError){
 				alert("등록 되었습니다.");
-				history.goBack();
+				history.back();
 			}else{
 				alert("등록 실패했습니다.");
 			}
@@ -328,6 +349,10 @@ function ProjectInfoForm(props) {
 			setShowLoadingBar(false);
 			processErrCode(e);
 		});
+	}
+	
+	const handleUpdateMember = (member_no) => {
+		
 	}
 	
 	const handleClickCancle = () => {
@@ -567,6 +592,7 @@ function ProjectInfoForm(props) {
 												name="CHRG_JOB"
 												margin="dense"
 												variant="outlined"
+												autoComplete="off"
 												value={memDataState[idx]["CHRG_JOB"]}
 												onChange={(event) => {handleMemChange(event, idx)}}
 												fullWidth
@@ -627,28 +653,48 @@ function ProjectInfoForm(props) {
 													name="ROLE_CODE"
 													margin="dense"
 													variant="outlined"
-													value={memDataState[idx]["ROLE_CODE"]}
+													value={screenType == "new" && idx == 0 ? "RL0000" : memDataState[idx]["ROLE_CODE"]}
 													onChange={(event) => {handleMemChange(event, idx)}}
 													fullWidth
 													select
 												>
 													{role_list.map(info => {
-														if(screenType == "modify"){
-															if(info.CODE_ID == memDataState[idx]["ROLE_CODE"]){
-																return (										
-																	<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
-																		{info.CODE_NAME}
+														if(screenType == "new"){
+															if(idx == 0 && info["CODE_ID"] == "RL0000"){
+																return (
+																	<MenuItem key={info["CODE_ID"]} value={info["CODE_ID"]}>
+																		{info["CODE_NAME"]}
 																	</MenuItem>
-																)
+																);
+															}else if(idx != 0){
+																if(info["CODE_ID"] == "RL0000"){
+																	
+																}else{
+																	return (
+																		<MenuItem key={info["CODE_ID"]} value={info["CODE_ID"]}>
+																			{info["CODE_NAME"]}
+																		</MenuItem>
+																	);
+																}
 															}
-														}else if(screenType == "new" && info.CODE_ID == "RL0000"){
-															
 														}else{
-															return (										
-																<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
-																	{info.CODE_NAME}
-																</MenuItem>
-															)
+															if(idx == 0 && info["CODE_ID"] == "RL0000"){
+																return (
+																	<MenuItem key={info["CODE_ID"]} value={info["CODE_ID"]}>
+																		{info["CODE_NAME"]}
+																	</MenuItem>
+																);
+															}else if(idx != 0){
+																if(info["CODE_ID"] == "RL0000"){
+																	
+																}else{
+																	return (
+																		<MenuItem key={info["CODE_ID"]} value={info["CODE_ID"]}>
+																			{info["CODE_NAME"]}
+																		</MenuItem>
+																	);
+																}
+															}
 														}
 													})}
 												</TextField>
@@ -674,9 +720,14 @@ function ProjectInfoForm(props) {
 										<TableCell 
 											align="left"
 											key={"BTN" + idx}>
-											{ screenType == "modify" && dataState["PM"] != memDataState[idx]["MEMBER_NO"] &&
+											{ screenType == "modify" &&
 												<IconButton aria-label="delete" className={classes.margin} onClick={() => handleRemoveMember(memDataState[idx]["MEMBER_NO"])}>
 													<DeleteIcon fontSize="small" />
+												</IconButton>
+											}
+											{ screenType == "modify" &&
+												<IconButton aria-label="update" className={classes.margin} onClick={() => handleUpdateMember(memDataState[idx]["MEMBER_NO"])}>
+													<CreateIcon fontSize="small" />
 												</IconButton>
 											}
 										</TableCell>

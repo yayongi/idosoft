@@ -241,12 +241,13 @@ public class ProjectController {
 		try {
 			projectService.update(dataState);
 			
-			for(HashMap<String, Object> member : member_list) {
-				member.put("UPD_ID", mno);
-				member.put("INPT_BGNDE", ((String)member.get("INPT_BGNDE")).replace("-", ""));
-				member.put("INPT_ENDDE", ((String)member.get("INPT_ENDDE")).replace("-", ""));
-				projectService.updateMember(member);
-			}
+			/*
+			 * for(HashMap<String, Object> member : member_list) { member.put("UPD_ID",
+			 * mno); member.put("INPT_BGNDE",
+			 * ((String)member.get("INPT_BGNDE")).replace("-", ""));
+			 * member.put("INPT_ENDDE", ((String)member.get("INPT_ENDDE")).replace("-",
+			 * "")); projectService.updateMember(member); }
+			 */
 			
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
