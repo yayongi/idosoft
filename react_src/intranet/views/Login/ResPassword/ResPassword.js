@@ -39,14 +39,6 @@ class ResPassword extends Component {
 		}
 	}
 	
-	setShowLoadingBar(param){
-		this.setState({
-			...this.state,
-			isShowLoadingBar: param
-		})
-		this.forceUpdate();
-	}
-
 	// errorArart 열기
 	errorArartOpen(errMsg){
 
@@ -66,6 +58,8 @@ class ResPassword extends Component {
 	// 입력값 미입력시, 에러처리
 	showValidationErr(elm, msg){
 		this.setState((prevState) => ( {errors: [...prevState.errors, {elm, msg}] } ));
+		
+		
 	}
 
 	// 에러처리된 입력값 입력시, 에러처리
@@ -98,9 +92,6 @@ class ResPassword extends Component {
 
 	// 로그인 버튼 클릭 시, 호출
 	resetPasswordHandleClick = (e) => {
-		const setShowLoadingBar = this.setShowLoadingBar.bind(this);
-		
-		setShowLoadingBar(true);
 
 		const { prevPassword, password} = this.state;
 		
@@ -115,6 +106,7 @@ class ResPassword extends Component {
 			prevPassCheck = false;
 
 			this.showValidationErr("prevPassword", "숫자, 특문 각 1회 이상, 영문은 2개 이상 사용하여 8자리 이상 입력해주세요.");
+			
 		}
 
 		if(!regExpPw.test(password)){
@@ -122,35 +114,34 @@ class ResPassword extends Component {
 			passwordCheck = false;
 
 			this.showValidationErr("password", "숫자, 특문 각 1회 이상, 영문은 2개 이상 사용하여 8자리 이상 입력해주세요.");
+
 		}
 		
 		if(prevPassCheck && passwordCheck){
 			if(prevPassword != "" && password != "") {
-					axios({
-						url: '/intranet/resPassword',
-						method: 'post',
-						data: {
-							prevPassword : prevPassword,
-							password : password
-						}
-					}).then(response => {
-						const isError = response.data.isError;
-						
-						if(isError == "true"){
-							const errMessage = response.data.errMessage;
-							const errorArartOpen = this.errorArartOpen.bind(this);
+				axios({
+					url: '/intranet/resPassword',
+					method: 'post',
+					data: {
+						prevPassword : prevPassword,
+						password : password
+					}
+				}).then(response => {
+					const isError = response.data.isError;
+					
+					if(isError == "true"){
+						const errMessage = response.data.errMessage;
+						const errorArartOpen = this.errorArartOpen.bind(this);
 
-							errorArartOpen(errMessage);
-						} else {
-							location.href= getRootPath() + "/#/signIn";
-						}
-						
-						setShowLoadingBar(false);
-					}).catch(e => {
-						processErrCode(e);
-						setShowLoadingBar(false);
-					});
-			}
+						errorArartOpen(errMessage);
+					} else {
+						location.href= getRootPath() + "/#/signIn";
+					}
+					
+				}).catch(e => {
+					processErrCode(e);
+				});
+			} 
 		}
 	} 
 
