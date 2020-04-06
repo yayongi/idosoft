@@ -56,13 +56,17 @@ const Notice = () => {
 	const [openModal, setOpenModal] = React.useState({
 		title:'', 
 		content:'', 
+		writer:'',
+		reg_datetime: '',
 		openModal:false,
 	});
 
-	const openContentModal = (Title, Content) => {
+	const openContentModal = (Title, Content,Writer,REG_DATETIME) => {
 		return setOpenModal({
 			title:Title, 
 			content:Content, 
+			writer:Writer,
+			reg_datetime: REG_DATETIME,
 			openModal:true,
 		});
 	  }
@@ -71,6 +75,8 @@ const Notice = () => {
 		return setOpenModal({
 			title:'', 
 			content:'', 
+			writer:'',
+			reg_datetime: '',
 			openModal:trigger,
 		});
 
@@ -101,7 +107,7 @@ const Notice = () => {
 				</TableHead>
 				<TableBody>
 					{(state != null) && state.map(datum => (
-						<TableRow key={datum.board_no} onClick={event => openContentModal(datum.title, datum.content)} style={{cursor : "pointer"}}>
+						<TableRow key={datum.board_no} onClick={event => openContentModal(datum.title, datum.content, datum.writer, datum.reg_datetime)} style={{cursor : "pointer"}}>
 							<TableCell className={`${classes.alignCenter} ${classes.maxWidth} ${classes.overflowCon} ${datum.major_period_date != null?  classes.textBold: null}`}>{datum.title}</TableCell>
 							<TableCell className={`${classes.alignCenter} ${datum.major_period_date != null?  classes.textBold: null}`}>{datum.reg_datetime}</TableCell>
 							<TableCell className={`${classes.alignCenter} ${datum.major_period_date != null?  classes.textBold: null}`}>{datum.writer}</TableCell>
