@@ -351,8 +351,26 @@ function ProjectInfoForm(props) {
 		});
 	}
 	
-	const handleUpdateMember = (member_no) => {
+	const handleUpdateMember = (memDataState) => {
+		setShowLoadingBar(true);
 		
+		memDataState["INPT_BGNDE"] = memDataState["INPT_BGNDE"].replace("-", "").replace("-", "");
+		memDataState["INPT_ENDDE"] = memDataState["INPT_ENDDE"].replace("-", "").replace("-", "");
+		axios({
+			url: '/intranet/updateMember',
+			method: 'post',
+			data: {"PROJECT_NO": match.params.id, "memDataState" : memDataState}
+		}).then(response => {
+			setShowLoadingBar(false);
+			if(response.data.isDBError){
+				alert("갱신 실패 했습니다.")
+			}else{
+				alert("갱신했습니다.");
+			}
+		}).catch(e => {
+			setShowLoadingBar(false);
+			processErrCode(e);
+		});
 	}
 	
 	const handleClickCancle = () => {
@@ -726,7 +744,7 @@ function ProjectInfoForm(props) {
 												</IconButton>
 											}
 											{ screenType == "modify" &&
-												<IconButton aria-label="update" className={classes.margin} onClick={() => handleUpdateMember(memDataState[idx]["MEMBER_NO"])}>
+												<IconButton aria-label="update" className={classes.margin} onClick={() => handleUpdateMember(memDataState[idx])}>
 													<CreateIcon fontSize="small" />
 												</IconButton>
 											}

@@ -283,6 +283,29 @@ public class ProjectController {
 		return mv;
 	}
 	
+	@RequestMapping(value="/updateMember",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView updateMember(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		boolean db_result = false;
+		try {
+			projectService.updateMember((HashMap<String, Object>) params.get("memDataState"));
+		}catch(Exception e) {
+			LOG.debug("디비 에러남 DB ERROR");
+			LOG.debug(e.toString());
+			db_result = true;
+		}
+		
+		mv.addObject("isDBError", db_result);
+		return mv;
+	}
+	
 	
 	@RequestMapping(value="/projectDashboard",method=RequestMethod.POST)
 	@ResponseBody
