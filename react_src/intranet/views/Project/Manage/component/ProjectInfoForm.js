@@ -276,7 +276,6 @@ function ProjectInfoForm(props) {
 			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
-			processErrCode(e);
 		});
 	}
 
@@ -305,7 +304,6 @@ function ProjectInfoForm(props) {
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
-			processErrCode(e);
 		});
 	}
 	const handleClickRemoveProject = () => {
@@ -324,7 +322,6 @@ function ProjectInfoForm(props) {
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
-			processErrCode(e);
 		});
 	}
 
