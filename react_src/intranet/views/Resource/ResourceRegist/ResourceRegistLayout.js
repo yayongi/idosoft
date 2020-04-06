@@ -15,7 +15,7 @@ import YearMonthPicker from '../component/YearMonthPicker';
 import SelectType from '../component/SelectType';
 import CommonDialog from '../../../js/CommonDialog';
 
-import {MacAddrCheck, getUrlParams} from '../uitl/ResUtil';
+import {MacAddrCheck, getUrlParams, SerialNoCheck} from '../uitl/ResUtil';
 import { getRootPath, processErrCode } from '../../../js/util';
 import axios from 'axios';
 
@@ -324,8 +324,8 @@ function RegistGrid() {
 		}else if(resData.display_size_code === undefined){
 			handleOpenDialog('자원관리', '화면사이즈를 선택해주세요.');
 			validation.display_size_code = true;
-		}else if(resData.serial_no === ''){
-			handleOpenDialog('자원관리', '시리얼번호를 입력해주세요.');
+		}else if(resData.serial_no !== '' && SerialNoCheck(resData.serial_no)){
+			handleOpenDialog('자원관리', '시리얼번호를 입력해주세요. 시리얼번호는 영문대소문자와 숫자만 입력가능합니다.');
 			validation.serial_no = true;
 		}else if(resData.mac_addr.length!==0 && MacAddrCheck(resData.mac_addr)){
 			handleOpenDialog('자원관리', 'MAC주소 형식과 맞게 입력해주세요.');
