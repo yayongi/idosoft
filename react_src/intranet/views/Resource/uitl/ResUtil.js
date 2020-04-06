@@ -9,6 +9,15 @@ export function MacAddrCheck(str){
 	}
 }
 
+export function SerialNoCheck(str){
+	if(str != undefined){
+		const regex = /^[A-Za-z0-9+]*$/;
+		return !regex.test(str);
+	}else{
+		return true;
+	}
+}
+
 // 년월 Validation
 export function YearMonthCheck(str){
 	if(str === undefined) {return true}
