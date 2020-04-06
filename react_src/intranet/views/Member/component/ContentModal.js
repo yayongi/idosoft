@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import Toolbar from '@material-ui/core/Toolbar';
-import { getRootPath, phoneFormatter } from '../../../js/util';
+import { getRootPath, phoneFormatter,dateFormatter } from '../../../js/util';
 
 const styles = theme => ({
   root: {
@@ -126,7 +126,7 @@ const ContentModal = ({props, closeModal}) => {
                             {props.address_2}
                         </Grid>
                         <Grid item xs={12}>
-                                                        입사일 : {props.entry_date}
+                                                        입사일 : {dateFormatter(props.entry_date)}
                         </Grid>
                     </Grid>
                   </Grid>
@@ -152,7 +152,7 @@ const ContentModal = ({props, closeModal}) => {
                     {props.address_2}
                   </Grid>
                   <Grid item xs={12}>
-                                        입사일 : {props.entry_date}
+                                        입사일 : {dateFormatter(props.entry_date)}
                   </Grid>
                 </Grid>
               </Hidden>
