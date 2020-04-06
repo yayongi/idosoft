@@ -129,13 +129,16 @@ export default function NoticeRegistLayout() {
           },
           }).then(response => {
             //수정 데이터 설정
-            // console.log(response);
-            const data = response.data;
-            setNoticeData( 
-              {...noticeData, ['board_no']: data.board_no, ['title']:data.title, ['content'] : data.content,
-                ['major_yn'] : data.major_yn === 1 ? true : false, ['major_period_date'] : data.major_yn !== 0 ? data.major_period_date : ''
-              }
-              );
+            if(response.data.result){
+              const data = response.data.noticeData;
+              setNoticeData( 
+                  {...noticeData, ['board_no']: data.board_no, ['title']:data.title, ['content'] : data.content,
+                    ['major_yn'] : data.major_yn === 1 ? true : false, ['major_period_date'] : data.major_yn !== 0 ? data.major_period_date : ''
+                  }
+                );
+            }else{
+              return location.href = getRootPath()+"/#/notice";
+            }
           }).catch(e => {
             processErrCode(e);
         });
@@ -166,7 +169,7 @@ export default function NoticeRegistLayout() {
     }else{
       setNoticeData({...noticeData, [event.target.name]:event.target.value});
     }
-    // setValidation(initValidation);
+    setValidation(initValidation);
   }
   const handleChildChange = date => {
     setNoticeData({...noticeData, major_period_date:date});

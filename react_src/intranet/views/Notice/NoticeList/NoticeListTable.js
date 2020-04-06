@@ -65,8 +65,9 @@ const useStyles = makeStyles(theme => ({
     top: 20,
     width: 1,
   },
-  margin: {
-    // margin: theme.spacing(1),
+  iconPadding: {
+    paddingTop : '0px',
+    paddingBottom : '0px'
   },
   overflowCon : {
 		whiteSpace:"nowrap",
@@ -362,13 +363,13 @@ function NoticeListTable(props) {
                     <TableCell align="center">
                     { memberNo === row.reg_id &&
                       <RouterLink button="true" to={"/notice/regist/?id="+row.board_no}>
-                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.board_no)}>
+                        <IconButton aria-label="delete" className={classes.iconPadding} onClick={()=>handleEditClick(row.board_no)}>
                           <CreateIcon fontSize="small" />
                         </IconButton>
                       </RouterLink>
                     }
                     {(isAdmin || memberNo === row.reg_id) &&
-                      <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.board_no)}>
+                      <IconButton aria-label="delete" className={classes.iconPadding} onClick={()=>handleDeleteClick(row.board_no)}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     }

@@ -107,7 +107,7 @@ const ResourceList = () => {
 
 	const handleSelectedResNo = (selectedNo) => {
 		setSelected(selectedNo);
-		// console.log(selectedNo);
+		console.log(selectedNo);
 	}
 
 	return (

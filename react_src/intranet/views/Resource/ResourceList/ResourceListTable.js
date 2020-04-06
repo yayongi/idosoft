@@ -78,8 +78,9 @@ const useStyles = makeStyles(theme => ({
     top: 20,
     width: 1,
   },
-  margin: {
-    // margin: theme.spacing(1),
+  iconPadding: {
+    paddingTop : '0px',
+    paddingBottom : '0px'
   },
   overflowCon : {
 		whiteSpace:"nowrap",
@@ -334,7 +335,7 @@ function ResourceListTable(props) {
                       </>
                       }
                       <TableCell align="center" onClick={event=>openContentModal(row)} width={isWidthUp('md', props.width) ? '12%' : '30%'} 
-                                className={`${classes.maxWidth}${classes.overflowCon}`}
+                                className={`${classes.maxWidth} ${classes.overflowCon}`}
                       >
                         {row.model_nm}
                       </TableCell>
@@ -349,7 +350,7 @@ function ResourceListTable(props) {
                       </TableCell>
                       <TableCell align="center" onClick={event=>openContentModal(row)}>{row.display_size_code}</TableCell>
                       <TableCell align="center" onClick={event=>openContentModal(row)} width={'13%'} 
-                                className={`${classes.maxWidth}${classes.overflowCon}`}
+                                className={`${classes.maxWidth} ${classes.overflowCon}`}
                       >
                         {row.serial_no}
                       </TableCell>
@@ -364,11 +365,11 @@ function ResourceListTable(props) {
                       {(isAdmin || memberNo === row.reg_id) &&
                       <>
                         <RouterLink button="true" to={"/resource/regist/?id="+row.res_no}>
-                          <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleEditClick(row.res_no)}>
+                          <IconButton aria-label="delete" className={classes.iconPadding} onClick={()=>handleEditClick(row.res_no)}>
                             <CreateIcon fontSize="small" />
                           </IconButton>
                         </RouterLink>
-                        <IconButton aria-label="delete" className={classes.margin} onClick={()=>handleDeleteClick(row.res_no)}>
+                        <IconButton aria-label="delete" className={classes.iconPadding} onClick={()=>handleDeleteClick(row.res_no)}>
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       </>
