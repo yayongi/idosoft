@@ -23,6 +23,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import CreateIcon from '@material-ui/icons/Create';
 
 import { LoadingBar }  from '../../../../common/LoadingBar/LoadingBar';
+import { processErrCode }  from '../../../../js/util';
 
 import axios from 'axios';
 
@@ -240,7 +241,6 @@ function ProjectInfoForm(props) {
 		}].concat(memDataState);
 
 		var instt = instt_list.filter((info) => (info.instt_code == dataState.instt_code))[0];
-
 		axios({
 			url: '/intranet/insertProject',
 			method: 'post',
@@ -386,6 +386,7 @@ function ProjectInfoForm(props) {
 										variant="outlined"
 										value={dataState.PROJECT_NM}
 										onChange={handleChange}
+										autoComplete="off"
 										fullWidth
 									>
 									</TextField>
@@ -401,6 +402,7 @@ function ProjectInfoForm(props) {
 										variant="outlined"
 										onChange={handleChange}
 										value={dataState.INSTT_CODE}
+										autoComplete="off"
 										fullWidth
 										select>
 										{instt_list.map(info => (
@@ -470,11 +472,12 @@ function ProjectInfoForm(props) {
 										decimalPlaces={0}
 										value={dataState.TRANSPORT_CT}
 										onChange={handleChange}
+										autoComplete="off"
 										fullWidth
 									/>
 								</TableCell>
 							</TableRow>
-							<TableRow>
+							{/*<TableRow>
 								<TableCell align="left" component="th" scope="row">PM</TableCell>
 								<TableCell align="left">
 									<TextField
@@ -492,7 +495,7 @@ function ProjectInfoForm(props) {
 										))}
 									</TextField>
 								</TableCell>
-							</TableRow>
+							</TableRow>*/}
 						</TableBody>
 					</Table>
 				</TableContainer>

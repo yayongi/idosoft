@@ -206,6 +206,18 @@
 			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
 	</update>
 	
+	<!-- 대쉬보드용 프로젝트 조회 -->
+	<select id="getPresentProject" resultType="hashmap">
+	<![CDATA[ 
+		SELECT
+			PROJECT_NO,
+			PROJECT_NM
+		FROM TB_PROJECT
+		WHERE DATE_FORMAT(NOW(),'%Y%m%d') >= BGNDE 
+		AND DATE_FORMAT(NOW(),'%Y%m%d') <= ENDDE
+	]]>
+	</select>
+	
 	<!-- 프로젝트 인원 조회 -->
 	<select id="getProjectMember" resultType="hashmap">
 	<![CDATA[ 

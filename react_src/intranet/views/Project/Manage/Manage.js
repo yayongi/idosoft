@@ -8,7 +8,7 @@ import ProjectInfoTable from './component/ProjectInfoTable';
 import ProjectGraph from './component/ProjectGraph';
 import Moment from "moment";
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
-
+import { processErrCode } from '../../../js/util';
 import axios from 'axios';
 
 const mainStyles = makeStyles(theme => ({
