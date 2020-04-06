@@ -192,7 +192,10 @@ function RegistGrid() {
 						},
 						}).then(response => {
 							//수정 데이터 설정
-							setResData(response.data);
+							if(!response.data.result){
+								return location.href=getRootPath()+"/#/resource";
+							}
+							setResData(response.data.resData);
 						}).catch(e => {
 							processErrCode(e);
 					});

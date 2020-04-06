@@ -86,10 +86,10 @@ public class ResourceController {
 	public boolean modifyResource(Model model, @RequestBody ResourceVO resVO, HttpServletRequest request) {
 		//관리자 여부
 		boolean isAdmin = commonUtil.isAdmin(request.getSession());
-		if(!isAdmin) {
+//		if(!isAdmin) {
 			//관리자가 아니면 false
-			return false;
-		}
+//			return false;
+//		}
 		
 		
 		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
@@ -208,8 +208,23 @@ public class ResourceController {
 	 * @return ResourceVO
 	 */
 	@PostMapping("/find")
-	public ResourceVO findResourceInfo(@RequestBody ResourceVO resVO) {
-		return resService.findResource(resVO.getRes_no());
+	public ModelAndView findResourceInfo(@RequestBody ResourceVO resVO, HttpServletRequest request) {
+		
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("jsonView");
+		
+		boolean isAdmin = commonUtil.isAdmin(request.getSession());
+		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
+		
+		ResourceVO resourceVO = resService.findResource(resVO.getRes_no());
+		
+		if(!isAdmin && !resourceVO.getReg_id().equals(sessionVO.getMEMBER_NO()) ) {
+			mv.addObject("result", false);
+			return mv;
+		}
+		mv.addObject("result", true);
+		mv.addObject("resData",resourceVO);
+		return mv;
 	}
 	/**
 	 * 자원관련 코드조회

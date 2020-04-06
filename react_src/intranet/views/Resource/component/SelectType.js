@@ -31,7 +31,7 @@ const SelectType = ({label, resKey, props, onChildClick, defaultValue, validatio
     if(trigger && defaultValue!==undefined && defaultValue!==null && defaultValue!==""){
       setTrigger(false);
       setType(defaultValue);
-      console.log(defaultValue);
+      // console.log(defaultValue);
     }
   }, [defaultValue]);
 

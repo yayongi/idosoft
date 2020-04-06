@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
@@ -192,8 +193,21 @@ public class NoticeController {
 	 * @return NoticeVO
 	 */
 	@PostMapping("/find")
-	public NoticeVO findNoticeInfo(@RequestBody NoticeVO noticeVO) {
-		return noticeService.findNotice(noticeVO.getBoard_no());
+	public ModelAndView findNoticeInfo(@RequestBody NoticeVO noticeVO, HttpServletRequest request) {
+		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
+		
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("jsonView");
+		
+		NoticeVO nVO = noticeService.findNotice(noticeVO.getBoard_no());
+		if(!nVO.getReg_id().equals(sessionVO.getMEMBER_NO())) {
+			mv.addObject("result", false);
+			return mv;
+		}else {
+			mv.addObject("result", true);
+			mv.addObject("noticeData", nVO);
+			return mv;
+		}
 	}
 	
 	//대쉬보드용 리스트
