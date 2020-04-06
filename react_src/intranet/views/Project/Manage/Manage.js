@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ProjectSearchDiv from './component/ProjectSearchDiv';
 import ProjectInfoTable from './component/ProjectInfoTable';
 import ProjectGraph from './component/ProjectGraph';
+import Moment from "moment";
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 
 import axios from 'axios';
@@ -26,76 +27,77 @@ const mainStyles = makeStyles(theme => ({
   }
 }));
 
+function currentCalcul(searchedInfo){
+	if(searchedInfo.length == 0){
+		return [];
+	}
+	
+	var currentDate = Moment(new Date()).format('YYYYMMDD');
+    var tmp = searchedInfo.filter((info) => {
+    	if(info.BGNDE <= currentDate && currentDate <= info.ENDDE){
+    		return info;
+    	}
+	});
+    
+    return tmp;
+}
+
 export default function ManageView(props) {
-  console.log("ManageView");
-  console.log(props);
   const classes = mainStyles();
-  const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
-  const [projectOriginInfo, setProjectOriginInfo] = useState([], []);
+  const [isShowLoadingBar, setShowLoadingBar] = useState(true);    //loading bar
   const [projectInfo, setProjectInfo] = useState([]);
+  const [projectGraphInfo, setProjectGraphInfo] = useState([]);
+  const [member_list, setMember_list] = useState([], []);
+  const [instt_list, setInstt_list] = useState([], []);
+  
+  
   const [condition, setCondition] = useState({
-    searchType: 		[],
-    searchDetailType:  "",
-    searchDetailTypes: []
+		searchType: "1",
+		select_date: Moment(new Date()).format("YYYY-MM-DD"),
+		select_detail : "",
   });
 
   useEffect(() => {
-    axios({
-      url: '/intranet/allProject',
-      method: 'post',
-      data: {}
-    }).then(response => {
-      var result = response.data.project_list;
-      console.log("result : ");
-      console.log(result);
-      setProjectOriginInfo(result);
-      setProjectInfo(result);
-      setShowLoadingBar(false);
-    }).catch(e => {
-      setShowLoadingBar(false);
-      processErrCode(e);
-    });
+	  getDBInfo({"searchType":"1", "select_detail":Moment(new Date()).format("YYYYMMDD")});
   }, []);
 
-
+  const getDBInfo = (condition) => {
+	  axios({
+	      url: '/intranet/allProject',
+	      method: 'post',
+	      data: {"CODE_ID":"CD0008", "condition":condition}
+	    }).then(response => {
+	    	setProjectInfo(response.data.hist_list);
+	    	setProjectGraphInfo(response.data.hist_list);
+	    	setMember_list(response.data.member_list);
+	    	setInstt_list(response.data.instt_list);
+	    	setShowLoadingBar(false);
+	    }).catch(e => {
+	      setShowLoadingBar(false);
+	      processErrCode(e);
+	    });
+  }
   const updateCondition = (conditions) => {
-    console.log("updateCondition");
-    console.log(conditions);
-    
-    setCondition(conditions);
-
-    var searchedInfo = [];
-    switch(conditions.searchType){
-      case "0":
-        searchedInfo = projectOriginInfo;
-        break;
-      case "1":
-        searchedInfo = projectOriginInfo.filter((info) => info.BGNDE.slice(0,4) === conditions.searchDetailType);
-        break;
-      case "2":
-        searchedInfo = projectOriginInfo.filter((info) => info.INSTT_CODE === conditions.searchDetailType);
-        break;
-      default:
-        searchedInfo = projectOriginInfo;
-        break;
-      
-    }
-    setProjectInfo(searchedInfo);
+	  setCondition(conditions);
+	  getDBInfo(conditions);
   }
 
   return (
     <>
       <LoadingBar openLoading={isShowLoadingBar}/>
-      <ProjectSearchDiv  condition={condition} updateCondition={updateCondition}/>
+      <ProjectSearchDiv maxYear={new Date().getFullYear()+1} minYear={"2012"} updateCondition={updateCondition} member_list={member_list} instt_list={instt_list}/>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Paper className={classes.paper}>
-            {/* <ProjectGraph projectInfo={projectInfo} /> */}
-          </Paper>
-        </Grid>
+      	{
+      		projectInfo.length > 0 && 
+      		<Grid item xs={12}>
+          		<Paper className={classes.paper}>
+          			<ProjectGraph projectGraphInfo={projectGraphInfo} condition={condition}/>
+      			</Paper>
+  			</Grid>
+      	}
         <Grid item xs={12}>
           <Paper className={classes.paper2}>
-            <ProjectInfoTable projectInfo={projectInfo} routeProps={props.routeProps}/>
+          <ProjectInfoTable projectInfo={projectInfo} routeProps={props.routeProps}/>
           </Paper>
         </Grid>
       </Grid>

@@ -100,11 +100,12 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		List<String> inputCodeList = (List<String>)params.get("CODE_ID");
 		List<Map<String, Object>> code_list = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> tmp = new HashMap<String, Object>();
 		try {
 			if(isAdmin) {
 				member_list = historyService.selectMemberList();
 			}
-			proj_list = historyService.selectAllList();
+			proj_list = historyService.selectAllList((HashMap<String, Object>) tmp);
 			code_list = historyService.getLowCodeList(inputCodeList.get(0));
 			role_list = historyService.getLowCodeList(inputCodeList.get(1));
 		} catch (Exception e) {
@@ -158,11 +159,12 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		List<Map<String, Object>> proj_list = new ArrayList<Map<String, Object>>();
 		Map<String, Object> detailInfo = new HashMap<String, Object>();
 		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> tmp = new HashMap<String, Object>();
 		boolean db_result = false;
 		try {
 			detailInfo = (Map<String, Object>) historyService.selectDetailHistory(mem_hist_no);
 			role_list = historyService.getLowCodeList((String) params.get("CODE_ID"));
-			proj_list = historyService.selectAllList();
+			proj_list = historyService.selectAllList((HashMap<String, Object>) tmp);
 		}catch(Exception e) {
 			db_result = true;
 		}

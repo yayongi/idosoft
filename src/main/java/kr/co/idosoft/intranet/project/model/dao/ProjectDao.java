@@ -16,7 +16,8 @@ public interface ProjectDao {
 	void deleteInfo(String project_no);
 	HashMap<String, Object> selectInfo(String project_no);
 	String selectMaxProject();
-	List<Map<String, Object>> selectAllList();
+	List<Map<String, Object>> selectAllList(HashMap<String, Object> condition);
+	List<Map<String, Object>> selectForList(HashMap<String, Object> condition);
 
 	
 	List<Map<String, Object>> projectMemberList(String project_no);
@@ -28,5 +29,8 @@ public interface ProjectDao {
 	public List<HashMap<String, String>> getPresentProject();
 	//프로젝트 개인이력 
 	public List<HashMap<String,String>> getProjectMember();
+	
+	public List<HashMap<String,Object>> getGraphInfo(HashMap<String, Object> condition);
+	public List<HashMap<String,Object>> getGraphForInfo(HashMap<String, Object> condition);
 }
 

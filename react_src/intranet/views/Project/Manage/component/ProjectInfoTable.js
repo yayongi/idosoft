@@ -22,9 +22,6 @@ const useStyles = makeStyles({
 function ProjectInfo(props) {
   const classes = useStyles();
   const { projectInfo, routeProps } = props;
-  const [count, setCount] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(0);
-  const [page, setPage] = useState(0);
   
   
 
@@ -39,8 +36,6 @@ function ProjectInfo(props) {
 
   const rows = makeTableFormInfo();
 
-  //console.log(rows);
-  // 상세페이지로 이동
 
   //연도, 프로젝트명, 기관,  프로젝트 기간, PM, 교통비
   const columnsUp = [
@@ -78,16 +73,6 @@ function ProjectInfo(props) {
   return (
     <Paper className={classes.root}>
       <TableContainer className={classes.container}>
-	      <TablePagination
-		    rowsPerPageOptions={[10, 25, 100]}
-		    component="div"
-		    count={count}
-		    rowsPerPage={rowsPerPage}
-		    page={page}
-		    onChangePage={handleChangePage}
-		    onChangeRowsPerPage={handleChangeRowsPerPage}
-		  />
-      
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -104,6 +89,17 @@ function ProjectInfo(props) {
             </TableRow>
           </TableHead>
           <TableBody>
+          	{projectInfo.length == 0 &&
+  				<>
+   				  	 <TableRow>
+   					    <TableCell
+   				            align="left"
+   			            	colSpan="6">
+   					    	현재 등록된 프로젝트가 없습니다.
+   				    	</TableCell>
+   				    </TableRow>
+   		  		</>
+          	}
             {rows.length > 0 && rows.map(row => {
               return (
                 <TableRow hover
@@ -130,16 +126,6 @@ function ProjectInfo(props) {
             })}
           </TableBody>
         </Table>
-        <TablePagination
-		    rowsPerPageOptions={[10, 25, 100]}
-		    component="div"
-		    // count={rows.length}
-		    count={count}
-		    rowsPerPage={rowsPerPage}
-		    page={page}
-		    onChangePage={handleChangePage}
-		    onChangeRowsPerPage={handleChangeRowsPerPage}
-		  />
       </TableContainer>
     </Paper>
   );

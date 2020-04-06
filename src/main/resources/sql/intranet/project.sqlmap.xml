@@ -61,7 +61,7 @@
 	</select>
 	
 	<!-- 프로젝트 전체 리스트 -->
-	<select id="selectAllList" resultType="hashMap">
+	<select id="selectAllList" resultType="hashMap" parameterType="hashMap">
 		SELECT	
 			A.PROJECT_NO
 			, A.PROJECT_NM
@@ -80,6 +80,55 @@
 		FROM TB_PROJECT AS A
 			LEFT JOIN TB_MEMBER AS B ON B.MEMBER_NO = A.PM
 			LEFT JOIN TB_CODE AS C ON C.CODE_ID = A.INSTT_CODE
+		WHERE 1=1
+			<choose>
+				<when test="SELDATE != null and SELDATE != ''">
+					AND STR_TO_DATE(#{SELDATE}, '%Y-%m-%d') <![CDATA[>=]]> date_format(BGNDE,'%Y-%m-%d') 
+					AND STR_TO_DATE(#{SELDATE}, '%Y-%m-%d') <![CDATA[<=]]> date_format(ENDDE,'%Y-%m-%d')
+					
+				</when>
+				<when test="SELYEAR != null and SELYEAR != ''">
+					AND BGNDE like CONCAT('',#{SELYEAR},'%')
+				</when>
+				<otherwise>
+					
+				</otherwise>
+			</choose>
+		ORDER BY BGNDE DESC
+	
+	</select>
+	
+	<!-- 프로젝트 전체 리스트 -->
+	<select id="selectForList" resultType="hashMap" parameterType="hashMap">
+		SELECT	
+			A.PROJECT_NO
+			, A.PROJECT_NM
+			, A.INSTT_CODE
+			, A.BGNDE
+			, A.ENDDE
+			, CONCAT(date_format(A.BGNDE,'%Y-%m-%d'), "~" , date_format(A.ENDDE,'%Y-%m-%d')) AS TERM
+			, A.PM
+			, B.NAME AS PM_NAME
+			, A.TRANSPORT_CT
+			, A.REG_DATETIME
+			, A.UPD_DATETIME
+			, A.REG_ID
+			, A.UPD_ID
+			, C.CODE_NAME AS INSTT_NAME
+		FROM TB_PROJECT AS A
+			LEFT JOIN TB_MEMBER AS B ON B.MEMBER_NO = A.PM
+			LEFT JOIN TB_CODE AS C ON C.CODE_ID = A.INSTT_CODE
+		WHERE 1=1 
+		<if test="SELINSTT != null and SELINSTT != ''">
+			AND A.INSTT_CODE = (
+				SELECT CODE_ID FROM TB_CODE WHERE CODE_ID = #{SELINSTT}
+			)
+		</if>
+		<if test="SELMEMBER != null and SELMEMBER != ''">
+			AND A.PM = (
+				SELECT MEMBER_NO FROM TB_MEMBER WHERE MEMBER_NO = #{SELMEMBER}
+			)
+		</if>
 		ORDER BY BGNDE DESC
 	</select>
 	
@@ -157,18 +206,6 @@
 			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
 	</update>
 	
-	<!-- 대쉬보드용 프로젝트 조회 -->
-	<select id="getPresentProject" resultType="hashmap">
-	<![CDATA[ 
-		SELECT
-			PROJECT_NO,
-			PROJECT_NM
-		FROM TB_PROJECT
-		WHERE DATE_FORMAT(NOW(),'%Y%m%d') >= BGNDE 
-		AND DATE_FORMAT(NOW(),'%Y%m%d') <= ENDDE
-	]]>
-	</select>
-	
 	<!-- 프로젝트 인원 조회 -->
 	<select id="getProjectMember" resultType="hashmap">
 	<![CDATA[ 
@@ -178,5 +215,51 @@
 		WHERE DATE_FORMAT(NOW(),'%Y%m%d') >= INPT_BGNDE 
 		AND DATE_FORMAT(NOW(),'%Y%m%d') <= INPT_ENDDE
 	]]>
+	</select>
+	
+	<!-- 그래프정보조회 -->
+	<select id="getGraphInfo" parameterType="hashmap" resultType="hashmap">
+		SELECT *
+		FROM TB_PROJECT_MEMBER
+		WHERE TB_PROJECT_MEMBER.PROJECT_NO IN (SELECT
+					PROJECT_NO
+				FROM TB_PROJECT
+				WHERE 1=1
+			<choose>
+				<when test="SELDATE != null and SELDATE != ''">
+					
+					AND STR_TO_DATE(#{SELDATE}, '%Y-%m-%d') <![CDATA[>=]]> date_format(BGNDE,'%Y-%m-%d') 
+					AND STR_TO_DATE(#{SELDATE}, '%Y-%m-%d') <![CDATA[<=]]> date_format(ENDDE,'%Y-%m-%d'))
+					
+				</when>
+				<when test="SELYEAR != null and SELYEAR != ''">
+					AND BGNDE like CONCAT('',#{SELYEAR},'%'))
+				</when>
+				<otherwise>
+					)
+				</otherwise>
+			</choose>
+	</select>
+	
+	
+	<!-- 그래프정보조회 -->
+	<select id="getGraphForInfo" parameterType="hashmap" resultType="hashmap">
+		SELECT *
+		FROM TB_PROJECT_MEMBER
+		WHERE TB_PROJECT_MEMBER.PROJECT_NO IN (SELECT
+					PROJECT_NO
+				FROM TB_PROJECT AS A
+				WHERE 1=1
+		<if test="SELINSTT != null">
+			AND A.INSTT_CODE = (
+				SELECT CODE_ID FROM TB_CODE WHERE CODE_ID = #{SELINSTT}
+			))
+		</if>
+		<if test="SELMEMBER != null">
+			AND A.PM = (
+				SELECT MEMBER_NO FROM TB_MEMBER 
+				WHERE MEMBER_NO = #{SELMEMBER}
+			))
+		</if>
 	</select>
 </mapper>

@@ -19,10 +19,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import { Link as RouterLink } from 'react-router-dom';
 import DateFnsUtils from '@date-io/date-fns';
+import ko from "date-fns/locale/ko";
+import Moment from "moment";
 import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+	  MuiPickersUtilsProvider,
+	  DatePicker,
+	} from '@material-ui/pickers';
+
 
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
@@ -51,84 +54,84 @@ export default function ProjectSearchDiv(props) {
 	
 	const classes = useToolbarStyles();
 	const [open, setOpen] = React.useState(false);
-	const {condition, updateCondition} = props;
+	const {condition, updateCondition, maxYear, minYear} = props;
+	const {member_list, instt_list} = props;
 	
 	const searchTypes = [
 		{ value: "0", label: "전체"},
-		{ value: "1", label: "연도"},
-		{ value: "2", label: "기관"},
+		{ value: "1", label: "날짜"},
+		{ value: "2", label: "연도"},
+		{ value: "3", label: "발주처"},
+		{ value: "4", label: "사원명"},
 	]
 	// Dialog 값 상위 컴포넌트의 state값으로 초기화
 	const initDialogState = {
-		searchType: searchTypes,
-		searchDetailType: "",
-		searchDetailTypes: []
+		searchType: "1",
+		select_date: Moment(new Date()).format("YYYY-MM-DD"),
+		select_detail : "",
 	};
 	const [dialogState, setDialogState] = React.useState(initDialogState);
-
+	const [detailList, setDetailList] = React.useState([]);
+	
 	const handleClickOpen = () => {
 		setOpen(true);
 	};
 	const handleClose = () => {
 		setOpen(false);
 	};
-
-	// Dialog에서 취소버튼 클릭 시
-	const handleClickCancel = () => {
-		setDialogState(initDialogState);
-		handleClose();
-	}
-
-	// Dialog에서 검색버튼 클릭 시
-	// 상위 컴포넌트의 state를 갱신 처리 해줌
-	const handleClickSearch = () => {
-		updateCondition({
-			searchType: 		document.getElementsByName("searchType")[0].value,
-			searchDetailType:  (document.getElementsByName("searchDetailType")[0]).value,
-		});
-		handleClose();
-	}
-
 	
-	// searchType change
-	const handleTypeChange= event => {
-		var searchDetailTypeList = [];
-		switch(event.target.value){
-			case "0" :
-				break;
-			case "1" :
-				var projectInfoList = JSON.parse(localStorage.getItem("resProjData"));
-				var start_year = projectInfoList[projectInfoList.length-1]["bgnde"].slice(0, 4);
-				var end_year = projectInfoList[0]["bgnde"].slice(0, 4);
-
-				for(var i = start_year; i <= end_year; i++){
-					searchDetailTypeList.push({"value":i, "label":i});
-				}
-				break;
-			case "2" :
-				var siteInfo = getSiteInfoDB();
-				for(var i=0; i < siteInfo.length; i++){
-					searchDetailTypeList.push({"value":siteInfo[i]["instt_code"], "label": siteInfo[i]["instt_name"]})
-				}
-				break;
-			default :
-				break;
+	const handleChange = (event) => {
+		var tmpList = [];
+		
+		if(event.target.value == "0" || event.target.value == "1"){
+			setDialogState({
+				[event.target.name]: event.target.value,
+			});
+		}else if(event.target.value == "2"){
+			for(var i=minYear; i < maxYear; i++){
+				tmpList.push(i);
+			}
+			setDetailList(tmpList);
+			setDialogState({
+				[event.target.name]: event.target.value,
+				select_detail:minYear
+			});
 		}
-
+		
+		else if(event.target.value == "3"){
+			setDetailList(instt_list);
+			setDialogState({
+				[event.target.name]: event.target.value,
+			});
+		}
+		
+		else if(event.target.value == "4"){
+			setDetailList(member_list);
+			setDialogState({
+				[event.target.name]: event.target.value,
+			});
+		}
+	}
+	
+	const handleChangeDate = (event) => {
 		setDialogState({
 			...dialogState,
-			searchType:   event.target.value,
-			searchDetailTypes:  searchDetailTypeList,
+			select_date: Moment(event).format("YYYY-MM-DD"),
 		});
 	}
-
-	//keyword change
-	const handleDetailTypeChange= event => {
+	
+	const handleDetailChange = (event) => {
 		setDialogState({
 			...dialogState,
-			searchDetailType: event.target.value
+			select_detail: event.target.value,
 		});
-	};
+	}
+	
+	const handleClickSearch = () => {
+		updateCondition(dialogState);
+		handleClose();
+	}
+	
 
 	return (
 		<Fragment>
@@ -173,13 +176,13 @@ export default function ProjectSearchDiv(props) {
 							<TextField
 								id="searchType"
 								name="searchType"
-								select
 								margin="dense"
 								placeholder="검색조건"
 								label="검색조건"
 								value={dialogState.searchType}
-								onChange={handleTypeChange}
-								fullWidth>
+								onChange={handleChange}
+								fullWidth
+								select>
 								{searchTypes.map(option => (
 									<MenuItem key={option.value} value={option.value}>
 										{option.label}
@@ -187,31 +190,91 @@ export default function ProjectSearchDiv(props) {
 								))}
 							</TextField>
 						</Grid>
-						<Grid item xs={6} style={{paddingRight: 10}}>
-							<TextField
-								label="검색조건"
-								id="searchDetailType"
-								name="searchDetailType"
-								placeholder="검색조건"
-								margin="dense"
-								InputLabelProps={{
-									shrink: true,
-								}}
-								value={dialogState.searchDetailType}
-								onChange={handleDetailTypeChange}
-								select
-								fullWidth>
-								{(dialogState.searchDetailTypes).map(option => (
-									<MenuItem key={option.value} value={option.value}>
-										{option.label}
-									</MenuItem>
-								))}
-							</TextField>
-						</Grid>
+						{dialogState.searchType == "1" &&  
+							<Grid item xs={6} style={{paddingRight: 10}}>
+								<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
+									<Grid container justify="space-around">
+										<DatePicker
+											locale='ko'
+											margin="dense"
+											id="select_date"
+											name="select_date"
+											views={["year", "month", "date"]}
+											format="yyyy-MM-dd"
+											value={dialogState.select_date}
+											onChange={handleChangeDate}
+											inputVariant="outlined"
+											readOnly={false}
+											fullWidth
+										/>
+									</Grid>
+								</MuiPickersUtilsProvider>
+							</Grid>
+						}
+						{dialogState.searchType == "2" && 
+							<Grid item xs={6} style={{paddingRight: 10}}>
+								<TextField
+									id="select_detail"
+									name="select_detail"
+									margin="dense"
+									placeholder="상세조건"
+									label="상세조건"
+									value={dialogState.select_detail}
+									onChange={handleDetailChange}
+									fullWidth
+									select>
+									{detailList.map((info) => (
+										<MenuItem key={info} value={info}>
+											{info}
+										</MenuItem>
+									))}
+								</TextField>
+							</Grid>
+						}
+						{dialogState.searchType == "3" && 
+							<Grid item xs={6} style={{paddingRight: 10}}>
+								<TextField
+									id="select_detail"
+									name="select_detail"
+									margin="dense"
+									placeholder="상세조건"
+									label="상세조건"
+									value={dialogState.select_detail}
+									onChange={handleDetailChange}
+									fullWidth
+									select>
+									{detailList.map((info) => (
+										<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
+											{info.CODE_NAME}
+										</MenuItem>
+									))}
+								</TextField>
+							</Grid>
+						}
+						{dialogState.searchType == "4" && 
+							<Grid item xs={6} style={{paddingRight: 10}}>
+								<TextField
+									id="select_detail"
+									name="select_detail"
+									margin="dense"
+									placeholder="상세조건"
+									label="상세조건"
+									value={dialogState.select_detail}
+									onChange={handleDetailChange}
+									fullWidth
+									select>
+									{detailList.map((info) => (
+										<MenuItem key={info.member_no} value={info.member_no}>
+											{info.name}
+										</MenuItem>
+									))}
+								</TextField>
+							</Grid>
+						}
 					</Grid>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClickCancel} color="primary">
+					<Button onClick={handleClose} color="primary">
 						취소
 					</Button>
 					<Button onClick={handleClickSearch} color="primary">

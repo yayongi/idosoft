@@ -48,8 +48,8 @@ public class HistoryServiceImpl implements HistoryService {
 	}
 
 	@Override
-	public List<Map<String, Object>> selectAllList() {
-		return pro_dao.selectAllList();
+	public List<Map<String, Object>> selectAllList(HashMap<String, Object> condition) {
+		return pro_dao.selectAllList(condition);
 	}
 
 	@Override

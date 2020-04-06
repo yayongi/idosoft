@@ -42,15 +42,58 @@ public class ProjectController {
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
 		
-		// 검색 조건 제외하고 개발중..
-		Map<String, Object> data = new HashMap<>();
+		List<MemberVO> member_list = projectService.selectMemberList();
+		List<Map<String, Object>> instt_list = projectService.getLowCodeList((String)params.get("CODE_ID"));
 		
-		List<Map<String, Object>> project_list = projectService.selectAllList();
 		
-		List<Map<String, Object>> code_list = projectService.getLowCodeList((String) params.get("CODE_ID"));
+		HashMap<String, Object> conditions = (HashMap<String, Object>)params.get("condition");
+		for (String key :conditions.keySet()) { 
+			LOG.debug("key : " + key); 
+			LOG.debug("value : " + conditions.get(key)); 
+		} 
 		
-		mv.addObject("project_list", project_list);
-		mv.addObject("code_list", code_list);
+		HashMap<String, Object> condition = new HashMap<String, Object>();
+		List<Map<String, Object>> hist_list = new ArrayList<Map<String, Object>>();
+		List<HashMap<String, Object>> graph_list = new ArrayList<HashMap<String, Object>>();
+		//전체 검색
+		if("0".equals(conditions.get("searchType"))) {
+			hist_list = projectService.selectAllList(condition);
+			graph_list = projectService.getGraphInfo(condition);
+		}
+		//특정 날짜 검색
+		else if("1".equals(conditions.get("searchType"))) {
+			LOG.debug("select_detail : " + conditions.get("select_detail")); 
+			condition.put("SELDATE", conditions.get("select_detail"));
+			hist_list = projectService.selectAllList(condition);
+			graph_list = projectService.getGraphInfo(condition);
+		}
+		//연도 검색
+		else if("2".equals(conditions.get("searchType"))) {
+			LOG.debug("key SELYEAR select_detail : " + conditions.get("select_detail")); 
+			condition.put("SELYEAR", conditions.get("select_detail"));
+			hist_list = projectService.selectAllList(condition);
+			graph_list = projectService.getGraphInfo(condition);
+		}
+		//발주처 검색
+		else if("3".equals(conditions.get("searchType"))) {
+			LOG.debug("key SELYEAR select_detail : " + conditions.get("select_detail")); 
+			condition.put("SELINSTT", conditions.get("select_detail"));
+			hist_list = projectService.selectForList(condition);
+			graph_list = projectService.getGraphForInfo(condition);
+		}
+		//사원명 검색
+		else if("4".equals(conditions.get("searchType"))) {
+			condition.put("SELMEMBER", conditions.get("select_detail"));
+			hist_list = projectService.selectForList(condition);
+			graph_list = projectService.getGraphForInfo(condition);
+		}
+		
+		
+		
+		mv.addObject("hist_list", hist_list);
+		mv.addObject("graph_list", graph_list);
+		mv.addObject("member_list", member_list);
+		mv.addObject("instt_list", instt_list);
 		return mv;
 	}
 	
@@ -238,6 +281,7 @@ public class ProjectController {
 		mv.addObject("isDBError", db_result);
 		return mv;
 	}
+	
 	
 	@RequestMapping(value="/projectDashboard",method=RequestMethod.POST)
 	@ResponseBody

@@ -16,7 +16,7 @@ public interface HistoryService {
 	List<MemberVO> selectMemberList();
 	
 	// 프로젝트 - 프로젝트 리스트 불러오기
-	List<Map<String, Object>> selectAllList();
+	List<Map<String, Object>> selectAllList(HashMap<String, Object> condition);
 	
 	//코드 정보 조회
 	List<Map<String, Object>> getLowCodeList(String code_id);

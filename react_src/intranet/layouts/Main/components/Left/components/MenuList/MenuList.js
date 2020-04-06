@@ -68,11 +68,6 @@ export default function MenuList(props) {
 	}
 	
 	const menuListView = (item) => {
-		
-		console.log('isAdmin : ' + isAdmin);
-		console.log('item.isAdminMenu : ' + item.isAdminMenu);
-		
-
 		if(isAdmin){
 			return true;
 		} else {

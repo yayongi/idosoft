@@ -162,8 +162,22 @@ public class ExcelController {
 				searchData.put("MEMBER_NO", mno);		// 사원번호
 				searchData.put("isAdmin", isAdmin);	// 관리자 여부
 			} else if("EXCEL0006".equals(fileCode) ) {
+				HttpSession session = request.getSession();
+				
+				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+				String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+				
+				// 세션 VO에 세션 값 저장
+				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
 				//이력관리 엑셀 다운로드
-				String member_no = (String)searchData.get("select_member_no");
+				
+				String member_no = "";
+				if("1".equals(isAdmin)) {
+					member_no = (String)searchData.get("select_member_no");
+				}else {
+					member_no = mno;
+				}
+				
 				if("".equals(member_no)) {
 					searchData.put("MEMBER_NO", null);
 				}else {

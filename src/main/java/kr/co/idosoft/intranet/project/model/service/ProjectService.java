@@ -13,7 +13,7 @@ public interface ProjectService {
 	HashMap<String, Object> selectInfo(String project_no);
 	List<Map<String, Object>> selectList(HashMap<String, Object> condition);
 	String selectMaxProject();
-	List<Map<String, Object>> selectAllList();
+	List<Map<String, Object>> selectAllList(HashMap<String, Object> condition);
 	
 	
 	
@@ -34,4 +34,9 @@ public interface ProjectService {
 	
 	// 사원 리스트 호출
 	public List<MemberVO> selectMemberList();
+	
+	List<Map<String, Object>> selectForList(HashMap<String, Object> condition);
+	
+	public List<HashMap<String,Object>> getGraphInfo(HashMap<String, Object> condition);
+	public List<HashMap<String,Object>> getGraphForInfo(HashMap<String, Object> condition);
 }

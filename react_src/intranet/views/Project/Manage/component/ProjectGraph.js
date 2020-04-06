@@ -9,25 +9,6 @@ import {
 
 
 
-const makeGraph = (projectInfo) => {
-  var data = [];
-  console.log(projectInfo);
-  var today = Moment(new Date()).format('YYYYMMDD');
-  var tempInfoList = projectInfo.filter(info => {
-    return (info.bgnde == today || info.bgnde < today) && (info.endde == today || info.endde > today);
-  });
-  console.log("---------------");
-  console.log(tempInfoList);
-  console.log("---------------");
-
-  for(var i=0; i < tempInfoList.length; i++){
-    data.push({
-      name: tempInfoList[i]["project_nm"],
-      num : 5
-    })
-  }
-  return data;
-};
 
 const useStyles = makeStyles({
   root: {
@@ -38,32 +19,50 @@ const useStyles = makeStyles({
   }
 });
 
+function makeGraph(projectGraphInfo, condition){
+	var ProjectNo = new Set();
+	for(var i=0; i < projectGraphInfo.length; i++){
+		ProjectNo.add(projectGraphInfo[i]["PROJECT_NO"]);
+	}
+	
+	if(!Object.keys(ProjectNo).length){
+		var tmp = Array.from(ProjectNo);
+		var list = [];
+		for(var i=0; i < tmp.length; i++){
+			var tmpList = projectGraphInfo.filter((info) => {
+				return info["PROJECT_NO"] == tmp[i];
+			});
+			
+			if(tmpList.length > 0){
+				var tmpJson = {};
+				tmpJson["name"] = tmpList[0]["PROJECT_NM"];
+				tmpJson["count"] = tmpList.length;
+				list.push(tmpJson);
+			}
+		}
+		return list;
+	}else{
+		return [];
+	}
+}
+
+
+
 function ProjectGraph(props) {
     const classes = useStyles();
-    const { projectInfo, routeProps } = props;
+    const { projectGraphInfo, routeProps, condition } = props;
+    
+    const makedGraphInfo = makeGraph(projectGraphInfo, condition);
 
-    if (isWidthUp('md', props.width)) {
-      console.log("big size");
-    } else {
-      console.log("small size");
-    }
     return (
-      <BarChart
-        className={classes.chart}
-        width={500}
-        height={300}
-        data={makeGraph(projectInfo)}
-        margin={{
-          top: 5, right: 30, left: 20, bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="num" fill="#8884d8" />
-      </BarChart>
+		<BarChart width={730} height={250} data={makedGraphInfo}>
+		  <CartesianGrid strokeDasharray="3 3" />
+		  <XAxis dataKey="name" />
+		  <YAxis />
+		  <Tooltip />
+		  <Legend />
+		  <Bar dataKey="count" fill="#8884d8" />
+		</BarChart>
     );
 }
 

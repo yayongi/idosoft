@@ -72,9 +72,6 @@ function initCheck(match){
 	return typeof(match.params.id) == "undefined" ? "new" : "modify";
 }
 function ProjectInfoForm(props) {
-	console.log("props : ");
-	console.log(props);
-
 
 	const classes = useStyles();
 	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
