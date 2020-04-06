@@ -23,7 +23,7 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 
 	// 검색 버튼 클릭 전, 임시로 값 저장
 	const [dialogState, setDialogState] = React.useState({
-		category : searchState.category != "" ? searchState.category: 0,
+		category : searchState.category != null ? searchState.category: 0,
 		searchword : searchState.searchword
 	});
 
