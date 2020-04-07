@@ -298,7 +298,7 @@ function NoticeListTable(props) {
                       {headCell.label}
                   </TableCell>
                 ))}
-                <TableCell align={'center'} >수정 / 삭제</TableCell>
+                <TableCell align={'center'} width={'120px'}>수정 / 삭제</TableCell>
               </>
               }
             </TableRow>
