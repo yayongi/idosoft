@@ -253,7 +253,7 @@ public class ResourceController {
 			
 			//�뿊�뀓 �뙆�씪 留뚮뱾�뼱�꽌 �떎�슫濡쒕뱶
 			fileController file = new fileController();
-			file.exportExcel(tempList,(String)data.get("title"),"","",response);
+			file.exportExcel(tempList,(String)data.get("title"),"",(String) data.get("searchStr"),response);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

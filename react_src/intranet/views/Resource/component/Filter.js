@@ -131,11 +131,13 @@ export default function  Filter(props) {
 	const handleClose = () => {
 		setOpen(false);
 	};
+	//엑셀내보내
 	const handleExcelClick = () => {
 		axios({
 			url: '/intranet/resource/exportexcel',
 			method: 'post',
 			data : {
+				searchStr : snackBarMessage === "검색조건이 초기화 되었습니다." ? "전체" : snackBarMessage,
 				searchState : state,
 				title : 'resourceData.xls'
 			},
@@ -282,7 +284,7 @@ export default function  Filter(props) {
 	}
 
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);
-	const [snackBarMessage , setSnackBarMessage] = React.useState('');
+	const [snackBarMessage , setSnackBarMessage] = React.useState('전체');
 	const snackBarClose = (event, reason) => {
 		if (reason === 'clickaway') {
 		return;

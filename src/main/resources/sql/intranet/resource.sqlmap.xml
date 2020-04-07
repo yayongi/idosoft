@@ -151,6 +151,7 @@
 			TB_MEMBER
 		<where>
 			TB_MEMBER.MEMBER_NO != "99999999"
+			AND TB_MEMBER.RET_DATE IS NULL
 			<if test=' memberNo != null'>
 			AND	TB_MEMBER.MEMBER_NO = #{memberNo}
 			</if>

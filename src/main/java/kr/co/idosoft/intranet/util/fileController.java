@@ -227,6 +227,8 @@ public class fileController {
 		    	}else if("1".equals(category)) {
 		    		cell.setCellValue("검색 조건 => 직급 : " + searchword);
 
+		    	}else {
+		    		cell.setCellValue("검색 조건 => "+searchword);
 		    	}
 		    }
 		    
