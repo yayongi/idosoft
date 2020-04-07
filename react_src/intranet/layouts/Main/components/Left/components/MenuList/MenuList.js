@@ -106,7 +106,7 @@ export default function MenuList(props) {
 	useEffect(()=>{
 		urlMatch();
 		setActive(match.url);	// URL이 변경될 때, 상태 변경을 한다.
-	},[isAdmin]);
+	});
 	
 	return (
 		<>
