@@ -23,6 +23,8 @@ import Typography from '@material-ui/core/Typography';
 import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
 import Paper from '@material-ui/core/Paper';
+import CreateIcon from '@material-ui/icons/Create';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 
 import CommonDialog from '../../js/CommonDialog';
 import ContentModal from "./component/ContentModal";
@@ -411,7 +413,9 @@ const MemberList = (props) => {
 			method: 'post',
 			data : {
 				memeberList : state.memberList,
-				title : 'memberData.xls'
+				title : 'memberData.xls',
+				category : searchState.category,
+				searchword : searchState.searchword
 			},
 			responseType: 'blob',
 			headers: {
@@ -573,14 +577,12 @@ const MemberList = (props) => {
 													{row.cert_yn == 1? '유':'무'}
 												</TableCell>
 												<TableCell align="center">
-													<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,state.manager_yn)}>
-														수정
-													</Button>
-													{(state.manager_yn || (state.user == row.member_no)) && (
-														<Button variant="contained" color="primary" onClick={() => goStory(row.member_no)}>
-															개인이력
-														</Button>
-													)}
+													<IconButton aria-label="delete" className={classes.iconPadding} onClick={() => goDetail(row.member_no,state.manager_yn)}>
+														<CreateIcon fontSize="small" />
+													</IconButton>
+													<IconButton aria-label="delete" className={classes.iconPadding} onClick={() => goStory(row.member_no)}>
+														<AssignmentIcon fontSize="small" />
+													</IconButton>
 												</TableCell>
 											</TableRow>
 										))}
@@ -621,14 +623,12 @@ const MemberList = (props) => {
 														{row.name}
 													</TableCell>
 													<TableCell align="center">
-														<Button variant="contained" color="primary" onClick={() => goDetail(row.member_no,state.manager_yn)}>
-															수정
-														</Button>
-														{(state.manager_yn || (state.user == row.member_no)) && (
-															<Button variant="contained" color="primary" onClick={() => goStory(row.member_no)}>
-																이력
-															</Button>
-														)}
+														<IconButton aria-label="delete" className={classes.iconPadding} onClick={() => goDetail(row.member_no,state.manager_yn)}>
+															<CreateIcon fontSize="small" />
+														</IconButton>
+														<IconButton aria-label="delete" className={classes.iconPadding} onClick={() => goStory(row.member_no)}>
+															<AssignmentIcon fontSize="small" />
+														</IconButton>
 													</TableCell>
 												</TableRow>
 											))

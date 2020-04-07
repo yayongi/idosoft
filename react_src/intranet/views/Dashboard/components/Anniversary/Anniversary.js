@@ -34,12 +34,12 @@ const Anniversary = () => {
 			<Title>기념일</Title>
 			{(state != null) && state.birthDate.map((datum,index) => (
 				<Typography key={index} variant="body1" gutterBottom>
-					{"오늘은 "+datum.NAME+datum.POSITION+"의 생일입니다."}
+					{"오늘은 "+datum.NAME+datum.POSITION+"님의 생일입니다."}
 				</Typography>
 			))}
 			{(state != null) && state.marriageDate.map((datum,index) => (
 				<Typography key={index} variant="body1" gutterBottom>
-					{"오늘은 "+datum.NAME+datum.POSITION+"의 결혼기념일입니다."}				
+					{"오늘은 "+datum.NAME+datum.POSITION+"님의 결혼기념일입니다."}				
 				</Typography>
 			))}
 		</React.Fragment>

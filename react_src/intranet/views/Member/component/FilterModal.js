@@ -29,10 +29,7 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 
 	// Dialog 필드 값 변경 시, 임시로 값 저장
 	const handleChange= event => {
-		setDialogState({
-			...dialogState,
-			[event.target.name]: event.target.value
-		});
+		document.getElementById("searchword").value="";
 	};
 
 	const handleClose = () => {
@@ -111,7 +108,6 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 							}}
 							defaultValue={dialogState.searchword}
 							type="search"
-							onChange={handleChange}
 							fullWidth
 						/>
 					</Grid>

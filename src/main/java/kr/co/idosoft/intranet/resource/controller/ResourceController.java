@@ -32,7 +32,7 @@ import kr.co.idosoft.intranet.util.fileController;
 
 /**
  * 
- * @author 김준선
+ * @author 源�以��꽑
  * @since 2020.03.25
  * @content Resource Controller
  */
@@ -45,12 +45,12 @@ public class ResourceController {
 	@Autowired
 	private ResourceServiceImpl resService;
 	
-	private static final String RES_CODE = "CD0004"; 			// 자원종류 코드
-	private static final String MARK_CODE = "CD0005";			// 제조사 코드
-	private static final String DISPLAY_SIZE_CODE = "CD0006"; 	// 화면사이즈 코드
+	private static final String RES_CODE = "CD0004"; 			// �옄�썝醫낅쪟 肄붾뱶
+	private static final String MARK_CODE = "CD0005";			// �젣議곗궗 肄붾뱶
+	private static final String DISPLAY_SIZE_CODE = "CD0006"; 	// �솕硫댁궗�씠利� 肄붾뱶
 	
 	/**
-	 * 자원 등록
+	 * �옄�썝 �벑濡�
 	 * @param request
 	 * @param ResourceVO resVO
 	 * @return boolean
@@ -65,7 +65,7 @@ public class ResourceController {
 		resVO.setReg_id(sessionVO.getMEMBER_NO());
 		
 		logger.debug("###########################################################");
-		logger.debug("자원번호 : "+resVO);
+		logger.debug("�옄�썝踰덊샇 : "+resVO);
 		logger.debug("###########################################################");
 		
 		try {
@@ -77,17 +77,17 @@ public class ResourceController {
 		return true;
 	}
 	/**
-	 * 자원 수정
+	 * �옄�썝 �닔�젙
 	 * @param request
 	 * @param ResourceVO resVO
 	 * @return boolean
 	 */
 	@PostMapping("/modify")
 	public boolean modifyResource(Model model, @RequestBody ResourceVO resVO, HttpServletRequest request) {
-		//관리자 여부
+		//愿�由ъ옄 �뿬遺�
 		boolean isAdmin = commonUtil.isAdmin(request.getSession());
 //		if(!isAdmin) {
-			//관리자가 아니면 false
+			//愿�由ъ옄媛� �븘�땲硫� false
 //			return false;
 //		}
 		
@@ -107,7 +107,7 @@ public class ResourceController {
 		}
 	}
 	/**
-	 * 자원관련 코드/코드명, 사원번호/사원명 조회
+	 * �옄�썝愿��젴 肄붾뱶/肄붾뱶紐�, �궗�썝踰덊샇/�궗�썝紐� 議고쉶
 	 * @param request
 	 * @return boolean
 	 */
@@ -130,7 +130,7 @@ public class ResourceController {
 		return mv;
 	}
 	/**
-	 * 자원 삭제
+	 * �옄�썝 �궘�젣
 	 * @param request
 	 * @param ResourceVO resVO
 	 * @return boolean
@@ -149,17 +149,17 @@ public class ResourceController {
 		}
 	}
 	/**
-	 * 자원 선택 삭제
+	 * �옄�썝 �꽑�깮 �궘�젣
 	 * @param request
 	 * @param Map<String, List<Integer>> res_no_list
 	 * @return boolean
 	 */
 	@PostMapping("/deletelist")
 	public boolean  deleteResourceList(@RequestBody Map<String, List<Integer>> res_no_list, HttpServletRequest request) {
-		//관리자 여부
+		//愿�由ъ옄 �뿬遺�
 		boolean isAdmin = commonUtil.isAdmin(request.getSession());
 		if(!isAdmin) {
-			//관리자가 아니면 false
+			//愿�由ъ옄媛� �븘�땲硫� false
 			return false;
 		}
 		try {
@@ -171,14 +171,14 @@ public class ResourceController {
 		return true;
 	}
 	/**
-	 * 자원 리스트 조회
+	 * �옄�썝 由ъ뒪�듃 議고쉶
 	 * @param request
 	 * @param Map<String, Object> data
 	 * @return Map<String, Object>
 	 */
 	@PostMapping("/findlist")
 	public Map<String, Object> findResourceList(HttpServletRequest request, @RequestBody Map<String, Object> data) {
-		//관리자 여부
+		//愿�由ъ옄 �뿬遺�
 		boolean isAdmin = commonUtil.isAdmin(request.getSession());
 		SessionVO sessionVO= (SessionVO) request.getSession().getAttribute("SESSION_DATA");
 		
@@ -192,7 +192,7 @@ public class ResourceController {
 		int count = resService.getListCount(searchData);
 		resultData.put("count", count);
 		resultData.put("isAdmin", isAdmin);
-		//카운트가 0일경우 리스트는 반환하지 않음
+		//移댁슫�듃媛� 0�씪寃쎌슦 由ъ뒪�듃�뒗 諛섑솚�븯吏� �븡�쓬
 		if(count == 0) {
 			return resultData;
 		}
@@ -203,7 +203,7 @@ public class ResourceController {
 		return resultData;
 	}
 	/**
-	 * 자원 조회
+	 * �옄�썝 議고쉶
 	 * @param ResourceVO resVO
 	 * @return ResourceVO
 	 */
@@ -227,7 +227,7 @@ public class ResourceController {
 		return mv;
 	}
 	/**
-	 * 자원관련 코드조회
+	 * �옄�썝愿��젴 肄붾뱶議고쉶
 	 * @param request
 	 * @return List<Object>
 	 */
@@ -237,7 +237,7 @@ public class ResourceController {
 	}
 	
 	/**
-	 * 자원엑셀 출력용 리스트 조회
+	 * �옄�썝�뿊�� 異쒕젰�슜 由ъ뒪�듃 議고쉶
 	 * @param request
 	 * @param HashMap<String,Object> data
 	 * @param response
@@ -246,14 +246,14 @@ public class ResourceController {
 	@RequestMapping(value="/exportexcel", method=RequestMethod.POST)
 	public void exportExcel(@RequestBody HashMap<String,Object> data, HttpServletRequest request, HttpServletResponse response){
 		try {
-			// 선택된 직원 정보 가져오기
+			// �꽑�깮�맂 吏곸썝 �젙蹂� 媛��졇�삤湲�
 //			List<LinkedHashMap<String,Object>> tempList =  resService.exportExcel((List<String>)data.get("selected"));
 			List<LinkedHashMap<String,Object>> tempList =  resService.exportExcel((HashMap<String, String>) data.get("searchState"));
 			logger.debug("data : " + tempList);
 			
-			//엑셍 파일 만들어서 다운로드
+			//�뿊�뀓 �뙆�씪 留뚮뱾�뼱�꽌 �떎�슫濡쒕뱶
 			fileController file = new fileController();
-			file.exportExcel(tempList,(String)data.get("title"),response);
+			file.exportExcel(tempList,(String)data.get("title"),"","",response);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
