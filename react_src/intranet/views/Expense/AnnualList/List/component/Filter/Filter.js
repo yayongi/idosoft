@@ -16,6 +16,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import Chip from '@material-ui/core/Chip';
+
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
@@ -45,6 +47,10 @@ const useToolbarStyles = makeStyles(theme => ({
 		flexWrap: 'wrap',
 	},
 	button: {
+		marginRight: '10px',
+	},
+	amountArea : {
+		margin: theme.spacing(1),
 		marginRight: '10px',
 	}
 }));
@@ -335,10 +341,10 @@ export default function  Filter(props) {
 		<Fragment>
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">
-					총 금액(진행) : {Number(totalProgAmount).toLocaleString()} 원 <br/>
-					총 금액(1차결재) : {Number(totalFirAmount).toLocaleString()} 원 <br/>
-					총 금액(완료) : {Number(totalCompAmount).toLocaleString()} 원 <br/>
-					총 금액(반려) : {Number(totalReturnAmount).toLocaleString()} 원 <br/>
+					<Chip className={classes.amountArea} variant="outlined"  label={'진행 : ' + Number(totalProgAmount).toLocaleString() +' 원'} />
+					<Chip className={classes.amountArea} variant="outlined"  label={'1차 결재  : ' + Number(totalFirAmount).toLocaleString() +' 원'} />
+					<Chip className={classes.amountArea} variant="outlined" color="primary" label={'완료  : ' + Number(totalCompAmount).toLocaleString() +' 원'}/>
+					<Chip className={classes.amountArea} variant="outlined" color="secondary" label={'반려  : ' + Number(totalReturnAmount).toLocaleString() +' 원'}/>
 				</Typography>
 				<div className={classes.container}>
 					<Hidden smDown>

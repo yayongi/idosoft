@@ -6,7 +6,6 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,14 +19,7 @@ import { processErrCode, isEmpty, getSessionStrogy } from '../../../../js/util'
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
 
 export default function  List(props) {
-	const [state, setState] = React.useState({
-		name: "",
-		expenseType: "-1",
-		payStDt: Moment().format('YYYY')+'01',
-		payEdDt: Moment().format('YYYYMM'),
-		status: "-1",
-		memo: "",
-	});
+	
 
 	// 다중 결재 체크 Array
 	const [firSelected, setFirSelected] = React.useState([]);
@@ -42,11 +34,13 @@ export default function  List(props) {
 
 	const [paging, setPaging] = React.useState({listCount : 0});
 	const [ holdUp, setHoldUp ] = React.useState(0);     // 이미 가지고있는 페이지를 다시 호출하는 것을 막기 위해 사용
-	const [firstRender, setFirstRender ] = React.useState(false);
+
+	const [firstRender1, setFirstRender1 ] = React.useState(false);
+	const [firstRender2, setFirstRender2 ] = React.useState(false);
+	const [firstRender3, setFirstRender3 ] = React.useState(false);
 	// 페이징
 	const [ page, setPage ] = React.useState(0);                 // 초기페이지가 0부터 시작
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(10); 
-	const [isAdmin, setIsAdmin] = React.useState("0");
 	const [isNoN, setIsNoN] = React.useState("true");
 	const [emptyMessage, setEmptyMessage] = React.useState("");
 	// alert 
@@ -58,7 +52,48 @@ export default function  List(props) {
 	// 검색어 표시
 	const [openSnackBar, setOpenSnackBar] = React.useState(false); 
 	const [snackBarMessage, setSnackBarMessage] = React.useState(false);
-	
+
+	const [defaultStatus, setDefaultStatus] = React.useState("-1");
+
+	const [state, setState] = React.useState({
+		name: "",
+		expenseType: "-1",
+		payStDt: Moment().format('YYYY')+'01',
+		payEdDt: Moment().format('YYYYMM'),
+		status: defaultStatus,
+		memo: "",
+	});
+
+	const allPageRender = () => {
+		if(firstRender1 && firstRender2 && firstRender3){
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	useEffect(() => {
+		Axios({
+			url: '/intranet/getdefaultStatus.exp',
+			method: 'post',
+			data: {},
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		}).then(response => {
+			console.log(`response : ${JSON.stringify(response)}`)
+			
+			setDefaultStatus(response.data.defaultStatus);
+			
+			setFirstRender2(true);
+
+		}).catch(e => {
+			processErrCode(e);
+			console.log(e);
+		});
+	},[]);
+
 	useEffect(() => {
 		let data;
 
@@ -74,7 +109,7 @@ export default function  List(props) {
 				expenseType: "-1",
 				payStDt: Moment().format('YYYY')+'01',
 				payEdDt: Moment().format('YYYYMM'),
-				status: "-1",
+				status: defaultStatus,
 				memo: "",
 			}
 		} else {
@@ -83,7 +118,9 @@ export default function  List(props) {
 
 		setState(data);
 		
-	},[]);
+		setFirstRender3(true);
+
+	},[defaultStatus]);
 
 	useEffect(() => {
 		setShowLoadingBar(true);
@@ -102,7 +139,7 @@ export default function  List(props) {
 				expenseType: "-1",
 				payStDt: Moment().format('YYYY')+'01',
 				payEdDt: Moment().format('YYYYMM'),
-				status: "-1",
+				status: defaultStatus,
 				memo: "",
 			}
 		} else {
@@ -130,7 +167,6 @@ export default function  List(props) {
 			const isNoN = response.data.isNoN;
 			setIsNoN(isNoN);
 			if(isNoN == "false"){
-				setIsAdmin(response.data.isAdmin);
 				setRows(JSON.parse(response.data.list));
 				setPaging(JSON.parse(response.data.result));
 				
@@ -138,8 +174,8 @@ export default function  List(props) {
 				setTotalFirAmount(response.data.totalFirAmount);
 				setTotalCompAmount(response.data.totalCompAmount);
 				setTotalReturnAmount(response.data.totalReturnAmount);
-				
-				setFirstRender(true);
+
+				setFirstRender1(true);
 
 				const result = JSON.parse(response.data.result);
 
@@ -150,7 +186,7 @@ export default function  List(props) {
 				setPage(Number(result.currentPage)-1);
 			} else {
 				setRows([]);
-				setFirstRender(true);
+				setFirstRender1(true);
 				setEmptyMessage("결재 권한이 있는 목록이 없습니다.");
 				//openHandleClick("결재 권한이 없는 직원입니다.");
 			}
@@ -187,13 +223,16 @@ export default function  List(props) {
 		setNonHistoryBack(false);
 	}
 
-	const snackBarClose = () => {
+	const snackBarClose = (event, reason) => {
+		if (reason === 'clickaway') {
+		return;
+		}
 		setOpenSnackBar(false);
-	}
+	};
 
 	return (
 		<Fragment>
-				{firstRender &&
+				{allPageRender &&
 				<>
 					<LoadingBar openLoading={isShowLoadingBar}/>
 					<Fragment>
@@ -219,6 +258,8 @@ export default function  List(props) {
 							selected={selected} setSelected={setSelected}
 							setNonHistoryBack={setNonHistoryBack}
 							setIsOpen={setIsOpen} setErrMessage={setErrMessage}
+
+							defaultStatus={defaultStatus}
 							/>
 					</Fragment>
 					{isNoN == "true" ?
@@ -235,7 +276,6 @@ export default function  List(props) {
 							holdUp={holdUp} setHoldUp={setHoldUp}
 							page={page} setPage={setPage}
 							rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
-							isAdmin={isAdmin} setIsAdmin={setIsAdmin}
 							setShowLoadingBar={setShowLoadingBar}
 							firSelected={firSelected} setFirSelected={setFirSelected}
 							selected={selected} setSelected={setSelected}

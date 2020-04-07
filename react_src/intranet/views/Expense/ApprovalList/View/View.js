@@ -16,7 +16,6 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import CardMedia from '@material-ui/core/CardMedia';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -93,7 +92,6 @@ export default function  View(props) {
 
 	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
 	const [dataState, setDataState] = React.useState(data);	// state : 수정을 위한 데이터 관리
-	const [isAdmin, setIsAdmin] = React.useState("0");
 	const classes = useStyles();
 	
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); // 로딩바
@@ -160,7 +158,6 @@ export default function  View(props) {
 
 			setExpenseTypes(exPenseTypeList);
 			setActiveStep(stepInfo.activeStep);
-			setIsAdmin(response.data.isAdmin);
 			setContextPath(response.data.contextPath);
 			const isNoN = response.data.isNoN;
 
@@ -189,14 +186,14 @@ export default function  View(props) {
 
 		switch (dataState.status) {
 		case 'SS0000':
-			if(mno == dataState.prevAuthPersonNO || isAdmin == "1"){
+			if(mno == dataState.prevAuthPersonNO){
 				isAuth = true;
 			} else {
 				isAuth = false;
 			}
 			break;
 		case 'SS0001':
-			if(mno == dataState.authPersonNO || isAdmin == "1"){  
+			if(mno == dataState.authPersonNO){  
 				isAuth = true;
 			} else {
 				isAuth = false;

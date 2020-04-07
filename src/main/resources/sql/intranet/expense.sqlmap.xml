@@ -5,14 +5,22 @@
 	<!-- datetime 형식을 가져올 때는 date_format으로 변환 후, alias를 잡아줘야 된다. -->
 	<!-- 소속 프로젝트 PM 번호 추출 -->
 	<select id="getProjectPMNo" resultType="String">
-		SELECT A.PM PM FROM TB_PROJECT A
+		SELECT PM 
+		FROM(
+			SELECT  
+				@rownum := @rownum+1 AS rnum
+				,A.PM PM FROM TB_PROJECT A
 			LEFT JOIN TB_PROJECT_MEMBER B
 			ON A.PROJECT_NO = B.PROJECT_NO
+			JOIN (SELECT @rownum := 0) R
+			WHERE 
+				DATE_FORMAT(NOW(), '%Y-%m-%d') 
+				BETWEEN DATE_FORMAT(B.INPT_BGNDE, '%Y-%m-%d') 
+				AND DATE_FORMAT(B.INPT_ENDDE, '%Y-%m-%d')
+				AND B.MEMBER_NO=#{MEMBER_NO}
+		)A
 		WHERE 
-			DATE_FORMAT(NOW(), '%Y-%m-%d') 
-			BETWEEN DATE_FORMAT(B.INPT_BGNDE, '%Y-%m-%d') 
-			AND DATE_FORMAT(B.INPT_ENDDE, '%Y-%m-%d')
-			AND B.MEMBER_NO=#{MEMBER_NO}
+		rnum <![CDATA[ < ]]> 2
 	</select>
 	<!-- 1차결재자 번호 추출 -->
 	<select id="getFirSancternerMno" resultType="String">
@@ -25,14 +33,22 @@
 	<select id="getRepresentativeNo" resultType="String">
 		SELECT MEMBER_NO
 		FROM (
-		SELECT
-		ROW_NUMBER() OVER() ROW
-		, MEMBER_NO
-		, REG_DATETIME
-		FROM TB_MEMBER
-		WHERE POSITION = "RK0000"
-		ORDER BY REG_DATETIME ASC
-		) MEMBER
+			SELECT
+				@rownum := @rownum+1 AS rnum 
+				,MEMBER_NO
+				FROM (
+					SELECT
+						ROW_NUMBER() OVER() ROW
+						, MEMBER_NO
+						, REG_DATETIME
+					FROM TB_MEMBER
+					JOIN (SELECT @rownum := 0) R
+					WHERE POSITION = "RK0000"
+					ORDER BY REG_DATETIME ASC
+				) MEMBER
+		) A
+		WHERE 
+		rnum <![CDATA[ < ]]> 2
 	</select>
 	<!-- 경비등록 -->
 	<update id="insertExpense" parameterType="hashmap">

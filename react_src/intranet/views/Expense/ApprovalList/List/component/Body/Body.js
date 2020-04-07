@@ -58,7 +58,7 @@ function Body(props) {
             , paging, setPaging, state, setState
             , holdUp, setHoldUp 
             , page, setPage, rowsPerPage, setRowsPerPage
-            , isAdmin, setIsAdmin, setShowLoadingBar
+            , setShowLoadingBar
             , firSelected ,setFirSelected
 						,	selected ,setSelected} = props;
 
@@ -91,7 +91,6 @@ function Body(props) {
           
           const result = JSON.parse(response.data.result);
 
-          setIsAdmin(response.data.isAdmin);
           setRowsPerPage(Number(result.limit));
           setPage(Number(result.currentPage)-1);
           setHoldUp(Number(result.currentPage)-1);
@@ -138,7 +137,6 @@ function Body(props) {
         
         const result = JSON.parse(response.data.result);
         
-        setIsAdmin(response.data.isAdmin);
         setRowsPerPage(Number(result.limit));
         setPage(Number(result.currentPage)-1);
         setHoldUp(Number(result.currentPage)-1);
@@ -194,14 +192,14 @@ function Body(props) {
 
       switch (status) {
       case 'SS0000':
-        if(mno == prevAuthPersonNO || isAdmin == "1"){ 
+        if(mno == prevAuthPersonNO){ 
           isAuth = true;
         } else {
           isAuth = false;
         }
         break;
       case 'SS0001':
-        if(mno == authPersonNO || isAdmin == "1"){  
+        if(mno == authPersonNO){  
           isAuth = true;
         } else {
           isAuth = false;
