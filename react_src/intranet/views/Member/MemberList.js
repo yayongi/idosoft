@@ -113,9 +113,9 @@ const MemberList = (props) => {
 	});
 
 	const[searchState, setSearchState] = React.useState({
-		category : sessionStorage.getItem("memberFilter") != undefined ? JSON.parse(sessionStorage.getItem("memberFilter")).category : null ,
-		searchword : sessionStorage.getItem("memberFilter") != undefined ? JSON.parse(sessionStorage.getItem("memberFilter")).searchword : null,
-		flag :sessionStorage.getItem("memberFilter") != undefined ? JSON.parse(sessionStorage.getItem("memberFilter")).flag : false
+		category : null ,
+		searchword :  null,
+		flag : false
 	})
 
 	const [openFilter, setOpenFilter] = React.useState({

@@ -23,8 +23,8 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 
 	// 검색 버튼 클릭 전, 임시로 값 저장
 	const [dialogState, setDialogState] = React.useState({
-		category : searchState.category != null ? searchState.category: 0,
-		searchword : searchState.searchword
+		category : 0,
+		searchword : ""
 	});
 
 	// Dialog 필드 값 변경 시, 임시로 값 저장
@@ -60,8 +60,7 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 	//검색 초기화
 	const resetFilter = () => {
 		setSearchState({
-			...searchState,
-			category : "",
+			category : 0,
 			searchword : "",
 			flag : false
 		});
@@ -70,9 +69,9 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 			...state,
 			showAll : true
 		})
-		sessionStorage.removeItem("memberFilter");
 		handleClose();
 		setOpenSnackBar(false);
+		sessionStorage.removeItem("memberFilter");
 	}
 	
 	return (
@@ -89,7 +88,7 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 							select
 							margin="dense"
 							label="유형"
-							defaultValue={dialogState.category}
+							defaultValue={sessionStorage.getItem("memberFilter") != null ? JSON.parse(sessionStorage.getItem("memberFilter")).category:0}
 							onChange={handleChange}
 							fullWidth>
 							<MenuItem key={0} value={0}>이름</MenuItem>
@@ -106,7 +105,7 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 							InputLabelProps={{
 								shrink: true,
 							}}
-							defaultValue={dialogState.searchword}
+							defaultValue={sessionStorage.getItem("memberFilter") != null ? JSON.parse(sessionStorage.getItem("memberFilter")).searchword:""}
 							type="search"
 							fullWidth
 						/>
