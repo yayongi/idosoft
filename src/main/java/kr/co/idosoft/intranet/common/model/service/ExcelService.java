@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.common.model.service;
 
+import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,5 +20,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 public interface ExcelService {
 	
 	List<LinkedHashMap<String, Object>> getCodetoList(Map<String, Object> data);
+
+	List<LinkedHashMap<String, Object>> getTransList(Map<String, Object> data) throws ParseException;
 
 }
