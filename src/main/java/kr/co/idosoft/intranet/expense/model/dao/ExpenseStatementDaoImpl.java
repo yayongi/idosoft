@@ -69,12 +69,20 @@ public class ExpenseStatementDaoImpl implements ExpenseStatementListDao {
 		return sqlTemplate.selectList("expense.getCommunicationExpenseList", data);
 	}
 	/**
-	 * 교통비 월별 통계
+	 * 교통비 시작일, 종료일 통계
 	 * @return List<Map<String, Object>>
 	 */
 	@Override
 	public List<Map<String, Object>> getTransExpenseList(Map<String, Object> data) {
 		return sqlTemplate.selectList("expense.getTransExpenseList", data);
+	}
+	/**
+	 * 직원 목록
+	 * @return List<String>
+	 */
+	@Override
+	public List<String> getMemberList(Map<String, Object> data){
+		return sqlTemplate.selectList("expense.getMemberList", data);
 	}
 
 }

@@ -37,10 +37,15 @@ public interface ExpenseStatementListDao {
 	 */
 	List<Map<String, Object>> getCommExpenseList(Map<String, Object> data);
 	/**
-	 * 교통비 월별 통계
+	 * 교통비 월별 시작일, 종료일
 	 * @return List<Map<String, Object>>
 	 */
 	List<Map<String, Object>> getTransExpenseList(Map<String, Object> data);
+	/**
+	 * 회원 목록
+	 * @return List<String>
+	 */
+	List<String> getMemberList(Map<String, Object> data);
 	
 	
 }
