@@ -36,8 +36,8 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		
 		HttpSession session = request.getSession();
 		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-		boolean isAdmin = commonUtil.isAdmin(session);
-		String member_no = "";
+		//boolean isAdmin = commonUtil.isAdmin(session);
+		//String member_no = "";
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -46,17 +46,14 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
 		
-		
-		ArrayList<Map<String, Object>> history_list = new ArrayList<Map<String, Object>>();
-		List<MemberVO> member_list = new ArrayList<MemberVO>();
-		
-		
-		String select_member = (String)params.get("select_member");
-		
+		//ArrayList<Map<String, Object>> history_list = new ArrayList<Map<String, Object>>();
+		//List<HashMap<String, Object>> memberList = new ArrayList<HashMap<String, Object>>();	
+		//String select_member = (String)params.get("select_member");
+		/*
 		try {
 			//관리자면 멤버 전체를 가져온다.
 			if(isAdmin) {
-				member_list = historyService.selectMemberList();
+				member_get_list = historyService.selectMemberList();
 				//선택된 계정이 없으면 전체를 가져온다.
 				if("".equals(select_member)) {
 					member_no = null;
@@ -71,10 +68,42 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		} catch (Exception e) {
 			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
 		}
-		
-		
-		mv.addObject("member_list", member_list);
+		mv.addObject("member_list", member_get_list);
 		mv.addObject("history_list", history_list);
+		*/
+		
+		//사원 목록을 조회한다.
+		List<MemberVO> member_get_list = new ArrayList<MemberVO>();
+		List<MemberVO> member_res_list = new ArrayList<MemberVO>();
+		//선택된 사원의 이력 정보를 조회한다.
+		List<Map<String, Object>> me_history_list = new ArrayList<Map<String, Object>>();
+		boolean db_result = false;
+		try {
+			String member_no = sessionVo.getMEMBER_NO();
+			String select_member = (String)params.get("select_member");
+			if(!"".equals(select_member)) {
+				member_no = select_member;
+			}
+			me_history_list = historyService.selectHistory(member_no);
+			member_get_list = historyService.selectMemberList();
+			
+			//멤버 리스트에서 퇴사자를 삭제하고 화면에 내려준다 (경리의 경우 스크립트로 한번 더 삭제한다)
+			//퇴사자의 경우 
+			for(int i=0; i < member_get_list.size(); i++) {
+				if(!"".equals(member_get_list.get(i).getRet_date()) 
+						|| null != member_get_list.get(i).getRet_date()){
+					member_res_list.add(member_get_list.get(i));
+				}
+			}
+			
+		} catch (Exception e) {
+			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
+			db_result = true;
+		}
+		
+		mv.addObject("isDBError", db_result);
+		mv.addObject("history_list", me_history_list);
+		mv.addObject("member_list", member_res_list);
 		return mv;
 	}
 	
@@ -155,6 +184,10 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
 		
+		HttpSession session = request.getSession();
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		boolean isAdmin = commonUtil.isAdmin(session);
+		
 		String mem_hist_no = (String)params.get("MEM_HIST_NO");
 		List<Map<String, Object>> proj_list = new ArrayList<Map<String, Object>>();
 		Map<String, Object> detailInfo = new HashMap<String, Object>();
@@ -172,6 +205,7 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		mv.addObject("proj_list", proj_list);
 		mv.addObject("role_list", role_list);
 		mv.addObject("detailInfo", detailInfo);
+		mv.addObject("isAdmin", isAdmin);
 		return mv;
 	}
 

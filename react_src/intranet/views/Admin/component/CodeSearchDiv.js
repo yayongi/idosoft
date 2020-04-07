@@ -105,9 +105,7 @@ export default function CodeSearchDiv(props) {
 		
 		
 		var list = ["전체","코드ID","코드명","레벨","상위코드","최상위코드목록"];0
-		
 		var txt = "검색 조건 : " + list[selectedSearchType] + ", 키워드 : " + document.getElementsByName("searchKeyword")[0].value;
-		
 		setSnackBarMessage(txt);
 		setOpenSnackBar(true);
 		handleClose();

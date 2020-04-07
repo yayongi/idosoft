@@ -16,6 +16,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
+
 import { processErrCode } from '../../../../js/util';
 
 import axios from 'axios';
@@ -52,13 +55,10 @@ const useToolbarStyles = makeStyles(theme => ({
 export default function HistorySearchDiv(props) {
 	
 	const classes = useToolbarStyles();
-	const {username, excelDownLoad, setSearchData, memberlist, searchData} = props;
+	const {username, excelDownLoad, setSearchData, memberList, searchData} = props;
 	const [open, setOpen] = useState(false);
 	const [isAdmin, SetIsAdmin] = useState(false);
-	const [searchMember, setSearchMemer] = useState(typeof(searchData) == "undefined" ? -1 : searchData);
-	
-	console.log("memberlist : ");
-	console.log(memberlist);
+	const [searchMember, setSearchMemer] = useState(searchData);
 	
 	useEffect(() => {
 		axios({
@@ -96,11 +96,44 @@ export default function HistorySearchDiv(props) {
 	const handleClick = () => {
 		setSearchData(searchMember);
 		setOpen(false);
+		
+		var tmp = memberList.filter((info) => info.member_no == searchMember);
+		var name= "";
+		if(typeof(tmp) == "object" && tmp.length > 0){
+			name = tmp[0]["name"] + " " + tmp[0]["code_name"] + "님 입니다.";
+		}
+		var txt = "검색 조건 : " + name;
+		setSnackBarMessage(txt);
+		setOpenSnackBar(true);
 	}
 	
+	//snack bar와 관련
+	const [openSnackBar, setOpenSnackBar] = React.useState(false);
+	const [snackBarMessage , setSnackBarMessage] = React.useState('');
 
+	const snackBarClose = (event, reason) => {
+		if (reason === 'clickaway') {
+			return;
+		}
+		setOpenSnackBar(false);
+	};
+	
 	return (
 		<Fragment>
+			<Snackbar
+				anchorOrigin={{vertical: 'top',horizontal: 'center',}}
+				onClose={snackBarClose}
+				open={openSnackBar}
+				message={snackBarMessage}
+				action={
+					<React.Fragment>
+						<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
+							<CloseIcon fontSize="small" />
+						</IconButton>
+					</React.Fragment>
+				}/>
+		
+		
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">					
 					이력관리 - {username}
@@ -108,7 +141,6 @@ export default function HistorySearchDiv(props) {
 				<div className={classes.container}>
 					<Hidden smDown>
 						{
-							isAdmin && 
 							<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickSearchBtn} className={classes.button}>
 								검색 
 							</Button>
@@ -123,7 +155,7 @@ export default function HistorySearchDiv(props) {
 						</Button>
 					</Hidden>
 					<Hidden mdUp>
-						{	isAdmin && 
+						{	
 							<IconButton color="primary" className={classes.button} onClick={handleClickSearchBtn}>
 								<FilterListIcon />
 							</IconButton>
@@ -162,23 +194,17 @@ export default function HistorySearchDiv(props) {
 							onChange={handleChange}
 							fullWidth
 							select>
-						<MenuItem key={-1} value={-1}>
-							전체
-						</MenuItem>
-						{memberlist.map((info) => {
-							if(info.member_no == "99999999" || info.member_no == "2019070801"){
-								
-							}else{
-								return (
-									<MenuItem key={info.member_no} value={info.member_no}>
-										{info.name}
-									</MenuItem>
-								)
-							}
-							
-							
-							
-						})}
+							{memberList.map((info) => {
+								if(info.member_no == "2019070801"){
+									
+								}else{
+									return (
+										<MenuItem key={info.member_no} value={info.member_no}>
+											{info.name}
+										</MenuItem>
+									)
+								}
+							})}
 						</TextField>
 					</Grid>
 				</DialogContent>

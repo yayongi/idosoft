@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import HistoryInfoTable from './component/HistoryInfoTable'
 import HistorySearchDiv from './component/HistorySearchDiv'
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
+import { processErrCode } from '../../../js/util';
 import axios from 'axios';
 
 const mainStyles = makeStyles(theme => ({
@@ -16,87 +17,72 @@ const mainStyles = makeStyles(theme => ({
 }));
 
 
-
+//최초 진입 시 선택해서 들어온 사람인지, 아님 그냥 이력관리에 들어온건지 판단
 function initCheck(match){
-	return typeof(match.params.member_no) == "undefined" ? "" : match.params.member_no;
+	var tmp = typeof(match.params.member_no) == "undefined" ? "" : match.params.member_no;
+	if(!tmp){
+		tmp = JSON.parse(sessionStorage.getItem("loginSession"))["member_NO"];
+	}
+	return tmp;
+}
+
+
+function getSelectedUserName(selectedUserMemberNo, memberList){
+	if(selectedUserMemberNo && selectedUserMemberNo != ""){
+		var tmp = memberList.filter((info) => info.member_no == selectedUserMemberNo);
+		if(tmp && tmp.length > 0){
+			return tmp[0];
+		}
+		return {};
+	}
+	return {};
 }
 export default function HistoryView(props) {
 	const classes = mainStyles();
 	
 	const { match, location, history } = props.routeProps;
 	const [historyInfo, setHistoryInfo] = useState([]);
-	const [memberlist, setMemberList] = useState([]);
-	const [searchData, setSearchData] = useState("", []);
+	const [searchData, setSearchData] = useState(initCheck(match));
 	const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
+	const [memberList, setMemberList] = useState([]);
 	const userInfo = JSON.parse(sessionStorage.getItem("loginSession"));
 	
+	const selectedUserName = getSelectedUserName(searchData, memberList);
+	
 	useEffect(() => {
-		var select_member_no = initCheck(match);
-		
-		if(searchData != "") {
-			if(searchData != -1){
-				select_member_no = searchData;
-			}else{
-				select_member_no = "";
-			}
-		}
-		
-		var sendData = {"select_member": select_member_no};
+		var sendData = {"select_member": searchData};
 		axios({
 			url: '/intranet/allHistory',
 			method: 'post',
 			data: sendData
 		}).then(response => {
-			var member_list = response.data.member_list;
-			if(member_list.length > 0){
-				setMemberList([...member_list]);
-			}else{
-				var list = [];
-				list.push({"MEMBER_NO" : userInfo["member_NO"], "MEMBER_NAME":userInfo["name"]})
-				setMemberList([...list]);
-			}
+			setMemberList(response.data.member_list);
 			setHistoryInfo(response.data.history_list);
 			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
 			processErrCode(e);
 		});
-	}, [searchData]);
+	},[searchData]);
 	
 	
 	const excelDownLoad = () => {
-		
-		var select_member_no = initCheck(match);
-		
-		if(searchData != "") {
-			if(searchData != -1){
-				select_member_no = searchData;
-			}else{
-				select_member_no = "";
-			}
-		}
-		
 		const fileName = "HISTORY";
 		const fileCode = "EXCEL0006";
-		
 		axios({
 			url: '/intranet/downloadExcelFile',
 			method: 'post',
 			data : {
 				fileCode : fileCode,
 				fileName : fileName,
-				searchData : {"select_member_no":select_member_no},
+				searchData : {"select_member_no":searchData},
 			},
 			responseType: 'blob',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 		}).then(response => {
-
-			console.log(JSON.stringify(response));
-
 			const fileName = response.headers.filename;
-
 			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
 			const link = document.createElement('a');
 			link.href = url;
@@ -107,18 +93,19 @@ export default function HistoryView(props) {
 			console.log(e);
 		});
 	}
+	
 
 
 	return (
 		<>
 			<LoadingBar openLoading={isShowLoadingBar}/>
-			<HistorySearchDiv username={userInfo["name"]} excelDownLoad={excelDownLoad} setSearchData={setSearchData} memberlist={memberlist}/>
+			<HistorySearchDiv username={userInfo["name"]} excelDownLoad={excelDownLoad} searchData={searchData} setSearchData={setSearchData} memberList={memberList}/>
 			<Grid container spacing={2}>
-			<Grid item xs={12}>
-				<Paper className={classes.paper}>
-					<HistoryInfoTable historyOriginalInfo={ historyInfo } memberlist={ memberlist } routeProps={props.routeProps}/>
-				</Paper>
-			</Grid>
+				<Grid item xs={12}>
+					<Paper className={classes.paper}>
+						<HistoryInfoTable historyOriginalInfo={ historyInfo } selectedUserName={selectedUserName} routeProps={props.routeProps}/>
+					</Paper>
+				</Grid>
 			</Grid>
 		</>
 	);

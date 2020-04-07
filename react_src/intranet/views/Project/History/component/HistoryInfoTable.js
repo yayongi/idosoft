@@ -48,7 +48,8 @@ function getTable(idx, beforeMember, historyInfo, props, historyOriginalInfo){
 	}
 	
 	const handleClickDetailView = (MEM_HIST_NO) => {
-		routeProps.history.push(`${routeProps.match.url}/view/${MEM_HIST_NO}`);
+		var path = routeProps.match.path.split(":")[0];
+		routeProps.history.push(path+`view/${MEM_HIST_NO}`);
 	}
 	
 	
@@ -89,12 +90,12 @@ function getTable(idx, beforeMember, historyInfo, props, historyOriginalInfo){
 						key={historyInfo[0]["MEM_HIST_NO"] + idx }>
 				    	{personTatalCount-idx}
 				    </TableCell>
-					{columns.map(column => (
+					{columns.map((column, columnIdx) => (
 				      <TableCell
 				        align="center"
 				        style={{ minWidth: column.minWidth }}
 				        className={column.className}
-				      	key={historyInfo[0][column.id]}>
+				      	key={column.id + historyInfo[0][column.id] + columnIdx}>
 				        {historyInfo[0][column.id]}
 				      </TableCell>
 				    ))}
@@ -115,7 +116,7 @@ function getTable(idx, beforeMember, historyInfo, props, historyOriginalInfo){
 				        align="center"
 				        style={{ minWidth: column.minWidth }}
 				        className={column.className}
-				      	key={historyInfo[0]["MEM_HIST_NO"] + columnIdx}>
+				      	key={column.id + historyInfo[0][column.id] + columnIdx}>
 				        {historyInfo[0][column.id]}
 				      </TableCell>
 				    ))}
@@ -128,7 +129,7 @@ function getTable(idx, beforeMember, historyInfo, props, historyOriginalInfo){
 
 function HistoryInfoTable(props) {
   const classes = useStyles();
-  const { historyOriginalInfo, memberlist } = props;
+  const { historyOriginalInfo, memberlist, selectedUserName } = props;
   const historyInfo = [].concat(historyOriginalInfo);
   
   return (
@@ -142,7 +143,7 @@ function HistoryInfoTable(props) {
 					    <TableCell
 				            align="left"
 			            	colSpan="6">
-					    	현재 등록된 이력이 없습니다.
+					    {selectedUserName.name} 님은 현재 등록된 이력이 없습니다.
 				    	</TableCell>
 				    </TableRow>
 		  		</>

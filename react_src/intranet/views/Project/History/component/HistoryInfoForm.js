@@ -19,7 +19,7 @@ import Moment from "moment";
 import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
-import { processErrCode } from '../../../../js/util';
+import { processErrCode, getRootPath } from '../../../../js/util';
 
 import axios from 'axios';
 
@@ -76,7 +76,7 @@ export default function ProjectInfoForm(props) {
 	
 	const { match, location, history } = props.routeProps.routeProps;
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false, []);    //loading bar
-	const userInfo = getUserInfo();
+	const userInfo = getUserInfo();												//로그인한 사람 정보
 	const [project_All_list, setProj_All_list] = React.useState([]);
 	const [project_list, setProj_list] = React.useState([]);
 	const [member_list, setMember_list] = React.useState([]);
@@ -86,8 +86,7 @@ export default function ProjectInfoForm(props) {
 	const [isAdmin, setisAdmin] = React.useState(false);
 	const [dataState, setDataState] = React.useState(
 		{
-			member_no: userInfo["member_NO"] == "99999999" 
-				|| userInfo["member_NO"] == "2019070801" ? "선택" : userInfo["member_NO"],
+			member_no: userInfo["member_NO"] == "2019070801" ? "선택" : userInfo["member_NO"],
 			select_year:"선택",
 			project_no: "선택",
 			project_nm : "",
@@ -145,6 +144,12 @@ export default function ProjectInfoForm(props) {
 				setInstt_list([...response.data.code_list]);
 				setRole_list([...response.data.role_list]);
 				setisAdmin(response.data.isAdmin);
+				if(response.data.isAdmin){
+					setDataState({
+						...dataState,
+						member_no: "선택"
+					});
+				}
 				setShowLoadingBar(false);
 			}).catch(e => {
 				setShowLoadingBar(false);
@@ -173,7 +178,7 @@ export default function ProjectInfoForm(props) {
 				var tmp = {
 					member_no: response.data.detailInfo["MEMBER_NO"],
 					select_year:"",
-					project_no: !response.data.detailInfo["PROJECT_NO"] ? -2 : response.data.detailInfo["PROJECT_NO"],
+					project_no: !response.data.detailInfo["PROJECT_NO"] ? "선택" : response.data.detailInfo["PROJECT_NO"],
 					project_nm : response.data.detailInfo["PROJECT_NM"],
 					instt_code: response.data.detailInfo["INSTT_CODE"],
 					instt_nm : response.data.detailInfo["INSTT_NM"],
@@ -186,6 +191,7 @@ export default function ProjectInfoForm(props) {
 				}
 				
 				setDataState(tmp)
+				setisAdmin(response.data.isAdmin);
 				setShowLoadingBar(false);
 			}).catch(e => {
 				setShowLoadingBar(false);
@@ -199,21 +205,20 @@ export default function ProjectInfoForm(props) {
 
 	// 필드 값 변경 시, 임시로 값 저장
 	const handleChange = event => {
-		if(event.target.name == "select_year"){
+		if(event.target.name == "project_nm" && screenType == "new"){
 			setDataState({
 				...dataState,
-				[event.target.name]: event.target.value,
+				select_year:"선택",
 				project_no: "선택",
-				project_nm: "",
+				project_nm : event.target.value,
 				instt_code: "",
-				instt_nm: "",
+				instt_nm : "",
+				inpt_bgnde: Moment(new Date()).format('YYYY-MM-DD'),
+				inpt_endde: Moment(new Date()).format('YYYY-MM-DD'),
+				role_code: "RL0001",
+				chrg_job: "",
+				use_lang: "java, jsp",
 			});
-			
-			if(event.target.value != "선택"){
-				var list = project_All_list.filter((info) => info["BGNDE"].slice(0,4) == event.target.value);
-				setProj_list(list);
-			}
-			
 		}else if(event.target.name == "project_no"){
 			var instt_nm = "";
 			var instt_code = "";
@@ -239,6 +244,21 @@ export default function ProjectInfoForm(props) {
 				inpt_endde: inpt_endde
 			});
 			
+		}else if(event.target.name == "select_year"){
+			setDataState({
+				...dataState,
+				[event.target.name]: event.target.value,
+				project_no: "선택",
+				project_nm: "",
+				instt_code: "",
+				instt_nm: "",
+			});
+			
+			if(event.target.value != "선택"){
+				var list = project_All_list.filter((info) => info["BGNDE"].slice(0,4) == event.target.value);
+				setProj_list(list);
+			}
+			
 		}else{
 			setDataState({
 				...dataState,
@@ -246,6 +266,7 @@ export default function ProjectInfoForm(props) {
 			});
 		}
 		
+		//validate 체크 초기화
 		setValidateCheck({
 			...validateCheck,
 			[event.target.name]: {error:false, helperText:""} 
@@ -299,19 +320,15 @@ export default function ProjectInfoForm(props) {
 		
 		
 		//선택된 프로젝트가 있는지 체크한다.
-		if(dataState.project_no == "선택"){
+		if(dataState.project_no == "선택" && dataState.project_nm == ""){
 			prop_project_no = {error:true, helperText:"프로젝트를 선택해주세요"};
-			isReturn=true;
-		}
-		//프로젝트를 직접입력으로 선택한 사람만 프로젝트 명을 검사한다.
-		if(dataState.project_no == -2 && dataState.project_nm == ""){
 			prop_project_nm = {error:true, helperText:"프로젝트를 입력해주세요"};
 			isReturn=true;
 		}
 		
 		//기관
 		if(dataState.instt_nm == ""){
-			prop_instt_nm = {error:true, helperText:"기관명을 입력해주세요(프로젝트에서 직접입력 선택 후)"};
+			prop_instt_nm = {error:true, helperText:"기관명을 입력해주세요"};
 			isReturn=true;
 		}
 		
@@ -385,7 +402,7 @@ export default function ProjectInfoForm(props) {
 		setShowLoadingBar(true);
 		
 		
-		var sendData = dataState;
+		var sendData = JSON.parse(JSON.stringify(dataState));
 		
 		if(sendData.project_no == -2){
 			sendData.project_no = null;
@@ -393,11 +410,11 @@ export default function ProjectInfoForm(props) {
 		
 		sendData.inpt_bgnde = sendData.inpt_bgnde.replace("-", "").replace("-", "");
 		sendData.inpt_endde = sendData.inpt_endde.replace("-", "").replace("-", "");
-		
+		sendData.project_no = sendData.project_no == "선택" ? null : sendData.project_no;
 		axios({
 			url: '/intranet/historyInsert',
 			method: 'post',
-			data: dataState
+			data: sendData
 		}).then(response => {
 			setShowLoadingBar(false);
 			
@@ -406,7 +423,18 @@ export default function ProjectInfoForm(props) {
 				return;
 			}else{
 				alert("이력 등록에 성공했습니다.");
-				history.goBack();
+				
+				//관리자가 등록하면 등록한 사람의 이력이 보일수있게 변경
+				if(isAdmin){
+					let url = "";
+					url = getRootPath() + "/project/history/";
+					history.push(url + dataState.member_no);
+				}
+				
+				//자기 자신이면 히스토리백
+				else{
+					history.goBack();
+				}
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -436,7 +464,16 @@ export default function ProjectInfoForm(props) {
 				return;
 			}else{
 				alert("이력 삭제에 성공했습니다.");
-				history.goBack();
+				if(isAdmin){
+					let url = "";
+					url = getRootPath() + "/project/history/";
+					history.push(url + dataState.member_no);
+				}
+				
+				//자기 자신이면 히스토리백
+				else{
+					history.goBack();
+				}
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -469,7 +506,17 @@ export default function ProjectInfoForm(props) {
 				return;
 			}else{
 				alert("이력 갱신에 성공했습니다.");
-				history.goBack();
+				//관리자가 등록하면 등록한 사람의 이력이 보일수있게 변경
+				if(isAdmin){
+					let url = "";
+					url = getRootPath() + "/project/history/";
+					history.push(url + dataState.member_no);
+				}
+				
+				//자기 자신이면 히스토리백
+				else{
+					history.goBack();
+				}
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -478,7 +525,9 @@ export default function ProjectInfoForm(props) {
 	}
 
 	const handleClickCancle = () => {
-		history.goBack();
+		let url = "";
+		url = getRootPath() + "/project/history/";
+		history.push(url + dataState.member_no);
 	};
 
 	return (
@@ -536,7 +585,27 @@ export default function ProjectInfoForm(props) {
 								</TextField>
 							</TableCell>
 						</TableRow>
-						
+						{ 
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">프로젝트명(직접입력)</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="project_nm"
+										name="project_nm"
+										margin="dense"
+										variant="outlined"
+										autoComplete="off"
+										placeholder="회사 프로젝트는 연도와 프로젝트를 선택해주세요"
+										error={validateCheck.project_nm.error}
+										helperText={validateCheck.project_nm.helperText}
+										onChange={handleChange}
+										value={dataState.project_nm}
+										fullWidth>
+										{dataState.project_nm}
+									</TextField>
+								</TableCell>
+							</TableRow>
+						}
 						{screenType == "new" && <TableRow>
 								<TableCell align="left" component="th" scope="row" style={{ width: '120px' }}>연도</TableCell>
 								<TableCell align="left">
@@ -587,11 +656,6 @@ export default function ProjectInfoForm(props) {
 									<MenuItem key={"선택"} value={"선택"}>
 										선택
 									</MenuItem>
-									{ (dataState.select_year == "선택" || screenType == "modify") && 	
-										<MenuItem key={-2} value={-2}>
-											직접입력
-										</MenuItem>
-									}
 									{
 										(dataState.select_year != "선택") 
 										&& project_list.length > 0 &&
@@ -605,26 +669,6 @@ export default function ProjectInfoForm(props) {
 								</TextField>
 							</TableCell>
 						</TableRow>
-						{ dataState.project_no == -2 && 
-							<TableRow>
-								<TableCell align="left" component="th" scope="row">프로젝트명(직접입력)</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="project_nm"
-										name="project_nm"
-										margin="dense"
-										variant="outlined"
-										autoComplete="off"
-										error={validateCheck.project_nm.error}
-										helperText={validateCheck.project_nm.helperText}
-										onChange={handleChange}
-										value={dataState.project_nm}
-										fullWidth>
-										{dataState.project_nm}
-									</TextField>
-								</TableCell>
-							</TableRow>
-						}
 						<TableRow>
 							<TableCell align="left" component="th" scope="row">기관</TableCell>
 							<TableCell align="left">
@@ -633,12 +677,14 @@ export default function ProjectInfoForm(props) {
 									name="instt_nm"
 									margin="dense"
 									variant="outlined"
+									error={validateCheck.instt_nm.error}
+									helperText={validateCheck.instt_nm.helperText}
 									placeholder="직접입력"
 									autoComplete="off"
 									fullWidth
 									onChange={handleChange}
 									InputProps={{
-									 	 readOnly: dataState.project_no == -2 || screenType == "new" ? false : true,
+									 	 readOnly: dataState.project_no == "선택" || screenType == "new" ? false : true,
 									}}
 									value={dataState.instt_nm}>
 									"직접입력"
@@ -773,7 +819,7 @@ export default function ProjectInfoForm(props) {
 						)
 					}
 					{
-						screenType == "modify" &&
+						screenType == "modify" && ( isAdmin ||  userInfo.member_NO == dataState.member_no) &&
 						(
 							<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickUpdateHistory}>
 								수정
@@ -781,7 +827,7 @@ export default function ProjectInfoForm(props) {
 						)
 					}
 					{
-						screenType == "modify" &&
+						screenType == "modify" && ( isAdmin ||  userInfo.member_NO == dataState.member_no) && 
 						(
 							<Button variant="contained" color="secondary" size="small" className={classes.button} onClick={handleClickRemoveHistory}>
 								삭제
