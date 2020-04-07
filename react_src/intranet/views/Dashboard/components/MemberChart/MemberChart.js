@@ -35,7 +35,7 @@ export default function MemberChart(){
 			{state != null && (
 			<ResponsiveContainer>
 				<BarChart  data={state.data}>
-					<XAxis dataKey="PROJECT_NM" stroke="#8884d8"/>
+					<XAxis dataKey="PROJECT_NM" stroke="#8884d8" tick={{ fontSize: '10px', width: '50px', wordWrap: 'break-word' }}/>
 					<YAxis interval={1}/>
 					<Tooltip wrapperStyle={{ width: 100, backgroundColor: '#ccc' }} />
 					

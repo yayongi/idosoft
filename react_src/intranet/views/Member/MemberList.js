@@ -245,50 +245,54 @@ const MemberList = (props) => {
 
 	//사원삭제
 	const removeData = () => {
-		// 사원 정보 삭제
-		axios({
-			url: '/intranet/member/memberdel',
-			method: 'post',
-			data : selected,
-			headers: {
-				'Content-Type': 'application/json;charset=UTF-8'
-			},
-		}).then(response => {
-			//체크박스로 선택된 직원 아이디로 선택적으로 필터링
-			let temp_1 = state.showMemberList;
-			for(let i=0;i<selected.length;i++){
-				for(let j=0;j<temp_1.length;j++){
-					if(temp_1[j].member_no === String(selected[i])){
-						temp_1[j].ret_date = "99999999";
+		if(selected.length != 0){
+			// 사원 정보 삭제
+			axios({
+				url: '/intranet/member/memberdel',
+				method: 'post',
+				data : selected,
+				headers: {
+					'Content-Type': 'application/json;charset=UTF-8'
+				},
+			}).then(response => {
+				//체크박스로 선택된 직원 아이디로 선택적으로 필터링
+				let temp_1 = state.showMemberList;
+				for(let i=0;i<selected.length;i++){
+					for(let j=0;j<temp_1.length;j++){
+						if(temp_1[j].member_no === String(selected[i])){
+							temp_1[j].ret_date = "99999999";
+						}
 					}
 				}
-			}
 
-			let temp_2 = state.hiddenMemberList;
-			for(let i=0;i<selected.length;i++){
-				temp_2 = temp_2.filter(temp_2 => temp_2.member_no !== String(selected[i]));
-			}
+				let temp_2 = state.hiddenMemberList;
+				for(let i=0;i<selected.length;i++){
+					temp_2 = temp_2.filter(temp_2 => temp_2.member_no !== String(selected[i]));
+				}
 
-			setSelected([]);
+				setSelected([]);
 
-			let temp;
+				let temp;
 
-			if(state.showAllValue == 0){
-				temp = temp_2
-			}else{
-				temp = temp_1
-			}
+				if(state.showAllValue == 0){
+					temp = temp_2
+				}else{
+					temp = temp_1
+				}
 
-			setState({
-				...state,
-				memberList : temp,
-				showMemberList : temp_1,
-				hiddenMemberList: temp_2,
+				setState({
+					...state,
+					memberList : temp,
+					showMemberList : temp_1,
+					hiddenMemberList: temp_2,
+				});
+			}).catch(e => {
 			});
-		}).catch(e => {
-		});
+		}else{
+			const confirmData = ['직원정보삭제불가', '삭제할 데이터를 선택해 주세요.', false];
+			handleOpenDialog(...confirmData)
+		}
 	}
-
 
 	const handleChangePage = (event, newPage) => {
       setPage(newPage);
@@ -337,12 +341,12 @@ const MemberList = (props) => {
 
 	//Dialog close handler
 	//확인:true 취소:false 리턴
-	const handleCloseDialog = (result) => {
+	const handleCloseDialog = (title, result) => {
 		setDialog({title:'', content:'', onOff:false, isConfirm:false});
-		if(result){
+		if(title === "직원정보삭제" && result === true){
 			removeData();
 		}else{
-			return;
+			return false;
 		}
 	}
 
@@ -408,28 +412,35 @@ const MemberList = (props) => {
 
 	// 맴버 엑셀 내보내기
 	const memberExcelExport = () =>{
-		axios({
-			url: '/intranet/member/exportexcel',
-			method: 'post',
-			data : {
-				memeberList : state.memberList,
-				title : 'memberData.xls',
-				category : searchState.category,
-				searchword : searchState.searchword
-			},
-			responseType: 'blob',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		}).then(response => {
-			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
-			const link = document.createElement('a');
-			link.href = url;
-			link.setAttribute('download', 'memberData.xls');
-			document.body.appendChild(link);
-			link.click();
-		}).catch(e => {
-		});
+		if(state.memberList.length != 0){
+			axios({
+				url: '/intranet/member/exportexcel',
+				method: 'post',
+				data : {
+					memeberList : state.memberList,
+					title : 'memberData.xls',
+					category : searchState.category,
+					searchword : searchState.searchword
+				},
+				responseType: 'blob',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}).then(response => {
+				const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+				const link = document.createElement('a');
+				link.href = url;
+				link.setAttribute('download', 'memberData.xls');
+				document.body.appendChild(link);
+				link.click();
+			}).catch(e => {
+
+			});
+		}else{
+			const confirmData = ['엑셀출력', '출력할 데이터가 없습니다.', false];
+			handleOpenDialog(...confirmData)
+		}
+		
 	}
 
 	return (
