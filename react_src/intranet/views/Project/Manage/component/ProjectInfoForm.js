@@ -274,7 +274,7 @@ function ProjectInfoForm(props) {
 	}
 	
 	const isValidateCheck = () => {
-		var isReturn = false;
+		var isError = false;
 		let prop_PROJECT_NM={error:false, helperText:""};
 		let prop_INSTT_CODE={error:false, helperText:""};
 		let prop_BGNDE={error:false, helperText:""};
@@ -286,60 +286,59 @@ function ProjectInfoForm(props) {
 		//프로그램 명 체크
 		if(dataState.PROJECT_NM == ""){
 			prop_PROJECT_NM = {error:true, helperText:"이름을 선택해주세요"};
-			isReturn = true;
+			isError = true;
 		}
 		
 		//발주처
 		if(dataState.INSTT_CODE == ""){
 			prop_INSTT_CODE={error:true, helperText:"발주처를 선택해주세요"};
-			isReturn = true;
+			isError = true;
 		}
 		
 		//투입일 - 철수일
 		if(dataState.BGNDE == ""){
 			prop_BGNDE={error:true, helperText:"투입일을 입력해주세요"};
-			isReturn = true;
+			isError = true;
 		}
 		
 		if(dataState.ENDDE == ""){
 			prop_ENDDE={error:false, helperText:""};
-			isReturn = true;
+			isError = true;
 		}
 		
 		if(dataState.BGNDE > dataState.ENDDE){
 			prop_BGNDE={error:true, helperText:"투입일과 철수일을 확인해주세요"};
 			prop_ENDDE={error:true, helperText:"투입일과 철수일을 확인해주세요"};
-			isReturn = true;
+			isError = true;
 		}
 		
 		//교통비
 		if(dataState.TRANSPORT_CT == ""){
 			prop_TRANSPORT_CT={error:true, helperText:"교통비을 입력해주세요"};
-			isReturn = true;
+			isError = true;
 		}
 
 		//PM
 		/*if(dataState.PM == ""){
 			
 		}*/
-		
-		if(isReturn){
-			setValidateCheck({
-				PROJECT_NM : prop_PROJECT_NM,
-				INSTT_CODE : prop_INSTT_CODE,
-				BGNDE : prop_BGNDE,
-				ENDDE : prop_ENDDE,
-				TRANSPORT_CT : prop_TRANSPORT_CT,
-				PM : prop_PM,
-			});
-			return true;
+		setValidateCheck({
+			PROJECT_NM : prop_PROJECT_NM,
+			INSTT_CODE : prop_INSTT_CODE,
+			BGNDE : prop_BGNDE,
+			ENDDE : prop_ENDDE,
+			TRANSPORT_CT : prop_TRANSPORT_CT,
+			PM : prop_PM,
+		});
+		if(isError){
+			return isError;
 		}
 		
-		return false;
+		return isError;
 	}
 
 	const handleClickAddProject = () => {
-		if(!isValidateCheck()){
+		if(isValidateCheck()){
 			return;
 		}
 		
