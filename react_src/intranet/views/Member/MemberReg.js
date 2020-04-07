@@ -433,8 +433,7 @@ const MemberReg = (props) => {
 				</CardContent>
         <div className={classes.root}>
           <Grid container spacing={3} style={{
-            backgroundColor:'lightgrey',
-            height:'auto'
+            backgroundColor:'lightgrey'
           }}>
             <Grid item xs={12} sm={4} style={{
               height:'100%'
