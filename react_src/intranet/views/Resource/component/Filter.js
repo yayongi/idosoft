@@ -260,16 +260,24 @@ export default function  Filter(props) {
 		setPage(0);
 		handleClose();
 
-		resType.filter((item)=>{
-			if(item['id'] === dialogState.resType){
-				setResTypeLabel(item.label);
-				return;
-			} 
-		});
+		// resType.filter((item)=>{
+		// 	if(item['id'] === dialogState.resType){
+		// 		setResTypeLabel(item.label);
+		// 		return;
+		// 	} 
+		// });
 
-		setSnackBarMessage(`검색타입 : ${resTypeLabel}
-						, 구입년월 : ${Moment(state.stDt+'01').format('YYYY년 MM월')} ~ ${Moment(state.edDt+'01').format('YYYY년 MM월')}
-						, 보유자 : ${state.holder === null ? "" : state.holder.replace(/(\s*)/g, "")}`);
+		// setSnackBarMessage(`검색타입 : ${resTypeLabel}
+		// 				, 구입년월 : ${Moment(state.stDt+'01').format('YYYY년 MM월')} ~ ${Moment(state.edDt+'01').format('YYYY년 MM월')}
+		// 				, 보유자 : ${state.holder === null ? "" : state.holder.replace(/(\s*)/g, "")}`);
+
+		setSnackBarMessage(
+			`검색타입 : ${document.getElementById('resType').innerText}
+			, 구입년월 : ${Moment(document.getElementsByName("stDt")[0].value+'/01').format('YYYY년 MM월')} ~ 
+			${Moment(document.getElementsByName("edDt")[0].value+'/01').format('YYYY년 MM월')}
+			${document.getElementsByName("holder")[0].value !== '' ? (", 보유자 : "+(document.getElementsByName("holder")[0].value).replace(/(\s*)/g, "")):''}`
+
+		);
 		setOpenSnackBar(true);
 	}
 

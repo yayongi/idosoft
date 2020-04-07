@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -230,26 +230,23 @@ export default function  Filter(props) {
 					?null:Moment(document.getElementsByName("edDt")[0].value).format('YYYYMM')
 		});
 		handleClose();
-		// setOpenSnackBar(true);
 
-		searchType.filter((item)=>{
-			if(item['id'] === dialogState.searchType){
-				setSearchTypeLabel(item.label);
-				return;
-			} 
-		});
+		setSnackBarMessage(
+			`검색타입 : ${document.getElementById('searchType').innerText}
+			, 검색기간 : ${Moment(document.getElementsByName("stDt")[0].value+'/01').format('YYYY년 MM월')} ~ 
+			${Moment(document.getElementsByName("edDt")[0].value+'/01').format('YYYY년 MM월')}
+			${document.getElementsByName("search")[0].value !== '' ? (", 검색어 : "+document.getElementsByName("search")[0].value):''}`
 
-		setSnackBarMessage(`검색타입 : ${searchTypeLabel}
-						, 검색기간 : ${Moment(state.stDt+'01').format('YYYY년 MM월')} ~ ${Moment(state.edDt+'01').format('YYYY년 MM월')}
-						, 검색어 : ${state.search}`);
+		);
 		setOpenSnackBar(true);
 	}
 
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);
 	const [snackBarMessage , setSnackBarMessage] = React.useState('');
+
 	const snackBarClose = (event, reason) => {
 		if (reason === 'clickaway') {
-		return;
+			return;
 		}
 
 		setOpenSnackBar(false);
