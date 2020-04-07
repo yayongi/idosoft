@@ -29,8 +29,9 @@
 			<exclude-mapping path="/" />
 			<exclude-mapping path="/login" />
 			<exclude-mapping path="/projectDashboard" />
-			<exclude-mapping path="/dashboardList" />
-			<exclude-mapping path="/getdate" />
+			<exclude-mapping path="/notice/dashboardList" />
+			<exclude-mapping path="/getIsAdmin" />
+			<exclude-mapping path="/member/getdate" />
 			<exclude-mapping path="/resources/**" />
 			<beans:bean id="commonInterceptor"
 				class="kr.co.idosoft.common.interceptor.CommonInterceptor" />

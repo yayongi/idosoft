@@ -97,7 +97,8 @@ public class LoginController {
 				
 			// 세션 저장
 			session.setAttribute("IS_ADMIN", sessionVo.getMANAGER_YN());
-
+			sessionVo.setMANAGER_YN("");
+			
 			// 비밀번호 delete
 			sessionVo.setPWD("");
 			sessionVo.setMANAGER_YN("");

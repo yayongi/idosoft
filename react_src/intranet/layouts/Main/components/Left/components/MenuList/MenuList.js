@@ -9,6 +9,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 // import AccountTreeIcon from '@material-ui/icons/AccountTree';
 
+import {LoadingBar} from '../../../../../../common/LoadingBar/LoadingBar';
+
 // Server
 import axios from 'axios';
 
@@ -40,6 +42,8 @@ export default function MenuList(props) {
 	const {routeProps, handleDrawerClose} = props;		// handleDrawerClose : 메뉴바 열기/닫기 이벤트
 	const {match} = routeProps;
 	
+	const [isShowLoadingBar, setShowLoadingBar] = useState(true); // 로딩바
+
 	function urlMatch() {
 		if(preUrl != match.url) {
 			preUrl = match.url;
@@ -77,31 +81,36 @@ export default function MenuList(props) {
 			return true;
 		}
 	}
+
+	setTimeout(function() {
+				axios({
+					url: '/intranet/getIsAdmin',
+					method: 'post',
+					data: {}
+				}).then(response => {
+					console.log(`response.data.isAdmin : ${response.data.isAdmin}`);
+
+					if(response.data.isAdmin == "true"){
+						setIsAdmin(true);
+					} else {
+						setIsAdmin(false);
+					}
+
+					setShowLoadingBar(false);
+				}).catch(e => {
+					console.log(e);
+				});
+			}, 500);
+	
+
 	useEffect(()=>{
 		urlMatch();
 		setActive(match.url);	// URL이 변경될 때, 상태 변경을 한다.
-
-		axios({
-			url: '/intranet/getIsAdmin',
-			method: 'post',
-			data: {}
-		}).then(response => {
-			console.log(`response.data.isAdmin : ${response.data.isAdmin}`);
-
-			if(response.data.isAdmin == "true"){
-				setIsAdmin(true);
-			} else {
-				setIsAdmin(false);
-			}
-		}).catch(e => {
-			console.log(e);
-		});
-
-	});
-	
+	},[isAdmin]);
 	
 	return (
 		<>
+			<LoadingBar openLoading={isShowLoadingBar}/>
 			<List>
 				{menus.map((item, idx) => {
 					
