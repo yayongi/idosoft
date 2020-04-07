@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.expense.controller;
 
 import java.math.BigInteger;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -228,7 +229,16 @@ public class ExpenseStatementController {
 		// 통신비 목록 조회
 		List<Map<String, Object>> commList = expenseStatementService.getCommExpenseList(data);
 		// 교통비 조회
-		List<Map<String, Object>> transList = expenseStatementService.getTransExpenseList(data);
+		List<Map<String, Object>> transList = null;
+		
+		try {
+			transList = expenseStatementService.getTransExpenseList(data);
+			
+			LOG.debug("#### transList : " + transList);
+			
+		} catch (ParseException e) {
+			LOG.debug("Exception : " + e.getMessage());
+		}
 		
 		data.remove("isAdmin");			// 관리자 여부 제거
 		data.remove("MEMBER_NO");		// 사원번호
