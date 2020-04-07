@@ -158,7 +158,7 @@ export default function  List(props) {
 			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
-			//processErrCode(e);
+			processErrCode(e);
 			console.log(e);
 		});
 		
@@ -177,10 +177,12 @@ export default function  List(props) {
 		setIsOpen(false);
 	}
 
-	const snackBarClose = () => {
+	const snackBarClose = (event, reason) => {
+		if (reason === 'clickaway') {
+		return;
+		}
 		setOpenSnackBar(false);
-	}
-
+	};
 	return (
 		<Fragment>
 				<LoadingBar openLoading={isShowLoadingBar}/>

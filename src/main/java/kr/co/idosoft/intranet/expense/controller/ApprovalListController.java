@@ -25,6 +25,7 @@ import kr.co.idosoft.common.util.CollectionsUtil;
 import kr.co.idosoft.common.util.JsonUtils;
 import kr.co.idosoft.common.util.PageInfo;
 import kr.co.idosoft.common.util.commonUtil;
+import kr.co.idosoft.intranet.expense.model.service.AnnalListServiceImpl;
 import kr.co.idosoft.intranet.expense.model.service.ApprovalListServiceImpl;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 
@@ -43,7 +44,8 @@ public class ApprovalListController {
 	
 	@Resource
 	ApprovalListServiceImpl approvalListService;
-	
+	@Resource
+	AnnalListServiceImpl annalListService;
 	/**
 	 * 경비결재목록 리스트 
 	 * @param request
@@ -67,6 +69,17 @@ public class ApprovalListController {
 		mv.setViewName("jsonView");
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+
+		HttpSession session = request.getSession();
+		
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		
+		// 세션 VO에 세션 값 저장
+		String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
+
+		data.put("MEMBER_NO", mno);		// 사원번호
+		data.put("isAdmin", isAdmin);	// 관리자 여부
 		
 		String name 			= (String)params.get("name");					// 이름
 		String expenseType 		= (String)params.get("expenseType");			// 경비 유형
@@ -76,6 +89,8 @@ public class ApprovalListController {
 		String memo 			= (String)params.get("memo");					// 내용
 		// 리스트 추가 요청시, true
 		String isAddList 		= (String) params.getOrDefault("isAddList", "false");
+		// 결재자별 디폴트값 셋팅
+		Boolean firstRender		= (Boolean)params.getOrDefault("firstRender", true);
 		
 		LOG.debug("#####################################################################################");
 		LOG.debug("# SEARCH DATA ");
@@ -87,9 +102,10 @@ public class ApprovalListController {
 		LOG.debug("# memo 			: " + memo);
 		LOG.debug("#####################################################################################");
 		
+		status = !"-1".equals(status) ? status : null;
+		
 		// -1 전체로 들어왔을  경우, null로 변환
 		expenseType = !"-1".equals(expenseType) ? expenseType : null;
-		status 		= !"-1".equals(status) ? status : null;
 		
 		// 그해의 첫 날
 		payStDt = payStDt + "01";
@@ -106,17 +122,6 @@ public class ApprovalListController {
 		data.put("payEdDt", payEdDt);
 		data.put("status", status);
 		data.put("memo", memo);
-		
-		HttpSession session = request.getSession();
-		
-		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
-		
-		// 세션 VO에 세션 값 저장
-		String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
-
-		data.put("MEMBER_NO", mno);		// 사원번호
-		data.put("isAdmin", isAdmin);	// 관리자 여부
 		
 		Integer temp 		= Integer.parseInt((String) params.get("currentPage"));
 		int currentPage 	= temp == null ? 1 : temp;					// 현재 페이지 (default : 1)
@@ -243,7 +248,6 @@ public class ApprovalListController {
 		mv.addObject("totalCompAmount", totalCompAmount);
 		mv.addObject("totalReturnAmount", totalReturnAmount);
 		mv.addObject("isAdmin", isAdmin);
-		
 		return mv;
 	}
 	
@@ -434,6 +438,53 @@ public class ApprovalListController {
 		}
 		LOG.debug("#################################################################################");
 		
+		return mv;
+	}
+	
+	/**
+	 * 경비 목록
+	 * @param mutipartRequest
+	 * @param request
+	 * @return ModelAndView
+	 */
+	
+	@RequestMapping(value="/getdefaultStatus.exp", method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getdefaultStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) {
+		
+		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("/getdefaultStatus.exp");
+		}
+		
+		HttpSession session = request.getSession();
+		
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		
+		// 세션 VO에 세션 값 저장
+		String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
+		
+		String defaultStatus 	= "";
+		
+		String representative = annalListService.getRepresentativeNo();
+		LOG.debug("# mno.equals(representative) : " + mno.equals(representative));
+		
+		if(mno.equals(representative)) {
+			defaultStatus = "SS0001"; // 2차 결재자 - 결재완료
+		} else if("1".equals(isAdmin)){
+			defaultStatus = null; 	// 1차 결재자 - 전체
+		} else {
+			defaultStatus = "SS0000"; // 1차 결재자 - 진행
+		}
+		
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		
+		mv.addObject("defaultStatus", defaultStatus == null ? "-1" : defaultStatus);
 		return mv;
 	}
 }

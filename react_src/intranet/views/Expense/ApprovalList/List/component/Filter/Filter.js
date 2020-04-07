@@ -16,6 +16,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import Chip from '@material-ui/core/Chip';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
+
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
 
@@ -48,6 +51,10 @@ const useToolbarStyles = makeStyles(theme => ({
 	},
 	button: {
 		marginRight: '10px',
+	},
+	amountArea : {
+		margin: theme.spacing(1),
+		marginRight: '10px',
 	}
 }));
 /*
@@ -75,7 +82,9 @@ export default function  Filter(props) {
 		firSelected ,setFirSelected,
 		selected ,setSelected,
 
-		setIsOpen, setErrMessage, setNonHistoryBack
+		setIsOpen, setErrMessage, setNonHistoryBack,
+
+		defaultStatus
 	} = props;
 
 	const [expenseTypes, setExpenseTypes] 	= React.useState([]);
@@ -88,10 +97,10 @@ export default function  Filter(props) {
 
 	const initData = {
 		expenseType: "-1",
-			payStDt: Moment().format('YYYY')+'01',
-			payEdDt: Moment().format('YYYYMM'),
-			status: "-1",
-			memo: "",
+		payStDt: Moment().format('YYYY')+'01',
+		payEdDt: Moment().format('YYYYMM'),
+		status: defaultStatus,
+		memo: "",
 	}
 
 	// 세션스토리지 공백 여부 확인
@@ -187,6 +196,14 @@ export default function  Filter(props) {
 		}
 		
 	}
+	/* useEffect(() => {
+
+		setDialogState({
+			...dialogState,
+			status : defaultStatus
+		});
+		
+	}, [defaultStatus]); */
 
 	// Dialog 값 상위 컴포넌트의 state값으로 초기화
 	const initDialogState = {
@@ -227,7 +244,7 @@ export default function  Filter(props) {
 		}
 
 		Axios({
-			url: '/intranet/getAnnaualList.exp',
+			url: '/intranet/getApprovalList.exp',
 			method: 'post',
 			data: searchData,
 			headers: {
@@ -429,10 +446,10 @@ export default function  Filter(props) {
 		<Fragment>
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">
-					총 금액(진행) : {Number(totalProgAmount).toLocaleString()} 원 <br/>
-					총 금액(1차결재) : {Number(totalFirAmount).toLocaleString()} 원 <br/>
-					총 금액(완료) : {Number(totalCompAmount).toLocaleString()} 원 <br/>
-					총 금액(반려) : {Number(totalReturnAmount).toLocaleString()} 원 <br/>
+					<Chip className={classes.amountArea} variant="outlined"  label={'진행 : ' + Number(totalProgAmount).toLocaleString() +' 원'} />
+					<Chip className={classes.amountArea} variant="outlined"  label={'1차 결재  : ' + Number(totalFirAmount).toLocaleString() +' 원'} />
+					<Chip className={classes.amountArea} variant="outlined" color="primary" label={'완료  : ' + Number(totalCompAmount).toLocaleString() +' 원'}/>
+					<Chip className={classes.amountArea} variant="outlined" color="secondary" label={'반려  : ' + Number(totalReturnAmount).toLocaleString() +' 원'}/>
 				</Typography>
 				<div className={classes.container}>
 					<Hidden smDown>
@@ -442,7 +459,7 @@ export default function  Filter(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon  />} onClick={excelExport} className={classes.button}>
 							엑셀 내보내기
 						</Button>
-						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} onClick={appHandleClickOpen} className={classes.button}>
+						<Button variant="contained" color="primary" size="small" startIcon={<DoneAllIcon />} onClick={appHandleClickOpen} className={classes.button}>
 							경비 결재
 						</Button>
 					</Hidden>
@@ -454,7 +471,7 @@ export default function  Filter(props) {
 							<SaveIcon />
 						</IconButton>
 						<IconButton color="primary" onClick={appHandleClickOpen} className={classes.button}>
-							<AddIcon />
+							<DoneAllIcon />
 						</IconButton>
 					</Hidden>
 				</div>
