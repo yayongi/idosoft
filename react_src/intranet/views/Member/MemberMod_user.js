@@ -341,6 +341,7 @@ const MemberMod_user = (props) => {
     })
   }
   const getEntry = (date) => {
+    defaultValidation();
     setDateState({
       ...dateState,
       entry_date : Moment(date).format('YYYY-MM-DD')
@@ -431,8 +432,7 @@ const MemberMod_user = (props) => {
           </CardContent>
           <div className={classes.root}>
             <Grid container spacing={3} style={{
-              backgroundColor:'lightgrey',
-              height:'auto'
+              backgroundColor:'lightgrey'
             }}>
               <Grid item xs={12} sm={4} style={{
                 height:'100%'
@@ -626,6 +626,8 @@ const MemberMod_user = (props) => {
                                       views={["year", "month", "date"]}
                                       format="yyyy-MM-dd"
                                       value={dateState.entry_date}
+                                      error={validation.entry_date.error}
+                                      helperText={validation.entry_date.helperText}
                                       onChange={getEntry}
                                       inputVariant="outlined"
                                       disabled={!state.isIdentified}
@@ -716,6 +718,8 @@ const MemberMod_user = (props) => {
                                       views={["year", "month", "date"]}
                                       format="yyyy-MM-dd"
                                       value={dateState.entry_date}
+                                      error={validation.entry_date.error}
+                                      helperText={validation.entry_date.helperText}
                                       onChange={getEntry}
                                       inputVariant="outlined"
                                       disabled={!state.isIdentified}
