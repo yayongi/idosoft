@@ -195,17 +195,7 @@ const MemberReg = (props) => {
           return;
         }
 
-        //입사일 Validation
-        if(document.getElementById("entry_date").value === "" || document.getElementById("entry_date").value === null){
-          setValidation({
-            ...validation,
-            entry_date:{
-              error:true,
-              helperText:"입사일을 선택해주세요."
-            },
-          })
-          return;
-        }
+        
 
         //우편번호 Validation
         if(document.getElementById("zip_code").value === "" || document.getElementById("zip_code").value === null){
@@ -220,13 +210,25 @@ const MemberReg = (props) => {
         }
 
         //최종학력 Validation
-        if(document.getElementById("school_career").nextSibling.value == "" || document.getElementById("school_career").nextSibling.value == null){
+        if(document.getElementById("school_career").nextSibling.value == "" || document.getElementById("school_career").nextSibling.value == null || document.getElementById("school_career").nextSibling.value == undefined){
           setValidation({
             ...validation,
             school_career:{
               error:true,
               helperText:"최종학력을 선택해 주세요."
             }
+          })
+          return;
+        }
+
+        //입사일 Validation
+        if(document.getElementById("entry_date").value === "" || document.getElementById("entry_date").value === null){
+          setValidation({
+            ...validation,
+            entry_date:{
+              error:true,
+              helperText:"입사일을 선택해주세요."
+            },
           })
           return;
         }
@@ -343,6 +345,7 @@ const MemberReg = (props) => {
     })
   }
   const getEntry = (date) => {
+    defaultValidation();
     setDateState({
       ...dateState,
       entry_date : Moment(date).format('YYYY-MM-DD')
@@ -621,15 +624,17 @@ const MemberReg = (props) => {
                             <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
                             <Grid container justify="space-around">
                               <DatePicker
-                              label="입사일"
-                              locale='ko'
-                              margin="dense"
-                              id="entry_date"
-                              views={["year", "month", "date"]}
-                              format="yyyy-MM-dd"
-                              value={dateState.entry_date}
-                              onChange={getEntry}
-                              inputVariant="outlined"
+                                label="입사일"
+                                locale='ko'
+                                margin="dense"
+                                id="entry_date"
+                                views={["year", "month", "date"]}
+                                format="yyyy-MM-dd"
+                                value={dateState.entry_date}
+                                onChange={getEntry}
+                                error={validation.entry_date.error}
+                                helperText={validation.entry_date.helperText}
+                                inputVariant="outlined"
                               />
                             </Grid>
                             </MuiPickersUtilsProvider>
@@ -712,6 +717,8 @@ const MemberReg = (props) => {
                               views={["year", "month", "date"]}
                               format="yyyy-MM-dd"
                               value={dateState.entry_date}
+                              error={validation.entry_date.error}
+                              helperText={validation.entry_date.helperText}
                               onChange={getEntry}
                               inputVariant="outlined"
                               />

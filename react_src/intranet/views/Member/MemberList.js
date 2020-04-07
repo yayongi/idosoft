@@ -14,7 +14,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import SaveIcon from '@material-ui/icons/Save';
 import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
+import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import { Button, Hidden } from '@material-ui/core';
 import TablePagination from '@material-ui/core/TablePagination'
@@ -494,7 +494,7 @@ const MemberList = (props) => {
 										</Button>
 									)}
 									{state.manager_yn && (
-										<Button variant="contained" color="secondary" size="small" startIcon={<RemoveIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"10px"}}>
+										<Button variant="contained" color="secondary" size="small" startIcon={<DeleteIcon />} onClick={() => handleOpenDialog(...confirmData)} style={{marginLeft:"10px"}}>
 											직원정보삭제
 										</Button>
 									)}
@@ -515,7 +515,7 @@ const MemberList = (props) => {
 									)}
 									{state.manager_yn && (
 										<IconButton color="secondary" onClick={() => handleOpenDialog(...confirmData)}>
-											<RemoveIcon />
+											<DeleteIcon />
 										</IconButton>
 									)}
 									{state.manager_yn && (
