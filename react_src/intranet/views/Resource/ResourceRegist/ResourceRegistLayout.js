@@ -229,6 +229,8 @@ function RegistGrid() {
 			} 
 		}else if(event.target.name ==="serial_no"){
 			//시리얼번호 20글자(영문 대소문자, 숫자)
+			// const regex = /^[A-Za-z0-9+]*$/;
+			// if(inputValue.length > 20 || !regex.test(inputValue)) {
 			if(inputValue.length > 20) {
 				event.preventdefault(); 
 				return;
