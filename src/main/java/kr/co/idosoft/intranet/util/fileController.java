@@ -359,7 +359,7 @@ public class fileController {
 		    		Object tempData = data1.get(tempList.get(j));
 		    		
 		    		if(j == 3) {
-		    			cell.setCellValue("�넻�떊鍮�");
+		    			cell.setCellValue("통신비");
 		    		} else {
 		    			if(j > 3) {
 		    				if(tempData instanceof String){
@@ -388,7 +388,7 @@ public class fileController {
 		    		cell = row.createCell(j);
 		    		
 		    		if(j == 3) {
-		    			cell.setCellValue("援먰넻鍮�");
+		    			cell.setCellValue("교통비");
 		    		} else {
 		    			Object tempData = data2.get(tempList.get(j));
 		    			
