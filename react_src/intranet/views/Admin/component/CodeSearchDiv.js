@@ -15,6 +15,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
+
 import { Link as RouterLink } from 'react-router-dom';
 
 const useToolbarStyles = makeStyles(theme => ({
@@ -96,6 +99,15 @@ export default function CodeSearchDiv(props) {
 			searchType: 	document.getElementsByName("searchType")[0].value,
 			searchKeyword:  document.getElementsByName("searchKeyword")[0].value,
 		});
+		
+		
+		
+		var list = ["전체","코드ID","코드명","레벨","상위코드","최상위코드목록"];0
+		
+		var txt = "검색 조건 : " + list[selectedSearchType] + ", 키워드 : " + document.getElementsByName("searchKeyword")[0].value;
+		
+		setSnackBarMessage(txt);
+		setOpenSnackBar(true);
 		handleClose();
 	}
 
@@ -122,9 +134,33 @@ export default function CodeSearchDiv(props) {
 	const handleClickAddCode = () => {
 		rootCodeAdd();
 	}
+	
+	const [openSnackBar, setOpenSnackBar] = React.useState(false);
+	const [snackBarMessage , setSnackBarMessage] = React.useState('');
+
+	const snackBarClose = (event, reason) => {
+		if (reason === 'clickaway') {
+			return;
+		}
+		setOpenSnackBar(false);
+	};
 
 	return (
 		<Fragment>
+			<Snackbar
+				anchorOrigin={{vertical: 'top',horizontal: 'center',}}
+				onClose={snackBarClose}
+				open={openSnackBar}
+				message={snackBarMessage}
+				action={
+					<React.Fragment>
+						<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
+							<CloseIcon fontSize="small" />
+						</IconButton>
+					</React.Fragment>
+				}/>
+		
+		
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">					
 					코드 관리
