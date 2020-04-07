@@ -90,7 +90,9 @@ export default function CodeSearchDiv(props) {
 	const handleClickSearch = () => {
 		var selectedSearchType = document.getElementsByName("searchType")[0].value;
 		var inputkeyword = document.getElementsByName("searchKeyword")[0].value;
-		if(!inputkeyword && selectedSearchType !== "0"){
+		
+		//검색 조건이 전체 혹은 최상위 코드인 경우 키워드를 입력받지 않는다.
+		if(!inputkeyword && (selectedSearchType !== "0" && selectedSearchType !== "5")){
 			document.getElementsByName("searchKeyword")[0].focus();
 			return;
 		}
@@ -217,7 +219,7 @@ export default function CodeSearchDiv(props) {
 									shrink: true,
 								}}
 								InputProps={{
-									readOnly: dialogState.searchType == "0",
+									readOnly: dialogState.searchType == "0" || dialogState.searchType == "5",
 								}}
 								value={dialogState.searchKeyword}
 								type="search"
