@@ -54,7 +54,7 @@ export default function ProjectSearchDiv(props) {
 	
 	const classes = useToolbarStyles();
 	const [open, setOpen] = React.useState(false);
-	const {condition, updateCondition, maxYear, minYear} = props;
+	const {condition, updateCondition} = props;
 	const {member_list, instt_list} = props;
 	
 	const searchTypes = [

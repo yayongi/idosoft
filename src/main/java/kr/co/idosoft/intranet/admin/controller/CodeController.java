@@ -83,7 +83,6 @@ public class CodeController {
 		
 		// 검색 조건 제외하고 개발중..
 		
-		String jsonArrayList 	= null;
 		String jsonObjectData 	= null;
 		
 		HttpSession session = request.getSession();

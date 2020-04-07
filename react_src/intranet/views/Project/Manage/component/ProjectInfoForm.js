@@ -118,7 +118,7 @@ function ProjectInfoForm(props) {
 		ROLE_CODE:{error:false, helperText:""},
 		USE_LANG:{error:false, helperText:""},
 	}]);
-
+	
 	const columnsUp = [
 		{ id: 'MEMBER_NO', label: '이름', minWidth: 100, align: 'center' },
 		{ id: 'CHRG_JOB', label: '담당업무', minWidth: 100, align: 'center' },
@@ -176,6 +176,22 @@ function ProjectInfoForm(props) {
 					proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
 					proMemList[idx]["INPT_ENDDE"] = proMemList[idx]["INPT_ENDDE"].slice(0,4) + "-" + proMemList[idx]["INPT_ENDDE"].slice(4,6) + "-" + proMemList[idx]["INPT_ENDDE"].slice(6,8);
 				}
+				
+				
+				var tmp = [];
+				for(var i=0; i < response.data.proMemList.length; i++){
+					var validateMemCheck_defaultForm = {
+						MEMBER_NO:{error:false, helperText:""},
+						CHRG_JOB:{error:false, helperText:""},
+						INPT_BGNDE:{error:false, helperText:""},
+						INPT_ENDDE:{error:false, helperText:""},
+						ROLE_CODE:{error:false, helperText:""},
+						USE_LANG:{error:false, helperText:""},
+					}
+					
+					tmp.push(validateMemCheck_defaultForm);
+				}
+				setValidateMemCheck(tmp);
 				setMemDataState([...proMemList]);
 				setShowLoadingBar(false);
 			}).catch(e => {
@@ -184,6 +200,10 @@ function ProjectInfoForm(props) {
 			});
 		}
 	}, [renderWant]);
+	
+	
+	console.log("ValidateMemCheck : ");
+	console.log(validateMemCheck);
 
 	const handleAddRow = () => {
 		console.log(memDataState);
@@ -252,16 +272,81 @@ function ProjectInfoForm(props) {
 			setMemDataState([...memDataState]);
 		}
 	}
+	
+	const isValidateCheck = () => {
+		var isReturn = false;
+		let prop_PROJECT_NM={error:false, helperText:""};
+		let prop_INSTT_CODE={error:false, helperText:""};
+		let prop_BGNDE={error:false, helperText:""};
+		let prop_ENDDE={error:false, helperText:""};
+		let prop_TRANSPORT_CT={error:false, helperText:""};
+		let prop_PM={error:false, helperText:""};
+		
+		
+		//프로그램 명 체크
+		if(dataState.PROJECT_NM == ""){
+			prop_PROJECT_NM = {error:true, helperText:"이름을 선택해주세요"};
+			isReturn = true;
+		}
+		
+		//발주처
+		if(dataState.INSTT_CODE == ""){
+			prop_INSTT_CODE={error:true, helperText:"발주처를 선택해주세요"};
+			isReturn = true;
+		}
+		
+		//투입일 - 철수일
+		if(dataState.BGNDE == ""){
+			prop_BGNDE={error:true, helperText:"투입일을 입력해주세요"};
+			isReturn = true;
+		}
+		
+		if(dataState.ENDDE == ""){
+			prop_ENDDE={error:false, helperText:""};
+			isReturn = true;
+		}
+		
+		if(dataState.BGNDE > dataState.ENDDE){
+			prop_BGNDE={error:true, helperText:"투입일과 철수일을 확인해주세요"};
+			prop_ENDDE={error:true, helperText:"투입일과 철수일을 확인해주세요"};
+			isReturn = true;
+		}
+		
+		//교통비
+		if(dataState.TRANSPORT_CT == ""){
+			prop_TRANSPORT_CT={error:true, helperText:"교통비을 입력해주세요"};
+			isReturn = true;
+		}
+
+		//PM
+		/*if(dataState.PM == ""){
+			
+		}*/
+		
+		if(isReturn){
+			setValidateCheck({
+				PROJECT_NM : prop_PROJECT_NM,
+				INSTT_CODE : prop_INSTT_CODE,
+				BGNDE : prop_BGNDE,
+				ENDDE : prop_ENDDE,
+				TRANSPORT_CT : prop_TRANSPORT_CT,
+				PM : prop_PM,
+			});
+			return true;
+		}
+		
+		return false;
+	}
 
 	const handleClickAddProject = () => {
+		if(!isValidateCheck()){
+			return;
+		}
+		
 		setShowLoadingBar(true);
-
 		var instt = instt_list.filter((info) => (info.instt_code == dataState.instt_code))[0];
-		
 		console.log("dataState : ");
-		
 		dataState["PM"] = memDataState[0]["MEMBER_NO"];
-		
 		axios({
 			url: '/intranet/insertProject',
 			method: 'post',
@@ -406,7 +491,7 @@ function ProjectInfoForm(props) {
 											}
 											{
 												screenType == "modify" &&
-												<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickRemoveProject}>
+												<Button variant="contained" color="secondary" size="small" className={classes.button} onClick={handleClickRemoveProject}>
 													삭제
 												</Button>
 											}
@@ -583,6 +668,8 @@ function ProjectInfoForm(props) {
 												margin="dense"
 												variant="outlined"
 												value={memDataState[idx]["MEMBER_NO"]}
+												error={validateMemCheck[idx]["MEMBER_NO"].error}
+												helperText={validateMemCheck[idx]["MEMBER_NO"].helperText}
 												onChange={(event) => {handleMemChange(event, idx)}}
 												readOnly={screenType=="modify"}
 												fullWidth
@@ -608,6 +695,8 @@ function ProjectInfoForm(props) {
 												margin="dense"
 												variant="outlined"
 												autoComplete="off"
+												error={validateMemCheck[idx]["CHRG_JOB"].error}
+												helperText={validateMemCheck[idx]["CHRG_JOB"].helperText}
 												value={memDataState[idx]["CHRG_JOB"]}
 												onChange={(event) => {handleMemChange(event, idx)}}
 												fullWidth
@@ -630,6 +719,8 @@ function ProjectInfoForm(props) {
 																format="yyyy-MM-dd"
 																minDate={dataState.BGNDE}
 																value={memDataState[idx]["INPT_BGNDE"]}
+																error={validateMemCheck[idx]["INPT_BGNDE"].error}
+																helperText={validateMemCheck[idx]["INPT_BGNDE"].helperText}
 																onChange={(data) => {handleChangeDate(data, "INPT_BGNDE", idx)}}
 																inputVariant="outlined"
 																readOnly={false}
@@ -649,6 +740,8 @@ function ProjectInfoForm(props) {
 																format="yyyy-MM-dd"
 																maxDate={dataState.ENDDE}
 																value={memDataState[idx]["INPT_ENDDE"]}
+																error={validateMemCheck[idx]["INPT_ENDDE"].error}
+																helperText={validateMemCheck[idx]["INPT_ENDDE"].helperText}
 																onChange={(data) => {handleChangeDate(data, "INPT_ENDDE", idx)}}
 																inputVariant="outlined"
 																readOnly={false}
@@ -668,6 +761,8 @@ function ProjectInfoForm(props) {
 													name="ROLE_CODE"
 													margin="dense"
 													variant="outlined"
+													error={validateMemCheck[idx]["ROLE_CODE"].error}
+													helperText={validateMemCheck[idx]["ROLE_CODE"].helperText}
 													value={screenType == "new" && idx == 0 ? "RL0000" : memDataState[idx]["ROLE_CODE"]}
 													onChange={(event) => {handleMemChange(event, idx)}}
 													fullWidth
@@ -724,6 +819,8 @@ function ProjectInfoForm(props) {
 													name="USE_LANG"
 													margin="dense"
 													variant="outlined"
+													error={validateMemCheck[idx]["USE_LANG"].error}
+													helperText={validateMemCheck[idx]["USE_LANG"].helperText}
 													value={memDataState[idx]["USE_LANG"]}
 													onChange={(event) => {handleMemChange(event, idx)}}
 													fullWidth

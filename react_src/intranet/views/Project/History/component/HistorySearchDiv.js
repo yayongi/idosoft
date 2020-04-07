@@ -41,6 +41,9 @@ const useToolbarStyles = makeStyles(theme => ({
 		display: 'flex',
 		flexWrap: 'wrap',
 	},
+	button: {
+		marginRight: '10px',
+	}
 }));
 
 /*
@@ -106,12 +109,12 @@ export default function HistorySearchDiv(props) {
 					<Hidden smDown>
 						{
 							isAdmin && 
-							<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickSearchBtn}>
+							<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickSearchBtn} className={classes.button}>
 								검색 
 							</Button>
 						}
 						<RouterLink button="true" to="/project/history_new/">
-							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} >
+							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
 								이력 등록 
 							</Button>
 						</RouterLink>

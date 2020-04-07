@@ -49,6 +49,7 @@ export default function ManageView(props) {
   const [projectGraphInfo, setProjectGraphInfo] = useState([]);
   const [member_list, setMember_list] = useState([], []);
   const [instt_list, setInstt_list] = useState([], []);
+  const [isAdmin, SetAdmin] = useState(false, []);
   
   
   const [condition, setCondition] = useState({
@@ -71,6 +72,7 @@ export default function ManageView(props) {
 	    	setProjectGraphInfo(response.data.hist_list);
 	    	setMember_list(response.data.member_list);
 	    	setInstt_list(response.data.instt_list);
+	    	SetAdmin(response.data.isAdmin);
 	    	setShowLoadingBar(false);
 	    }).catch(e => {
 	      setShowLoadingBar(false);
@@ -85,13 +87,13 @@ export default function ManageView(props) {
   return (
     <>
       <LoadingBar openLoading={isShowLoadingBar}/>
-      <ProjectSearchDiv maxYear={new Date().getFullYear()+1} minYear={"2012"} updateCondition={updateCondition} member_list={member_list} instt_list={instt_list}/>
+      <ProjectSearchDiv updateCondition={updateCondition} member_list={member_list} instt_list={instt_list}/>
       <Grid container spacing={2}>
       	{
       		projectInfo.length > 0 && 
       		<Grid item xs={12}>
           		<Paper className={classes.paper}>
-          			<ProjectGraph projectGraphInfo={projectGraphInfo} condition={condition}/>
+          			{/*<ProjectGraph projectGraphInfo={projectGraphInfo} condition={condition}/>*/}
       			</Paper>
   			</Grid>
       	}

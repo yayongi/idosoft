@@ -53,9 +53,6 @@ export default function CodeSearchDiv(props) {
 	const classes = useToolbarStyles();
 	const {condition, updateCondition, rootCodeAdd} = props;
 	const [open, setOpen] = React.useState(false, []);
-	
-	console.log("open");
-	console.log(open);
 
 	const handleClickOpenSearch = (event) => {
 		console.log("handleClickOpenSearch");
@@ -89,25 +86,17 @@ export default function CodeSearchDiv(props) {
 	// 상위 컴포넌트의 state를 갱신 처리 해줌
 	const handleClickSearch = () => {
 		var selectedSearchType = document.getElementsByName("searchType")[0].value;
-		if(!selectedSearchType){
-			alert("검색조건을 선택해주세요");
-			document.getElementsByName("searchType")[0].focus();
-			return;
-		}
-
 		var inputkeyword = document.getElementsByName("searchKeyword")[0].value;
 		if(!inputkeyword && selectedSearchType !== "0"){
-			alert("검색어를 입력해주세요");
 			document.getElementsByName("searchKeyword")[0].focus();
 			return;
 		}
 
-		handleClose();
 		updateCondition({
-			searchType: document.getElementsByName("searchType")[0].value,
-			searchKeyword:    document.getElementsByName("searchKeyword")[0].value,
+			searchType: 	document.getElementsByName("searchType")[0].value,
+			searchKeyword:  document.getElementsByName("searchKeyword")[0].value,
 		});
-		
+		handleClose();
 	}
 
 	
@@ -124,24 +113,11 @@ export default function CodeSearchDiv(props) {
 
 	//keyword change
 	const handleKeywordChange= (event) => {
-		var selectedSearchType = document.getElementsByName("searchType")[0].value;
-
-		if(!selectedSearchType || selectedSearchType === "0"){
-			alert("검색조건을 선택해주세요");
-			return;
-		}
-		
 		setDialogState({
 			...dialogState,
 			searchKeyword: event.target.value
 		});
 	};
-
-	const handleEnterKey = (event) => {
-		if(event.key === 'Enter'){
-			handleClickSearch();
-		}
-	}
 
 	const handleClickAddCode = () => {
 		rootCodeAdd();
@@ -158,16 +134,10 @@ export default function CodeSearchDiv(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpenSearch} className={classes.button}>
 							검색
 						</Button>
-						<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />}  onClick={handleClickAddCode} className={classes.button}>
-							코드추가
-						</Button>
 					</Hidden>
 					<Hidden mdUp>
 						<IconButton color="primary" onClick={handleClickOpenSearch} className={classes.button}>
 							<FilterListIcon />
-						</IconButton>
-						<IconButton color="primary" onClick={handleClickAddCode} className={classes.button}>
-							<AddIcon />
 						</IconButton>
 					</Hidden>
 				</div>
@@ -190,7 +160,6 @@ export default function CodeSearchDiv(props) {
 								placeholder="검색조건"
 								label="검색조건"
 								value={dialogState.searchType}
-								defaultValue={searchTypes[0].value}
 								onChange={handleTypeChange}
 								select
 								fullWidth>
@@ -211,10 +180,13 @@ export default function CodeSearchDiv(props) {
 								InputLabelProps={{
 									shrink: true,
 								}}
+								InputProps={{
+									readOnly: dialogState.searchType == "0",
+								}}
 								value={dialogState.searchKeyword}
 								type="search"
 								onChange={handleKeywordChange}
-								onKeyDown={handleEnterKey}
+								autoComplete="off"
 								fullWidth
 								// helperText="직책을 포함하여 넣어주세요."
 							/>

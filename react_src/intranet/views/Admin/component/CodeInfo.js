@@ -14,6 +14,7 @@ import TextField from '@material-ui/core/TextField';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
+import { processErrCode } from '../../../js/util';
 
 import axios from 'axios';
 
@@ -59,59 +60,78 @@ const useStyles = makeStyles(theme => ({
 export default function CodeInfo(props) {
 	console.log("call CodeInfo Area");
 	const classes = useStyles();
-	const {detailCodeInfo, setShowTotalInfoTable, getOrigin} = props;
-	const [isModify, setModify] = React.useState(false);
+	const { selectNodeInfo, reGetOriginData } = props;
 	const [isAddBtnClicked, setIsAddBtn] = React.useState(false, []);
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false, []);    //loading bar
+	const [isLowerBtnClicked, setIsLowerBtnClicked] = React.useState(false, []);    //loading bar
 	const [dataState, setDataState] = React.useState(
 		{
 			CODE_ID: ""
 			,CODE_LEVEL: "1"
 			,UPPER_CODE: ""
-			,UPD_ID: ""
-			,TEMP_COLUM: ""
 			,UPPER_NAME: ""
 			,CODE_NAME: ""
-			,NOTE: ""
-			,REG_DATETIME: ""
-			,UPD_DATETIME: ""
-			,REG_ID: ""
 			,CODE_DC: ""
-		}
+		}, []
 	);	// state : 수정을 위한 데이터 관리
-
-	//하위코드 등록 시 화면이 그려진 후 dataState(등록할 코드의 상위 코드 정보)를 한번 더 변경시켜준다.
+	
+	
+	const [validateCheck, setValidateCheck] = React.useState({
+		code_id:{error:false, helperText:""},
+		code_name:{error:false, helperText:""},
+	});
+	
 	useEffect(() => {
-		console.log("detailCodeInfo : ");
-		console.log(detailCodeInfo);
-		if(detailCodeInfo && detailCodeInfo.length != 0){
-			setDataState(detailCodeInfo);
-			setModify(true);
-		}else{
-			setModify(false);
-			setDataState(
-			{
+		if(selectNodeInfo.CODE_ID == "root"){
+			setDataState({
 				CODE_ID: ""
 				,CODE_LEVEL: "1"
 				,UPPER_CODE: ""
-				,UPD_ID: ""
-				,TEMP_COLUM: ""
 				,UPPER_NAME: ""
 				,CODE_NAME: ""
-				,NOTE: ""
-				,REG_DATETIME: ""
-				,UPD_DATETIME: ""
-				,REG_ID: ""
 				,CODE_DC: ""
 			});
-
-
-
+			setIsLowerBtnClicked(true);
 		}
-	}, [detailCodeInfo]);
+		else if(selectNodeInfo.length > 0){
+			setDataState({
+				...selectNodeInfo[0],
+			});
+			setIsLowerBtnClicked(false);
+		}
+	}, [selectNodeInfo]);
 
 	const validationCheck = () => {
-		return false;
+		var isError = false;
+		var prop_code_id = {error:false, helperText:""};
+		var prop_code_name = {error:false, helperText:""};
+		
+		
+		if(!dataState.CODE_ID && dataState.CODE_ID == ""){
+			prop_code_id = {error:true, helperText:"코드ID를 입력해주세요"};
+			isError = true;
+		}else if(dataState.CODE_ID.length != 6){
+			prop_code_id = {error:true, helperText:"코드ID를 확인 해주세요"};
+			isError = true;
+		}
+		
+		if(!dataState.CODE_NAME && dataState.CODE_NAME == ""){
+			prop_code_name = {error:true, helperText:"코드명을 입력해주세요"};
+			isError = true;
+		}else if(dataState.CODE_NAME.length >= 20){
+			prop_code_name = {error:true, helperText:"코드명을 확인 해주세요"};
+			isError = true;
+		}
+		
+		setValidateCheck({
+			code_id: prop_code_id,
+			code_name: prop_code_name
+		});
+		
+		if(isError){
+			return isError;
+		}
+		return isError;
 	}
 
 	// 필드 값 변경 시, 임시로 값 저장
@@ -123,11 +143,10 @@ export default function CodeInfo(props) {
 	};
 
 	const handleClickAddCode = () => {
-		setShowLoadingBar(true);
 		if(validationCheck()){
 			return;	
 		}
-
+		setShowLoadingBar(true);
 		var sendData = dataState;
 		var upper_code = sendData.UPPER_CODE;
 		if(!upper_code){
@@ -138,14 +157,13 @@ export default function CodeInfo(props) {
 			method: 'post',
 			data: sendData
 		}).then(response => {
+			setShowLoadingBar(false);
 			if(!response.data.isDBError){
-				console.log(response);
-				getOrigin();
-				setShowTotalInfoTable(true);
+				alert("DB insert에 성공했습니다.");
+				reGetOriginData();
 			}else{
 				alert("DB insert에 실패했습니다.");
 			}
-				setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
 			processErrCode(e);
@@ -153,25 +171,23 @@ export default function CodeInfo(props) {
 	};
 
 	const handleClickModifyCode = () => {
-		if(dataState.CODE_NAME == ""){
-			alert("코드명을 입력해주세요");
+		if(validationCheck()){
 			return;
 		}
+		
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/updateCode',
 			method: 'post',
 			data: dataState
 		}).then(response => {
+			setShowLoadingBar(false);
 			if(!response.data.isDBError){
-				console.log(response);
 				alert("수정했습니다.");
-				getOrigin();
-				setShowTotalInfoTable(true);
+				reGetOriginData();
 			}else{
 				alert("수정에 실패했습니다.");
 			}
-			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
 			processErrCode(e);
@@ -179,25 +195,37 @@ export default function CodeInfo(props) {
 	}
 
 	const handleClickRemoveCode = () => {
-		if(detailCodeInfo.subTrees){
-			alert("하위코드가 존재하여 삭제가 불가능합니다. " + detailCodeInfo.subTrees[0]["CODE_ID"]);
+		
+		
+		
+		
+		if(typeof(selectNodeInfo[0].subTrees) != "undefined" && selectNodeInfo[0].subTrees.length > 0){
+			alert("하위코드가 존재하여 삭제가 불가능합니다. " + selectNodeInfo[0].subTrees[0]["CODE_ID"]);
 			return;
 		}
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/deleteCode',
 			method: 'post',
-			data: {"CODE_ID": detailCodeInfo["CODE_ID"]}
+			data: {"CODE_ID": selectNodeInfo[0]["CODE_ID"]}
 		}).then(response => {
+			setShowLoadingBar(false);
 			if(!response.data.isDBError){
 				console.log(response);
 				alert("삭제했습니다.");
-				getOrigin();
-				setShowTotalInfoTable(true);
+				reGetOriginData();
+				
+				setDataState({
+					CODE_ID: ""
+					,CODE_LEVEL: "1"
+					,UPPER_CODE: ""
+					,UPPER_NAME: ""
+					,CODE_NAME: ""
+					,CODE_DC: ""
+				});
 			}else{
 				alert("삭제 실패했습니다.");
 			}
-			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
 			processErrCode(e);
@@ -207,23 +235,16 @@ export default function CodeInfo(props) {
 	}
 
 	const handleClickLowerCode = () => {
-		setModify(false);
 		setDataState({
 			CODE_ID: ""
-			,CODE_LEVEL: dataState.CODE_LEVEL+1
+			,CODE_LEVEL: Number(dataState.CODE_LEVEL)+1
 			,UPPER_CODE: dataState.CODE_ID
-			,UPD_ID: ""
-			,TEMP_COLUM: ""
 			,UPPER_NAME: dataState.CODE_NAME
 			,CODE_NAME: ""
-			,NOTE: ""
-			,REG_DATETIME: ""
-			,UPD_DATETIME: ""
-			,REG_ID: ""
 			,CODE_DC: ""
 		});
-
-
+		
+		setIsLowerBtnClicked(true);
 	}
 
 	return (
@@ -271,6 +292,7 @@ export default function CodeInfo(props) {
 									style={{
 										background: 'gray'
 									}}
+									autoComplete="off"
 									fullWidth
 								/>
 							</TableCell>
@@ -283,14 +305,11 @@ export default function CodeInfo(props) {
 									name="CODE_ID"
 									margin="dense"
 									variant="outlined"
+									error={validateCheck["code_id"].error}
+									helperText={validateCheck["code_id"].helperText}
 									value={dataState.CODE_ID}
 									onChange={handleChange}
-									InputProps={{
-									 	readOnly: isModify,
-									}}
-									style={{
-										background: isModify ? 'gray' : ''
-									}}
+									autoComplete="off"
 									fullWidth
 								/>
 							</TableCell>
@@ -303,8 +322,11 @@ export default function CodeInfo(props) {
 									name="CODE_NAME"
 									margin="dense"
 									variant="outlined"
+									error={validateCheck["code_name"].error}
+									helperText={validateCheck["code_name"].helperText}
 									value={dataState.CODE_NAME}
 									onChange={handleChange}
+									autoComplete="off"
 									fullWidth
 								/>
 							</TableCell>
@@ -320,6 +342,7 @@ export default function CodeInfo(props) {
 									value={dataState.CODE_DC}
 									onChange={handleChange}
 									multiline
+									autoComplete="off"
 									fullWidth
 								/>
 							</TableCell>
@@ -331,38 +354,29 @@ export default function CodeInfo(props) {
 				<Typography className={classes.title} color="secondary" variant="subtitle2">
 				</Typography>
 				<div>
-					<RouterLink button="true" to="/admin/code">
-						<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={() => (setShowTotalInfoTable(true))}>
-							목록
+					{
+						isLowerBtnClicked && 
+						<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickAddCode}>
+							등록
 						</Button>
-					</RouterLink>
-					{	!isModify && 
-						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickAddCode}>
-								추가
-							</Button>
-						)
 					}
-					{	isModify && 
-						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickRemoveCode}>
-								삭제
-							</Button>
-						)
+					{	
+						!isLowerBtnClicked && 
+						<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickRemoveCode}>
+							삭제
+						</Button>
 					}
-					{	isModify && 
-						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickModifyCode}>
-								수정
-							</Button>
-						)
+					{	
+						!isLowerBtnClicked &&
+						<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickModifyCode}>
+							수정
+						</Button>
 					}
-					{	isModify && 
-						(
-							<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickLowerCode}>
-								하위코드추가
-							</Button>
-						)
+					{
+						!isLowerBtnClicked &&
+						<Button variant="contained" color="primary" size="small"  className={classes.button} onClick={handleClickLowerCode}>
+							하위코드추가
+						</Button>
 					}
 				</div>
 			</Toolbar>

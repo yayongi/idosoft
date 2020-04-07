@@ -1,8 +1,8 @@
 import React, {useState, useReducer, useCallback, useEffect} from 'react';
-import CodeInfoTable from '../component/CodeInfoTable';
+import CodeInfo from '../component/CodeInfo';
 import CodeSearchDiv from '../component/CodeSearchDiv';
 import CodeTreeView from '../component/CodeTreeView';
-import CodeInfo from '../component/CodeInfo';
+import {getCodeInfoDB} from '../data';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,8 +11,6 @@ import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 import { processErrCode } from '../../../js/util';
 
 import axios from 'axios';
-
-
 
 /*
   level 순으로 정렬된 데이터를 아래와 같은 구조로 재구성 
@@ -44,9 +42,7 @@ function addTreeData(treeDatas, rowData) {
         row.subTrees = [];
       }
       if(row.CODE_ID == rowData.UPPER_CODE) {
-        if(row.subTrees.findIndex((item, idx) => item.CODE_ID === rowData.CODE_ID) == -1){
-          row.subTrees.push(rowData);
-        }
+        row.subTrees.push(rowData);
         break;
       } else {  // 하위 트리에 존재하는지 확인
         addTreeData(row.subTrees, rowData);
@@ -55,16 +51,11 @@ function addTreeData(treeDatas, rowData) {
   }
   return treeDatas;
 }
-
 /**
  * 정렬된 데이터를 재구성
  */
 function getRebuildSortedData(codeOriginInfo){
-  console.log("call getRebuildSortedData");
-  if(!codeOriginInfo){
-    return "";
-  }
-  
+  console.log("call getRebuildSortedData") ;
   let sortedCodeInfo = codeOriginInfo;
   let rebuildDataList = [];
   sortedCodeInfo = [
@@ -90,7 +81,45 @@ function getRebuildSortedData(codeOriginInfo){
   }
   return rebuildDataList;
 }
+/**
+ * 검색 조건에 해당하는 데이터를 기준으로 upper, lower 추출
+ */
+function getRebuildFilterData(codeOriginList, filteredList) {
+  let rebuildDataList = [];
+  let duplicateCheckList = [];
+  for(let i=0; i<filteredList.length; i++) {
+    const filteredRow= filteredList[i];
+   
+    duplicateCheckList.push(filteredRow.CODE_ID);   // 중복 체크를 위해 code_id 저장
 
+    rebuildDataList.push(filteredRow); // 필터된 자신은 먼저 저장
+    getUpperCodeList(rebuildDataList, codeOriginList, filteredList[i].CODE_ID, duplicateCheckList);  // 상위코드 정보 추가
+  }
+
+  rebuildDataList.sort((a, b) => {
+    return parseInt(a.id) - parseInt(b.id);
+  });
+ 
+  return rebuildDataList;
+}
+/*
+  상위 코드 조회
+*/
+function getUpperCodeList(rebuildDataList, codeOriginList, codeId, duplicateCheckList) {
+  for(let i=0; i<codeOriginList.length; i++) {
+    if(codeId == codeOriginList[i].CODE_ID) {      
+      const rebuildDataRow = codeOriginList[i];
+      if(duplicateCheckList.findIndex((item, idx) => item == rebuildDataRow.CODE_ID) == -1) {   // 이미 저장된 code id는 저장하지 않음.
+        rebuildDataList.push(rebuildDataRow);  
+        duplicateCheckList.push(rebuildDataRow.CODE_ID);   // 중복 체크를 위해 code_id 저장
+      }
+      if(codeOriginList[i].UPPER_CODE != "") {
+        getUpperCodeList(rebuildDataList, codeOriginList, codeOriginList[i].UPPER_CODE, duplicateCheckList);
+      } 
+      break;
+    } 
+  }
+}
 
 const mainStyles = makeStyles(theme => ({
   paper: {
@@ -108,112 +137,102 @@ const mainStyles = makeStyles(theme => ({
 }));
 
 export default function CodeView(props) {
+  const [isShowLoadingBar, setShowLoadingBar] = React.useState(false, []);    //loading bar
   const classes = mainStyles();
-  const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
-  const [codeOriginInfo, setCodeOriginInfo] = useState([], []);
-  const [rebuildSortedData, setRebuildSortedData] = useState();
-
-  const [detailCodeInfo, setDetailCodeInfo] = useState();
-  const [isShowTotalInfoTable, setShowTotalInfoTable] = useState(true);
-  
-  console.log("detailCodeInfo : ");
-  console.log(detailCodeInfo);
-
+  const [codeOriginInfo, setCodeOriginInfo] = useState([]);
+  const [rebuildSortedData, setRebuildSortedData] = useState([]);
+  const [codeInfo, setCodeInfo] = useState([]);
   const [condition, setCondition] = useState({
-    searchType: "",
+    searchType: "0",
     searchKeyword: "",
   });
-  const [codeInfo, setCodeInfo] = useState();
+  const [selectNodeInfo, setSelectNodeInfo] = useState({});
+  
+  const getOriginCode = () => {
+	setShowLoadingBar(true);
+	axios({
+	    url: '/intranet/allCode',
+	    method: 'post',
+	    data: {}
+	}).then(response => {
+	    var result = JSON.parse(response.data.list);
+	    result.sort((a, b) => {
+	      return parseInt(a.code_level) - parseInt(b.code_level);
+	    });
+	    
+	    setCodeOriginInfo(result);
+	    setCodeInfo(result);
+	    setRebuildSortedData(getRebuildSortedData(getRebuildFilterData(result, result)));
+	    setShowLoadingBar(false);
 
-  const getOrigin = () => {
-    axios({
-      url: '/intranet/allCode',
-      method: 'post',
-      data: {}
-    }).then(response => {
-      var result = JSON.parse(response.data.list);
-      result.sort((a, b) => {
-        return parseInt(a.CODE_LEVEL) - parseInt(b.CODE_LEVEL);
-      });
-      setCodeOriginInfo(result);
-      setCodeInfo(result);
-      setShowLoadingBar(false);
-      setRebuildSortedData(getRebuildSortedData(result));
-
-    }).catch(e => {
-      setShowLoadingBar(false);
-      processErrCode(e);
-    });
+	}).catch(e => {
+	    setShowLoadingBar(false);
+	    processErrCode(e);
+	});
   }
+  
+  
   useEffect(() => {
-    getOrigin();
+	  getOriginCode();
   }, []);
 
+		const updateCondition = (conditions) => {
+			console.log("updateCondition");
+			console.log(conditions);
+    
+			let searchedInfo = [];
+			switch(conditions.searchType){
+			case "0":
+				searchedInfo = codeOriginInfo;
+				break;
+			case "1":
+				searchedInfo = codeOriginInfo.filter((info) => info.code_id === conditions.searchKeyword);
+				break;
+			case "2":
+				searchedInfo = codeOriginInfo.filter((info) => info.code_name.includes(conditions.searchKeyword));
+				break;
+			case "3":
+				searchedInfo = codeOriginInfo.filter((info) => info.code_level === conditions.searchKeyword);
+				break;
+			case "4":
+				searchedInfo = codeOriginInfo.filter((info) => info.upper_code === conditions.searchKeyword);
+				break;
+			case "5":
+				searchedInfo = codeOriginInfo.filter((info) => info.upper_code === "");
+				break;
+			default:
+				searchedInfo = codeOriginInfo;
+			break;
+		}
+		setCondition(conditions);
+		setCodeInfo(searchedInfo);
+	};
+  
 
-  const updateCondition = (conditions) => {
-    let searchedInfo = [];
-    switch(conditions.searchType){
-      case "0":
-        searchedInfo = codeOriginInfo;
-        break;
-      case "1":
-        searchedInfo = codeOriginInfo.filter((info) => info.CODE_ID === conditions.searchKeyword);
-        break;
-      case "2":
-        searchedInfo = codeOriginInfo.filter((info) => info.CODE_NAME.includes(conditions.searchKeyword));
-        break;
-      case "3":
-        searchedInfo = codeOriginInfo.filter((info) => info.CODE_LEVEL == conditions.searchKeyword);
-        break;
-      case "4":
-        searchedInfo = codeOriginInfo.filter((info) => info.UPPER_CODE === conditions.searchKeyword);
-        break;
-      case "5":
-        searchedInfo = codeOriginInfo.filter((info) => info.UPPER_CODE === "");
-        break;
-      default:
-        searchedInfo = codeOriginInfo;
-        break;
-    }
-    setCondition(conditions);
-    setCodeInfo(searchedInfo);
-    if(searchedInfo.length == 1){
-       setShowTotalInfoTable(false);
-       setDetailCodeInfo(searchedInfo);
-    }else{
-      setShowTotalInfoTable(true);
-    }
-  };
-
-  const updateSelectedNodeId = (nodeid) => {
-    var filterList = codeOriginInfo.filter((info) => info.CODE_ID == nodeid);
-
-    if(typeof(filterList) == "object" && filterList.length>0){
-      setDetailCodeInfo(filterList[0]);
-    }
-
-    setShowTotalInfoTable(false);
-  }
-
-  const rootCodeAdd = () => {
-    setDetailCodeInfo([]);
-    setShowTotalInfoTable(false);
-  }
+	const updateSelectedNodeId = (nodeId) => {
+		if(!nodeId || nodeId == "root"){
+			setSelectNodeInfo({"CODE_ID":"root"});
+		}else{
+			setSelectNodeInfo(codeOriginInfo.filter((info) => info.CODE_ID === nodeId));
+		}
+	}
+	
+	const reGetOriginData = () => {
+		getOriginCode();
+	}
 
   return (
     <>
-      <LoadingBar openLoading={isShowLoadingBar}/>
-      <CodeSearchDiv condition={condition} updateCondition={updateCondition} rootCodeAdd={rootCodeAdd}/>
+      <CodeSearchDiv condition={condition} updateCondition={updateCondition}/>
       <Grid container spacing={2}>
-        <Grid item xs={6} sm={6}>
+        <Grid item xs={12} sm={12} md={6}>
           <Paper className={classes.paperCode}>
-            <CodeTreeView codeInfo={codeInfo} rebuildSortedData={rebuildSortedData} codeOriginInfo={codeOriginInfo} updateSelectedNodeId={updateSelectedNodeId}/>
+            <CodeTreeView rebuildSortedData={rebuildSortedData} updateSelectedNodeId={updateSelectedNodeId}/>
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={6}>
+        <Grid item xs={12} sm={12} md={6}>
           <Paper className={classes.paper}>
-            {isShowTotalInfoTable && <CodeInfoTable codeInfo={codeInfo} rebuildSortedData={rebuildSortedData} routeProps={props.routeProps} updateSelectedNodeId={updateSelectedNodeId}/>}
-            {!isShowTotalInfoTable && <CodeInfo detailCodeInfo={detailCodeInfo}  setShowTotalInfoTable={setShowTotalInfoTable} getOrigin={getOrigin}></CodeInfo>}
+            <CodeInfo routeProps={props.routeProps} selectNodeInfo={selectNodeInfo} reGetOriginData={reGetOriginData}/>
           </Paper>
         </Grid>
       </Grid>

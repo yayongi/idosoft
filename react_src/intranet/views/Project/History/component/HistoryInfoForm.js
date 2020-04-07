@@ -783,7 +783,7 @@ export default function ProjectInfoForm(props) {
 					{
 						screenType == "modify" &&
 						(
-							<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickRemoveHistory}>
+							<Button variant="contained" color="secondary" size="small" className={classes.button} onClick={handleClickRemoveHistory}>
 								삭제
 							</Button>
 						)

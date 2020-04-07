@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import kr.co.idosoft.common.util.commonUtil;
 import kr.co.idosoft.intranet.admin.model.service.CodeServiceImpl;
 import kr.co.idosoft.intranet.login.vo.SessionVO;
 import kr.co.idosoft.intranet.member.model.service.MemberServiceImpl;
@@ -45,6 +46,8 @@ public class ProjectController {
 		List<MemberVO> member_list = projectService.selectMemberList();
 		List<Map<String, Object>> instt_list = projectService.getLowCodeList((String)params.get("CODE_ID"));
 		
+		HttpSession session = request.getSession();
+		boolean isAdmin = commonUtil.isAdmin(session);
 		
 		HashMap<String, Object> conditions = (HashMap<String, Object>)params.get("condition");
 		for (String key :conditions.keySet()) { 
@@ -94,6 +97,7 @@ public class ProjectController {
 		mv.addObject("graph_list", graph_list);
 		mv.addObject("member_list", member_list);
 		mv.addObject("instt_list", instt_list);
+		mv.addObject("isAdmin", isAdmin);
 		return mv;
 	}
 	
@@ -240,15 +244,6 @@ public class ProjectController {
 		boolean db_result = false;
 		try {
 			projectService.update(dataState);
-			
-			/*
-			 * for(HashMap<String, Object> member : member_list) { member.put("UPD_ID",
-			 * mno); member.put("INPT_BGNDE",
-			 * ((String)member.get("INPT_BGNDE")).replace("-", ""));
-			 * member.put("INPT_ENDDE", ((String)member.get("INPT_ENDDE")).replace("-",
-			 * "")); projectService.updateMember(member); }
-			 */
-			
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());

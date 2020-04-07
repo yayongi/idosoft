@@ -55,14 +55,8 @@ function ProjectGraph(props) {
     const makedGraphInfo = makeGraph(projectGraphInfo, condition);
 
     return (
-		<BarChart width={730} height={250} data={makedGraphInfo}>
-		  <CartesianGrid strokeDasharray="3 3" />
-		  <XAxis dataKey="name" />
-		  <YAxis interval={1}/>
-		  <Tooltip />
-		  <Legend />
-		  <Bar dataKey="count" fill="#8884d8" />
-		</BarChart>
+		<>
+		</>
     );
 }
 
