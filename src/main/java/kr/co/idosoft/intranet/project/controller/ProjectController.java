@@ -65,8 +65,8 @@ public class ProjectController {
 		}
 		//특정 날짜 검색
 		else if("1".equals(conditions.get("searchType"))) {
-			LOG.debug("select_detail : " + conditions.get("select_detail")); 
-			condition.put("SELDATE", conditions.get("select_detail"));
+			LOG.debug("select_date : " + conditions.get("select_date")); 
+			condition.put("SELDATE", conditions.get("select_date"));
 			hist_list = projectService.selectAllList(condition);
 			graph_list = projectService.getGraphInfo(condition);
 		}

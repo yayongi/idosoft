@@ -17,6 +17,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
+
 import { Link as RouterLink } from 'react-router-dom';
 import DateFnsUtils from '@date-io/date-fns';
 import ko from "date-fns/locale/ko";
@@ -54,7 +57,7 @@ export default function ProjectSearchDiv(props) {
 	
 	const classes = useToolbarStyles();
 	const [open, setOpen] = React.useState(false);
-	const {condition, updateCondition} = props;
+	const {condition, updateCondition, minYear, maxYear} = props;
 	const {member_list, instt_list} = props;
 	
 	const searchTypes = [
@@ -62,7 +65,7 @@ export default function ProjectSearchDiv(props) {
 		{ value: "1", label: "날짜"},
 		{ value: "2", label: "연도"},
 		{ value: "3", label: "발주처"},
-		{ value: "4", label: "사원명"},
+		{ value: "4", label: "PM"},
 	]
 	// Dialog 값 상위 컴포넌트의 state값으로 초기화
 	const initDialogState = {
@@ -128,13 +131,62 @@ export default function ProjectSearchDiv(props) {
 	}
 	
 	const handleClickSearch = () => {
-		updateCondition(dialogState);
+		
+		
+		var detailCondition = "";
+		var tmpDialogState = JSON.parse(JSON.stringify(dialogState));
+		if(dialogState.searchType == "0"){
+			detailCondition = "";
+		}else if(dialogState.searchType == "1"){
+			detailCondition = dialogState.select_date
+			
+			//날짜의 경우 포맷을 변경해줘야한다.
+			tmpDialogState["select_date"] = Moment(dialogState.select_date).format("YYYYMMDD");
+		}else if(dialogState.searchType == "2"){
+			detailCondition = dialogState.select_detail;
+		}else if(dialogState.searchType == "3"){
+			detailCondition = instt_list.filter((info) => info.CODE_ID == dialogState.select_detail)[0]["CODE_NAME"];
+		}else if(dialogState.searchType == "4"){
+			var tmp = member_list.filter((info) => info.member_no == dialogState.select_detail)[0];
+			detailCondition = tmp["name"] + tmp["code_name"] + "님 입니다.";
+		}
+		
+		updateCondition(tmpDialogState);
+		var list = ["전체","날짜","연도","발주처","사원명"];
+		var txt = "검색 조건 : " + list[Number(dialogState.searchType)] + ", 키워드 : " + detailCondition;
+			+ dialogState.searchType == "0" ? "" : dialogState.searchType == "1" ? dialogState.select_date : detailCondition;
+		setSnackBarMessage(txt);
+		setOpenSnackBar(true);
 		handleClose();
 	}
 	
+	
+	const [openSnackBar, setOpenSnackBar] = React.useState(false);
+	const [snackBarMessage , setSnackBarMessage] = React.useState('');
+
+	const snackBarClose = (event, reason) => {
+		if (reason === 'clickaway') {
+			return;
+		}
+		setOpenSnackBar(false);
+	};
 
 	return (
 		<Fragment>
+			<Snackbar
+				anchorOrigin={{vertical: 'top',horizontal: 'center',}}
+				onClose={snackBarClose}
+				open={openSnackBar}
+				message={snackBarMessage}
+				action={
+					<React.Fragment>
+						<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>
+							<CloseIcon fontSize="small" />
+						</IconButton>
+					</React.Fragment>
+				}/>
+		
+		
 			<Toolbar className={classes.root}>
 				<Typography className={classes.title} color="secondary" variant="subtitle2">					
 					프로젝트 관리

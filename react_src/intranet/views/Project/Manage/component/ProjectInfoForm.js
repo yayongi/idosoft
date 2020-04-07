@@ -21,10 +21,11 @@ import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CreateIcon from '@material-ui/icons/Create';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 import { LoadingBar }  from '../../../../common/LoadingBar/LoadingBar';
 import { processErrCode }  from '../../../../js/util';
-
+import CommonDialog from '../../../../js/CommonDialog';
 import axios from 'axios';
 
 import {
@@ -77,6 +78,7 @@ function ProjectInfoForm(props) {
 	const classes = useStyles();
 	// 이벤트에 따른 값 변화를 위해 임시로 값 저장
 	const { location, match, history } = props.routeProps.routeProps;
+	const { routeProps } = props.routeProps;
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true, []);    //loading bar
 	const [instt_list, setInstt] = React.useState([], []);
 	const [member_list, setMember] = React.useState([], [member_list]);
@@ -98,7 +100,7 @@ function ProjectInfoForm(props) {
 		CHRG_JOB : "",
 		INPT_BGNDE : dataState.BGNDE,
 		INPT_ENDDE : dataState.ENDDE,
-		ROLE_CODE : "RL0001",
+		ROLE_CODE : "RL0000",
 		USE_LANG : "Java,Jsp,Javascript",
 	}]);	// state : 수정을 위한 데이터 관리
 	
@@ -125,12 +127,12 @@ function ProjectInfoForm(props) {
 		{ id: 'TERM', label: '프로젝트 기간', minWidth: 100, align: 'center' },
 		{ id: 'ROLE', label: '역할', minWidth: 100, align: 'center' },
 		{ id: 'USE_LANG', label: '비고', minWidth: 100, align: 'center' },
-		{ id: 'BTN', label: '수정/삭제', minWidth: 100, align: 'center' },
+		{ id: 'BTN', label: screenType == "new" ? "행삭제" : '수정/삭제', minWidth: 100, align: 'center' },
 	];
 	const columnsDown = [
 		{ id: 'MEMBER_NO', label: '이름', minWidth: 100, align: 'center' },
 		{ id: 'CHRG_JOB', label: '담당업무', minWidth: 100, align: 'center' },
-		{ id: 'BTN', label: '수정/삭제', minWidth: 100, align: 'center' },
+		{ id: 'BTN', label: screenType == "new" ? "행삭제" : '수정/삭제', minWidth: 100, align: 'center' },
 	];
     let columns = columnsUp;
     if (isWidthUp('md', props.width)) {
@@ -171,13 +173,6 @@ function ProjectInfoForm(props) {
 				projectInfo["ENDDE"] = projectInfo["ENDDE"].slice(0,4) + "-" + projectInfo["ENDDE"].slice(4,6) + "-" + projectInfo["ENDDE"].slice(6,8);  
 				setDataState(projectInfo);
 
-				var proMemList = response.data.proMemList;
-				for(var idx=0; idx < proMemList.length; idx++){
-					proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
-					proMemList[idx]["INPT_ENDDE"] = proMemList[idx]["INPT_ENDDE"].slice(0,4) + "-" + proMemList[idx]["INPT_ENDDE"].slice(4,6) + "-" + proMemList[idx]["INPT_ENDDE"].slice(6,8);
-				}
-				
-				
 				var tmp = [];
 				for(var i=0; i < response.data.proMemList.length; i++){
 					var validateMemCheck_defaultForm = {
@@ -192,7 +187,14 @@ function ProjectInfoForm(props) {
 					tmp.push(validateMemCheck_defaultForm);
 				}
 				setValidateMemCheck(tmp);
-				setMemDataState([...proMemList]);
+				
+				
+				var proMemList = response.data.proMemList;
+				for(var idx=0; idx < proMemList.length; idx++){
+					proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
+					proMemList[idx]["INPT_ENDDE"] = proMemList[idx]["INPT_ENDDE"].slice(0,4) + "-" + proMemList[idx]["INPT_ENDDE"].slice(4,6) + "-" + proMemList[idx]["INPT_ENDDE"].slice(6,8);
+				}
+				setMemDataState(proMemList);
 				setShowLoadingBar(false);
 			}).catch(e => {
 				setShowLoadingBar(false);
@@ -242,6 +244,12 @@ function ProjectInfoForm(props) {
 			...dataState,
 			[event.target.name]: event.target.value
 		});
+		
+		
+		setValidateCheck({
+			...validateCheck,
+			[event.target.name] : {error:false, helperText:""},
+		});
 	};
 
 	const handleMemChange = (event, idx) => {
@@ -249,6 +257,23 @@ function ProjectInfoForm(props) {
 			updatedMemList.push(idx);
 			setUpdateMemList(updatedMemList);
 		}
+		
+		var validateMemCheck_defaultForm = {
+			MEMBER_NO:{error:false, helperText:""},
+			CHRG_JOB:{error:false, helperText:""},
+			INPT_BGNDE:{error:false, helperText:""},
+			INPT_ENDDE:{error:false, helperText:""},
+			ROLE_CODE:{error:false, helperText:""},
+			USE_LANG:{error:false, helperText:""},
+		}
+		
+		
+		//투입인원에대한 에러 문구는 한번에 초기화 시켜준다
+		var defaultMemberValidate = [];
+		for(var i=0; i < memDataState.length; i++){
+			defaultMemberValidate.push(validateMemCheck_defaultForm);
+		}
+		setValidateMemCheck(defaultMemberValidate);
 
 		memDataState[idx][event.target.name] = event.target.value;
 		setMemDataState([...memDataState]);
@@ -262,6 +287,12 @@ function ProjectInfoForm(props) {
 				...dataState,
 				[target]: Moment(date).format('YYYY-MM-DD')
 			});
+			
+			//투입일 철수일이 수정되었을때 에러문구 초기화
+			setValidateCheck({
+				...validateCheck,
+				[target]: {error:false, helperText:""}
+			});
 		}else{
 			console.log("target include inpt_");
 			if(screenType == "modify" && updatedMemList.indexOf(idx) < 0){
@@ -270,6 +301,21 @@ function ProjectInfoForm(props) {
 			}
 			memDataState[idx][target] = Moment(date).format('YYYY-MM-DD'); 
 			setMemDataState([...memDataState]);
+			
+			var tmp = [];
+			for(var i=0; i < memDataState.length; i++){
+				var validateMemCheck_defaultForm = {
+					MEMBER_NO:{error:false, helperText:""},
+					CHRG_JOB:{error:false, helperText:""},
+					INPT_BGNDE:{error:false, helperText:""},
+					INPT_ENDDE:{error:false, helperText:""},
+					ROLE_CODE:{error:false, helperText:""},
+					USE_LANG:{error:false, helperText:""},
+				}
+				
+				tmp.push(validateMemCheck_defaultForm);
+			}
+			setValidateMemCheck(tmp);
 		}
 	}
 	
@@ -333,12 +379,90 @@ function ProjectInfoForm(props) {
 		if(isError){
 			return isError;
 		}
-		
 		return isError;
 	}
+	
+	const isMemberValidateCheck = () => {
+		var isError = false;
+		var errorList = [];
+		for (var i = 0; i < memDataState.length; i++){
+			var validateMemCheck_defaultForm = {
+				MEMBER_NO:{error:false, helperText:""},
+				CHRG_JOB:{error:false, helperText:""},
+				INPT_BGNDE:{error:false, helperText:""},
+				INPT_ENDDE:{error:false, helperText:""},
+				ROLE_CODE:{error:false, helperText:""},
+				USE_LANG:{error:false, helperText:""},
+			}
+			
+			
+			//이름
+			if(memDataState[i]["MEMBER_NO"] == ""){
+				validateMemCheck_defaultForm.MEMBER_NO = {error:true, helperText:"사원을 선택해주세요"};
+				isError = true;
+			}
+			//담당업무	
+			if(memDataState[i]["CHRG_JOB"] == ""){
+				validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"역할을 입력해주세요"};
+				isError = true;
+			}
+			
+			else if(memDataState[i]["CHRG_JOB"].length > 30){
+				validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"역할을 너무 길게 입력하셨습니다."};
+				isError = true;
+			}
+			
+			//프로젝트 기간
+			var INPT_BGNDE = memDataState[i]["INPT_BGNDE"].replace("-", "").replace("-", "");
+			var INPT_ENDDE = memDataState[i]["INPT_ENDDE"].replace("-", "").replace("-", "");
+			var BGNDE = dataState.BGNDE.replace("-", "").replace("-", "");
+			var ENDDE = dataState.ENDDE.replace("-", "").replace("-", "");
+			if(INPT_BGNDE > INPT_ENDDE ){
+				validateMemCheck_defaultForm.INPT_BGNDE = {error:true, helperText:"투입일을 확인해주세요"};
+				validateMemCheck_defaultForm.INPT_ENDDE = {error:true, helperText:"철수일을 확인해주세요"};
+				isError = true;
+			}
+			
+			if(INPT_BGNDE < BGNDE){
+				validateMemCheck_defaultForm.INPT_BGNDE = {error:true, helperText:"투입일을 확인해주세요"};
+				isError = true;
+			}
+			
+			if(INPT_ENDDE > ENDDE){
+				validateMemCheck_defaultForm.INPT_ENDDE = {error:true, helperText:"철수일을 확인해주세요"};
+				isError = true;
+			}
+			
+			//역할
+			if(memDataState[i]["ROLE_CODE"] == ""){
+				validateMemCheck_defaultForm.ROLE_CODE = {error:true, helperText:"역할을 선택해주세요"};
+				isError = true;
+			}
+			//비고
+			if(memDataState[i]["USE_LANG"] == "" ){
+				validateMemCheck_defaultForm.USE_LANG = {error:true, helperText:"비고를 입력해주세요"};
+				isError = true;
+			}
+			else if(memDataState[i]["USE_LANG"].length > 30){
+				validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"비고을 너무 길게 입력하셨습니다."};
+				isError = true;
+			}
+			errorList.push(validateMemCheck_defaultForm);
+		}
+		setValidateMemCheck(errorList);
+		if(isError){
+			return isError;
+		}
+		return isError;
+	}
+	
 
 	const handleClickAddProject = () => {
 		if(isValidateCheck()){
+			return;
+		}
+		
+		if(isMemberValidateCheck()){
 			return;
 		}
 		
@@ -351,13 +475,13 @@ function ProjectInfoForm(props) {
 			method: 'post',
 			data: {"dataState" : dataState, "memDataState": memDataState, "instt_name":instt["CODE_NAME"], "instt_code":instt["CODE_ID"]}
 		}).then(response => {
+			setShowLoadingBar(false);
 			if(!response.data.isDBError){
 				alert("등록 되었습니다.");
-				history.back();
+				history.goBack();
 			}else{
 				alert("등록 실패했습니다.");
 			}
-			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
 		});
@@ -390,7 +514,7 @@ function ProjectInfoForm(props) {
 			setShowLoadingBar(false);
 		});
 	}
-	const handleClickRemoveProject = () => {
+	const removeProject = () => {
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/removeProject',
@@ -407,6 +531,14 @@ function ProjectInfoForm(props) {
 		}).catch(e => {
 			setShowLoadingBar(false);
 		});
+	}
+	
+	const handleRemoveRow = (idx) => {
+		console.log("---------remove click "+ idx +"-------");
+		if(idx == 0){
+			alert("PM은 삭제할 수 없습니다.");
+			return;
+		}
 	}
 
 	const handleRemoveMember = (member_no) => {
@@ -457,9 +589,35 @@ function ProjectInfoForm(props) {
 	const handleClickCancle = () => {
 		history.goBack();
 	};
+	
+	
+	
+	// confirm, alert 창 함수
+  	// 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
+	const [dialog, setDialog] = React.useState({});
+	
+	const handleClickRemoveProject = () => {
+		handleOpenDialog("프로젝트 관리", "프로젝트를 삭제하시겠습니까?", true);
+	}
+	//Dialog open handler
+	const handleOpenDialog = (title, content, isConfirm) => {
+		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
+	}
+
+	//Dialog close handler
+	//확인:true 취소:false 리턴
+	const handleCloseDialog = (title, result) => {
+		setDialog({title:'', content:'', onOff:false, isConfirm:false});
+		if(result){
+			removeProject();
+		}else{
+			return;
+		}
+	}
 
 	return (
 			<>
+			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<LoadingBar openLoading={isShowLoadingBar}/>
 			<div className={classes.root}>
 				<TableContainer component={Paper}>
@@ -510,6 +668,8 @@ function ProjectInfoForm(props) {
 										variant="outlined"
 										value={dataState.PROJECT_NM}
 										onChange={handleChange}
+										error={validateCheck.PROJECT_NM.error}
+										helperText={validateCheck.PROJECT_NM.helperText}
 										autoComplete="off"
 										fullWidth
 									>
@@ -526,6 +686,8 @@ function ProjectInfoForm(props) {
 										variant="outlined"
 										onChange={handleChange}
 										value={dataState.INSTT_CODE}
+										error={validateCheck.INSTT_CODE.error}
+										helperText={validateCheck.INSTT_CODE.helperText}
 										autoComplete="off"
 										fullWidth
 										select>
@@ -552,6 +714,8 @@ function ProjectInfoForm(props) {
 												/* minDate={new Date()} */
 												value={dataState.BGNDE}
 												onChange={(data) => {handleChangeDate(data, "BGNDE")}}
+												error={validateCheck.BGNDE.error}
+												helperText={validateCheck.BGNDE.helperText}
 												inputVariant="outlined"
 												readOnly={false}
 												// InputAdornmentProps={{ position: "start" }}
@@ -575,6 +739,8 @@ function ProjectInfoForm(props) {
 												format="yyyy-MM-dd"
 												/* maxDate={dataState.ENDDE} */
 												value={dataState.ENDDE}
+												error={validateCheck.ENDDE.error}
+												helperText={validateCheck.ENDDE.helperText}
 												onChange={(data) => {handleChangeDate(data, "ENDDE")}}
 												inputVariant="outlined"
 												readOnly={false}
@@ -594,6 +760,8 @@ function ProjectInfoForm(props) {
 										currencySymbol="￦"
 										minimumValue="0"
 										decimalPlaces={0}
+										error={validateCheck.TRANSPORT_CT.error}
+										helperText={validateCheck.TRANSPORT_CT.helperText}
 										value={dataState.TRANSPORT_CT}
 										onChange={handleChange}
 										autoComplete="off"
@@ -601,25 +769,6 @@ function ProjectInfoForm(props) {
 									/>
 								</TableCell>
 							</TableRow>
-							{/*<TableRow>
-								<TableCell align="left" component="th" scope="row">PM</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="PM"
-										name="PM"
-										variant="outlined"
-										onChange={handleChange}
-										value={dataState.PM}
-										fullWidth
-										select>
-										{member_list.map(info => (
-											<MenuItem key={info.member_no} value={info.member_no}>
-												{info.name}
-											</MenuItem>
-										))}
-									</TextField>
-								</TableCell>
-							</TableRow>*/}
 						</TableBody>
 					</Table>
 				</TableContainer>
@@ -829,8 +978,13 @@ function ProjectInfoForm(props) {
 										}
 
 										<TableCell 
-											align="left"
+											align="center"
 											key={"BTN" + idx}>
+											{ screenType == "new" &&
+												<IconButton aria-label="remove" color="secondary" className={classes.margin} onClick={() => handleRemoveRow(idx)}>
+													<CancelIcon fontSize="small" />
+												</IconButton>
+											}
 											{ screenType == "modify" &&
 												<IconButton aria-label="delete" className={classes.margin} onClick={() => handleRemoveMember(memDataState[idx]["MEMBER_NO"])}>
 													<DeleteIcon fontSize="small" />
