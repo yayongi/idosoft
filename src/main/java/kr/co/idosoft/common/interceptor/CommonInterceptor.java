@@ -1,5 +1,6 @@
 package kr.co.idosoft.common.interceptor;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,8 +61,32 @@ public class CommonInterceptor extends  HandlerInterceptorAdapter {
 					sessionVo = loginService.checkUserWithSessionKey(sessionMap);
 					
 					if(sessionVo != null) { // 로그인 여부 존재 여부 판단
+						session.setAttribute("IS_ADMIN", sessionVo.getMANAGER_YN());
+						sessionVo.setMANAGER_YN(""); // 관리자 여부 삭제
 						session.setAttribute("SESSION_DATA", sessionVo);
 						session.setMaxInactiveInterval(60 * 30);
+						
+						// 자동로그인 처리시, 자동으로 쿠키 재설정 
+						// ##############################################################################
+						// 쿠키를 생성하고 생성한 세션의 id를 쿠키에 저장한다
+						Cookie cookie = new Cookie("loginCookie", session.getId());
+						
+						// 쿠키를 찾을 경로를 컨텍스트 경로로 변경한다.
+						cookie.setPath("/");
+						// 7일로 유효기간을 설정한다.
+						cookie.setMaxAge(60*60*24*7);
+						// 쿠키를 response객체에 담는다.
+						response.addCookie(cookie);
+						
+						int amount = 60 * 60 * 24 * 7;
+						Date sessionLimit = new Date(System.currentTimeMillis() + (1000 * amount));
+						
+						data.put("MEMBER_NO", sessionVo.getMEMBER_NO());
+						data.put("sessionId", session.getId());
+						data.put("sessionLimit", sessionLimit);
+						
+						loginService.keepLogin(data);
+						// ##############################################################################
 						
 						return true;
 					} else {
