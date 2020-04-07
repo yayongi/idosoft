@@ -215,7 +215,7 @@ public class ExcelController {
 		
 		if("EXCEL0005".equals(fileCode)) {
 			// Month KEY Array
-			String[] monthArray = {"1�썡", "2�썡", "3�썡", "4�썡", "5�썡", "6�썡", "7�썡", "8�썡", "9�썡", "10�썡", "11�썡", "12�썡"};
+			String[] monthArray = {"1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"};
 			
 			// �넻�떊鍮� & 援먰넻鍮� �빀怨� 
 			
@@ -225,16 +225,16 @@ public class ExcelController {
 				for(int j = 0; j < monthArray.length; j++) {
 					commTotalAmount += Integer.parseInt((String) list1.get(i).get(monthArray[j]));
 					// 吏곸썝�쓽 �넻�떊鍮� 珥앺빀怨�
-					list1.get(i).put("�빀怨�", commTotalAmount);
+					list1.get(i).put("합계", commTotalAmount);
 				}
 				for(int j = 0; j < monthArray.length; j++) {
 					transTotalAmount += (Double)list2.get(i).get(monthArray[j]);
 					// 吏곸썝�쓽 援먰넻鍮� 珥앺빀怨�
-					list2.get(i).put("�빀怨�", transTotalAmount);
+					list2.get(i).put("합계", transTotalAmount);
 				}
 				
 				// 吏곸썝�쓽 珥앺빀怨�
-				list1.get(i).put("珥앺빀怨�", transTotalAmount+commTotalAmount);
+				list1.get(i).put("총합계", transTotalAmount+commTotalAmount);
 			}
 		}
 		
