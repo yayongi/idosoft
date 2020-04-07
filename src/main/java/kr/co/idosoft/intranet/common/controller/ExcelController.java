@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.common.controller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -201,7 +202,11 @@ public class ExcelController {
 			list1 =  excelService.getCodetoList(data);
 			//교통비
 			data.put("FILE_CODE","EXCEL0005_2");
-			list2 =  excelService.getCodetoList(data);
+			try {
+				list2 =  excelService.getTransList(data);
+			} catch (ParseException e) {
+				LOG.debug("ParseException e : " + e.getMessage());
+			}
 			
 			data.put("FILE_CODE","EXCEL0005");
 		} else {

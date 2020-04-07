@@ -913,5 +913,6 @@
 		</if>
 		AND MEMBER_NO != '99999999'
 	</where>
+	ORDER BY NAME ASC
 	</select>
 </mapper>

@@ -311,217 +311,33 @@
 	</select>
 	<!-- 교통비 년별 조회 -->
 	<select id="EXCEL0005_2" parameterType="hashmap" resultType="java.util.LinkedHashMap">
-	SELECT 
-	B.MEMBER_NO '사번',
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-01') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-01')			/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-01')																									/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')														/* step3 */
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)											/* step3 true */			
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-01-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)											/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-01')																								/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-01-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-01-01')),CONCAT(#{YEAR}, '-01-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "1월",
-	SUM(
-		ROUND(IF(																																							
-		DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-02') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-02')			/* step1 */																													  
-		,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-02')																									/* step2 */
-			,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')														/* step3 */
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-02-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)										/* step3 true */			
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-02-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-02-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)										/* step3 false */
-			)																					
-			,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-02')																								/* step4 */	
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-02-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-02-01')) + 1)
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-02-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-02-01')),CONCAT(#{YEAR}, '-02-01')) + 1)
-			)
-		)																
-		,0)
-	)) AS "2월",
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-03') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-03')		/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-03')																								/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')													/* step3 */
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-03-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)									/* step3 true */			
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-03-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-03-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)									/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-03')																							/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-03-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-03-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-03-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-03-01')),CONCAT(#{YEAR}, '-03-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "3월",	
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-04') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-04')			/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-04')																									/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')														/* step3 */
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-04-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)										/* step3 true */			
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-04-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-04-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)										/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-04')																								/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-04-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-04-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-04-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-04-01')),CONCAT(#{YEAR}, '-04-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "4월",
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-05') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-05')			/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-05')																						/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')								/* step3 */
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-05-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)			/* step3 true */			
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-05-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-05-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)			/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-05')																					/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-05-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-05-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-05-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-05-01')),CONCAT(#{YEAR}, '-05-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "5월",
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-06') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-06')			/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-06')																						/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')								/* step3 */
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-06-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)			/* step3 true */			
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-06-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-06-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)			/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-06')																					/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-06-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-06-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-06-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-06-01')),CONCAT(#{YEAR}, '-06-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "6월",
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-07') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-07')			/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-07')																						/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')								/* step3 */
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-07-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)			/* step3 true */			
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-07-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-07-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)			/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-07')																					/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-07-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-07-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-07-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-07-01')),CONCAT(#{YEAR}, '-07-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "7월",
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-08') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-08')			/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-08')																						/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')								/* step3 */
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-08-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)			/* step3 true */			
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-08-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-08-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)			/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-08')																					/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-08-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-08-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-08-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-08-01')),CONCAT(#{YEAR}, '-08-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "8월",
-	SUM(
-	ROUND(IF(																																							
-		DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-09') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-09')			/* step1 */																													  
-		,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-09')																						/* step2 */
-			,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')								/* step3 */
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-09-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)			/* step3 true */			
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-09-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-09-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)			/* step3 false */
-			)																					
-			,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-09')																					/* step4 */	
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-09-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-09-01')) + 1)
-				,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-09-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-09-01')),CONCAT(#{YEAR}, '-09-01')) + 1)
-			)
-		)																
-	,0)
-	)) AS "9월",
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-10') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-10')			/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-10')																						/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')								/* step3 */
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-10-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)			/* step3 true */			
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-10-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-10-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)			/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-10')																					/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-10-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-10-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-10-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-10-01')),CONCAT(#{YEAR}, '-10-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "10월",
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-11') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-11')			/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-11')																						/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')								/* step3 */
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)			/* step3 true */			
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-11-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)			/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-11')																					/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-11-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-11-01')),CONCAT(#{YEAR}, '-11-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "11월",
-	SUM(
-		ROUND(IF(																																							
-			DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ >= ]]> CONCAT(#{YEAR}, '-12') <![CDATA[ && ]]> DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ <= ]]> CONCAT(#{YEAR}, '-12')			/* step1 */																													  
-			,IF(DATE_FORMAT(INPT_BGNDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-12')																						/* step2 */
-				,IF(CONCAT(DATE_FORMAT(INPT_BGNDE, '%Y-%m'), '-01') <![CDATA[ = ]]> CONCAT(DATE_FORMAT(INPT_ENDDE, '%Y-%m'), '-01')								/* step3 */
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-12-01')), '%d')) * (DATEDIFF(DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d'),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d'))	+ 1)			/* step3 true */			
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-12-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-12-01')),DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d')) + 1)			/* step3 false */
-				)																					
-				,IF(DATE_FORMAT(INPT_ENDDE, '%Y-%m') <![CDATA[ = ]]> CONCAT(#{YEAR}, '-12')																					/* step4 */	
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-12-01')), '%d')) * (DATEDIFF(INPT_ENDDE,CONCAT(#{YEAR}, '-12-01')) + 1)
-					,(C.TRANSPORT_CT/DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-12-01')), '%d')) * (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-12-01')),CONCAT(#{YEAR}, '-12-01')) + 1)
-				)
-			)																
-		,0)
-	)) AS "12월"														
-	FROM TB_PROJECT_MEMBER A
-	RIGHT JOIN TB_MEMBER B
-	ON A.MEMBER_NO = B.MEMBER_NO
-	LEFT JOIN TB_PROJECT C
-	ON A.PROJECT_NO = C.PROJECT_NO
+	SELECT A.MEMBER_NO mno
+	, DATE_FORMAT(A.INPT_BGNDE, '%Y-%m-%d') startDate
+	, DATE_FORMAT(A.INPT_ENDDE, '%Y-%m-%d') endDate
+	, B.TRANSPORT_CT ct
+	FROM TB_PROJECT_MEMBER A 
+	LEFT JOIN TB_PROJECT B
+	ON A.PROJECT_NO = B.PROJECT_NO
 	<where>
 		<if test="isAdmin != 1">
-			AND B.MEMBER_NO = #{MEMBER_NO}
+			AND A.MEMBER_NO = #{MEMBER_NO}
 		</if>
-		AND B.MEMBER_NO != '99999999'
+		AND A.MEMBER_NO != '99999999'
+		AND (DATE_FORMAT(A.INPT_BGNDE, '%Y') = #{YEAR}
+		OR DATE_FORMAT(A.INPT_ENDDE, '%Y') = #{YEAR})
 	</where>
-	GROUP BY 사번
-	ORDER BY B.NAME ASC
-	<!-- 
-	1. 종료날짜가  해당 월보다 작거나 같은지 체크 */
-	/* 1. true : 2. 해당 월에 종료하는 날짜인지 체크  */
-	/* 2. true : 3. 시작날짜와 종료날짜가 같은 달 인지 여부 	 */ 
-	/* 2. false :  4. 해당 월에 종료되는 날짜인지 체크 */
-	/* 3. true : 시작날짜부터 종료일 까지 일 수를 계산*/
-	/* 3. false : 시작날짜부터 달의 마지막 날짜까지 일 수 계산*/
-	/* 4. true : 그달의 첫 날부터 종료 일 수 까지 계산  */
-	/* 4. false : 그달의 첫 날부터 마지막 일 수 까지 계산  */
-	/* 1. false : 0
-	/* DATEDIFF() 사용시 차이 계산시, 일수로 하루 빠져 하루를 더해주었습니다. 
-	
-	 -->
 	</select>
-	
-	
+	<select id="EXCEL0005_3" parameterType="hashmap" resultType="string">
+	SELECT MEMBER_NO 
+	FROM TB_MEMBER
+	<where>
+		<if test="isAdmin != 1">
+			AND MEMBER_NO = #{MEMBER_NO}
+		</if>
+		AND MEMBER_NO != '99999999'
+	</where>
+	ORDER BY NAME ASC
+	</select>
 	<!-- 이력 조회 -->
 	<select id="EXCEL0006" parameterType="hashmap" resultType="java.util.LinkedHashMap">
 		SELECT
