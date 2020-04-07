@@ -14,7 +14,8 @@ import TextField from '@material-ui/core/TextField';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
-import { processErrCode } from '../../../js/util';
+import { processErrCode  } from '../../../js/util';
+import CommonDialog from '../../../js/CommonDialog';
 
 import axios from 'axios';
 
@@ -106,12 +107,15 @@ export default function CodeInfo(props) {
 		var prop_code_id = {error:false, helperText:""};
 		var prop_code_name = {error:false, helperText:""};
 		
-		
+		var reg = /[A-Z]{2}[0-9]{4}$/;
 		if(!dataState.CODE_ID && dataState.CODE_ID == ""){
 			prop_code_id = {error:true, helperText:"코드ID를 입력해주세요"};
 			isError = true;
 		}else if(dataState.CODE_ID.length != 6){
 			prop_code_id = {error:true, helperText:"코드ID를 확인 해주세요"};
+			isError = true;
+		}else if(!reg.test(dataState.CODE_ID)){
+			prop_code_id = {error:true, helperText:"대문자2자, 숫자4자 입니다."};
 			isError = true;
 		}
 		
@@ -125,7 +129,7 @@ export default function CodeInfo(props) {
 		
 		setValidateCheck({
 			code_id: prop_code_id,
-			code_name: prop_code_name
+			code_name: prop_code_name,
 		});
 		
 		if(isError){
@@ -197,8 +201,8 @@ export default function CodeInfo(props) {
 			processErrCode(e);
 		});
 	}
-
-	const handleClickRemoveCode = () => {
+	
+	const removeCode = () => {
 		if(typeof(selectNodeInfo[0].subTrees) != "undefined" && selectNodeInfo[0].subTrees.length > 0){
 			alert("하위코드가 존재하여 삭제가 불가능합니다. " + selectNodeInfo[0].subTrees[0]["CODE_ID"]);
 			return;
@@ -230,10 +234,8 @@ export default function CodeInfo(props) {
 			setShowLoadingBar(false);
 			processErrCode(e);
 		});
-
-
 	}
-
+	
 	const handleClickLowerCode = () => {
 		setDataState({
 			CODE_ID: ""
@@ -247,8 +249,32 @@ export default function CodeInfo(props) {
 		setIsLowerBtnClicked(true);
 	}
 
+	// confirm, alert 창 함수
+  	// 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
+	const [dialog, setDialog] = React.useState({});
+	
+	const handleClickRemoveCode = () => {
+		handleOpenDialog("코드관리", "코드를 삭제하시겠습니까?", true);
+	}
+	//Dialog open handler
+	const handleOpenDialog = (title, content, isConfirm) => {
+		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
+	}
+
+	//Dialog close handler
+	//확인:true 취소:false 리턴
+	const handleCloseDialog = (title, result) => {
+		setDialog({title:'', content:'', onOff:false, isConfirm:false});
+		if(result){
+			removeCode();
+		}else{
+			return;
+		}
+	}
+
 	return (
 		<>
+			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<LoadingBar openLoading={isShowLoadingBar}/>
 			<div className={classes.root}>
 			</div>

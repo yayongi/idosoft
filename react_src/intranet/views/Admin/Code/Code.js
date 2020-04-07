@@ -95,11 +95,10 @@ function getRebuildFilterData(codeOriginList, filteredList) {
     rebuildDataList.push(filteredRow); // 필터된 자신은 먼저 저장
     getUpperCodeList(rebuildDataList, codeOriginList, filteredList[i].CODE_ID, duplicateCheckList);  // 상위코드 정보 추가
   }
-
+  
   rebuildDataList.sort((a, b) => {
-    return parseInt(a.id) - parseInt(b.id);
+    return parseInt(a.CODE_LEVEL) - parseInt(b.CODE_LEVEL);
   });
- 
   return rebuildDataList;
 }
 /*
@@ -137,78 +136,79 @@ const mainStyles = makeStyles(theme => ({
 }));
 
 export default function CodeView(props) {
-  const [isShowLoadingBar, setShowLoadingBar] = React.useState(false, []);    //loading bar
-  const classes = mainStyles();
-  const [codeOriginInfo, setCodeOriginInfo] = useState([]);
-  const [rebuildSortedData, setRebuildSortedData] = useState([]);
-  const [codeInfo, setCodeInfo] = useState([]);
-  const [condition, setCondition] = useState({
-    searchType: "0",
-    searchKeyword: "",
-  });
-  const [selectNodeInfo, setSelectNodeInfo] = useState({});
-  
-  const getOriginCode = () => {
-	setShowLoadingBar(true);
-	axios({
-	    url: '/intranet/allCode',
-	    method: 'post',
-	    data: {}
-	}).then(response => {
-	    var result = JSON.parse(response.data.list);
-	    result.sort((a, b) => {
-	      return parseInt(a.code_level) - parseInt(b.code_level);
-	    });
-	    
-	    setCodeOriginInfo(result);
-	    setCodeInfo(result);
-	    setRebuildSortedData(getRebuildSortedData(getRebuildFilterData(result, result)));
-	    setShowLoadingBar(false);
+		const [isShowLoadingBar, setShowLoadingBar] = React.useState(false, []);    //loading bar
+		const classes = mainStyles();
+		const [codeOriginInfo, setCodeOriginInfo] = useState([]);
+		const [codeInfo, setCodeInfo] = useState([]);
+		const [condition, setCondition] = useState({
+		  searchType: "0",
+		  searchKeyword: "",
+		});
+		const [selectNodeInfo, setSelectNodeInfo] = useState({});
+		
+		
+		
+		const cloneCodeOriginInfo = JSON.parse(JSON.stringify(codeOriginInfo));     // 배열은 다른변수에 할당해도 레퍼런스 참조로 복사된다.
+		const cloneCodeInfo = JSON.parse(JSON.stringify(codeInfo));
+		let filterdData = getRebuildFilterData(cloneCodeOriginInfo, cloneCodeInfo);  // 필터링된 리스트형 데이터 (상위코드를 포함)
+		let rebuildSortedData = getRebuildSortedData(filterdData);                      // 계층형 데이터로 재구성한 데이터, 코드별 하위 레벨을 포함하는 구조
 
-	}).catch(e => {
-	    setShowLoadingBar(false);
-	    processErrCode(e);
-	});
-  }
+		
+		const getOriginCode = () => {
+			setShowLoadingBar(true);
+			axios({
+			    url: '/intranet/allCode',
+			    method: 'post',
+			    data: {}
+			}).then(response => {
+			    var result = JSON.parse(response.data.list);
+			    result.sort((a, b) => {
+			      return parseInt(a.CODE_LEVEL) - parseInt(b.CODE_LEVEL);
+			    });
+			    setCodeInfo([].concat(result));
+			    setCodeOriginInfo([].concat(result));
+			    setShowLoadingBar(false);
+			
+			}).catch(e => {
+			    setShowLoadingBar(false);
+			    processErrCode(e);
+			});
+		}
   
   
-  useEffect(() => {
-	  getOriginCode();
-  }, []);
+		useEffect(() => {
+			getOriginCode();
+		}, []);
 
 		const updateCondition = (conditions) => {
-			console.log("updateCondition");
-			console.log(conditions);
-    
 			let searchedInfo = [];
 			switch(conditions.searchType){
-			case "0":
-				searchedInfo = codeOriginInfo;
-				break;
-			case "1":
-				searchedInfo = codeOriginInfo.filter((info) => info.code_id === conditions.searchKeyword);
-				break;
-			case "2":
-				searchedInfo = codeOriginInfo.filter((info) => info.code_name.includes(conditions.searchKeyword));
-				break;
-			case "3":
-				searchedInfo = codeOriginInfo.filter((info) => info.code_level === conditions.searchKeyword);
-				break;
-			case "4":
-				searchedInfo = codeOriginInfo.filter((info) => info.upper_code === conditions.searchKeyword);
-				break;
-			case "5":
-				searchedInfo = codeOriginInfo.filter((info) => info.upper_code === "");
-				break;
-			default:
-				searchedInfo = codeOriginInfo;
-			break;
+				case "0":
+					searchedInfo = [].concat(codeOriginInfo);
+					break;
+				case "1":
+					searchedInfo = codeOriginInfo.filter((info) => info.CODE_ID === conditions.searchKeyword);
+					break;
+				case "2":
+					searchedInfo = codeOriginInfo.filter((info) => info.CODE_NAME.includes(conditions.searchKeyword));
+					break;
+				case "3":
+					searchedInfo = codeOriginInfo.filter((info) => info.CODE_LEVEL === conditions.searchKeyword);
+					break;
+				case "4":
+					searchedInfo = codeOriginInfo.filter((info) => info.UPPER_CODE === conditions.searchKeyword);
+					break;
+				case "5":
+					searchedInfo = codeOriginInfo.filter((info) => info.UPPER_CODE === "");
+					break;
+				default:
+					searchedInfo = [].concat(codeOriginInfo);
+					break;
 		}
 		setCondition(conditions);
 		setCodeInfo(searchedInfo);
 	};
-  
-
+	
 	const updateSelectedNodeId = (nodeId) => {
 		if(!nodeId || nodeId == "root"){
 			setSelectNodeInfo({"CODE_ID":"root"});
@@ -221,21 +221,21 @@ export default function CodeView(props) {
 		getOriginCode();
 	}
 
-  return (
-    <>
-      <CodeSearchDiv condition={condition} updateCondition={updateCondition}/>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={6}>
-          <Paper className={classes.paperCode}>
-            <CodeTreeView rebuildSortedData={rebuildSortedData} updateSelectedNodeId={updateSelectedNodeId}/>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          <Paper className={classes.paper}>
-            <CodeInfo routeProps={props.routeProps} selectNodeInfo={selectNodeInfo} reGetOriginData={reGetOriginData}/>
-          </Paper>
-        </Grid>
-      </Grid>
-    </>
-  );
+	return (
+	  <>
+	    <CodeSearchDiv condition={condition} updateCondition={updateCondition}/>
+	    <Grid container spacing={2}>
+	      <Grid item xs={12} sm={12} md={6}>
+	        <Paper className={classes.paperCode}>
+	          <CodeTreeView rebuildSortedData={rebuildSortedData} updateSelectedNodeId={updateSelectedNodeId}/>
+	        </Paper>
+	      </Grid>
+	      <Grid item xs={12} sm={12} md={6}>
+	        <Paper className={classes.paper}>
+	          <CodeInfo routeProps={props.routeProps} selectNodeInfo={selectNodeInfo} reGetOriginData={reGetOriginData}/>
+	        </Paper>
+	      </Grid>
+	    </Grid>
+	  </>
+	);
 }
