@@ -231,11 +231,18 @@
 	
 	<!-- 그래프정보조회 -->
 	<select id="getGraphInfo" parameterType="hashmap" resultType="hashmap">
-		SELECT *
-		FROM TB_PROJECT_MEMBER
-		WHERE TB_PROJECT_MEMBER.PROJECT_NO IN (SELECT
-					PROJECT_NO
-				FROM TB_PROJECT
+		SELECT  
+			proj_mem.MEMBER_NO
+	        , proj_mem.PROJECT_NO
+	        , proj_mem.INPT_BGNDE
+	        , proj_mem.INPT_ENDDE
+			, proj.PROJECT_NM 
+			FROM TB_PROJECT_MEMBER as proj_mem
+	        LEFT JOIN TB_PROJECT  as proj
+	        ON proj_mem.PROJECT_NO = proj.PROJECT_NO 
+			WHERE proj_mem.PROJECT_NO IN (SELECT
+						PROJECT_NO
+					FROM TB_PROJECT
 				WHERE 1=1
 			<choose>
 				<when test="SELDATE != null and SELDATE != ''">
