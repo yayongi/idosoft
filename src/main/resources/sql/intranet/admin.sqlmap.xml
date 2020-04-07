@@ -25,7 +25,7 @@
 			, NOTE = #{NOTE}
 			, TEMP_COLUM = #{TEMP_COLUM}
 		WHERE
-			CODE_ID like #{CODE_ID}
+			CODE_ID like #{ORIGIN_CODE}
 	</update>
 	
 	<!--  프로젝트 삭제 -->

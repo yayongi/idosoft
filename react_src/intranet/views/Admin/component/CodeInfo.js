@@ -175,11 +175,15 @@ export default function CodeInfo(props) {
 			return;
 		}
 		
+		var sendData = dataState;
+		sendData["ORIGIN_CODE"] = selectNodeInfo[0]["CODE_ID"];
+		
+		
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/updateCode',
 			method: 'post',
-			data: dataState
+			data: sendData
 		}).then(response => {
 			setShowLoadingBar(false);
 			if(!response.data.isDBError){
@@ -195,10 +199,6 @@ export default function CodeInfo(props) {
 	}
 
 	const handleClickRemoveCode = () => {
-		
-		
-		
-		
 		if(typeof(selectNodeInfo[0].subTrees) != "undefined" && selectNodeInfo[0].subTrees.length > 0){
 			alert("하위코드가 존재하여 삭제가 불가능합니다. " + selectNodeInfo[0].subTrees[0]["CODE_ID"]);
 			return;
