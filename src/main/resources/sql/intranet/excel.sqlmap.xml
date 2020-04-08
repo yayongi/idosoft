@@ -43,40 +43,26 @@
 	
 	<!-- 경비 - 월별 통계 -->
 	<select id="EXCEL0002" parameterType="hashmap" resultType="java.util.LinkedHashMap">
-	SELECT CONVERT((@rownum := @rownum+1), CHAR) '번호', T.* FROM (
+	SELECT CONVERT(@rownum := @rownum+1, CHAR) '번호', A.* 
+	FROM(
 		SELECT 
-			 A.MEMBER_NO '사번'
-			, D.CODE_NAME '경비유형'
-			, A.USE_CN '내용'
-			, B.NAME '이름'
-			, C.CODE_NAME '직급'
-			, IFNULL(CONVERT(A.USE_AMOUNT, CHAR),'') '결제금액'
-			, A.USE_DATE '결제일'
-			, E.NAME '1차 결재자'
-			, IFNULL(CONVERT(A.FIR_SANCTN_DATETIME, CHAR),'') '1차 결재일'
-			, F.NAME '2차 결재자'
-			, IFNULL(CONVERT(A.SCD_SANCTN_DATETIME, CHAR),'') '2차 결재일'
-			, IFNULL(CONVERT(A.REG_DATETIME, CHAR) ,'') '등록일'
-		FROM TB_EXPENSE A
-		LEFT JOIN TB_MEMBER B
-			ON A.MEMBER_NO = B.MEMBER_NO
-		LEFT JOIN TB_CODE C
-			ON B.POSITION = C.CODE_ID
-		LEFT JOIN TB_CODE D
-			ON A.EXPENS_TY_CODE = D.CODE_ID
-		LEFT JOIN TB_MEMBER E
-			ON A.FIR_SANCTENER_MEMBER_NO = E.MEMBER_NO
-		LEFT JOIN TB_MEMBER F
-			ON A.SANCTNER_MEMBER_NO = F.MEMBER_NO
-		JOIN (SELECT @rownum := 0) R
-		<where>
-		AND DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
-			BETWEEN DATE_FORMAT(#{REG_START_DATE}, '%Y-%m-%d') 
-				AND DATE_FORMAT(#{REG_END_DATE}, '%Y-%m-%d')
-		AND A.SANCTN_STTUS_CODE = 'SS0002'
-	</where> 
-	ORDER BY B.NAME ASC, A.REG_DATETIME ASC
-	) T
+				B.NAME '이름'
+				, C.CODE_NAME '직급'
+				, CONVERT(SUM(A.USE_AMOUNT), CHAR) '총금액'
+			FROM 
+				TB_EXPENSE A
+				LEFT JOIN TB_MEMBER B
+				ON A.MEMBER_NO = B.MEMBER_NO
+				LEFT JOIN TB_CODE C
+				ON B.POSITION = C.CODE_ID
+				JOIN (SELECT @rownum := 0) R
+			WHERE 
+				DATE_FORMAT(A.REG_DATETIME, '%Y-%m-%d') 
+					
+				AND A.SANCTN_STTUS_CODE = 'SS0002'
+			GROUP BY A.MEMBER_NO
+			ORDER BY B.NAME ASC
+	) A
 	</select>
 	
 	<!-- 경비 관리 -->

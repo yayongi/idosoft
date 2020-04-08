@@ -92,7 +92,7 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 				// 그달 경비 리스트 (중복된 직원번호 존재시 누적 처리) 
 				List <Double[]> monthExpenseList = new ArrayList<Double[]>();	
 				
-				double monthTotal = 0;
+				double monthTotal = 0.0;
 				
 				// dataList
 				for(int k = 0; k < dataList.size(); k++) {
@@ -255,7 +255,7 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 						monthTotal += monthExpenseList.get(0)[k];
 					}
 				} else { // ROW가 없는 경우, 0
-					monthTotal = 0;
+					monthTotal = 0.0;
 				}
 				
 				LOG.debug("# monthKeyArray["+j+"] : " + monthTotal);
@@ -263,6 +263,7 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 				// 그달의 키를 기준으로 올림처리해서 Map으로 저장
 				monthMap.put(monthKeyArray[j], Math.ceil(monthTotal));
 			}
+			LOG.debug("MEMBER_NO : " + membetList.get(i));
 			// Map에 사번을 추가한다.
 			monthMap.put("MEMBER_NO", membetList.get(i));
 			
