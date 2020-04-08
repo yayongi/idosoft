@@ -285,7 +285,7 @@ const MemberMod_admin = (props) => {
             photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+"_"+document.getElementById("myFileProfile").files[0].name : row.photo_path,
             certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileItcert").files[0].name : row.certfile_job_path,
             certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileSchoolcert").files[0].name : row.certfile_school_path,
-            upd_id : JSON.parse(sessionStorage.getItem("loginSession")).member_no
+            upd_id : JSON.parse(sessionStorage.getItem("loginSession")).member_NO
           }
         })
 

@@ -24,7 +24,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
 import Paper from '@material-ui/core/Paper';
 import CreateIcon from '@material-ui/icons/Create';
-import AssignmentIcon from '@material-ui/icons/Assignment';
+import BarChartIcon from '@material-ui/icons/BarChart';
 
 import CommonDialog from '../../js/CommonDialog';
 import ContentModal from "./component/ContentModal";
@@ -558,7 +558,7 @@ const MemberList = (props) => {
 												<TableCell align="center">경력</TableCell>
 												<TableCell align="center">입사일</TableCell>
 												<TableCell align="center">자격증</TableCell>
-												<TableCell align="center"></TableCell>
+												<TableCell align="center">수정 / 이력</TableCell>
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -592,7 +592,7 @@ const MemberList = (props) => {
 														<CreateIcon fontSize="small" />
 													</IconButton>
 													<IconButton aria-label="delete" className={classes.iconPadding} onClick={() => goStory(row.member_no)}>
-														<AssignmentIcon fontSize="small" />
+														<BarChartIcon fontSize="small" />
 													</IconButton>
 												</TableCell>
 											</TableRow>
@@ -614,7 +614,7 @@ const MemberList = (props) => {
 													</TableCell> 
 												)}
 												<TableCell align="center">이름</TableCell>
-												<TableCell align="center"></TableCell>
+												<TableCell align="center">수정 / 이력</TableCell>
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -638,7 +638,7 @@ const MemberList = (props) => {
 															<CreateIcon fontSize="small" />
 														</IconButton>
 														<IconButton aria-label="delete" className={classes.iconPadding} onClick={() => goStory(row.member_no)}>
-															<AssignmentIcon fontSize="small" />
+															<BarChartIcon fontSize="small" />
 														</IconButton>
 													</TableCell>
 												</TableRow>

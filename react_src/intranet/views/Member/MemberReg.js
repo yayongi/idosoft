@@ -258,7 +258,7 @@ const MemberReg = (props) => {
             photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+"_"+document.getElementById("myFileProfile").files[0].name : null,
             certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileItcert").files[0].name : null,
             certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileSchoolcert").files[0].name : null,
-            reg_id : JSON.parse(sessionStorage.getItem("loginSession")).member_no
+            reg_id : JSON.parse(sessionStorage.getItem("loginSession")).member_NO
           }
         })
 
@@ -761,9 +761,6 @@ const MemberReg = (props) => {
                     </Button>
                     <Button variant="contained" color="primary" onClick={() => location.href = getRootPath() + '/#/member'}>
                             뒤로가기
-                    </Button>
-                        <Button variant="contained" color="primary" onClick={() => fileUpload()}>
-                            파일업로드
                     </Button>
                   </div>
                 </CardContent>
