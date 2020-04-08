@@ -421,6 +421,7 @@ function RegistGrid() {
 								multiline={true}  //TextArea로 사용 여부
 								rows={1}          //처음 보여줄 TexArea 행수
 								rowsMax = {5}     //최대호 보여줄 TextArea 행수
+								helperText="영문과 숫자로 입력해주세요."
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>

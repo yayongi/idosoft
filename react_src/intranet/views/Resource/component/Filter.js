@@ -33,7 +33,7 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 
-import {excelExport, processErrCode} from '../../../js/util';
+import {excelExport, processErrCode, isEmpty} from '../../../js/util';
 
 import axios from 'axios';
 
@@ -133,31 +133,36 @@ export default function  Filter(props) {
 	};
 	//엑셀내보내
 	const handleExcelClick = () => {
-		axios({
-			url: '/intranet/resource/exportexcel',
-			method: 'post',
-			data : {
-				searchStr : snackBarMessage === "검색조건이 초기화 되었습니다." ? "전체" : snackBarMessage,
-				searchState : state,
-				title : 'resourceData.xls'
-			},
-			responseType: 'blob',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		}).then(response => {
-			// console.log("positionResult : " + JSON.stringify(response));
-			const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
-			const link = document.createElement('a');
-			link.href = url;
-			link.setAttribute('download', 'resourceData.xls');
-			document.body.appendChild(link);
-			link.click();
-		}).catch(e => {
-			processErrCode(e);
-		});
+		if(isEmpty(resData)){
+			return window.alert('출력하실 목록이 없습니다.');
+		}else{
+			axios({
+				url: '/intranet/resource/exportexcel',
+				method: 'post',
+				data : {
+					searchStr : snackBarMessage === "검색조건이 초기화 되었습니다." ? "전체" : snackBarMessage,
+					searchState : state,
+					title : 'resourceData.xls'
+				},
+				responseType: 'blob',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}).then(response => {
+				// console.log("positionResult : " + JSON.stringify(response));
+				console.log(response.data);
+				const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+				const link = document.createElement('a');
+				link.href = url;
+				link.setAttribute('download', 'resourceData.xls');
+				document.body.appendChild(link);
+				link.click();
 
-		// alert("엑셀 내보내기");
+			}).catch(e => {
+				processErrCode(e);
+			});
+		}
+
 	}
 	// confirm Open Handler
 	const handleOpenConfirm = (title, content, isConfirm) => {
@@ -234,10 +239,17 @@ export default function  Filter(props) {
 
 	//검색 초기화
 	const handleClickReset = () => {
-		setState(initDialogState);
+		setState(
+			{
+				holder: null,
+				resType: '1',
+				stDt: null,
+				edDt: null
+			}
+		);
 		setDialogState(initDialogState);
 		handleClose();
-
+		setPage(0);
 		setOpenSnackBar(true);
 		setSnackBarMessage(`검색조건이 초기화 되었습니다.`);
 	}
