@@ -63,7 +63,7 @@ public class ExcelServiceImpl implements ExcelService {
 		// 회원 목록
 		for(int i = 0; i < membetList.size(); i++) {
 			LinkedHashMap<String, Object> monthMap = new LinkedHashMap<String, Object>();
-			
+			LOG.debug("# membetList.get("+i+") : " + membetList.get(i));
 			// Map에 사번을 추가한다.
 			monthMap.put("MEMBER_NO", membetList.get(i));
 			
@@ -75,7 +75,7 @@ public class ExcelServiceImpl implements ExcelService {
 				// 그달 경비 리스트 (중복된 직원번호 존재시 누적 처리) 
 				List <Double[]> monthExpenseList = new ArrayList<Double[]>();	
 				
-				double monthTotal = 0;
+				double monthTotal = 0.0;
 				
 				// dataList
 				for(int k = 0; k < dataList.size(); k++) {
@@ -238,7 +238,7 @@ public class ExcelServiceImpl implements ExcelService {
 						monthTotal += monthExpenseList.get(0)[k];
 					}
 				} else { // ROW가 없는 경우, 0
-					monthTotal = 0;
+					monthTotal = 0.0;
 				}
 				
 				LOG.debug("# monthKeyArray["+j+"] : " + monthTotal);
