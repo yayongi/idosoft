@@ -47,6 +47,9 @@ const useToolbarStyles = makeStyles(theme => ({
 	},
 	button: {
 		marginRight: '10px',
+	},
+	routerLink : {
+		textDecoration: 'none',
 	}
 }));
 
@@ -196,7 +199,7 @@ export default function ProjectSearchDiv(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button}>
 							검색
 						</Button>
-						<RouterLink button="true" to="/project/manage/new">
+						<RouterLink button="true" className={classes.routerLink} to="/project/manage/new">
 							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} >
 								프로젝트 등록
 							</Button>

@@ -423,18 +423,7 @@ export default function ProjectInfoForm(props) {
 				return;
 			}else{
 				alert("이력 등록에 성공했습니다.");
-				
-				//관리자가 등록하면 등록한 사람의 이력이 보일수있게 변경
-				if(isAdmin){
-					let url = "";
-					url = getRootPath() + "/project/history/";
-					history.push(url + dataState.member_no);
-				}
-				
-				//자기 자신이면 히스토리백
-				else{
-					history.goBack();
-				}
+				history.goBack();
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -464,16 +453,7 @@ export default function ProjectInfoForm(props) {
 				return;
 			}else{
 				alert("이력 삭제에 성공했습니다.");
-				if(isAdmin){
-					let url = "";
-					url = getRootPath() + "/project/history/";
-					history.push(url + dataState.member_no);
-				}
-				
-				//자기 자신이면 히스토리백
-				else{
-					history.goBack();
-				}
+				history.goBack();
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -507,16 +487,7 @@ export default function ProjectInfoForm(props) {
 			}else{
 				alert("이력 갱신에 성공했습니다.");
 				//관리자가 등록하면 등록한 사람의 이력이 보일수있게 변경
-				if(isAdmin){
-					let url = "";
-					url = getRootPath() + "/project/history/";
-					history.push(url + dataState.member_no);
-				}
-				
-				//자기 자신이면 히스토리백
-				else{
-					history.goBack();
-				}
+				history.goBack();
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -525,9 +496,7 @@ export default function ProjectInfoForm(props) {
 	}
 
 	const handleClickCancle = () => {
-		let url = "";
-		url = getRootPath() + "/project/history/";
-		history.push(url + dataState.member_no);
+		history.goBack();
 	};
 
 	return (

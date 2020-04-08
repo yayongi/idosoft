@@ -46,6 +46,9 @@ const useToolbarStyles = makeStyles(theme => ({
 	},
 	button: {
 		marginRight: '10px',
+	},
+	routerLink : {
+		textDecoration: 'none',
 	}
 }));
 
@@ -148,7 +151,7 @@ export default function HistorySearchDiv(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} className={classes.button} onClick={handleClickExcelBtn}>
 							엑셀 내보내기
 						</Button>
-						<RouterLink button="true" to="/project/history_new/">
+						<RouterLink button="true" className={classes.routerLink} to="/project/history_new/">
 							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
 								이력 등록 
 							</Button>
