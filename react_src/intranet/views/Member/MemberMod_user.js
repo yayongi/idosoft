@@ -589,7 +589,7 @@ const MemberMod_user = (props) => {
                                       id="career_date"
                                       views={["year", "month", "date"]}
                                       format="yyyy-MM-dd"
-                                      defaultValue={dateState.career_date}
+                                      value={dateState.career_date}
                                       onChange={getCarDate}
                                       inputVariant="outlined"
                                       disabled={!state.isIdentified}
