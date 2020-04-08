@@ -896,13 +896,14 @@
 	FROM TB_MEMBER A
 	LEFT JOIN TB_CODE B
 	ON A.POSITION = B.CODE_ID
+	JOIN (SELECT @rownum := 0) R
 	<where>
 		<if test="isAdmin != 1">
 			AND A.MEMBER_NO = #{MEMBER_NO}
 		</if>
 		AND A.MEMBER_NO != '99999999'
 	</where>
-	ORDER BY A.NAME ASC
+	ORDER BY NAME ASC
 	) T
 	<if test='isAdmin == 1'>
 	UNION ALL
