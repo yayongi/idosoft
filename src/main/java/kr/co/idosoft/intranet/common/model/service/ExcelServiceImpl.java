@@ -43,11 +43,11 @@ public class ExcelServiceImpl implements ExcelService {
 		
 		HashMap<String, Object> searchData = (HashMap<String, Object>) data.get("SEARCH_DATA");
 		
-		return batchProcessing( dataList, memberList, (String)searchData.get("YEAR"));
+		return batchProcessing( dataList, memberList, (String)searchData.get("YEAR"), (String)searchData.get("isAdmin"));
 	}
 
 	// 교통비 일괄 처리 프로세스
-	static List<LinkedHashMap<String, Object>> batchProcessing(List<LinkedHashMap<String, Object>> dataList, List<String> membetList, String year) throws ParseException { // 월별 일괄 계산 처리
+	static List<LinkedHashMap<String, Object>> batchProcessing(List<LinkedHashMap<String, Object>> dataList, List<String> membetList, String year, String isAdmin) throws ParseException { // 월별 일괄 계산 처리
 		
 		LOG.debug("## 교통비 일괄 처리 프로세스 START #######################################################");
 		
@@ -247,11 +247,34 @@ public class ExcelServiceImpl implements ExcelService {
 				monthMap.put(monthKeyArray[j], Math.round(monthTotal));
 			}
 			
-			
 			// Map을 List에 저장한다.
 			transList.add(monthMap);
 		}
-
+		
+		if("1".equals(isAdmin)) {
+			Map<String, Object> totalMonthMap = new LinkedHashMap<String,Object>();
+			
+			totalMonthMap.put("MEMBER_NO", "ALL");
+			
+			// 월별 합계 및 전체 합계 계산 기능 2020-04-08
+			
+			for(int i = 0; i < monthKeyArray.length; i++) {
+				Integer totalValue = 0;
+				
+				for(int j = 0; j < transList.size(); j++) {
+					
+					totalValue += ((Long)transList.get(j).get(monthKeyArray[i])).intValue();
+					
+					LOG.debug("# totalValue : ["+monthKeyArray[i]+"]" + transList.get(j).get("MEMBER_NO"));
+					LOG.debug("# totalValue : ["+monthKeyArray[i]+"]" + totalValue);
+					
+				}
+				
+				totalMonthMap.put(monthKeyArray[i], totalValue.longValue());
+			}
+			
+			transList.add((LinkedHashMap<String, Object>) totalMonthMap);
+		}
 		LOG.debug("## 교통비 일괄 처리 프로세스 END #########################################################");
 
 		return transList;

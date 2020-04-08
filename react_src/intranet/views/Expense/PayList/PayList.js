@@ -223,7 +223,8 @@ export default function PayList() {
 								<TableRow>
 									{/* 성명 */}
 									<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
-										{members.NAME}
+										{members.NAME} <br/>
+										{members.POSITION === "" ? "" : '('+ members.POSITION +')'}
 									</TableCell>
 									<TableCell  align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>통신비</TableCell>
 									{/* 위치 */}
