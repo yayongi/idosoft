@@ -526,7 +526,7 @@ export default function ProjectInfoForm(props) {
 
 	const handleClickCancle = () => {
 		let url = "";
-		url = getRootPath() + "/#/project/history/";
+		url = getRootPath() + "/project/history/";
 		history.push(url + dataState.member_no);
 	};
 

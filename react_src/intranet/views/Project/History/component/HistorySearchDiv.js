@@ -145,14 +145,14 @@ export default function HistorySearchDiv(props) {
 								검색 
 							</Button>
 						}
+						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} className={classes.button} onClick={handleClickExcelBtn}>
+							엑셀 내보내기
+						</Button>
 						<RouterLink button="true" to="/project/history_new/">
 							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} className={classes.button}>
 								이력 등록 
 							</Button>
 						</RouterLink>
-						<Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} className={classes.button} onClick={handleClickExcelBtn}>
-							엑셀 내보내기
-						</Button>
 					</Hidden>
 					<Hidden mdUp>
 						{	
@@ -160,14 +160,14 @@ export default function HistorySearchDiv(props) {
 								<FilterListIcon />
 							</IconButton>
 						}
+						<IconButton color="primary" onClick={handleClickExcelBtn}>
+							<SaveIcon />
+						</IconButton>
 						<RouterLink button="true" to="/project/history_new/">
 							<IconButton color="primary" className={classes.button}>
 								<AddIcon />
 							</IconButton>
 						</RouterLink>
-						<IconButton color="primary" onClick={handleClickExcelBtn}>
-							<SaveIcon />
-						</IconButton>
 					</Hidden>
 				</div>
 			</Toolbar>
