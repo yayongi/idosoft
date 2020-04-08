@@ -67,6 +67,10 @@ export default function HistoryView(props) {
 	
 	
 	const excelDownLoad = () => {
+		if(typeof(historyInfo) == "object" && historyInfo.length < 1){
+			alert("검색 결과가 없습니다.");
+			return;
+		}
 		const fileName = "HISTORY";
 		const fileCode = "EXCEL0006";
 		axios({
@@ -75,7 +79,7 @@ export default function HistoryView(props) {
 			data : {
 				fileCode : fileCode,
 				fileName : fileName,
-				searchData : {"select_member_no":searchData},
+				searchData : selectedUserName,
 			},
 			responseType: 'blob',
 			headers: {

@@ -177,26 +177,13 @@ public class ExcelController {
 				HttpSession session = request.getSession();
 				
 				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-				String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+				String mno = (String)searchData.get("member_no");									// 로그인 회원번호
 				
 				// 세션 VO에 세션 값 저장
 				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
 				//이력관리 엑셀 다운로드
-				
-				
-				String member_no = "";
-				if("1".equals(isAdmin)) {
-					member_no = (String)searchData.get("select_member_no");
-				}else {
-					member_no = mno;
-				}
-				
-				if("".equals(member_no)) {
-					searchData.put("MEMBER_NO", null);
-				}else {
-					searchData.put("MEMBER_NO", member_no);
-				}
-				
+				searchStr = "사원명 : " + (String)searchData.get("name");
+				searchData.put("MEMBER_NO", mno);
 			}
 			
 			data.put("SEARCH_DATA", searchData);
