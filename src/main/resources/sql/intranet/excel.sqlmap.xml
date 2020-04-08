@@ -48,7 +48,7 @@
 		SELECT 
 				B.NAME '이름'
 				, C.CODE_NAME '직급'
-				, CONVERT(SUM(A.USE_AMOUNT)) '총금액'
+				, CONVERT(SUM(A.USE_AMOUNT), CHAR) '총금액'
 			FROM 
 				TB_EXPENSE A
 				LEFT JOIN TB_MEMBER B
