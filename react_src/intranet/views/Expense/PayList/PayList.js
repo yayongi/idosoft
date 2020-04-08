@@ -341,7 +341,8 @@ export default function PayList() {
 										{
 											transList.map((member, idx1) => (
 												members.MEMBER_NO == member.MEMBER_NO &&
-												member.totalAmount.toLocaleString()
+												//typeof member.totalAmount
+												parseInt(member.totalAmount).toLocaleString()
 											))
 										}
 									</TableCell>

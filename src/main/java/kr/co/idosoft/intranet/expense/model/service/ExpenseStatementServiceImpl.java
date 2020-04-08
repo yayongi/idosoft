@@ -63,11 +63,11 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 		List<Map<String, Object>> 	dataList 	= dao.getTransExpenseList(data);
 		List<String>				memberList 	= dao.getMemberList(data);
 		
-		return batchProcessing(dataList, memberList, (String)data.get("YEAR"));
+		return batchProcessing(dataList, memberList, (String)data.get("YEAR"), (String)data.get("isAdmin"));
 	}
 
 	// 교통비 일괄 처리 프로세스
-	static List<Map<String, Object>> batchProcessing(List<Map<String, Object>> dataList, List<String> membetList, String year) throws ParseException { // 월별 일괄 계산 처리
+	static List<Map<String, Object>> batchProcessing(List<Map<String, Object>> dataList, List<String> membetList, String year, String isAdmin) throws ParseException { // 월별 일괄 계산 처리
 		
 		LOG.debug("## 교통비 일괄 처리 프로세스 START #######################################################");
 		
@@ -270,7 +270,34 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 			// Map을 List에 저장한다.
 			transList.add(monthMap);
 		}
-
+		
+		if("1".equals(isAdmin)) {
+			Map<String, Object> totalMonthMap = new HashMap<String, Object>();
+			
+			totalMonthMap.put("MEMBER_NO", "ALL");
+			
+			// 월별 합계 및 전체 합계 계산 기능 2020-04-08
+			
+			for(int i = 0; i < monthKeyArray.length; i++) {
+				Integer totalValue = 0;
+				
+				for(int j = 0; j < transList.size(); j++) {
+					
+					totalValue += ((Long)transList.get(j).get(monthKeyArray[i])).intValue();
+					
+					LOG.debug("# totalValue : ["+monthKeyArray[i]+"]" + transList.get(j).get("MEMBER_NO"));
+					LOG.debug("# totalValue : ["+monthKeyArray[i]+"]" + totalValue);
+					
+				}
+				
+				totalMonthMap.put(monthKeyArray[i], totalValue.longValue());
+			}
+			
+			transList.add(totalMonthMap);
+		}
+		
+		LOG.debug("교통비 일괄 처리 프로세스 - transList : " + transList);
+		
 		LOG.debug("## 교통비 일괄 처리 프로세스 END #########################################################");
 
 		return transList;

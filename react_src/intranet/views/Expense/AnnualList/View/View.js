@@ -162,12 +162,20 @@ export default function  View(props) {
 			});
 		} else {
 			if(event.target.name == 'pay') {	// 결제금액 특수문자 제거
-				event.target.value = event.target.value.replace(/[^0-9]/g, '');
+				let inputValue = event.target.value;
+				
+				if(inputValue.length >= 9) {
+					event.target.value = inputValue.slice(0, 9).replace(/[^0-9]/g, '');
+					return;
+				} else {
+					event.target.value = inputValue.replace(/[^0-9]/g, '');
+					return;
+				}
+
 			} else if(event.target.name == 'memo') {
 				let inputValue = event.target.value;
 				//최대 글자수 50글자로 제한
 				if(inputValue.length >= 200) {
-					//alert("어림없지");
 					event.target.value = inputValue.slice(0, 200);
 					return;
 				}
@@ -624,7 +632,7 @@ export default function  View(props) {
 									onChange={handleChange}
 									InputProps={{
 										readOnly: isReadOnly,
-										maxLength: 10,
+										maxLength: 8,
 									}}
 									variant="outlined"
 									decimalPlaces={0}

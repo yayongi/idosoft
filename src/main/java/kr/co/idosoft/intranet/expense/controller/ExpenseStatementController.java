@@ -276,7 +276,7 @@ public class ExpenseStatementController {
 		
 		mv.addObject("commList", jsonArraycommList);
 		mv.addObject("transList", jsonArraytransList);
-		
+		mv.addObject("totalRow", "");
 		return mv;
 	}
 }

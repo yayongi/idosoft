@@ -93,6 +93,16 @@ class SignIn extends Component {
 		});
 	}
 
+	// password enter 클릭시, 로그인 처리
+	pwHandleKeydown = (e) => {
+		console.log(`e.target.keyCode : ${e.keyCode}`);
+		if(e.keyCode === 13){
+			const loginHandleClick = this.loginHandleClick.bind(this);
+
+			loginHandleClick();
+		}
+	}
+	
 	// email 입력창에 onchange 이벤트 발생 시, 호출
 	emailHandleChange = (e) => {
 		this.setState({email: e.target.value});
@@ -239,6 +249,7 @@ class SignIn extends Component {
 								id="password"
 								autoComplete="current-password"
 								onChange={this.pwHandleChange.bind(this)}
+								onKeyDown={this.pwHandleKeydown.bind(this)}
 							/>
 							{passwordErr ? <Alert severity="error">{passwordErr}</Alert> : ""}
 							<FormControlLabel

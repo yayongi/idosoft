@@ -102,15 +102,15 @@ public class ExcelController {
 				// 그해의 첫 날
 				REG_END_DATE = regDate + String.valueOf(lastDate);
 				
-				searchData.put("REG_START_DATE", REG_START_DATE);		// 洹몃떖�쓽 �떆�옉�씪
-				searchData.put("REG_END_DATE", REG_END_DATE);			// 洹몃떖�쓽 醫낅즺�씪
+				searchData.put("REG_START_DATE", REG_START_DATE);		// 시작날짜
+				searchData.put("REG_END_DATE", REG_END_DATE);			// 종료날짜
 				
 			} else if("EXCEL0003".equals(fileCode) || "EXCEL0004".equals(fileCode)) {
 				
-				String expenseType 		= (String)searchData.get("expenseType");			// 寃쎈퉬 �쑀�삎
-				String payStDt 			= (String)searchData.get("payStDt");				// �떆�옉 �궇吏�
-				String payEdDt 			= (String)searchData.get("payEdDt");				// 醫낅즺 �궇吏�
-				String status 			= (String)searchData.get("status");					// 寃곗옱 �긽�깭
+				String expenseType 		= (String)searchData.get("expenseType");			// 경비유형
+				String payStDt 			= (String)searchData.get("payStDt");				// 시작날짜
+				String payEdDt 			= (String)searchData.get("payEdDt");				// 종료날짜
+				String status 			= (String)searchData.get("status");					// 결재상태
 				// currentPage 1 초과하고 rows가 비어있는 경우,
 				
 				LOG.debug("#####################################################################################");
@@ -157,7 +157,6 @@ public class ExcelController {
 				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
 				String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
 				
-				// �꽭�뀡 VO�뿉 �꽭�뀡 媛� ���옣
 				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
 
 				searchData.put("MEMBER_NO", mno);		// 사원번호
@@ -229,7 +228,7 @@ public class ExcelController {
 					list1.get(i).put("합계", commTotalAmount);
 				}
 				for(int j = 0; j < monthArray.length; j++) {
-					transTotalAmount += (Long)list2.get(i).get(monthArray[j]);
+					transTotalAmount += ((Long)list2.get(i).get(monthArray[j])).intValue();
 					// 직원의 교통비 총합계
 					list2.get(i).put("합계", transTotalAmount);
 				}
