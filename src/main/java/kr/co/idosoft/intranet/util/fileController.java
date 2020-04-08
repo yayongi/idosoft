@@ -272,7 +272,7 @@ public class fileController {
 		    		}else if(tempData instanceof String){
 		    			cell.setCellValue((String)tempData);
 		    		}else if(tempData instanceof Integer) {
-		    			cell.setCellValue((String)tempData);
+		    			cell.setCellValue((Integer)tempData);
 		    		}
 		    	}
 		    }
@@ -403,7 +403,9 @@ public class fileController {
 		    				cell.setCellValue((Integer)tempData);
 		    			} else if(tempData instanceof Double){
 		    				cell.setCellValue((Double)tempData);
-		    			}
+		    			}  else if(tempData instanceof Long){
+	    					cell.setCellValue((Long)tempData);
+	    				}
 		    		}
 		    	}
 		    	
@@ -430,7 +432,7 @@ public class fileController {
 		    workbook.write(response.getOutputStream());
 		    workbook.close();
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.debug("# Exception : " + e.getMessage());
 		}
 	}
 }
