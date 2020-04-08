@@ -787,6 +787,9 @@
 	<!-- 통신비 년별 조회 -->
 	<select id="getCommunicationExpenseList" parameterType="hashmap" resultType="hashmap">
 	SELECT 
+		* 
+	FROM (
+	SELECT 
 		A.MEMBER_NO MEMBER_NO,
 		A.NAME NAME,
 		B.CODE_NAME POSITION,
@@ -799,7 +802,6 @@
 		* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
 		, B.NOTE) 																																	
 		ELSE '0' END AS "Jan",
-		
 		CASE WHEN 
 		DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 1 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
 		<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-02-01'), INTERVAL 1 MONTH) 
@@ -901,6 +903,127 @@
 		AND A.MEMBER_NO != '99999999'
 	</where>
 	ORDER BY A.NAME ASC
+	) T
+	<if test='isAdmin == 1'>
+	UNION ALL
+	SELECT 'ALL' AS "MEMBER_NO",'전체' AS 'NAME', '' AS 'POSITION' , SUM(T.Jan) "Jan", SUM(T.Fab) "Fab"
+			, SUM(T.Mar) "Mar", SUM(T.Apr) "Apr", SUM(T.May) "May"
+			, SUM(T.June) "June", SUM(T.July) "July", SUM(T.Aug) "Aug"
+			, SUM(T.Sept) "Sept", SUM(T.Oct) "Oct", SUM(T.Nov) Nov, SUM(T.Dec) "Dec"
+	FROM (
+		SELECT
+			CASE WHEN 
+			CONCAT(#{YEAR}, '-01-01') <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 									/* 입사일 기준 처리 조건 */
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> CONCAT(#{YEAR}, '-01-01') 											/* 현재일 기준 처리 조건 */
+			<![CDATA[ && ]]> CONCAT(#{YEAR}, '-01-01') <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01') 		/* 퇴사일 기준 처리 조건 */
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-01-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-01-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE)																																	
+			ELSE 0 END AS "Jan",
+			CASE WHEN 
+			DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 1 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-02-01'), INTERVAL 1 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 1 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-02-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-02-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-02-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE) 
+			ELSE '0' END AS "Fab",
+			CASE WHEN
+			DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 2 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 2 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 2 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-03-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-03-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-03-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE) 
+			ELSE '0' END AS "Mar",
+			CASE WHEN
+			DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 3 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 3 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 3 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-04-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-04-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-04-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE) 
+			ELSE '0' END AS "Apr",
+			CASE WHEN DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 4 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 4 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 4 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-05-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-05-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-05-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE) 
+			ELSE '0' END AS "May",
+			CASE WHEN DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 5 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 5 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 5 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-06-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-06-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-06-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE)
+			ELSE '0' END AS "June",
+			CASE WHEN DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 6 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 6 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 6 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-07-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-07-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-07-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE) 
+			ELSE '0' END AS "July",
+			CASE WHEN DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 7 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 7 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 7 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-08-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-08-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-08-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE)  
+			ELSE '0' END AS "Aug",
+			CASE WHEN DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 8 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 8 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 8 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-09-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-09-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-09-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE) 
+			ELSE '0' END AS "Sept",
+			CASE WHEN DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 9 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 9 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 9 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-10-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-10-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-10-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE)   
+			ELSE '0' END AS "Oct",
+			CASE WHEN DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 10 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 10 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 10 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-11-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-11-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-11-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE) 
+			ELSE '0' END AS "Nov",
+			CASE WHEN DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 11 MONTH) <![CDATA[ >= ]]> CONCAT(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m'), '-01') 
+			<![CDATA[ && ]]> CONCAT(DATE_FORMAT(NOW(), '%Y-%m'), '-01') <![CDATA[ > ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 11 MONTH) 
+			<![CDATA[ && ]]> DATE_ADD(CONCAT(#{YEAR}, '-01-01'), INTERVAL 11 MONTH) <![CDATA[ < ]]> CONCAT(DATE_FORMAT(IFNULL(A.RET_DATE,'9999-12-31'), '%Y-%m'), '-01')
+			THEN IF(DATE_FORMAT(A.ENTRY_DATE, '%Y-%m') <![CDATA[ >= ]]> DATE_FORMAT(CONCAT(#{YEAR}, '-12-01'), '%Y-%m')					/* 그달에 입사한 경우 */
+			, ROUND((B.NOTE / DATE_FORMAT(LAST_DAY(CONCAT(#{YEAR}, '-12-01')), '%d')) 
+			* (DATEDIFF(LAST_DAY(CONCAT(#{YEAR}, '-12-01')), DATE_FORMAT(A.ENTRY_DATE, '%Y-%m-%d')) + 1))
+			, B.NOTE) 
+			ELSE '0' END AS "Dec"
+		FROM TB_MEMBER A
+		LEFT JOIN TB_CODE B
+		ON A.POSITION = B.CODE_ID
+		<where>
+			<if test="isAdmin != 1">
+				AND A.MEMBER_NO = #{MEMBER_NO}
+			</if>
+			AND A.MEMBER_NO != '99999999'
+		</where>
+		ORDER BY A.NAME ASC
+	) T
+	</if>
 	</select>
 	<!-- 교통비 년별 조회 -->
 	<select id="getTransExpenseList" parameterType="hashmap" resultType="hashmap">
@@ -920,6 +1043,7 @@
 		OR DATE_FORMAT(A.INPT_ENDDE, '%Y') = #{YEAR})
 	</where>
 	</select>
+	<!-- 사번 목록 -->
 	<select id="getMemberList" parameterType="hashmap" resultType="string">
 	SELECT MEMBER_NO 
 	FROM TB_MEMBER
