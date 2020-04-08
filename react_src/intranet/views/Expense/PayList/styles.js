@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles';
+import { maxWidth } from '@material-ui/system';
 
 export const useStyles = makeStyles (theme => ({
 	cardArea: {
@@ -18,7 +19,9 @@ export const useStyles = makeStyles (theme => ({
 		color: '#546e7a', 
 		fontSize: '0.75rem', 
 		fontWeight: 500, 
-		lineHeight: '1.3125rem'
+		lineHeight: '1.3125rem',
+		minWidth: 70,
+		maxWidth: 100
 	},
 	fab: {
 		position: 'absolute',
