@@ -57,8 +57,10 @@ export default function ManageView(props) {
 		select_detail : "",
 	});
 	
+	
+	//최초 진입 시 검색 조건
 	useEffect(() => {
-		getDBInfo({"searchType":"1", "select_detail":Moment(new Date()).format("YYYYMMDD")});
+		getDBInfo({"searchType":"1", "select_date":Moment(new Date()).format("YYYYMMDD")});
 	}, []);
 	
 	const getDBInfo = (condition) => {

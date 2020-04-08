@@ -323,6 +323,36 @@ public class ProjectController {
 		return mv;
 	}
 	
+	@RequestMapping(value="/addMember",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView addMember(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		HttpSession session = request.getSession();
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		params.put("REG_ID", mno);		//등록자 사번 추가
+		
+		
+		// 현재 진행 중이 프로젝트 목록 호출
+		boolean db_result = false;
+		try {
+			projectService.insertProjectMember((HashMap<String, Object>)params);
+		}catch(Exception e) {
+			LOG.debug("디비 에러남 DB ERROR");
+			LOG.debug(e.toString());
+			db_result = true;
+		}
+		
+		mv.addObject("isDBError", db_result);
+		return mv;
+	}
+	
 	
 	
 	@RequestMapping(value="/projectDashboard",method=RequestMethod.POST)

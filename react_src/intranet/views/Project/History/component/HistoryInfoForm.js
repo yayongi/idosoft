@@ -353,12 +353,12 @@ export default function ProjectInfoForm(props) {
 			var selProjectBGNDE = selectedProjectInfo["BGNDE"].replace("-", "").replace("-", "");
 			var selProjectENDDE = selectedProjectInfo["ENDDE"].replace("-", "").replace("-", "");
 			if(inpt_bgnde < selProjectBGNDE){
-				prop_inpt_bgnde= {error:true, helperText:"프로젝트 최초 투입일은 "+selProjectBGNDE+"입니다."};
+				prop_inpt_bgnde= {error:true, helperText:"프로젝트 최초 투입일은 "+Moment(selectedProjectInfo["BGNDE"]).format("YYYY-MM-DD")+"입니다."};
 				isReturn=true;
 			}
 			
 			if(inpt_endde > selProjectENDDE){
-				prop_inpt_endde= {error:true, helperText:"프로젝트 최종 철수일은 "+selProjectENDDE+"입니다."};
+				prop_inpt_endde= {error:true, helperText:"프로젝트 최종 철수일은 "+Moment(selectedProjectInfo["ENDDE"]).format("YYYY-MM-DD")+"입니다."};
 				isReturn=true;
 			}
 		}
@@ -526,7 +526,7 @@ export default function ProjectInfoForm(props) {
 
 	const handleClickCancle = () => {
 		let url = "";
-		url = getRootPath() + "/project/history/";
+		url = getRootPath() + "/#/project/history/";
 		history.push(url + dataState.member_no);
 	};
 
@@ -543,7 +543,7 @@ export default function ProjectInfoForm(props) {
 								align="left"
 								 colSpan="6">
 								<Typography className={classes.title} color="inherit" variant="h6">
-									{dataState.screenType == "new" ? "이력관리 등록" : "이력관리 수정"}
+									{screenType == "new" ? "이력관리 등록" : "이력관리 수정"}
 								</Typography>
 							</TableCell>
 						</TableRow>

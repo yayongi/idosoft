@@ -187,7 +187,7 @@ export default function CodeView(props) {
 					searchedInfo = [].concat(codeOriginInfo);
 					break;
 				case "1":
-					searchedInfo = codeOriginInfo.filter((info) => info.CODE_ID === conditions.searchKeyword);
+					searchedInfo = codeOriginInfo.filter((info) => info.CODE_ID.includes(conditions.searchKeyword));
 					break;
 				case "2":
 					searchedInfo = codeOriginInfo.filter((info) => info.CODE_NAME.includes(conditions.searchKeyword));
