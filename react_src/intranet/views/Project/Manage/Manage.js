@@ -88,7 +88,7 @@ export default function ManageView(props) {
 	return (
 	<>
 		<LoadingBar openLoading={isShowLoadingBar}/>
-		<ProjectSearchDiv minYear={"2012"} maxYear={new Date().getFullYear()+2} updateCondition={updateCondition} member_list={member_list} instt_list={instt_list}/>
+		<ProjectSearchDiv isAdmin={isAdmin} minYear={"2012"} maxYear={new Date().getFullYear()+2} updateCondition={updateCondition} member_list={member_list} instt_list={instt_list}/>
 		<Grid container spacing={2}>
 			<Grid item xs={12}>
 				<Paper className={fixedHeightPaper}>

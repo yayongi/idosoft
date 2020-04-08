@@ -60,7 +60,7 @@ export default function ProjectSearchDiv(props) {
 	
 	const classes = useToolbarStyles();
 	const [open, setOpen] = React.useState(false);
-	const {condition, updateCondition, minYear, maxYear} = props;
+	const {isAdmin, condition, updateCondition, minYear, maxYear} = props;
 	const {member_list, instt_list} = props;
 	
 	const searchTypes = [
@@ -199,21 +199,25 @@ export default function ProjectSearchDiv(props) {
 						<Button variant="contained" color="primary" size="small" startIcon={<FilterListIcon />} onClick={handleClickOpen} className={classes.button}>
 							검색
 						</Button>
-						<RouterLink button="true" className={classes.routerLink} to="/project/manage/new">
-							<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} >
-								프로젝트 등록
-							</Button>
-						</RouterLink>	
+						{	isAdmin && 
+							<RouterLink button="true" className={classes.routerLink} to="/project/manage/new">
+								<Button variant="contained" color="primary" size="small" startIcon={<AddIcon />} >
+									프로젝트 등록
+								</Button>
+							</RouterLink>	
+						}
 					</Hidden>
 					<Hidden mdUp>
 						<IconButton color="primary" onClick={handleClickOpen} className={classes.button}>
 							<FilterListIcon />
 						</IconButton>
-						<RouterLink button="true" to="/project/manage/new">
-							<IconButton color="primary">
-								<AddIcon />
-							</IconButton>
-						</RouterLink>
+						{	isAdmin && 
+							<RouterLink button="true" className={classes.routerLink} to="/project/manage/new">
+								<IconButton color="primary">
+									<AddIcon />
+								</IconButton>
+							</RouterLink>
+						}
 					</Hidden>
 				</div>
 			</Toolbar>

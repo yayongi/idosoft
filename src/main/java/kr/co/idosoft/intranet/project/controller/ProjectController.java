@@ -92,10 +92,17 @@ public class ProjectController {
 		}
 		
 		
+		//프로젝트 관리에서 사원 목록 가져올 때 퇴사자를 제외함
+		List<MemberVO> member_res_list = new ArrayList<MemberVO>();
+		for(int i=0; i < member_list.size(); i++) {
+			if("".equals(member_list.get(i).getRet_date()) || member_list.get(i).getRet_date() == null ) {
+				member_res_list.add(member_list.get(i));
+			}
+		}
 		
 		mv.addObject("hist_list", hist_list);
 		mv.addObject("graph_list", graph_list);
-		mv.addObject("member_list", member_list);
+		mv.addObject("member_list", member_res_list);
 		mv.addObject("instt_list", instt_list);
 		mv.addObject("isAdmin", isAdmin);
 		return mv;
