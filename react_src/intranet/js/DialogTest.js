@@ -21,7 +21,7 @@ export default function DialogTest() {
 
 	//Dialog close handler
 	//확인:true 취소:false 리턴
-	const handleCloseDialog = (result) => {
+	const handleCloseDialog = (title, result) => {
 		setDialog({title:'', content:'', onOff:false, isConfirm:false});
     	return resultValue=result;
 	}
