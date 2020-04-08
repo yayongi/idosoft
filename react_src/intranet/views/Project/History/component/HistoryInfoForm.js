@@ -21,6 +21,8 @@ import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
 import { processErrCode, getRootPath } from '../../../../js/util';
 
+import CommonDialog from '../../../../js/CommonDialog';
+
 import axios from 'axios';
 
 import {
@@ -434,7 +436,7 @@ export default function ProjectInfoForm(props) {
 		
 	}
 
-	const handleClickRemoveHistory = () => {
+	const removeHistory = () => {
 		if(isValidateCheck()){
 			return;
 		}
@@ -460,6 +462,29 @@ export default function ProjectInfoForm(props) {
 			processErrCode(e);
 		});
 		//history.goBack();
+	}
+	
+	// confirm, alert 창 함수
+  	// 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
+	const [dialog, setDialog] = React.useState({});
+	const handleClickRemoveHistory = () => {
+		handleOpenDialog("이력관리", "이력을 삭제하시겠습니까?", true);
+	}
+	
+	//Dialog open handler
+	const handleOpenDialog = (title, content, isConfirm) => {
+		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
+	}
+
+	//Dialog close handler
+	//확인:true 취소:false 리턴
+	const handleCloseDialog = (title, result) => {
+		setDialog({title:'', content:'', onOff:false, isConfirm:false});
+		if(result){
+			removeHistory();
+		}else{
+			return;
+		}
 	}
 
 	const handleClickUpdateHistory = () => {
@@ -501,6 +526,7 @@ export default function ProjectInfoForm(props) {
 
 	return (
 		<>
+			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<LoadingBar openLoading={isShowLoadingBar}/>
 			<div className={classes.root}>
 			</div>
