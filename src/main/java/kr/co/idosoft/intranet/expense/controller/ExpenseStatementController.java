@@ -256,7 +256,7 @@ public class ExpenseStatementController {
 				commList.get(i).put("totalAmount", commTotalAmount);
 			}
 			for(int j = 0; j < monthArray.length; j++) {
-				transTotalAmount += (Double)transList.get(i).get(monthArray[j]);
+				transTotalAmount += (Long)transList.get(i).get(monthArray[j]);
 				transList.get(i).put("totalAmount", transTotalAmount);
 			}
 			

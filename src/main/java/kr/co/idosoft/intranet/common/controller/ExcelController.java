@@ -32,7 +32,7 @@ import kr.co.idosoft.intranet.util.fileController;
 
 /**
  * 
- * @author �쑀湲고솚
+ * @author 유기환
  * @since 2020.03.16
  * @content Excel
  */
@@ -60,12 +60,12 @@ public class ExcelController {
 		ModelAndView mv = new ModelAndView(); 
 		mv.setViewName("jsonView"); 
 
-		String fileName 				= (String)params.get("fileName"); // �뿊�� �씠由�
-		String fileCode 				= (String)params.get("fileCode"); // �뿊�� 肄붾뱶
+		String fileName 				= (String)params.get("fileName"); // 엑셀 이름
+		String fileCode 				= (String)params.get("fileCode"); // 엑셀 코드
 		
 		Map<String, Object> searchData 	= (Map<String, Object>)params.getOrDefault("searchData", null);
 		
-		// 寃뱀튂�뒗 �뙆�씪 �씠由� 以묐났�쓣 �뵾�븯湲� �쐞�빐 �떆媛꾩쓣 �씠�슜�빐�꽌 �뙆�씪 �씠由꾩뿉 異붽�
+		// 겹치는 파일 이름 중복을 피하기 위해 시간을 이용해서 파일 이름에 추가
 		Date date = new Date();
 		
 		SimpleDateFormat dayformat = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
@@ -86,20 +86,20 @@ public class ExcelController {
 		data.put("FILE_CODE", fileCode);
 		
 		if(searchData != null) {
-			// EXCEL0001 �썡蹂� 寃쎈퉬 �넻怨� - 媛쒖씤
-			// EXCEL0002 �썡蹂� 寃쎈퉬 �넻怨� - �쟾泥�
-			// EXCEL0003 寃곗옱 愿�由�
+			// EXCEL0001 월별 경비 통계 - 개인
+			// EXCEL0002 월병 경비 통계 - 전체
+			// EXCEL0003 결재 관리
 			
 			if("EXCEL0001".equals(fileCode) || "EXCEL0002".equals(fileCode)) {  
 				String regDate = (String) searchData.get("regDate");
 				
-				String REG_START_DATE 	= ""; // 洹몃떖�쓽 �떆�옉�씪 
-				String REG_END_DATE		= ""; // 洹몃떖�쓽 醫낅즺�씪
+				String REG_START_DATE 	= ""; // 그달의 시작일  
+				String REG_END_DATE		= ""; // 그달의 종료일
 				
 				REG_START_DATE = regDate + "01";
-				// 洹몃떖�쓽 留덉�留� �씪 援ы븯湲�
+				// 그달의 마지막 일 구하기
 				int lastDate = commonUtil.LastDateInMonth(regDate);
-				// 洹명빐�쓽 泥� �궇
+				// 그해의 첫 날
 				REG_END_DATE = regDate + String.valueOf(lastDate);
 				
 				searchData.put("REG_START_DATE", REG_START_DATE);		// 洹몃떖�쓽 �떆�옉�씪
@@ -111,7 +111,7 @@ public class ExcelController {
 				String payStDt 			= (String)searchData.get("payStDt");				// �떆�옉 �궇吏�
 				String payEdDt 			= (String)searchData.get("payEdDt");				// 醫낅즺 �궇吏�
 				String status 			= (String)searchData.get("status");					// 寃곗옱 �긽�깭
-				// currentPage 1 珥덇낵�븯怨� rows媛� 鍮꾩뼱�엳�뒗 寃쎌슦,
+				// currentPage 1 초과하고 rows가 비어있는 경우,
 				
 				LOG.debug("#####################################################################################");
 				LOG.debug("# SEARCH DATA ");
@@ -121,14 +121,14 @@ public class ExcelController {
 				LOG.debug("# status 		: " + status);
 				LOG.debug("#####################################################################################");
 			
-				// -1 �쟾泥대줈 �뱾�뼱�솕�쓣  寃쎌슦, null濡� 蹂��솚
+				// -1 전체로 들어왔을  경우, null로 변환
 				expenseType = !"-1".equals(expenseType) ? expenseType : null;
 				status 		= !"-1".equals(status) ? status : null;
 				
-				// 洹명빐�쓽 泥� �궇
+				// 그해의 첫 날
 				payStDt = payStDt + "01";
 				
-				// 洹몃떖�쓽 留덉�留� �씪 援ы븯湲�
+				// 그달의 마지막 일 구하기
 				int lastDate = commonUtil.LastDateInMonth(payEdDt);
 				payEdDt = payEdDt + String.valueOf(lastDate);
 				
@@ -141,36 +141,37 @@ public class ExcelController {
 				
 				HttpSession session = request.getSession();
 				
-				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// �꽭�뀡 �젙蹂�
-				String mno = sessionVo.getMEMBER_NO();									// 濡쒓렇�씤 �쉶�썝踰덊샇
+				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+				String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
 				
-				// �꽭�뀡 VO�뿉 �꽭�뀡 媛� ���옣
-				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//愿�由ъ옄 �뿬遺�
+				// 세션 VO에 세션 값 저장
+				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
 
-				searchData.put("MEMBER_NO", mno);		// �궗�썝踰덊샇
-				searchData.put("isAdmin", isAdmin);	// 愿�由ъ옄 �뿬遺�
+				searchData.put("MEMBER_NO", mno);		// 사원번호
+				searchData.put("isAdmin", isAdmin);		// 관리자 여부
 				
 			} else if("EXCEL0005".equals(fileCode) ) {
 				
 				HttpSession session = request.getSession();
 				
-				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// �꽭�뀡 �젙蹂�
-				String mno = sessionVo.getMEMBER_NO();									// 濡쒓렇�씤 �쉶�썝踰덊샇
+				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+				String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
 				
 				// �꽭�뀡 VO�뿉 �꽭�뀡 媛� ���옣
-				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//愿�由ъ옄 �뿬遺�
+				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
 
-				searchData.put("MEMBER_NO", mno);		// �궗�썝踰덊샇
-				searchData.put("isAdmin", isAdmin);	// 愿�由ъ옄 �뿬遺�
+				searchData.put("MEMBER_NO", mno);		// 사원번호
+				searchData.put("isAdmin", isAdmin);		// 관리자 여부
 			} else if("EXCEL0006".equals(fileCode) ) {
 				HttpSession session = request.getSession();
 				
-				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// �꽭�뀡 �젙蹂�
-				String mno = sessionVo.getMEMBER_NO();									// 濡쒓렇�씤 �쉶�썝踰덊샇
+				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+				String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
 				
-				// �꽭�뀡 VO�뿉 �꽭�뀡 媛� ���옣
-				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//愿�由ъ옄 �뿬遺�
-				//�씠�젰愿�由� �뿊�� �떎�슫濡쒕뱶
+				// 세션 VO에 세션 값 저장
+				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
+				//이력관리 엑셀 다운로드
+				
 				
 				String member_no = "";
 				if("1".equals(isAdmin)) {
@@ -195,12 +196,12 @@ public class ExcelController {
 		List<LinkedHashMap<String,Object>> list1 = null;
 		List<LinkedHashMap<String,Object>> list2 = null;
 		
-		// �넻�떊鍮�, 援먰넻鍮� �넻怨�
+		// 통신비, 교통비 통계
 		if("EXCEL0005".equals(fileCode)) {
-			//�넻�떊鍮�
+			//통신비
 			data.put("FILE_CODE","EXCEL0005_1");
 			list1 =  excelService.getCodetoList(data);
-			//援먰넻鍮�
+			//교통비
 			data.put("FILE_CODE","EXCEL0005_2");
 			try {
 				list2 =  excelService.getTransList(data);
@@ -217,30 +218,30 @@ public class ExcelController {
 			// Month KEY Array
 			String[] monthArray = {"1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"};
 			
-			// �넻�떊鍮� & 援먰넻鍮� �빀怨� 
+			// 통신비 & 교통비 합계 
 			
 			for(int i = 0; i < list1.size(); i++) {
 				int commTotalAmount = 0;
 				int transTotalAmount = 0;
 				for(int j = 0; j < monthArray.length; j++) {
 					commTotalAmount += Integer.parseInt((String) list1.get(i).get(monthArray[j]));
-					// 吏곸썝�쓽 �넻�떊鍮� 珥앺빀怨�
+					// 직원의 통신비 총합계
 					list1.get(i).put("합계", commTotalAmount);
 				}
 				for(int j = 0; j < monthArray.length; j++) {
-					transTotalAmount += (Double)list2.get(i).get(monthArray[j]);
-					// 吏곸썝�쓽 援먰넻鍮� 珥앺빀怨�
+					transTotalAmount += (Long)list2.get(i).get(monthArray[j]);
+					// 직원의 교통비 총합계
 					list2.get(i).put("합계", transTotalAmount);
 				}
 				
-				// 吏곸썝�쓽 珥앺빀怨�
+				// 직원의 총합계
 				list1.get(i).put("총합계", transTotalAmount+commTotalAmount);
 			}
 		}
 		
 		response.setHeader("fileName", fileName);
 		try {
-			//�뿊�� �뙆�씪 �깮�꽦 諛� �떎�슫濡쒕뱶
+			//엑셀 파일 생성 및 다운로드
 			if("EXCEL0005".equals(fileCode)) {
 				fileController.exportExceptionExcel(list1, list2, fileName, response);
 			} else {

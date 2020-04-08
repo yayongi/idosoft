@@ -261,7 +261,7 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 				LOG.debug("# monthKeyArray["+j+"] : " + monthTotal);
 				
 				// 그달의 키를 기준으로 올림처리해서 Map으로 저장
-				monthMap.put(monthKeyArray[j], Math.ceil(monthTotal));
+				monthMap.put(monthKeyArray[j], Math.round(monthTotal));
 			}
 			LOG.debug("MEMBER_NO : " + membetList.get(i));
 			// Map에 사번을 추가한다.
