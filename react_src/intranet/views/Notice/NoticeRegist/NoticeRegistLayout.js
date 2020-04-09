@@ -233,7 +233,7 @@ export default function NoticeRegistLayout() {
   
   const validationCheck = (noticeData) => {
 
-    if(noticeData.title.length === 0 ){
+    if(noticeData.title.trim().length === 0 ){
       return 1;
     }else if(noticeData.content.length === 0 || noticeData.content === null){
       return 2;

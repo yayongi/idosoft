@@ -110,7 +110,7 @@ public class NoticeController {
 		NoticeVO regedNotice = noticeService.findNotice(noticeVO.getBoard_no());
 		
 		//작성자 또는 관리자 삭제가능
-		if(!mNo.equals(regedNotice.getReg_id()) || !isAdmin) return false;
+		if(!mNo.equals(regedNotice.getReg_id()) && !isAdmin) return false;
 		
 		try {
 			if(0 < noticeService.deleteNotice(noticeVO.getBoard_no())) {
