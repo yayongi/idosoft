@@ -129,13 +129,23 @@ const ContentModal = ({props, closeModal}) => {
             <br/>
             <Table className={classes.tableRoot} aria-label="simple table" stickyHeader key={"3"}>
               <TableHead>
-                  <TableCell  align={"center"} style={{maxWidth:'120px'}} >시리얼번호</TableCell>
-                  <TableCell  align={"center"} style={{maxWidth:'120px'}} className={classes.tableCell}>MAC주소</TableCell>
-                  <TableCell  align={"center"} className={classes.tableCell}>보유자</TableCell>
+                  <TableCell  align={"center"} >시리얼번호</TableCell>
+                  <TableCell  align={"center"} >MAC주소</TableCell>
               </TableHead>
               <TableBody>
                   <TableCell align={"center"} > {props.resData.serial_no}</TableCell>
                   <TableCell align={"center"} > {props.resData.mac_addr === "" ? "미등록" : props.resData.mac_addr} </TableCell>
+              </TableBody>
+            </Table>
+            <br/>
+            <br/>
+            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader key={"4"}>
+              <TableHead>
+                  <TableCell  align={"center"} >등록일</TableCell>
+                  <TableCell  align={"center"} >보유자</TableCell>
+              </TableHead>
+              <TableBody>
+                  <TableCell align={"center"} > {props.resData.reg_datetime}</TableCell>
                   <TableCell align={"center"}> {props.resData.holder}</TableCell>
               </TableBody>
             </Table>

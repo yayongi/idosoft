@@ -74,7 +74,7 @@
 			DATE_FORMAT(STR_TO_DATE(TB_RESOURCE.PURCHASE_MTN, '%Y%m'),'%Y-%m ') AS PURCHASE_MTN,
 			TB_RESOURCE.SERIAL_NO, 
 			TB_RESOURCE.MAC_ADDR,
-			TB_RESOURCE.REG_ID,
+			DATE_FORMAT(TB_RESOURCE.REG_DATETIME, '%Y-%m-%d') AS REG_DATETIME,
 			A.CODE_NAME AS RES_CODE,
 			B.CODE_NAME AS MARK_CODE,
 			C.CODE_NAME AS DISPLAY_SIZE_CODE,
@@ -93,12 +93,12 @@
 			</if>
 			<if test='stDt != "null" and stDt !=""'>
 				<![CDATA[ 
-				AND CAST(#{stDt} as unsigned) <= CAST(TB_RESOURCE.PURCHASE_MTN as unsigned)
+				AND DATE_FORMAT(#{stDt}, '%Y-%m-%d') <= DATE_FORMAT(TB_RESOURCE.REG_DATETIME, '%Y-%m-%d')
 				]]>
 			</if>
 			<if test='edDt != "null" and edDt !=""'>
 				<![CDATA[ 
-				AND CAST(#{edDt} as unsigned) >= CAST(TB_RESOURCE.PURCHASE_MTN as unsigned)
+				AND DATE_FORMAT(#{edDt}, '%Y-%m-%d') >= DATE_FORMAT(TB_RESOURCE.REG_DATETIME, '%Y-%m-%d')
 				]]>
 			</if>
 		</where>
@@ -121,12 +121,12 @@
 			</if>
 			<if test='stDt != "null" and stDt !=""'>
 				<![CDATA[ 
-				AND CAST(#{stDt} as unsigned) <= CAST(TB_RESOURCE.PURCHASE_MTN as unsigned)
+				AND DATE_FORMAT(#{stDt}, '%Y-%m-%d') <= DATE_FORMAT(TB_RESOURCE.REG_DATETIME, '%Y-%m-%d')
 				]]>
 			</if>
 			<if test='edDt != "null" and edDt !=""'>
 				<![CDATA[ 
-				AND CAST(#{edDt} as unsigned) >= CAST(TB_RESOURCE.PURCHASE_MTN as unsigned)
+				AND DATE_FORMAT(#{edDt}, '%Y-%m-%d') >= DATE_FORMAT(TB_RESOURCE.REG_DATETIME, '%Y-%m-%d')
 				]]>
 			</if>
 		</where>
@@ -169,6 +169,7 @@
 			C.CODE_NAME AS 화면크기,
 			TB_RESOURCE.SERIAL_NO AS Serial번호, 
 			TB_RESOURCE.MAC_ADDR AS MAC주소,
+			DATE_FORMAT(TB_RESOURCE.REG_DATETIME, '%Y-%m-%d') AS 등록일,
 			D.NAME AS 보유자
 		FROM	TB_RESOURCE
 			LEFT OUTER JOIN TB_CODE A ON TB_RESOURCE.RES_CODE = A.CODE_ID
@@ -185,12 +186,12 @@
 			</if>
 			<if test='stDt != null and stDt !=""'>
 				<![CDATA[ 
-				AND CAST(#{stDt} as unsigned) <= CAST(TB_RESOURCE.PURCHASE_MTN as unsigned)
+				AND DATE_FORMAT(#{stDt}, '%Y-%m-%d') <= DATE_FORMAT(TB_RESOURCE.REG_DATETIME, '%Y-%m-%d')
 				]]>
 			</if>
 			<if test='edDt != null and edDt !=""'>
 				<![CDATA[ 
-				AND CAST(#{edDt} as unsigned) >= CAST(TB_RESOURCE.PURCHASE_MTN as unsigned)
+				AND DATE_FORMAT(#{edDt}, '%Y-%m-%d') >= DATE_FORMAT(TB_RESOURCE.REG_DATETIME, '%Y-%m-%d')
 				]]>
 			</if>
 		</where>	

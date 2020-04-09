@@ -287,7 +287,7 @@ export default function  Filter(props) {
 
 		setSnackBarMessage(
 			`검색타입 : ${document.getElementById('resType').innerText}
-			, 구입년월 : ${Moment(document.getElementsByName("stDt")[0].value+'/01').format('YYYY년 MM월')} ~ 
+			, 등록기간 : ${Moment(document.getElementsByName("stDt")[0].value+'/01').format('YYYY년 MM월')} ~ 
 			${Moment(document.getElementsByName("edDt")[0].value+'/01').format('YYYY년 MM월')}
 			${document.getElementsByName("holder")[0].value !== '' ? (", 보유자 : "+(document.getElementsByName("holder")[0].value).replace(/(\s*)/g, "")):''}`
 
@@ -431,10 +431,14 @@ export default function  Filter(props) {
 										margin="normal"
 										id="stDt"
 										name="stDt"
-										label="구입년월 시작"
+										label="등록기간 시작"
 										views={["year", "month"]}
 										format="yyyy/MM" 
-										maxDate={new Date()}
+										maxDate={
+											dialogState.edDt !== null 
+												?new Date(dialogState.edDt.slice(0, 4), Number(dialogState.edDt.slice(4, 6))-1)
+												:null
+										}
 										value={	dialogState.stDt !== null 
 												?new Date(dialogState.stDt.slice(0, 4), Number(dialogState.stDt.slice(4, 6))-1)
 												:null
@@ -459,7 +463,7 @@ export default function  Filter(props) {
 										margin="normal"
 										id="edDt"
 										name="edDt"
-										label="구입년월 종료"
+										label="등록기간 종료"
 										views={["year", "month"]}
 										format="yyyy/MM" 
 										maxDate={new Date()}
@@ -467,6 +471,11 @@ export default function  Filter(props) {
 												?new Date(dialogState.edDt.slice(0, 4), Number(dialogState.edDt.slice(4, 6))-1)
 												:null
 											  }
+										minDate={
+											dialogState.stDt !== null 
+												?new Date(dialogState.stDt.slice(0, 4), Number(dialogState.stDt.slice(4, 6))-1)
+												:null
+										}
 										onChange={handleChangeEdDt}
 										KeyboardButtonProps={{
 											'aria-label': 'change date',
