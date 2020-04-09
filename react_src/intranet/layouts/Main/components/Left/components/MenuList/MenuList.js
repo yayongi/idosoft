@@ -82,28 +82,28 @@ export default function MenuList(props) {
 		}
 	}
 
-	setTimeout(function() {
-				axios({
-					url: '/intranet/getIsAdmin',
-					method: 'post',
-					data: {}
-				}).then(response => {
-					console.log(`response.data.isAdmin : ${response.data.isAdmin}`);
-
-					if(response.data.isAdmin == "true"){
-						setIsAdmin(true);
-					} else {
-						setIsAdmin(false);
-					}
-
-					setShowLoadingBar(false);
-				}).catch(e => {
-					console.log(e);
-				});
-			}, 500);
-	
-
 	useEffect(()=>{
+
+		setTimeout(function() {
+			axios({
+				url: '/intranet/getIsAdmin',
+				method: 'post',
+				data: {}
+			}).then(response => {
+				console.log(`response.data.isAdmin : ${response.data.isAdmin}`);
+
+				if(response.data.isAdmin == "true"){
+					setIsAdmin(true);
+				} else {
+					setIsAdmin(false);
+				}
+
+				setShowLoadingBar(false);
+			}).catch(e => {
+				console.log(e);
+			});
+		}, 500);
+
 		urlMatch();
 		setActive(match.url);	// URL이 변경될 때, 상태 변경을 한다.
 	});
@@ -160,6 +160,7 @@ export default function MenuList(props) {
 					}
 				})}
 			</List>
+
 			<Divider />
 			{/* <List>
 					<ListSubheader inset>Administrator</ListSubheader>

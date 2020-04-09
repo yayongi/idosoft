@@ -234,6 +234,7 @@ public class ExcelController {
 			for(int i = 0; i < list1.size(); i++) {
 				int commTotalAmount = 0;
 				int transTotalAmount = 0;
+				
 				for(int j = 0; j < monthArray.length; j++) {
 					commTotalAmount += Integer.parseInt((String) list1.get(i).get(monthArray[j]));
 					// 직원의 통신비 총합계
