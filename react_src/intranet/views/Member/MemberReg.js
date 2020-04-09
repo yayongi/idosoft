@@ -255,9 +255,9 @@ const MemberReg = (props) => {
             approval_yn : document.getElementById("approval_yn").checked ? 1:0,
             mooncal_yn : document.getElementById("mooncal_yn").checked ? 1:0,
             career_date : document.getElementById("career_date").value != "" ? document.getElementById("career_date").value.replace(/\-/gi,""):null,
-            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+"_"+document.getElementById("myFileProfile").files[0].name : null,
-            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileItcert").files[0].name : null,
-            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileSchoolcert").files[0].name : null,
+            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+document.getElementById("entry_date").value.replace(/\-/gi,"")+"."+document.getElementById("myFileProfile").files[0].name.split(".")[1] : null,
+            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+document.getElementById("entry_date").value.replace(/\-/gi,"")+"."+document.getElementById("myFileItcert").files[0].name.split(".")[1] : null,
+            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+document.getElementById("entry_date").value.replace(/\-/gi,"")+"."+document.getElementById("myFileSchoolcert").files[0].name.split(".")[1] : null,
             reg_id : JSON.parse(sessionStorage.getItem("loginSession")).member_NO
           }
         })

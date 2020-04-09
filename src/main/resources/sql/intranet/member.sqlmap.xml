@@ -216,8 +216,8 @@
 				NAME,
 				POSITION
 			FROM TB_MEMBER
-				WHERE (BIRTH_DATE = #{solarDate} AND MOONCAL_YN = 0)
-				OR (BIRTH_DATE = #{moonDate} AND MOONCAL_YN = 1) 
+				WHERE (BIRTH_DATE LIKE CONCAT('%',#{solarDate}) AND MOONCAL_YN = 0)
+				OR (BIRTH_DATE LIKE CONCAT('%',#{moonDate}) AND MOONCAL_YN = 1) 
 		) A
 	</select>
 	
@@ -232,7 +232,7 @@
 				NAME,
 				POSITION
 			FROM TB_MEMBER
-				WHERE MARRIAGE_DATE = #{solarDate} 
+				WHERE MARRIAGE_DATE LIKE CONCAT('%',#{solarDate}) 
 		) A
 	</select>
 	

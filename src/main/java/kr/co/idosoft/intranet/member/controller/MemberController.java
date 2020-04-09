@@ -175,12 +175,12 @@ public class MemberController {
 		try {
 			
 			HashMap<String, String> birthDate = new HashMap<String, String>();
-			birthDate.put("solarDate",date.get("solarDate"));
-			birthDate.put("moonDate",date.get("moonDate"));
+			birthDate.put("solarDate",date.get("solarDate").substring(4));
+			birthDate.put("moonDate",date.get("moonDate").substring(4));
 			
 			HashMap<String, Object> tempMap = new HashMap<String, Object>();
 			tempMap.put("birthDate", memberService.getBirthDate(birthDate));
-			tempMap.put("marriageDate", memberService.getMarriageDate(date.get("solarDate")));
+			tempMap.put("marriageDate", memberService.getMarriageDate(date.get("solarDate").substring(4)));
 			return tempMap;
 		}catch(Exception e) {
 			e.printStackTrace();
