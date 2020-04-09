@@ -1,7 +1,7 @@
 import React,{ useEffect } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import axios from 'axios';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid,ResponsiveContainer } from 'recharts';
+import { LabelList,BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid,ResponsiveContainer } from 'recharts';
 import Title from '../Title';
 
 import {processErrCode } from '../../../../js/util';
@@ -34,13 +34,15 @@ export default function MemberChart(){
 			<Title>투입인원현황</Title>
 			{state != null && (
 			<ResponsiveContainer>
-				<BarChart  data={state.data}>
-					<XAxis dataKey="PROJECT_NM" stroke="#8884d8" tick={{ fontSize: '10px', width: '50px', wordWrap: 'break-word' }}/>
+				<BarChart height={250} data={state.data}>
+					<XAxis dataKey="PROJECT_NM" stroke="#8884d8" tick={{ fontSize: '9px', width: '5px', maxChars : '3', wordWrap: 'break-word',display:"none" }}/>
 					<YAxis interval={1}/>
-					<Tooltip wrapperStyle={{ width: 100, backgroundColor: '#ccc' }} />
+					<Tooltip dataKey="PROJECT_NM" wrapperStyle={{ width: 100, backgroundColor: '#ccc' }} />
 					
 					<CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-					<Bar dataKey="memberCount" name="인원" fill="#8884d8" barSize={30} />
+					<Bar dataKey="memberCount" name="인원" fill="#8884d8" barSize={30}>
+						<LabelList dataKey="PROJECT_NM" position="middle" />
+					</Bar>
 				</BarChart>
 			</ResponsiveContainer>
 			)}

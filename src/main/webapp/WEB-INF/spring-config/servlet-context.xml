@@ -30,7 +30,6 @@
 			<exclude-mapping path="/login" />
 			<exclude-mapping path="/projectDashboard" />
 			<exclude-mapping path="/notice/dashboardList" />
-			<exclude-mapping path="/getIsAdmin" />
 			<exclude-mapping path="/member/getdate" />
 			<exclude-mapping path="/resources/**" />
 			<beans:bean id="commonInterceptor"

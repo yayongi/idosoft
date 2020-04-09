@@ -11,9 +11,6 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 
 import {LoadingBar} from '../../../../../../common/LoadingBar/LoadingBar';
 
-// Server
-import axios from 'axios';
-
 import { menus } from './data';
 
 const useStyles = makeStyles(theme => ({
@@ -35,10 +32,12 @@ const useStyles = makeStyles(theme => ({
 }));
 let preUrl = "";
 let menuCss = {};
+let callIsAdmin = false;
 export default function MenuList(props) {
 	const classes = useStyles();
 	const [active, setActive] = useState({});
-	const [isAdmin, setIsAdmin] = useState(false);
+	const {globalState, setGlobalState} = props;								// App 전체 전역 state
+	const isAdmin = globalState.isAdmin;						// 관리자 여부
 	const {routeProps, handleDrawerClose} = props;		// handleDrawerClose : 메뉴바 열기/닫기 이벤트
 	const {match} = routeProps;
 	
@@ -68,7 +67,6 @@ export default function MenuList(props) {
 				}
 			}
 		}
-		
 	}
 	
 	const menuListView = (item) => {
@@ -83,27 +81,7 @@ export default function MenuList(props) {
 	}
 
 	useEffect(()=>{
-
-		setTimeout(function() {
-			axios({
-				url: '/intranet/getIsAdmin',
-				method: 'post',
-				data: {}
-			}).then(response => {
-				console.log(`response.data.isAdmin : ${response.data.isAdmin}`);
-
-				if(response.data.isAdmin == "true"){
-					setIsAdmin(true);
-				} else {
-					setIsAdmin(false);
-				}
-
-				setShowLoadingBar(false);
-			}).catch(e => {
-				console.log(e);
-			});
-		}, 500);
-
+		setShowLoadingBar(false);
 		urlMatch();
 		setActive(match.url);	// URL이 변경될 때, 상태 변경을 한다.
 	});

@@ -90,12 +90,12 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 			//멤버 리스트에서 퇴사자를 삭제하고 화면에 내려준다 (경리의 경우 스크립트로 한번 더 삭제한다)
 			//퇴사자의 경우 
 			for(int i=0; i < member_get_list.size(); i++) {
-				if(!"".equals(member_get_list.get(i).getRet_date()) 
-						|| null != member_get_list.get(i).getRet_date()){
+				if(!"".equals(member_get_list.get(i).getRet_date()) || member_get_list.get(i).getRet_date() != null){
+					LOG.debug("퇴사자 : " + member_get_list.get(i));
+				}else {
 					member_res_list.add(member_get_list.get(i));
 				}
 			}
-			
 		} catch (Exception e) {
 			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
 			db_result = true;

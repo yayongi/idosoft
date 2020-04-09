@@ -282,9 +282,9 @@ const MemberMod_admin = (props) => {
             marriage_date : unFormatter(document.getElementById("marriage_date").value != ""? document.getElementById("marriage_date").value.replace(/\-/gi,""):null),
             approval_yn : document.getElementById("approval_yn").checked? 1:0,
             mooncal_yn : document.getElementById("mooncal_yn").checked? 1:0,
-            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+"_"+document.getElementById("myFileProfile").files[0].name : row.photo_path,
-            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileItcert").files[0].name : row.certfile_job_path,
-            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileSchoolcert").files[0].name : row.certfile_school_path,
+            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+document.getElementById("entry_date").value.replace(/\-/gi,"")+"."+document.getElementById("myFileProfile").files[0].name.split(".")[1] : row.photo_path,
+            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+document.getElementById("entry_date").value.replace(/\-/gi,"")+"."+document.getElementById("myFileItcert").files[0].name.split(".")[1] : row.certfile_job_path,
+            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+document.getElementById("entry_date").value.replace(/\-/gi,"")+"."+document.getElementById("myFileSchoolcert").files[0].name.split(".")[1] : row.certfile_school_path,
             upd_id : JSON.parse(sessionStorage.getItem("loginSession")).member_NO
           }
         })
@@ -489,9 +489,6 @@ const MemberMod_admin = (props) => {
                       <img id="profileImg" src={row.photo_path != undefined ? getRootPath() + "/resources" + pathProfile + row.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
                     </div>
                     <div style={{textAlign:'center'}}>
-                      <Typography>
-                        {row.member_no}
-                      </Typography>
                       <div className={classes.textfield}>
                         <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => readUrl(event,"profileImg")}/>
                         <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => readUrl(event,"certImg")}/>
@@ -539,6 +536,11 @@ const MemberMod_admin = (props) => {
               <Grid item xs={12} sm={8}>
                 <Card>
                   <CardContent>
+                      <div className={classes.textfield} style={{width:'auto'}}>
+                        <TextField autoComplete="off" style={{width:'70%'}} id="member_no" size="small" label="사번" defaultValue={row.member_no} variant="outlined" InputProps={{
+                          readOnly: true,
+                        }}/>
+                      </div>
                       <div className={classes.textfield} style={{width:'auto'}}>
                         <TextField size="small" id="name" style={{maxWidth:'140px'}} autoComplete="off" onClick={defaultValidation} error={validation.name.error} helperText={validation.name.helperText} onChange={isValidEmail} defaultValue={row.name} label="이름" variant="outlined" />
                         <TextField style={{width:'20%'}}

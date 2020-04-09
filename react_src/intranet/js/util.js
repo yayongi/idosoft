@@ -165,7 +165,7 @@ export function downloadFile(event,path){
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', response.headers.filename.split("_")[1]);
+      link.setAttribute('download', response.headers.filename);
       document.body.appendChild(link);
       link.click();
     }).catch(e => {

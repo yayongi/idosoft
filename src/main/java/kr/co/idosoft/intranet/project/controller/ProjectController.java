@@ -92,10 +92,17 @@ public class ProjectController {
 		}
 		
 		
+		//프로젝트 관리에서 사원 목록 가져올 때 퇴사자를 제외함
+		List<MemberVO> member_res_list = new ArrayList<MemberVO>();
+		for(int i=0; i < member_list.size(); i++) {
+			if("".equals(member_list.get(i).getRet_date()) || member_list.get(i).getRet_date() == null ) {
+				member_res_list.add(member_list.get(i));
+			}
+		}
 		
 		mv.addObject("hist_list", hist_list);
 		mv.addObject("graph_list", graph_list);
-		mv.addObject("member_list", member_list);
+		mv.addObject("member_list", member_res_list);
 		mv.addObject("instt_list", instt_list);
 		mv.addObject("isAdmin", isAdmin);
 		return mv;
@@ -313,6 +320,36 @@ public class ProjectController {
 		boolean db_result = false;
 		try {
 			projectService.removeMember((HashMap<String, Object>)params);
+		}catch(Exception e) {
+			LOG.debug("디비 에러남 DB ERROR");
+			LOG.debug(e.toString());
+			db_result = true;
+		}
+		
+		mv.addObject("isDBError", db_result);
+		return mv;
+	}
+	
+	@RequestMapping(value="/addMember",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView addMember(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		HttpSession session = request.getSession();
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		params.put("REG_ID", mno);		//등록자 사번 추가
+		
+		
+		// 현재 진행 중이 프로젝트 목록 호출
+		boolean db_result = false;
+		try {
+			projectService.insertProjectMember((HashMap<String, Object>)params);
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());

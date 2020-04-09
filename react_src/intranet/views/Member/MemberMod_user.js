@@ -255,9 +255,9 @@ const MemberMod_user = (props) => {
             approval_yn : row.approval_yn,
             mooncal_yn : document.getElementById("mooncal_yn").checked? 1:0,
             career_date : unFormatter(document.getElementById("career_date").value != "" ? document.getElementById("career_date").value.replace(/\-/gi,""):null),
-            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+"_"+document.getElementById("myFileProfile").files[0].name : row.photo_path,
-            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileItcert").files[0].name : row.certfile_job_path,
-            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+"_"+document.getElementById("myFileSchoolcert").files[0].name : row.certfile_school_path,
+            photo_path : document.getElementById("myFileProfile").files.length != 0 ? dateTime+document.getElementById("entry_date").value.replace(/\-/gi,"")+"."+document.getElementById("myFileProfile").files[0].name.split(".")[1] : row.photo_path,
+            certfile_job_path : document.getElementById("myFileItcert").files.length != 0 ? dateTime+document.getElementById("entry_date").value.replace(/\-/gi,"")+"."+document.getElementById("myFileItcert").files[0].name.split(".")[1] : row.certfile_job_path,
+            certfile_school_path : document.getElementById("myFileSchoolcert").files.length != 0 ? dateTime+document.getElementById("entry_date").value.replace(/\-/gi,"")+"."+document.getElementById("myFileSchoolcert").files[0].name.split(".")[1] : row.certfile_school_path,
             upd_id : JSON.parse(sessionStorage.getItem("loginSession")).member_NO
           }
         });
@@ -446,10 +446,7 @@ const MemberMod_user = (props) => {
                     </div>
                     <div style={{textAlign:'center'}}>
                       <Typography>
-                        {row.member_no}
-                      </Typography>
-                      <Typography>
-                        {row.name} {row.code_name} ({dataCalculator(row.career_date)})
+                        {row.name} {row.code_name} {row.career_date != null && "("+dataCalculator(row.career_date)+")"}
                       </Typography>
                     </div>
                     <div style={{textAlign:'center'}}>
@@ -506,6 +503,11 @@ const MemberMod_user = (props) => {
               <Grid item xs={12} sm={8}>
                 <Card>
                   <CardContent>
+                    <div className={classes.textfield} style={{width:'auto'}}>
+                      <TextField autoComplete="off" style={{width:'70%'}} id="member_no" size="small" label="사번" defaultValue={row.member_no} variant="outlined" InputProps={{
+                        readOnly: true,
+                      }}/>
+                    </div>
                     <div className={classes.textfield} style={{width:'auto'}}>
                       <TextField autoComplete="off" style={{width:'70%'}} id="email" size="small" label="이메일" defaultValue={row.email} onClick={defaultValidation}  error={validation.email.error} helperText={validation.email.helperText} onChange={isValidEmail} variant="outlined" InputProps={{
                         readOnly: !state.isIdentified,
@@ -589,7 +591,7 @@ const MemberMod_user = (props) => {
                                       id="career_date"
                                       views={["year", "month", "date"]}
                                       format="yyyy-MM-dd"
-                                      defaultValue={dateState.career_date}
+                                      value={dateState.career_date}
                                       onChange={getCarDate}
                                       inputVariant="outlined"
                                       disabled={!state.isIdentified}

@@ -21,6 +21,8 @@ import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 import { LoadingBar } from '../../../../common/LoadingBar/LoadingBar';
 import { processErrCode, getRootPath } from '../../../../js/util';
 
+import CommonDialog from '../../../../js/CommonDialog';
+
 import axios from 'axios';
 
 import {
@@ -353,12 +355,12 @@ export default function ProjectInfoForm(props) {
 			var selProjectBGNDE = selectedProjectInfo["BGNDE"].replace("-", "").replace("-", "");
 			var selProjectENDDE = selectedProjectInfo["ENDDE"].replace("-", "").replace("-", "");
 			if(inpt_bgnde < selProjectBGNDE){
-				prop_inpt_bgnde= {error:true, helperText:"프로젝트 최초 투입일은 "+selProjectBGNDE+"입니다."};
+				prop_inpt_bgnde= {error:true, helperText:"프로젝트 최초 투입일은 "+Moment(selectedProjectInfo["BGNDE"]).format("YYYY-MM-DD")+"입니다."};
 				isReturn=true;
 			}
 			
 			if(inpt_endde > selProjectENDDE){
-				prop_inpt_endde= {error:true, helperText:"프로젝트 최종 철수일은 "+selProjectENDDE+"입니다."};
+				prop_inpt_endde= {error:true, helperText:"프로젝트 최종 철수일은 "+Moment(selectedProjectInfo["ENDDE"]).format("YYYY-MM-DD")+"입니다."};
 				isReturn=true;
 			}
 		}
@@ -423,18 +425,7 @@ export default function ProjectInfoForm(props) {
 				return;
 			}else{
 				alert("이력 등록에 성공했습니다.");
-				
-				//관리자가 등록하면 등록한 사람의 이력이 보일수있게 변경
-				if(isAdmin){
-					let url = "";
-					url = getRootPath() + "/project/history/";
-					history.push(url + dataState.member_no);
-				}
-				
-				//자기 자신이면 히스토리백
-				else{
-					history.goBack();
-				}
+				history.goBack();
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -445,7 +436,7 @@ export default function ProjectInfoForm(props) {
 		
 	}
 
-	const handleClickRemoveHistory = () => {
+	const removeHistory = () => {
 		if(isValidateCheck()){
 			return;
 		}
@@ -464,22 +455,36 @@ export default function ProjectInfoForm(props) {
 				return;
 			}else{
 				alert("이력 삭제에 성공했습니다.");
-				if(isAdmin){
-					let url = "";
-					url = getRootPath() + "/project/history/";
-					history.push(url + dataState.member_no);
-				}
-				
-				//자기 자신이면 히스토리백
-				else{
-					history.goBack();
-				}
+				history.goBack();
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
 			processErrCode(e);
 		});
 		//history.goBack();
+	}
+	
+	// confirm, alert 창 함수
+  	// 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
+	const [dialog, setDialog] = React.useState({});
+	const handleClickRemoveHistory = () => {
+		handleOpenDialog("이력관리", "이력을 삭제하시겠습니까?", true);
+	}
+	
+	//Dialog open handler
+	const handleOpenDialog = (title, content, isConfirm) => {
+		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
+	}
+
+	//Dialog close handler
+	//확인:true 취소:false 리턴
+	const handleCloseDialog = (title, result) => {
+		setDialog({title:'', content:'', onOff:false, isConfirm:false});
+		if(result){
+			removeHistory();
+		}else{
+			return;
+		}
 	}
 
 	const handleClickUpdateHistory = () => {
@@ -507,16 +512,7 @@ export default function ProjectInfoForm(props) {
 			}else{
 				alert("이력 갱신에 성공했습니다.");
 				//관리자가 등록하면 등록한 사람의 이력이 보일수있게 변경
-				if(isAdmin){
-					let url = "";
-					url = getRootPath() + "/project/history/";
-					history.push(url + dataState.member_no);
-				}
-				
-				//자기 자신이면 히스토리백
-				else{
-					history.goBack();
-				}
+				history.goBack();
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -525,13 +521,12 @@ export default function ProjectInfoForm(props) {
 	}
 
 	const handleClickCancle = () => {
-		let url = "";
-		url = getRootPath() + "/project/history/";
-		history.push(url + dataState.member_no);
+		history.goBack();
 	};
 
 	return (
 		<>
+			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<LoadingBar openLoading={isShowLoadingBar}/>
 			<div className={classes.root}>
 			</div>
@@ -543,7 +538,7 @@ export default function ProjectInfoForm(props) {
 								align="left"
 								 colSpan="6">
 								<Typography className={classes.title} color="inherit" variant="h6">
-									{dataState.screenType == "new" ? "이력관리 등록" : "이력관리 수정"}
+									{screenType == "new" ? "이력관리 등록" : "이력관리 수정"}
 								</Typography>
 							</TableCell>
 						</TableRow>

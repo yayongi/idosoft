@@ -36,7 +36,9 @@ class SignIn extends Component {
 			errors: [],
 			open: false,
 			isShowLoadingBar: false,
-			isKeepLogin : false
+			isKeepLogin : false,
+			globalState : props.globalState,
+			setGlobalState : props.setGlobalState
 		}
 
 	}
@@ -122,7 +124,7 @@ class SignIn extends Component {
 
 		setShowLoadingBar(true);
 
-		const { email, password } = this.state;
+		const { email, password, globalState, setGlobalState } = this.state;
 
 		if(email == ""){
 			this.showValidationErr("email", "이메일을 입력해주세요!");
@@ -146,8 +148,13 @@ class SignIn extends Component {
 				
 				const loginSign = response.data.loginSign;
 				const resPassSign = response.data.resPassSign;
+				const isAdmin = response.data.isAdmin == "true";
 
 				if(loginSign == 'true'){
+					setGlobalState({
+						...globalState,
+						isAdmin: isAdmin
+					});
 					//로그인 후 세션 등록
 					if(resPassSign == 'true'){
 						location.href= getRootPath() +"/#/resPassword";

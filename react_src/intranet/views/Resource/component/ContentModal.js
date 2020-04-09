@@ -43,7 +43,8 @@ const useStyles = makeStyles(theme => ({
     border: '1px'
   },
   tableCell: {
-    width: '33%'
+    maxWidth: '120px',
+    width: '33%',
   }
 }));
 
@@ -98,11 +99,11 @@ const ContentModal = ({props, closeModal}) => {
         </DialogTitle>
         <DialogContent dividers>
           <TableContainer className={classes.container}>
-            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader>
+            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader key={"1"}>
               <TableHead>
                   <TableCell  align={"center"} className={classes.tableCell}>종류</TableCell>
                   <TableCell  align={"center"} className={classes.tableCell}>모델명</TableCell>
-                  <TableCell  align={"center"}>제조사</TableCell>
+                  <TableCell  align={"center"} className={classes.tableCell}>제조사</TableCell>
               </TableHead>
               <TableBody>
                   <TableCell align={"center"}> {props.resData.res_code}</TableCell>
@@ -112,11 +113,11 @@ const ContentModal = ({props, closeModal}) => {
             </Table>
             <br/>
             <br/>
-            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader>
+            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader key={"2"}>
               <TableHead>
                   <TableCell  align={"center"} className={classes.tableCell}>제조년월</TableCell>
                   <TableCell  align={"center"} className={classes.tableCell}>구입년월</TableCell>
-                  <TableCell  align={"center"}>화면크기</TableCell>
+                  <TableCell  align={"center"} className={classes.tableCell}>화면크기</TableCell>
               </TableHead>
               <TableBody>
                   <TableCell align={"center"}> {props.resData.product_mtn === null ? "미등록" : props.resData.product_mtn}</TableCell>
@@ -126,15 +127,25 @@ const ContentModal = ({props, closeModal}) => {
             </Table>
             <br/>
             <br/>
-            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader>
+            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader key={"3"}>
               <TableHead>
-                  <TableCell  align={"center"} className={classes.tableCell}>시리얼번호</TableCell>
-                  <TableCell  align={"center"} className={classes.tableCell}>MAC주소</TableCell>
-                  <TableCell  align={"center"}>보유자</TableCell>
+                  <TableCell  align={"center"} >시리얼번호</TableCell>
+                  <TableCell  align={"center"} >MAC주소</TableCell>
               </TableHead>
               <TableBody>
-                  <TableCell align={"center"}> {props.resData.serial_no}</TableCell>
-                  <TableCell align={"center"}> {props.resData.mac_addr === "" ? "미등록" : props.resData.mac_addr} </TableCell>
+                  <TableCell align={"center"} > {props.resData.serial_no}</TableCell>
+                  <TableCell align={"center"} > {props.resData.mac_addr === "" ? "미등록" : props.resData.mac_addr} </TableCell>
+              </TableBody>
+            </Table>
+            <br/>
+            <br/>
+            <Table className={classes.tableRoot} aria-label="simple table" stickyHeader key={"4"}>
+              <TableHead>
+                  <TableCell  align={"center"} >등록일</TableCell>
+                  <TableCell  align={"center"} >보유자</TableCell>
+              </TableHead>
+              <TableBody>
+                  <TableCell align={"center"} > {props.resData.reg_datetime}</TableCell>
                   <TableCell align={"center"}> {props.resData.holder}</TableCell>
               </TableBody>
             </Table>

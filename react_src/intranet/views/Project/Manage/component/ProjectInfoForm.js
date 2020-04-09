@@ -22,6 +22,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CreateIcon from '@material-ui/icons/Create';
 import CancelIcon from '@material-ui/icons/Cancel';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 import { LoadingBar }  from '../../../../common/LoadingBar/LoadingBar';
 import { processErrCode }  from '../../../../js/util';
@@ -85,6 +86,7 @@ function ProjectInfoForm(props) {
 	const [role_list, setRole] = React.useState([], []);
 	const [updatedMemList, setUpdateMemList] = React.useState([], []);
 	const [renderWant, setRenderWant] = React.useState(true);
+	const [isRowAddClicked, setIsRowAddClicked] = React.useState(false);
 	const screenType = initCheck(match);
 	
 	const [dataState, setDataState] = React.useState({
@@ -94,7 +96,7 @@ function ProjectInfoForm(props) {
 		ENDDE : Moment(new Date()).format('YYYY-MM-DD'),
 		TRANSPORT_CT : "",
 		PM : "",
-	});	// state : 수정을 위한 데이터 관리
+	}, [dataState]);	// state : 수정을 위한 데이터 관리
 	const [memDataState, setMemDataState] = React.useState([{
 		MEMBER_NO : "",
 		CHRG_JOB : "",
@@ -102,7 +104,9 @@ function ProjectInfoForm(props) {
 		INPT_ENDDE : dataState.ENDDE,
 		ROLE_CODE : "RL0000",
 		USE_LANG : "Java,Jsp,Javascript",
-	}]);	// state : 수정을 위한 데이터 관리
+	}], [memDataState]);	// state : 수정을 위한 데이터 관리
+	const [memOriginDataState, setMemOriginDataState] = React.useState([{}], []);	// 수정 상태에서 ROW 삭제할 시 사용함
+	
 	
 	const [validateCheck, setValidateCheck] = React.useState({
 		PROJECT_NM:{error:false, helperText:""},
@@ -195,6 +199,7 @@ function ProjectInfoForm(props) {
 					proMemList[idx]["INPT_ENDDE"] = proMemList[idx]["INPT_ENDDE"].slice(0,4) + "-" + proMemList[idx]["INPT_ENDDE"].slice(4,6) + "-" + proMemList[idx]["INPT_ENDDE"].slice(6,8);
 				}
 				setMemDataState(proMemList);
+				setMemOriginDataState(JSON.parse(JSON.stringify(proMemList)));
 				setShowLoadingBar(false);
 			}).catch(e => {
 				setShowLoadingBar(false);
@@ -203,13 +208,7 @@ function ProjectInfoForm(props) {
 		}
 	}, [renderWant]);
 	
-	
-	console.log("ValidateMemCheck : ");
-	console.log(validateMemCheck);
-
 	const handleAddRow = () => {
-		console.log(memDataState);
-
 		var member_defaultForm = {
 			MEMBER_NO : "",
 			CHRG_JOB : "",
@@ -233,6 +232,7 @@ function ProjectInfoForm(props) {
 		}
 		validateMemCheck.push(validateMemCheck_defaultForm);
 		setValidateMemCheck([...validateMemCheck]);
+		setIsRowAddClicked(true);
 	}
 
 	// 필드 값 변경 시, 임시로 값 저장
@@ -444,7 +444,7 @@ function ProjectInfoForm(props) {
 				isError = true;
 			}
 			else if(memDataState[i]["USE_LANG"].length > 30){
-				validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"비고을 너무 길게 입력하셨습니다."};
+				validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"비고를 너무 길게 입력하셨습니다."};
 				isError = true;
 			}
 			errorList.push(validateMemCheck_defaultForm);
@@ -496,7 +496,6 @@ function ProjectInfoForm(props) {
 			memUpdateList.push(memDataState[updatedMemList[i]]);
 		}
 
-
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/updateProjectInfo',
@@ -534,16 +533,30 @@ function ProjectInfoForm(props) {
 	}
 	
 	const handleRemoveRow = (idx) => {
-		console.log("---------remove click "+ idx +"-------");
 		if(idx == 0){
 			alert("PM은 삭제할 수 없습니다.");
 			return;
+		}else {
+			if(screenType == "new"){
+				alert("삭제했습니다.");
+				memDataState.splice(idx, 1);
+				setMemDataState([...memDataState]);
+				console.log(memDataState);
+				setRenderWant(!renderWant);
+			}else{
+				alert("삭제했습니다.");
+				memDataState.splice(idx, 1);
+				setMemDataState([...memDataState]);
+			}
 		}
 	}
 
-	const handleRemoveMember = (member_no) => {
-		var list = memDataState.filter((info) => (info.MEMBER_NO != member_no));
-		
+	const handleRemoveMember = (member_no, idx) => {
+		if(idx == 0){
+			alert("PM은 삭제가 불가능 합니다.");
+			return;
+		}
+		var list = memOriginDataState.filter((info) => (info.MEMBER_NO != member_no));
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/removeMember',
@@ -556,6 +569,7 @@ function ProjectInfoForm(props) {
 			}else{
 				alert("삭제했습니다.");
 				setMemDataState([...list]);
+				setMemOriginDataState([...list]);
 				setRenderWant(!renderWant);
 			}
 		}).catch(e => {
@@ -564,21 +578,115 @@ function ProjectInfoForm(props) {
 		});
 	}
 	
-	const handleUpdateMember = (memDataState) => {
+	const handleUpdateMember = (selectMemberInfo) => {
 		setShowLoadingBar(true);
-		
-		memDataState["INPT_BGNDE"] = memDataState["INPT_BGNDE"].replace("-", "").replace("-", "");
-		memDataState["INPT_ENDDE"] = memDataState["INPT_ENDDE"].replace("-", "").replace("-", "");
+		selectMemberInfo["INPT_BGNDE"] = selectMemberInfo["INPT_BGNDE"].replace("-", "").replace("-", "");
+		selectMemberInfo["INPT_ENDDE"] = selectMemberInfo["INPT_ENDDE"].replace("-", "").replace("-", "");
 		axios({
 			url: '/intranet/updateMember',
 			method: 'post',
-			data: {"PROJECT_NO": match.params.id, "memDataState" : memDataState}
+			data: {"PROJECT_NO": match.params.id, "memDataState" : selectMemberInfo}
 		}).then(response => {
 			setShowLoadingBar(false);
 			if(response.data.isDBError){
 				alert("갱신 실패 했습니다.")
 			}else{
+				setRenderWant(!renderWant);
 				alert("갱신했습니다.");
+			}
+		}).catch(e => {
+			setShowLoadingBar(false);
+			processErrCode(e);
+		});
+	}
+	
+	const handleAddMember = (member_no, idx) => {
+		
+		var isError = false;
+		var errorList = [];
+		var validateMemCheck_defaultForm = {
+			MEMBER_NO:{error:false, helperText:""},
+			CHRG_JOB:{error:false, helperText:""},
+			INPT_BGNDE:{error:false, helperText:""},
+			INPT_ENDDE:{error:false, helperText:""},
+			ROLE_CODE:{error:false, helperText:""},
+			USE_LANG:{error:false, helperText:""},
+		}
+		//이름
+		if(member_no["MEMBER_NO"] == ""){
+			validateMemCheck_defaultForm.MEMBER_NO = {error:true, helperText:"사원을 선택해주세요"};
+			isError = true;
+		}
+		//담당업무	
+		if(member_no["CHRG_JOB"] == ""){
+			validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"역할을 입력해주세요"};
+			isError = true;
+		}
+		
+		else if(member_no["CHRG_JOB"].length > 30){
+			validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"역할을 너무 길게 입력하셨습니다."};
+			isError = true;
+		}
+		
+		//프로젝트 기간
+		var INPT_BGNDE = member_no["INPT_BGNDE"].replace("-", "").replace("-", "");
+		var INPT_ENDDE = member_no["INPT_ENDDE"].replace("-", "").replace("-", "");
+		var BGNDE = dataState.BGNDE.replace("-", "").replace("-", "");
+		var ENDDE = dataState.ENDDE.replace("-", "").replace("-", "");
+		if(INPT_BGNDE > INPT_ENDDE ){
+			validateMemCheck_defaultForm.INPT_BGNDE = {error:true, helperText:"투입일을 확인해주세요"};
+			validateMemCheck_defaultForm.INPT_ENDDE = {error:true, helperText:"철수일을 확인해주세요"};
+			isError = true;
+		}
+		
+		if(INPT_BGNDE < BGNDE){
+			validateMemCheck_defaultForm.INPT_BGNDE = {error:true, helperText:"투입일을 확인해주세요"};
+			isError = true;
+		}
+		
+		if(INPT_ENDDE > ENDDE){
+			validateMemCheck_defaultForm.INPT_ENDDE = {error:true, helperText:"철수일을 확인해주세요"};
+			isError = true;
+		}
+		
+		//역할
+		if(member_no["ROLE_CODE"] == ""){
+			validateMemCheck_defaultForm.ROLE_CODE = {error:true, helperText:"역할을 선택해주세요"};
+			isError = true;
+		}
+		//비고
+		if(member_no["USE_LANG"] == "" ){
+			validateMemCheck_defaultForm.USE_LANG = {error:true, helperText:"비고를 입력해주세요"};
+			isError = true;
+		}
+		else if(member_no["USE_LANG"].length > 30){
+			validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"비고를 너무 길게 입력하셨습니다."};
+			isError = true;
+		}
+		
+		if(isError){
+			validateMemCheck[idx] = validateMemCheck_defaultForm;
+			setValidateMemCheck([...validateMemCheck]);
+			return;
+		}
+		
+		console.log(member_no);
+		var sendData = JSON.parse(JSON.stringify(member_no));
+		
+		sendData["PROJECT_NO"] = match.params.id;
+		sendData["INPT_BGNDE"] = Moment(sendData["INPT_BGNDE"]).format("YYYYMMDD");
+		sendData["INPT_ENDDE"] = Moment(sendData["INPT_ENDDE"]).format("YYYYMMDD");
+		axios({
+			url: '/intranet/addMember',
+			method: 'post',
+			data: sendData
+		}).then(response => {
+			setShowLoadingBar(false);
+			if(response.data.isDBError){
+				alert("추가 실패 했습니다.")
+			}else{
+				setRenderWant(!renderWant);
+				alert("추가 했습니다.");
 			}
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -980,17 +1088,22 @@ function ProjectInfoForm(props) {
 										<TableCell 
 											align="center"
 											key={"BTN" + idx}>
-											{ screenType == "new" &&
+											{ (screenType == "new" || (screenType == "modify" && memOriginDataState.length <= idx)) &&
 												<IconButton aria-label="remove" color="secondary" className={classes.margin} onClick={() => handleRemoveRow(idx)}>
 													<CancelIcon fontSize="small" />
 												</IconButton>
 											}
-											{ screenType == "modify" &&
-												<IconButton aria-label="delete" className={classes.margin} onClick={() => handleRemoveMember(memDataState[idx]["MEMBER_NO"])}>
+											{ ((screenType == "modify" && memOriginDataState.length <= idx)) &&
+												<IconButton aria-label="remove" color="secondary" className={classes.margin} onClick={() => handleAddMember(memDataState[idx], idx)}>
+													<CheckCircleIcon fontSize="small" color="primary"/>
+												</IconButton>
+											}
+											{ screenType == "modify" && memOriginDataState.length > idx && 
+												<IconButton aria-label="delete" className={classes.margin} onClick={() => handleRemoveMember(memDataState[idx]["MEMBER_NO"], idx)}>
 													<DeleteIcon fontSize="small" />
 												</IconButton>
 											}
-											{ screenType == "modify" &&
+											{ screenType == "modify" && memOriginDataState.length > idx && 
 												<IconButton aria-label="update" className={classes.margin} onClick={() => handleUpdateMember(memDataState[idx])}>
 													<CreateIcon fontSize="small" />
 												</IconButton>

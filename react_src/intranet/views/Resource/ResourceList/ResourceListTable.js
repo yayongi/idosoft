@@ -44,6 +44,7 @@ const columnsUp = [
       { id: 'display_size_code', label: '화면크기' , minWidth: 100, align: 'center', paddingLeft : 50},
       { id: 'serial_no', label: 'Serial번호' , minWidth: 100, align: 'center', paddingLeft : 50},
       { id: 'mac_addr', label: 'Mac주소' , minWidth: 100, align: 'center', paddingLeft : 50},
+      { id: 'reg_datetime', label: '등록일', minWidth: 100, align: 'center', paddingLeft : 50},
       { id: 'holder', label: '보유자' , minWidth: 100, align: 'center', paddingLeft : 50},
     ];
 
@@ -356,6 +357,9 @@ function ResourceListTable(props) {
                       </TableCell>
                       <TableCell align="center" onClick={event=>openContentModal(row)}>
                                           {isEmpty(row.mac_addr)? "미설정" : row.mac_addr}
+                      </TableCell>
+                      <TableCell align="center" onClick={event=>openContentModal(row)}>
+                                          {row.reg_datetime}
                       </TableCell>
                       </>
                     }

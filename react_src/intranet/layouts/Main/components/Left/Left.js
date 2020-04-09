@@ -8,7 +8,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuList from './components/MenuList'
 
 export default function Left(props) {
-	const {classes, handleDrawerClose, open, routeProps} = props;
+	const {classes, handleDrawerClose, open, routeProps, globalState, setGlobalState} = props;
 
 		// 왼쪽 메뉴 리스트 
 	const drawer = (
@@ -19,7 +19,7 @@ export default function Left(props) {
 				</IconButton>
 			</div>
 			<Divider />
-			<MenuList routeProps={routeProps} handleDrawerClose={handleDrawerClose}/>
+			<MenuList routeProps={routeProps} handleDrawerClose={handleDrawerClose} globalState={globalState} setGlobalState={setGlobalState}/>
 		</div>
 	);
 

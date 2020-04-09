@@ -129,6 +129,14 @@ module.exports = {
                 'style-loader',
                 // Translates CSS into CommonJS
                 'css-loader',
+                {
+                    loader: 'postcss-loader',
+                    options: {
+                        plugins: () => [require('autoprefixer')({
+                            'overrideBrowserslist': ['> 10%', 'last 2 versions']
+                        })],
+                    }
+                  },
                 // Compiles Sass to CSS
                 // need to install  => npm install sass-loader node-sass webpack --save-dev
                 'sass-loader'
@@ -149,7 +157,8 @@ module.exports = {
     },
     optimization: {
         providedExports: true, 
-        splitChunks: {
+        minimize: true, 			// UglifyJsPlugin 계승
+        splitChunks: {			// CommonsChunkPlugin 계승
             cacheGroups: {      // 특정 파일들을 청크로 분리할 때 사용 (common이란 청크를 분리)
                 commons: {
                     test: /[\\/]node_modules[\\/]/,     // 대상이 되는 파일에 대한 정규식

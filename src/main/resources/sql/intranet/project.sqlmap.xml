@@ -174,7 +174,7 @@
 		ORDER BY ROLE_CODE ASC
 	</select>
 	
-	<!--  프로젝트 삭제 -->
+	<!--  투입인원 삭제 -->
 	<delete id="removeMember" parameterType="hashmap">
 		DELETE FROM
 			TB_PROJECT_MEMBER
@@ -182,7 +182,7 @@
 			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
 	</delete>
 	
-	<!--  프로젝트 삭제 -->
+	<!--  투입인원 삭제 -->
 	<delete id="removeMemberForPro" parameterType="String">
 		DELETE FROM
 			TB_PROJECT_MEMBER
@@ -190,7 +190,7 @@
 			PROJECT_NO = #{PROJECT_NO}
 	</delete>
 	
-	<!-- 프로젝트 수정 -->
+	<!-- 투입인원 수정 -->
 	<update id="updateMember" parameterType="hashmap">
 		UPDATE
 			TB_PROJECT_MEMBER

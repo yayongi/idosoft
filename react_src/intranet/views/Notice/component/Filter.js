@@ -374,7 +374,7 @@ export default function  Filter(props) {
 										label="작성일 검색기간 시작"
 										views={["year", "month"]}
 										format="yyyy/MM" 
-										maxDate={new Date()}
+										maxDate={new Date(dialogState.edDt.slice(0,4), Number(dialogState.edDt.slice(4,6))-1)}
 										// value={	dialogState.stDt !== null 
 										// 		?new Date(dialogState.stDt.slice(0, 4), Number(dialogState.stDt.slice(4, 6))-1)
 										// 		:null
@@ -409,6 +409,7 @@ export default function  Filter(props) {
 										// 		:null
 										// 	  }
 										value = { new Date(dialogState.edDt.slice(0,4), Number(dialogState.edDt.slice(4,6))-1) } 
+										minDate={new Date(dialogState.stDt.slice(0,4), Number(dialogState.stDt.slice(4,6))-1)}
 										onChange={handleChangeEdDt}
 										KeyboardButtonProps={{
 											'aria-label': 'change date',

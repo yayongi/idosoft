@@ -222,10 +222,10 @@ const MemberList = (props) => {
 
 		if(searchState.category == 0){
 		//이름 검색
-			temp = temp.filter(temp => temp.name == searchState.searchword);
+			temp = temp.filter(temp => temp.name.indexOf(searchState.searchword) != -1);
 		}else if(searchState.category == 1){
 		//직급 검색
-			temp = temp.filter(temp => temp.code_name == searchState.searchword);
+			temp = temp.filter(temp => temp.code_name.indexOf(searchState.searchword) != -1);
 		}
 		
 		setState({
@@ -457,7 +457,7 @@ const MemberList = (props) => {
 			}}
 			onClose={snackBarClose}
 			open={openSnackBar}
-			message={searchState.category === 0 ? "이름 : "+searchState.searchword:"직급 : "+searchState.searchword}
+			message={searchState.category == 0 ? "이름 : "+searchState.searchword:"직급 : "+searchState.searchword}
 			action={
 				<React.Fragment>
 					<IconButton size="small" aria-label="close" color="inherit" onClick={snackBarClose}>

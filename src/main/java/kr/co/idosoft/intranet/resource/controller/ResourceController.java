@@ -187,6 +187,16 @@ public class ResourceController {
 		logger.debug("isAdmin ? "+isAdmin);
 		logger.debug("#########################################################");
 		
+		//시작일 종료일 설정
+		if(searchData.get("stDt") != null){
+			searchData.put("stDt", searchData.get("stDt")+"01");
+		}
+		if(searchData.get("edDt") != null){
+			int lastDate = (Integer) commonUtil.LastDateInMonth(String.valueOf(searchData.get("edDt")));
+			searchData.put("edDt", searchData.get("edDt")+String.valueOf(lastDate));
+		}
+		data.put("searchData", searchData);
+		
 		Map<String, Object> resultData = new HashMap<>();
 		
 		int count = resService.getListCount(searchData);
@@ -248,7 +258,19 @@ public class ResourceController {
 		try {
 			// �꽑�깮�맂 吏곸썝 �젙蹂� 媛��졇�삤湲�
 //			List<LinkedHashMap<String,Object>> tempList =  resService.exportExcel((List<String>)data.get("selected"));
-			List<LinkedHashMap<String,Object>> tempList =  resService.exportExcel((HashMap<String, String>) data.get("searchState"));
+			
+			HashMap<String, String> searchState = (HashMap<String, String>) data.get("searchState");
+			
+			//시작일 종료일 설정
+			if(searchState.get("stDt") != null){
+				searchState.put("stDt", searchState.get("stDt")+"01");
+			}
+			if(searchState.get("edDt") != null){
+				int lastDate = (Integer) commonUtil.LastDateInMonth(String.valueOf(searchState.get("edDt")));
+				searchState.put("edDt", searchState.get("edDt")+String.valueOf(lastDate));
+			}
+			
+			List<LinkedHashMap<String,Object>> tempList =  resService.exportExcel(searchState);
 			logger.debug("data : " + tempList);
 			
 			//�뿊�뀓 �뙆�씪 留뚮뱾�뼱�꽌 �떎�슫濡쒕뱶

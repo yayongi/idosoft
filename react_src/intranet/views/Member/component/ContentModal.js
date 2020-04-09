@@ -140,7 +140,7 @@ const ContentModal = ({props, closeModal}) => {
                     </div>
                   </Grid>
                   <Grid item xs={12}>
-                    {props.phone_num}
+                    {phoneFormatter(props.phone_num)}
                   </Grid>
                   <Grid item xs={12}>
                     {props.email}
