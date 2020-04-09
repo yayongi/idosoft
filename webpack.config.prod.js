@@ -129,6 +129,14 @@ module.exports = {
                 'style-loader',
                 // Translates CSS into CommonJS
                 'css-loader',
+                {
+                    loader: 'postcss-loader',
+                    options: {
+                        plugins: () => [require('autoprefixer')({
+                            'overrideBrowserslist': ['> 10%', 'last 2 versions']
+                        })],
+                    }
+                  },
                 // Compiles Sass to CSS
                 // need to install  => npm install sass-loader node-sass webpack --save-dev
                 'sass-loader'
