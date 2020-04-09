@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 export default function Main(props) {	
 	const classes = useStyles();	
 	const [open, setOpen] = React.useState(false);
-	const {routeProps} = props;
+	const {routeProps, globalState, setGlobalState} = props;
 	// 왼쪽 메뉴바 열기
 	const handleDrawerOpen = () => {
 		setOpen(true);
@@ -82,7 +82,7 @@ export default function Main(props) {
 		<div className={classes.root}>
 			<CssBaseline />
 			<Top classes={classes} handleDrawerOpen={handleDrawerOpen}/>
-			<Left classes={classes} open={open} handleDrawerClose={handleDrawerClose} routeProps={routeProps}/>
+			<Left classes={classes} open={open} handleDrawerClose={handleDrawerClose} routeProps={routeProps} globalState={globalState} setGlobalState={setGlobalState}/>
 			<main className={classes.content}>
 				<div className={classes.appBarSpacer} />
 				<Container maxWidth="lg" className={classes.container}>

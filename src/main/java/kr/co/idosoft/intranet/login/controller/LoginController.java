@@ -66,7 +66,7 @@ public class LoginController {
 		
 		data.put("loginSign", "false");		// 로그인 가능 여부
 		data.put("resPassSign", "false"); 	// 비밀번호 재설정 여부
-		
+		data.put("isAdmin", "false"); 		// 관리자 여부
 		LOG.debug("##########################################################");
 
 		SessionVO sessionVo = loginService.selectMemberInfo(loginVo);
@@ -142,7 +142,11 @@ public class LoginController {
 			// 로그인 
 			data.put("loginSign", "true");
 			LOG.debug("# LOGIN FINISH ");
-
+			
+			if (commonUtil.isAdmin(session)) {
+				// 세션 데이터 저장
+				data.put("isAdmin", "true");
+			}
 			
 		}
 		
