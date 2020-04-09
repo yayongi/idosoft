@@ -21,7 +21,6 @@ IDOSOFT 인트라넷
     https://chrisbateman.github.io/webpack-visualizer/
     
 3.아래 패키지를 설치해서 로컬 환경에서 분석하는 방법도 있음.
-
     https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 
