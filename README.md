@@ -16,12 +16,14 @@ IDOSOFT 인트라넷
 1. npm run stat 을 실행하면 stats.json 이 생성됨 (package.json scipts.stat에 정의)
 2. json 파일을 아래 사이트에 업로드하여 살펴보면 됨.
 
-    https://webpack.github.io/analyse/
+   https://webpack.github.io/analyse/
 
-    https://chrisbateman.github.io/webpack-visualizer/
+   https://chrisbateman.github.io/webpack-visualizer/
     
 3.아래 패키지를 설치해서 로컬 환경에서 분석하는 방법도 있음.
-    https://github.com/webpack-contrib/webpack-bundle-analyzer
+
+   https://github.com/webpack-contrib/webpack-bundle-analyzer
+
 
 
 
