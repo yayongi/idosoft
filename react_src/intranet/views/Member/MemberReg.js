@@ -365,15 +365,41 @@ const MemberReg = (props) => {
   }
 
   const readUrl = (event,path) => {
-    if (event.target.files && event.target.files[0]) {
-    var reader = new FileReader();
     
-    reader.onload = function (e) {
-      document.getElementById(path).setAttribute('src',e.target.result);  
-    }
+
+      if (event.target.files && event.target.files[0]) {
+
+        var files = event.target.files; 
+        var fileType = files[0].type; 
+        loadImage(files[0], function(img, data) { 
+          img.toBlob(function(blob){ 
+            var rotateFile = new File([blob], files[0].name, {type:fileType}); 
+            sel_file = rotateFile; 
+            var reader = new FileReader(); 
+            reader.onload = function(event){ 
+              document.getElementById(path).setAttribute('src',event.target.result);
+            } 
+            reader.readAsDataURL(rotateFile); 
+          },fileType)}, 
+          { 
+            orientation:true
+          })
+  
+        }
+
+
+
+
+
+
+    // var reader = new FileReader();
     
-    reader.readAsDataURL(event.target.files[0]);
-    }
+    // reader.onload = function (e) {
+    //   document.getElementById(path).setAttribute('src',e.target.result);  
+    // }
+    
+    // reader.readAsDataURL(event.target.files[0]);
+    // }
   }
 
   const fileUpload = () => {
@@ -443,13 +469,13 @@ const MemberReg = (props) => {
                   height:'100%'
                 }}>
                   <div style={{textAlign:'center'}}>
-                    <img id="profileImg" src={getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
+                    <img id="profileImg" src={getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}} accept=""/>
                   </div>
                   <div style={{textAlign:'center'}}>
                     <div className={classes.textfield}>
-                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => readUrl(event,"profileImg")}/>
-                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => readUrl(event,"certImg")}/>
-                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => readUrl(event,"schoolImg")}/>
+                      <input type="file" id="myFileProfile" style={{display:"none"}} onChange={() => readUrl(event,"profileImg")} accept=".gif, .jpg,.png"/>
+                      <input type="file" id="myFileItcert" style={{display:"none"}} onChange={() => readUrl(event,"certImg")} accept=".gif, .jpg,.png"/>
+                      <input type="file" id="myFileSchoolcert" style={{display:"none"}} onChange={() => readUrl(event,"schoolImg")} accept=".gif, .jpg,.png"/>
                       <Button variant="contained" color="primary" onClick={() => document.getElementById("myFileProfile").click()}>
                                                 프로필 업로드
                       </Button>

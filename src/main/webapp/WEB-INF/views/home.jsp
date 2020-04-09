@@ -16,5 +16,6 @@
 	<script type="text/javascript" src="<c:out value='<%=contextPath %>' />/resources/js/vendors.chunk.js"></script>
 	<script type="text/javascript" src="<c:out value='<%=contextPath %>' />/resources/js/intranet.bundle.js"></script>
 	<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.9.0/load-image.all.min.js"></script>
 </body>
 </html>
