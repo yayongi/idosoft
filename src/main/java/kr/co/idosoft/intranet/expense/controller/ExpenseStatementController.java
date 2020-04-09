@@ -61,6 +61,7 @@ public class ExpenseStatementController {
 		mv.setViewName("jsonView");
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		mv.addObject("contextPath", request.getSession().getServletContext().getContextPath() + "/resources/expense/");
 		
 		String regDate = (String)params.get("regDate");				// 시작 날짜
 

@@ -80,7 +80,6 @@ export default function MenuList(props) {
 		}
 	}
 
-
 	useEffect(()=>{
 		setShowLoadingBar(false);
 		urlMatch();
@@ -139,6 +138,7 @@ export default function MenuList(props) {
 					}
 				})}
 			</List>
+
 			<Divider />
 			{/* <List>
 					<ListSubheader inset>Administrator</ListSubheader>

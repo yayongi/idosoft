@@ -6,7 +6,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
@@ -25,10 +24,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import PrintIcon from '@material-ui/icons/Print';
-import { Hidden } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 
+import Toolbar from '@material-ui/core/Toolbar';
+import PrintIcon from '@material-ui/icons/Print';
+import { Hidden } from '@material-ui/core';
 
 import Axios from 'axios';
 
@@ -283,14 +283,17 @@ export default function  View(props) {
 			setShowLoadingBar(false);
 		})
 		.catch(e => {
+			setShowLoadingBar(false);
 			processErrCode(e);
 			console.log(e);
-			setShowLoadingBar(false);
 		});
 	}
 
 	// 이미지 영역 인쇄
 	const printImageArea = () => {
+
+		setShowLoadingBar(true);
+
 		let container = document.getElementsByName("image");
 		
 		/** 팝업 */
@@ -313,6 +316,7 @@ export default function  View(props) {
 		setTimeout(() => {
 			popupWindow.print()         // 팝업의 프린트 도구 시작
 			popupWindow.close()         // 프린트 도구 닫혔을 경우 팝업 닫기
+			setShowLoadingBar(false);
 		}, 1000)
 	}
 

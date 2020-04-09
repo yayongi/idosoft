@@ -25,9 +25,12 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { Divider, Button, Hidden } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
+
+import PrintIcon from '@material-ui/icons/Print';
+
 import ko from "date-fns/locale/ko";
 
-import {processErrCode, isEmpty, expectedDevelopment} from '../../../js/util';
+import {processErrCode, isEmpty, pathtoFileName} from '../../../js/util';
 
 import { LoadingBar } from '../../../common/LoadingBar/LoadingBar';
 
@@ -61,13 +64,13 @@ import {useStyles} from './styles';
 
 	const [indiNo, setIndiNo] = React.useState("");
 	const [indiName, setIndiName] = React.useState(""); 
-	const [indiPosition, setIndiiPosition] = React.useState("");
-	
+	const [indiPosition, setIndiiPosition] 	= React.useState("");
+
 	const [open, setOpen] = React.useState(false);
 	const [errOpen, setErrOpen] = React.useState(false);
 	const [errMessage, setErrMessage] = React.useState("");
 	const [nonHistoryBack, setNonHistoryBack] = React.useState(false); 
-
+	const [contextPath, setContextPath] = React.useState("");
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(false); 
 
 	const [selectedDate, setSelectedDate] = React.useState(new Date());
@@ -91,12 +94,14 @@ import {useStyles} from './styles';
 				return openHandleClick(response.data.errorMessage);
 			}
 
-			const list = JSON.parse(response.data.list);
-			const total_amount = response.data.totalAmount;
+			const list 			= JSON.parse(response.data.list);
+			const total_amount 	= response.data.totalAmount;
+			const contextPath	= response.data.contextPath;
 
 			setMembers(list);
 			setTotalAmount(total_amount);
-			
+			setContextPath(contextPath);
+
 			setShowLoadingBar(false);
 		}).catch(e => {
 			setShowLoadingBar(false);
@@ -154,14 +159,17 @@ import {useStyles} from './styles';
 				'Content-Type': 'application/json'
 			},
 		}).then(response => {
-			const list = JSON.parse(response.data.list);
-			const total_amount = response.data.totalAmount;
+			const list 			= JSON.parse(response.data.list);
+			const total_amount 	= response.data.totalAmount;
+			
 			//POSITION
 			setIndiExpenseInfo(list);
 			setIndiTotalAmount(total_amount);
+
 			setIndiNo(row.MEMBER_NO);
 			setIndiName(row.NAME);
 			setIndiiPosition(row.POSITION);
+			
 			setOpen(true);
 			
 			setShowLoadingBar(false);
@@ -225,6 +233,40 @@ import {useStyles} from './styles';
 		}
 		
 	}
+	
+	// 이미지 영역 인쇄
+	const printImageArea = (filePath) => {
+
+		console.log(`filePath : ${filePath}`);
+		console.log(`contextPath : ${contextPath}`);
+		setShowLoadingBar(true);
+
+		const src = contextPath + pathtoFileName(filePath);
+
+		let innerHtml = `<div name='image'><img src=${src} title='image' style='max-width: 200px;'/></div>`;
+		
+		/** 팝업 */
+		let popupWindow = window.open("", "_blank", "width=700,height=800");
+		
+		popupWindow.document.write(
+			"<!DOCTYPE html>"+
+			"<html>"+
+				"<head>"+
+				"</head>"+
+				"<body>"+innerHtml+"</body>"+
+			"</html>"
+		)
+	
+		popupWindow.document.close()
+		popupWindow.focus()
+
+		/** 1초 지연 */
+		setTimeout(() => {
+			popupWindow.print()         // 팝업의 프린트 도구 시작
+			popupWindow.close()         // 프린트 도구 닫혔을 경우 팝업 닫기
+			setShowLoadingBar(false);
+		}, 1000)
+	}
 
 	const handleClose = () => {
 		setOpen(false);
@@ -250,7 +292,7 @@ import {useStyles} from './styles';
 		}
 		setNonHistoryBack(false);
 	}
-
+	
 	return (
 		<Fragment>
 			<LoadingBar openLoading={isShowLoadingBar}/>
@@ -377,13 +419,16 @@ import {useStyles} from './styles';
 					<TableContainer component={Paper}>
 						<Table className={classes.table} aria-label="simple table">
 							<TableHead>
-							<TableRow>
-								<TableCell align="center">경비<br/>번호</TableCell>
-								<TableCell align="center">경비<br/>유형</TableCell>
-								<TableCell align="center">내용</TableCell>
-								<TableCell align="center">금액</TableCell>
-								<TableCell align="center">결제일</TableCell>
-							</TableRow>
+								<TableRow>
+									<TableCell align="center">경비<br/>번호</TableCell>
+									<TableCell align="center">경비<br/>유형</TableCell>
+									<TableCell align="center">내용</TableCell>
+									<TableCell align="center">금액</TableCell>
+									<TableCell align="center">결제일</TableCell>
+									<TableCell align="center" style={{
+										maxWidth : 80
+									}}>인쇄</TableCell>
+								</TableRow>
 							</TableHead>
 							<TableBody>
 							{indiExpenseInfo.map(row => (
@@ -395,6 +440,13 @@ import {useStyles} from './styles';
 									<TableCell align="center">{row.USE_CN}</TableCell>
 									<TableCell align="center">{(Number)(row.AMOUNT).toLocaleString()}</TableCell>
 									<TableCell align="center">{row.USE_DATE}</TableCell>
+									<TableCell align="center" style={{
+										maxWidth : 80
+									}}>
+										<IconButton aria-label="delete" className={classes.iconPadding} onClick={() => printImageArea(row.FILEPATH)}>
+											<PrintIcon fontSize="small" />
+										</IconButton>
+									</TableCell>
 								</TableRow>
 							))}
 							</TableBody>
