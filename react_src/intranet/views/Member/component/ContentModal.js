@@ -93,7 +93,15 @@ const ContentModal = ({props, closeModal}) => {
 		}
 
 		routeProps.history.push(url + member_no);
-	}
+  }
+  
+  const error = (id,photo_path) => {
+    if(photo_path.trim() != ""){
+      setTimeout(function() {
+        document.getElementById(id).setAttribute("src",getRootPath() + "/resources/profile/" + photo_path+'?number='+Math.random()*1000);
+      }, 1000);
+    }
+  }
 
   return (
     <div>
@@ -108,7 +116,7 @@ const ContentModal = ({props, closeModal}) => {
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
                     <div style={{textAlign:'center'}}>
-                      <img id="profileImg" src={props.photo_path != null ? getRootPath() + "/resources/profile/" + props.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}}/>
+                      <img id="profileImg" src={props.photo_path != null ? getRootPath() + "/resources/profile/" + props.photo_path : getRootPath() + "/resources/img/noImg.jpg"} className={classes.large} style={{borderRadius: "70%"}} onError={() => error("profileImg",props.photo_path)}/>
                     </div>
                   </Grid>
                   <Grid item xs={6}>
