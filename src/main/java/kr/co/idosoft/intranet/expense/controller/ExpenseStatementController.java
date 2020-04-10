@@ -237,7 +237,7 @@ public class ExpenseStatementController {
 			
 			LOG.debug("#### transList : " + transList);
 			
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			LOG.debug("Exception : " + e.getMessage());
 		}
 		

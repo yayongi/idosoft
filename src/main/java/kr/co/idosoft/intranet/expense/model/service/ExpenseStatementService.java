@@ -41,8 +41,9 @@ public interface ExpenseStatementService {
 	 * 교통비 년별 통계
 	 * @return String
 	 * @throws ParseException 
+	 * @throws Exception 
 	 */
-	List<Map<String, Object>> getTransExpenseList(Map<String, Object> data) throws ParseException;
+	List<Map<String, Object>> getTransExpenseList(Map<String, Object> data) throws ParseException, Exception;
 
 	
 }

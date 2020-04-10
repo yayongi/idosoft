@@ -201,11 +201,13 @@ public class ExcelController {
 			list1 =  excelService.getCodetoList(data);
 			//교통비
 			data.put("FILE_CODE","EXCEL0005_2");
+			
 			try {
 				list2 =  excelService.getTransList(data);
-			} catch (ParseException e) {
-				LOG.debug("ParseException e : " + e.getMessage());
+			} catch (Exception e) {
+				LOG.debug("# Exception : " + e.getMessage());
 			}
+			
 			
 			data.put("FILE_CODE","EXCEL0005");
 		} else {
