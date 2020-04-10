@@ -35,7 +35,7 @@ public class ExcelServiceImpl implements ExcelService {
 		return excelDao.getCodetoList(data);
 	}
 	@Override
-	public List<LinkedHashMap<String, Object>> getTransList(Map<String, Object> data) throws ParseException {
+	public List<LinkedHashMap<String, Object>> getTransList(Map<String, Object> data) throws Exception {
 		List<LinkedHashMap<String, Object>> dataList = excelDao.getCodetoList(data);
 		
 		data.put("FILE_CODE","EXCEL0005_3");
@@ -47,7 +47,7 @@ public class ExcelServiceImpl implements ExcelService {
 	}
 
 	// 교통비 일괄 처리 프로세스
-	static List<LinkedHashMap<String, Object>> batchProcessing(List<LinkedHashMap<String, Object>> dataList, List<String> membetList, String year, String isAdmin) throws ParseException { // 월별 일괄 계산 처리
+	static List<LinkedHashMap<String, Object>> batchProcessing(List<LinkedHashMap<String, Object>> dataList, List<String> membetList, String year, String isAdmin) throws Exception { // 월별 일괄 계산 처리
 		
 		LOG.debug("## 교통비 일괄 처리 프로세스 START #######################################################");
 		
@@ -117,7 +117,16 @@ public class ExcelServiceImpl implements ExcelService {
 									LOG.debug("startMonth와 endMonth 현재 달에 포함되어있는지 추출");
 									
 									// SimpleDateFormat 이용하여 해당 날짜의 일수 추출
-									int startDay 	= Integer.parseInt(dateToDay.format(startDate));
+									int startDay = 0;
+									
+									// 시작일이 첫째주이면서 월요일인 경우, 첫날부터 시작 (2020-04-10 요건 수용)
+									if(commonUtil.getWeekOfYear(stringToDate.format(startDate)) == 1 && "월".equals(commonUtil.getDateDay(stringToDate.format(startDate)))) {
+										startDay = 0;
+									} else {
+										// 시작일이 0부터  시작하기 때문에 -1
+										startDay 	= Integer.parseInt(dateToDay.format(startDate)) -1;
+									}
+									
 									int endDay 		= Integer.parseInt(dateToDay.format(endDate));
 									
 									// 시작날짜와 종료날짜가 같은 달이기 때문에, 1일 부터 시작날짜 까지 0.0 대입
@@ -139,7 +148,15 @@ public class ExcelServiceImpl implements ExcelService {
 									/* 3. false : 시작날짜부터 달의 마지막 날짜까지 일 수 계산*/
 									LOG.debug("시작날짜부터 달의 마지막 날짜까지 일 수 계산");
 									
-									int startDay 	= Integer.parseInt(dateToDay.format(startDate));
+									int startDay = 0;
+									
+									// 시작일이 첫째주이면서 월요일인 경우, 첫날부터 시작 (2020-04-10 요건 수용)
+									if(commonUtil.getWeekOfYear(stringToDate.format(startDate)) == 1 && "월".equals(commonUtil.getDateDay(stringToDate.format(startDate)))) {
+										startDay = 0;
+									} else {
+										// 시작일이 0부터  시작하기 때문에 -1
+										startDay 	= Integer.parseInt(dateToDay.format(startDate)) -1;
+									}
 									
 									// (시작날짜는 그달에 해당)시작날짜와 종료날짜가 같지 않기 때문에, 1일부터 시작날짜까지 0.0 대입
 									for(int l = 0; l < startDay; l++) {
