@@ -81,14 +81,15 @@ function ProjectInfoForm(props) {
 	const { location, match, history } = props.routeProps.routeProps;
 	const { routeProps } = props.routeProps;
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true, []);    //loading bar
-	const [instt_list, setInstt] = React.useState([], []);
-	const [member_list, setMember] = React.useState([], [member_list]);
-	const [role_list, setRole] = React.useState([], []);
-	const [updatedMemList, setUpdateMemList] = React.useState([], []);
-	const [renderWant, setRenderWant] = React.useState(true);
-	const [isRowAddClicked, setIsRowAddClicked] = React.useState(false);
-	const screenType = initCheck(match);
+	const [instt_list, setInstt] = React.useState([], []);					//발주처 정보 처음 진입할때 받아오면 새로 갱신할 필요가없음
+	const [member_list, setMember] = React.useState([], [member_list]);		//사원정보
+	const [role_list, setRole] = React.useState([], []);					//역할정보 처음 진입할때 받아오면 새로 갱신할 필요가없음
+	const [updatedMemList, setUpdateMemList] = React.useState([], []);		//투입 인원 리스트
+	const [renderWant, setRenderWant] = React.useState(true);				//다시 렌더링을 원할때 setRenderWant로 렌더링 제어
+	const [isRowAddClicked, setIsRowAddClicked] = React.useState(false);	//추가 버튼을 클릭 했는지 여부 (프로젝트 정보 수정 시 사용)
+	const screenType = initCheck(match);									//신규 프로젝트 작성인지 프로젝트 수정인지 판단
 	
+	//프로젝트 정보
 	const [dataState, setDataState] = React.useState({
 		PROJECT_NM : "",
 		INSTT_CODE : "",
@@ -97,6 +98,10 @@ function ProjectInfoForm(props) {
 		TRANSPORT_CT : "",
 		PM : "",
 	}, [dataState]);	// state : 수정을 위한 데이터 관리
+	//프로젝트 투입 인원 원 정보 - 수정 시 비교하기 위함
+	const [memOriginDataState, setMemOriginDataState] = React.useState([{}], []);	// 수정 상태에서 ROW 삭제할 시 사용함
+	
+	//프로젝트 투입 인원 정보
 	const [memDataState, setMemDataState] = React.useState([{
 		MEMBER_NO : "",
 		CHRG_JOB : "",
@@ -105,9 +110,8 @@ function ProjectInfoForm(props) {
 		ROLE_CODE : "RL0000",
 		USE_LANG : "Java,Jsp,Javascript",
 	}], [memDataState]);	// state : 수정을 위한 데이터 관리
-	const [memOriginDataState, setMemOriginDataState] = React.useState([{}], []);	// 수정 상태에서 ROW 삭제할 시 사용함
 	
-	
+	//프로젝트 정보 벨리데이션 체크용도
 	const [validateCheck, setValidateCheck] = React.useState({
 		PROJECT_NM:{error:false, helperText:""},
 		INSTT_CODE:{error:false, helperText:""},
@@ -115,7 +119,7 @@ function ProjectInfoForm(props) {
 		ENDDE:{error:false, helperText:""},
 		TRANSPORT_CT:{error:false, helperText:""},
 	});
-
+	//투입 인원 벨리데이션 정보 (배열로 되어 있으며, 투입 인원 수에 맞게 동적으로 생성해줘야함)
 	const [validateMemCheck, setValidateMemCheck] = React.useState([{
 		MEMBER_NO:{error:false, helperText:""},
 		CHRG_JOB:{error:false, helperText:""},
@@ -125,6 +129,24 @@ function ProjectInfoForm(props) {
 		USE_LANG:{error:false, helperText:""},
 	}]);
 	
+	const validateMemCheckDefault = (list_leng) => {
+		var tmp = [];
+		for(var i=0; i < list_leng; i++){
+			var validateMemCheck_defaultForm = {
+				MEMBER_NO:{error:false, helperText:""},
+				CHRG_JOB:{error:false, helperText:""},
+				INPT_BGNDE:{error:false, helperText:""},
+				INPT_ENDDE:{error:false, helperText:""},
+				ROLE_CODE:{error:false, helperText:""},
+				USE_LANG:{error:false, helperText:""},
+			}
+			
+			tmp.push(validateMemCheck_defaultForm);
+		}
+		setValidateMemCheck(tmp);
+	}
+	
+	//보여줄 레이블
 	const columnsUp = [
 		{ id: 'MEMBER_NO', label: '이름', minWidth: 100, align: 'center' },
 		{ id: 'CHRG_JOB', label: '담당업무', minWidth: 100, align: 'center' },
@@ -147,7 +169,8 @@ function ProjectInfoForm(props) {
 
 
 	useEffect(() => {
-		setUpdateMemList([]);
+		// 진입 경로가 신규 등록으로 들어왔는 지 프로젝트 수정으로 들어왔는지 여부에 따라
+		// 신규로 들어온 경우 사원정보, 발주처 정보, 역할 정보를 받아옴(모든 프로젝트 공통)
 		if(screenType == "new"){
 			axios({
 				url: '/intranet/projectInfo',
@@ -162,7 +185,10 @@ function ProjectInfoForm(props) {
 				setShowLoadingBar(false);
 				processErrCode(e);
 			});
-		}else if(screenType == "modify"){
+		}
+		
+		//프로젝트 수정으로 들어온 경우
+		else if(screenType == "modify"){
 			axios({
 				url: '/intranet/projectDetailInfo',
 				method: 'post',
@@ -176,30 +202,18 @@ function ProjectInfoForm(props) {
 				projectInfo["BGNDE"] = projectInfo["BGNDE"].slice(0,4) + "-" + projectInfo["BGNDE"].slice(4,6) + "-" + projectInfo["BGNDE"].slice(6,8);  
 				projectInfo["ENDDE"] = projectInfo["ENDDE"].slice(0,4) + "-" + projectInfo["ENDDE"].slice(4,6) + "-" + projectInfo["ENDDE"].slice(6,8);  
 				setDataState(projectInfo);
-
-				var tmp = [];
-				for(var i=0; i < response.data.proMemList.length; i++){
-					var validateMemCheck_defaultForm = {
-						MEMBER_NO:{error:false, helperText:""},
-						CHRG_JOB:{error:false, helperText:""},
-						INPT_BGNDE:{error:false, helperText:""},
-						INPT_ENDDE:{error:false, helperText:""},
-						ROLE_CODE:{error:false, helperText:""},
-						USE_LANG:{error:false, helperText:""},
+				
+				if(response.data.proMemList.length > 0){
+					//투입 인원 벨리데이션 체크 동적으로 생성
+					validateMemCheckDefault(response.data.proMemList.length);
+					var proMemList = response.data.proMemList;
+					for(var idx=0; idx < proMemList.length; idx++){
+						proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
+						proMemList[idx]["INPT_ENDDE"] = proMemList[idx]["INPT_ENDDE"].slice(0,4) + "-" + proMemList[idx]["INPT_ENDDE"].slice(4,6) + "-" + proMemList[idx]["INPT_ENDDE"].slice(6,8);
 					}
-					
-					tmp.push(validateMemCheck_defaultForm);
+					setMemDataState(proMemList);
+					setMemOriginDataState(JSON.parse(JSON.stringify(proMemList)));
 				}
-				setValidateMemCheck(tmp);
-				
-				
-				var proMemList = response.data.proMemList;
-				for(var idx=0; idx < proMemList.length; idx++){
-					proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
-					proMemList[idx]["INPT_ENDDE"] = proMemList[idx]["INPT_ENDDE"].slice(0,4) + "-" + proMemList[idx]["INPT_ENDDE"].slice(4,6) + "-" + proMemList[idx]["INPT_ENDDE"].slice(6,8);
-				}
-				setMemDataState(proMemList);
-				setMemOriginDataState(JSON.parse(JSON.stringify(proMemList)));
 				setShowLoadingBar(false);
 			}).catch(e => {
 				setShowLoadingBar(false);
@@ -258,23 +272,7 @@ function ProjectInfoForm(props) {
 			setUpdateMemList(updatedMemList);
 		}
 		
-		var validateMemCheck_defaultForm = {
-			MEMBER_NO:{error:false, helperText:""},
-			CHRG_JOB:{error:false, helperText:""},
-			INPT_BGNDE:{error:false, helperText:""},
-			INPT_ENDDE:{error:false, helperText:""},
-			ROLE_CODE:{error:false, helperText:""},
-			USE_LANG:{error:false, helperText:""},
-		}
-		
-		
-		//투입인원에대한 에러 문구는 한번에 초기화 시켜준다
-		var defaultMemberValidate = [];
-		for(var i=0; i < memDataState.length; i++){
-			defaultMemberValidate.push(validateMemCheck_defaultForm);
-		}
-		setValidateMemCheck(defaultMemberValidate);
-
+		validateMemCheckDefault(memDataState.length);
 		memDataState[idx][event.target.name] = event.target.value;
 		setMemDataState([...memDataState]);
 	}
@@ -302,20 +300,7 @@ function ProjectInfoForm(props) {
 			memDataState[idx][target] = Moment(date).format('YYYY-MM-DD'); 
 			setMemDataState([...memDataState]);
 			
-			var tmp = [];
-			for(var i=0; i < memDataState.length; i++){
-				var validateMemCheck_defaultForm = {
-					MEMBER_NO:{error:false, helperText:""},
-					CHRG_JOB:{error:false, helperText:""},
-					INPT_BGNDE:{error:false, helperText:""},
-					INPT_ENDDE:{error:false, helperText:""},
-					ROLE_CODE:{error:false, helperText:""},
-					USE_LANG:{error:false, helperText:""},
-				}
-				
-				tmp.push(validateMemCheck_defaultForm);
-			}
-			setValidateMemCheck(tmp);
+			validateMemCheckDefault(memDataState.length);
 		}
 	}
 	
@@ -932,12 +917,23 @@ function ProjectInfoForm(props) {
 												select
 											>
 											{member_list.map(info => {
-												if(screenType == "new" || memDataState[idx]["MEMBER_NO"] == info.member_no || !memDataState[idx]["MEMBER_NO"]){
-													return (
-														<MenuItem key={info.member_no} value={info.member_no}>
-															{info.name}
-														</MenuItem>
-													)
+												//기존의 투입된 인원은 투입된 인원을 보여줘야하고 새롭게 투입인원을 추가할때는 기존에 없는 사람으로 보여줘야함
+												if(memOriginDataState.length > idx){
+													if(memDataState[idx]["MEMBER_NO"] == info.member_no || !memDataState[idx]["MEMBER_NO"]){
+														return (
+															<MenuItem key={info.member_no} value={info.member_no}>
+																{info.name}
+															</MenuItem>
+														)
+													}
+												}else{
+													if(memDataState.findIndex((item) => item["MEMBER_NO"] == info.member_no) == -1){
+														return (
+															<MenuItem key={info.member_no} value={info.member_no}>
+																{info.name}
+															</MenuItem>
+														)
+													}
 												}
 											})}
 											</TextField>

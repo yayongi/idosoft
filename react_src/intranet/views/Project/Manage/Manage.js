@@ -44,7 +44,7 @@ export default function ManageView(props) {
 	const classes = useStyles();
 	const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 	const [isShowLoadingBar, setShowLoadingBar] = useState(false);    //loading bar
-	const [projectInfo, setProjectInfo] = useState([]);
+	const [projectInfo, setProjectInfo] = useState([], [projectInfo]);
 	const [projectGraphInfo, setProjectGraphInfo] = useState([]);
 	const [member_list, setMember_list] = useState([], []);
 	const [instt_list, setInstt_list] = useState([], []);
