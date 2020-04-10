@@ -18,7 +18,7 @@ const DialogContent = withStyles(theme => ({
 }))(MuiDialogContent);
 
 //다이얼 로그
-const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenSnackBar,closeModal}) => {
+const FilterModal = ({props,state, setState, searchState,setSearchState,pageSetting, setPageSetting,setOpenSnackBar,closeModal}) => {
 	const [open, setOpen] = React.useState(false);
 
 	// 검색 버튼 클릭 전, 임시로 값 저장
@@ -54,6 +54,11 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 			searchword : document.getElementsByName("searchword")[0].value,
 			flag : true
 		});
+
+		setPageSetting({
+			page : 0,
+			pagerow : 10
+		});
 		handleClose();
 	}
 
@@ -63,6 +68,11 @@ const FilterModal = ({props,state, setState, searchState,setSearchState,setOpenS
 			category : 0,
 			searchword : "",
 			flag : false
+		});
+
+		setPageSetting({
+			page : 0,
+			pagerow : 10
 		});
 
 		setState({

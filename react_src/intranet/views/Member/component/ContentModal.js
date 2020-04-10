@@ -72,7 +72,7 @@ const DialogActions = withStyles(theme => ({
 }))(MuiDialogActions);
 
 //다이얼 로그
-const ContentModal = ({props, closeModal}) => {
+const ContentModal = ({props, pageSetting, setPageSetting,closeModal}) => {
   const [open, setOpen] = React.useState(false);
 
   const classes = useStyles();
@@ -84,6 +84,7 @@ const ContentModal = ({props, closeModal}) => {
 
   // 상세화면 이돋하기
 	const goDetail = (member_no,manager_yn) => {
+    sessionStorage.setItem("pageSetting",JSON.stringify(pageSetting));
     const {routeProps} = props;
 		let url = "";
 		if(manager_yn == 1){

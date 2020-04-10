@@ -406,7 +406,6 @@ const MemberMod_admin = (props) => {
 
   const readUrl = (event,path) => {
     if (event.target.files && event.target.files[0]) {
-
       var files = event.target.files; 
       var fileType = files[0].type; 
       loadImage(files[0], function(img, data) { 
@@ -422,15 +421,6 @@ const MemberMod_admin = (props) => {
         { 
           orientation:true
         })
-
-
-      // var reader = new FileReader();
-      
-      // reader.onload = function (e) {
-      //   document.getElementById(path).setAttribute('src',e.target.result);  
-      // }
-      
-      // reader.readAsDataURL(event.target.files[0]);
     }
   }
 

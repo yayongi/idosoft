@@ -365,41 +365,24 @@ const MemberReg = (props) => {
   }
 
   const readUrl = (event,path) => {
-    
+    if (event.target.files && event.target.files[0]) {
+      var files = event.target.files; 
+      var fileType = files[0].type; 
+      loadImage(files[0], function(img, data) { 
+        img.toBlob(function(blob){ 
+          var rotateFile = new File([blob], files[0].name, {type:fileType}); 
+          sel_file = rotateFile; 
+          var reader = new FileReader(); 
+          reader.onload = function(event){ 
+            document.getElementById(path).setAttribute('src',event.target.result);
+          } 
+          reader.readAsDataURL(rotateFile); 
+        },fileType)}, 
+        { 
+          orientation:true
+        })
 
-      if (event.target.files && event.target.files[0]) {
-
-        var files = event.target.files; 
-        var fileType = files[0].type; 
-        loadImage(files[0], function(img, data) { 
-          img.toBlob(function(blob){ 
-            var rotateFile = new File([blob], files[0].name, {type:fileType}); 
-            sel_file = rotateFile; 
-            var reader = new FileReader(); 
-            reader.onload = function(event){ 
-              document.getElementById(path).setAttribute('src',event.target.result);
-            } 
-            reader.readAsDataURL(rotateFile); 
-          },fileType)}, 
-          { 
-            orientation:true
-          })
-  
-        }
-
-
-
-
-
-
-    // var reader = new FileReader();
-    
-    // reader.onload = function (e) {
-    //   document.getElementById(path).setAttribute('src',e.target.result);  
-    // }
-    
-    // reader.readAsDataURL(event.target.files[0]);
-    // }
+      }
   }
 
   const fileUpload = () => {

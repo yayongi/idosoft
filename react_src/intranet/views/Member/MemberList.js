@@ -124,9 +124,10 @@ const MemberList = (props) => {
 		setSearchState:setSearchState
 	});
 
-	const [ page, setPage ] = React.useState(0);
-
-	const [ rowsPerPage, setRowsPerPage ] = React.useState(10);
+	const [ pageSetting, setPageSetting ] = React.useState({
+		page : sessionStorage.getItem("pageSetting") != null? JSON.parse(sessionStorage.getItem("pageSetting")).page : 0,
+		pagerow : sessionStorage.getItem("pageSetting") != null? JSON.parse(sessionStorage.getItem("pageSetting")).pagerow : 10,
+	});
 
 	const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
@@ -295,12 +296,18 @@ const MemberList = (props) => {
 	}
 
 	const handleChangePage = (event, newPage) => {
-      setPage(newPage);
+		setPageSetting({
+			...pageSetting,
+			page : newPage
+		});
     };
 
     const handleChangeRowsPerPage = event => {
-      setRowsPerPage(+event.target.value);
-      setPage(0);
+		setPageSetting({
+			...pageSetting,
+			page : 0,
+			pagerow : +event.target.value
+		})
 	};
 	
 	const showAll = (value) => {
@@ -391,6 +398,8 @@ const MemberList = (props) => {
 
 	// 상세화면 이돋하기
 	const goDetail = (member_no,manager_yn) => {
+		sessionStorage.setItem("pageSetting",JSON.stringify(pageSetting));
+
 		let url = "";
 		if(manager_yn == true){
 			url = "/member/membermod/admin/";
@@ -445,8 +454,8 @@ const MemberList = (props) => {
 
 	return (
 		<div>
-			<ContentModal props={openModal} closeModal={handleCloseModal}/>
-			<FilterModal props={openFilter} state={state} setState={setState} setOpenSnackBar={setOpenSnackBar} searchState = {searchState} setSearchState = {setSearchState} closeModal={handleClickClose}/>
+			<ContentModal props={openModal} pageSetting={pageSetting} setPageSetting={setPageSetting} closeModal={handleCloseModal}/>
+			<FilterModal props={openFilter} state={state} setState={setState} setOpenSnackBar={setOpenSnackBar} pageSetting={pageSetting} setPageSetting={setPageSetting} searchState = {searchState} setSearchState = {setSearchState} closeModal={handleClickClose}/>
 			<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 			<LoadingBar openLoading={isShowLoadingBar}/>
 
@@ -531,8 +540,8 @@ const MemberList = (props) => {
 								rowsPerPageOptions={[10, 25, 100]}
 								component="div"
 								count={state.memberList.length}
-								rowsPerPage={rowsPerPage}
-								page={page}
+								rowsPerPage={pageSetting.pagerow}
+								page={pageSetting.page}
 								onChangePage={handleChangePage}
 								onChangeRowsPerPage={handleChangeRowsPerPage}
 							/>
@@ -562,7 +571,7 @@ const MemberList = (props) => {
 											</TableRow>
 										</TableHead>
 										<TableBody>
-										{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+										{state.memberList.slice(pageSetting.page * pageSetting.pagerow, pageSetting.page * pageSetting.pagerow + pageSetting.pagerow).map(row => (
 											<TableRow key={row.member_no} hover style={(row.ret_date != null)? {backgroundColor:"lightgrey"}:{}}>
 												{state.manager_yn && (
 													<TableCell padding="checkbox">
@@ -618,7 +627,7 @@ const MemberList = (props) => {
 											</TableRow>
 										</TableHead>
 										<TableBody>
-										{state.memberList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+										{state.memberList.slice(pageSetting.page * pageSetting.pagerow, pageSetting.page * pageSetting.pagerow + pageSetting.pagerow).map(row => (
 												<TableRow key={row.member_no} hover style={(row.ret_date != null)?  {backgroundColor:"lightgrey"}:{}}>
 													{state.manager_yn && (
 													<TableCell padding="checkbox">
@@ -655,8 +664,8 @@ const MemberList = (props) => {
 								rowsPerPageOptions={[10, 25, 100]}
 								component="div"
 								count={state.memberList.length}
-								rowsPerPage={rowsPerPage}
-								page={page}
+								rowsPerPage={pageSetting.pagerow}
+								page={pageSetting.page}
 								onChangePage={handleChangePage}
 								onChangeRowsPerPage={handleChangeRowsPerPage}
 							/>
