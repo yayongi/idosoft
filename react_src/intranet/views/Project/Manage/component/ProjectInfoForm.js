@@ -87,7 +87,11 @@ function ProjectInfoForm(props) {
 	const [updatedMemList, setUpdateMemList] = React.useState([], []);		//투입 인원 리스트
 	const [renderWant, setRenderWant] = React.useState(true);				//다시 렌더링을 원할때 setRenderWant로 렌더링 제어
 	const [isRowAddClicked, setIsRowAddClicked] = React.useState(false);	//추가 버튼을 클릭 했는지 여부 (프로젝트 정보 수정 시 사용)
+	const [pm_member_no, setPm_member_no] = React.useState("",[]);			//PM과 관리자만 투입인원 추가 삭제 수정이 가능함 + 수정은 자기 자신도
+	const [isAdmin, setIsAdmin] = React.useState("",[]);			//PM과 관리자만 투입인원 추가 삭제 수정이 가능함 + 수정은 자기 자신도
 	const screenType = initCheck(match);									//신규 프로젝트 작성인지 프로젝트 수정인지 판단
+	const userInfo = JSON.parse(sessionStorage.getItem("loginSession"))["member_NO"];
+	
 	
 	//프로젝트 정보
 	const [dataState, setDataState] = React.useState({
@@ -98,6 +102,10 @@ function ProjectInfoForm(props) {
 		TRANSPORT_CT : "",
 		PM : "",
 	}, [dataState]);	// state : 수정을 위한 데이터 관리
+	
+	
+	// 투입 인원 변경할때 프로젝트 정보가 변경되면 안되기 때문
+	const [cloneDataState, setCloneDataState] = React.useState([], []);
 	//프로젝트 투입 인원 원 정보 - 수정 시 비교하기 위함
 	const [memOriginDataState, setMemOriginDataState] = React.useState([{}], []);	// 수정 상태에서 ROW 삭제할 시 사용함
 	
@@ -180,13 +188,13 @@ function ProjectInfoForm(props) {
 				setInstt(response.data.code_list);
 				setMember(response.data.member_list);
 				setRole(response.data.role_list);
+				setIsAdmin(response.data.isAdmin);
 				setShowLoadingBar(false);
 			}).catch(e => {
 				setShowLoadingBar(false);
 				processErrCode(e);
 			});
 		}
-		
 		//프로젝트 수정으로 들어온 경우
 		else if(screenType == "modify"){
 			axios({
@@ -197,12 +205,14 @@ function ProjectInfoForm(props) {
 				setInstt(response.data.code_list);
 				setMember(response.data.member_list);
 				setRole(response.data.role_list);
-
+				setIsAdmin(response.data.isAdmin);
+				
 				var projectInfo = response.data.project_info;
 				projectInfo["BGNDE"] = projectInfo["BGNDE"].slice(0,4) + "-" + projectInfo["BGNDE"].slice(4,6) + "-" + projectInfo["BGNDE"].slice(6,8);  
 				projectInfo["ENDDE"] = projectInfo["ENDDE"].slice(0,4) + "-" + projectInfo["ENDDE"].slice(4,6) + "-" + projectInfo["ENDDE"].slice(6,8);  
 				setDataState(projectInfo);
-				
+				setPm_member_no(response.data.project_info.PM);
+				setCloneDataState(projectInfo);
 				if(response.data.proMemList.length > 0){
 					//투입 인원 벨리데이션 체크 동적으로 생성
 					validateMemCheckDefault(response.data.proMemList.length);
@@ -563,14 +573,26 @@ function ProjectInfoForm(props) {
 		});
 	}
 	
-	const handleUpdateMember = (selectMemberInfo) => {
+	const handleUpdateMember = (selectMemberInfo, idx) => {
 		setShowLoadingBar(true);
 		selectMemberInfo["INPT_BGNDE"] = selectMemberInfo["INPT_BGNDE"].replace("-", "").replace("-", "");
 		selectMemberInfo["INPT_ENDDE"] = selectMemberInfo["INPT_ENDDE"].replace("-", "").replace("-", "");
+		
+		
+		var sendData = JSON.parse(JSON.stringify(cloneDataState));
+		sendData["BGNDE"] = sendData["BGNDE"].replace("-", "").replace("-", "");
+		sendData["ENDDE"] = sendData["ENDDE"].replace("-", "").replace("-", "");
+		
+		var beforePM = "";
+		if(idx == 0){
+			beforePM = sendData["PM"];
+			sendData["PM"] = selectMemberInfo.MEMBER_NO;
+		}
+		
 		axios({
 			url: '/intranet/updateMember',
 			method: 'post',
-			data: {"PROJECT_NO": match.params.id, "memDataState" : selectMemberInfo}
+			data: {"PROJECT_NO": match.params.id, "memDataState" : selectMemberInfo, "isPM" : idx == 0, "dataState":sendData, "beforePM": beforePM}
 		}).then(response => {
 			setShowLoadingBar(false);
 			if(response.data.isDBError){
@@ -724,23 +746,23 @@ function ProjectInfoForm(props) {
 										</Typography>
 										<div>
 											<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickCancle}>
-												취소
+												목록
 											</Button>
 
 											{
-												screenType == "new" &&
+												screenType == "new" && (isAdmin || pm_member_no == userInfo) &&
 												<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickAddProject}>
 													등록
 												</Button>
 											}
 											{
-												screenType == "modify" &&
+												screenType == "modify" && (isAdmin || pm_member_no == userInfo) &&
 												<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleClickModifyProject}>
 													수정
 												</Button>
 											}
 											{
-												screenType == "modify" &&
+												screenType == "modify" && (isAdmin || pm_member_no == userInfo) &&
 												<Button variant="contained" color="secondary" size="small" className={classes.button} onClick={handleClickRemoveProject}>
 													삭제
 												</Button>
@@ -876,9 +898,12 @@ function ProjectInfoForm(props) {
 											투입인원
 										</Typography>
 										<div>
-											<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleAddRow}>
+											{/* 관리자 혹은 PM만 투입 인원 수정 삭제가 가능함*/}
+											{	(isAdmin || pm_member_no == userInfo) &&
+												<Button variant="contained" color="primary" size="small" className={classes.button} onClick={handleAddRow}>
 												추가
-											</Button>
+												</Button>
+											}
 										</div>
 									</Toolbar>
 								</TableCell>
@@ -912,13 +937,20 @@ function ProjectInfoForm(props) {
 												error={validateMemCheck[idx]["MEMBER_NO"].error}
 												helperText={validateMemCheck[idx]["MEMBER_NO"].helperText}
 												onChange={(event) => {handleMemChange(event, idx)}}
-												readOnly={screenType=="modify"}
 												fullWidth
 												select
 											>
 											{member_list.map(info => {
+												//PM 인 경우 수정 가능하도록 변경
+												if (idx == 0){
+													return (
+														<MenuItem key={info.member_no} value={info.member_no}>
+															{info.name}
+														</MenuItem>
+													)
+												}
 												//기존의 투입된 인원은 투입된 인원을 보여줘야하고 새롭게 투입인원을 추가할때는 기존에 없는 사람으로 보여줘야함
-												if(memOriginDataState.length > idx){
+												else if(memOriginDataState.length > idx){
 													if(memDataState[idx]["MEMBER_NO"] == info.member_no || !memDataState[idx]["MEMBER_NO"]){
 														return (
 															<MenuItem key={info.member_no} value={info.member_no}>
@@ -927,7 +959,7 @@ function ProjectInfoForm(props) {
 														)
 													}
 												}else{
-													if(memDataState.findIndex((item) => item["MEMBER_NO"] == info.member_no) == -1){
+													if(memOriginDataState.findIndex((item) => item["MEMBER_NO"] == info.member_no) == -1){
 														return (
 															<MenuItem key={info.member_no} value={info.member_no}>
 																{info.name}
@@ -1084,23 +1116,27 @@ function ProjectInfoForm(props) {
 										<TableCell 
 											align="center"
 											key={"BTN" + idx}>
-											{ (screenType == "new" || (screenType == "modify" && memOriginDataState.length <= idx)) &&
+											{ 	((isAdmin || pm_member_no == userInfo) &&
+												(screenType == "new" || (screenType == "modify" && memOriginDataState.length <= idx))) &&
 												<IconButton aria-label="remove" color="secondary" className={classes.margin} onClick={() => handleRemoveRow(idx)}>
 													<CancelIcon fontSize="small" />
 												</IconButton>
 											}
-											{ ((screenType == "modify" && memOriginDataState.length <= idx)) &&
+											{ 	((isAdmin || pm_member_no == userInfo) &&
+												((screenType == "modify" && memOriginDataState.length <= idx))) &&
 												<IconButton aria-label="remove" color="secondary" className={classes.margin} onClick={() => handleAddMember(memDataState[idx], idx)}>
 													<CheckCircleIcon fontSize="small" color="primary"/>
 												</IconButton>
 											}
-											{ screenType == "modify" && memOriginDataState.length > idx && 
+											{ 	((isAdmin || pm_member_no == userInfo) &&
+												screenType == "modify" && memOriginDataState.length > idx) && 
 												<IconButton aria-label="delete" className={classes.margin} onClick={() => handleRemoveMember(memDataState[idx]["MEMBER_NO"], idx)}>
 													<DeleteIcon fontSize="small" />
 												</IconButton>
 											}
-											{ screenType == "modify" && memOriginDataState.length > idx && 
-												<IconButton aria-label="update" className={classes.margin} onClick={() => handleUpdateMember(memDataState[idx])}>
+											{ 	((isAdmin || pm_member_no == userInfo) &&
+												screenType == "modify" && memOriginDataState.length > idx) && 
+												<IconButton aria-label="update" className={classes.margin} onClick={() => handleUpdateMember(memDataState[idx], idx)}>
 													<CreateIcon fontSize="small" />
 												</IconButton>
 											}

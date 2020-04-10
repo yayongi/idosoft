@@ -21,6 +21,7 @@
 			, INSTT_CODE = #{INSTT_CODE}
 			, BGNDE = #{BGNDE}
 			, ENDDE = #{ENDDE}
+			, PM = #{PM}
 			, TRANSPORT_CT = #{TRANSPORT_CT}
 			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
 			, UPD_ID = #{UPD_ID}

@@ -120,9 +120,8 @@ public class ProjectController {
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
 		
-		// 검색 조건 제외하고 개발중..
-		Map<String, Object> data = new HashMap<>();
-		
+		HttpSession session = request.getSession();
+		boolean isAdmin = commonUtil.isAdmin(session);
 		
 		String jsonArrayList 	= null;
 		//String jsonObjectData 	= null;
@@ -135,6 +134,7 @@ public class ProjectController {
 		mv.addObject("code_list", code_list);
 		mv.addObject("role_list", role_list);
 		mv.addObject("member_list", member_list);
+		mv.addObject("isAdmin", isAdmin);
 		
 		return mv;
 	}
@@ -195,6 +195,10 @@ public class ProjectController {
 		List<Map<String, Object>> code_list = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
 		List<MemberVO> member_list = new ArrayList<MemberVO>();
+		
+		HttpSession session = request.getSession();
+		boolean isAdmin = commonUtil.isAdmin(session);
+		
 		String project_no = (String)params.get("PROJECT_NO");
 		boolean db_result = false;
 		try {
@@ -209,6 +213,7 @@ public class ProjectController {
 			db_result = true;
 		}
 		
+		mv.addObject("isAdmin", isAdmin);
 		mv.addObject("project_info", project_info);
 		mv.addObject("proMemList", proMemList);
 		mv.addObject("code_list", code_list);
@@ -295,11 +300,21 @@ public class ProjectController {
 		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
 		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
 		
+		LOG.debug("isPM : " + params.get("isPM").toString());
 		boolean db_result = false;
 		try {
 			projectService.updateMember((HashMap<String, Object>) params.get("memDataState"));
+			
+			//변경하는게 PM이면 project 테이블도 변경시켜줘야함
+			if((boolean) params.get("isPM")) {
+				HashMap<String, Object> removeData = new HashMap<String, Object>();
+				removeData.put("PROJECT_NO", params.get("PROJECT_NO"));
+				removeData.put("MEMBER_NO", params.get("beforePM"));
+				projectService.removeMember(removeData);
+				projectService.insertProjectMember((HashMap<String, Object>) params.get("memDataState"));
+				projectService.update((HashMap<String, Object>) params.get("dataState"));
+			}
 		}catch(Exception e) {
-			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());
 			db_result = true;
 		}
