@@ -38,11 +38,17 @@ export default function Top(props) {
 		});
 	},[])
 
+	window.onpageshow = function(event) {
+		if ( event.persisted || (window.performance && window.performance.navigation.type == 2)) {
+			handleOpenDialog(...confirmData);
+		}
+	}
+
 	//브라우저 뒤로가기 버튼 제어
-	history.pushState(null, null, location.href);
-	window.onpopstate = function () {
-		handleOpenDialog(...confirmData);
-	};
+	// history.pushState(null, null, location.href);
+	// window.onpopstate = function () {
+	// 	handleOpenDialog(...confirmData);
+	// };
 
 	// confirm, alert 창 함수
   	// 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
