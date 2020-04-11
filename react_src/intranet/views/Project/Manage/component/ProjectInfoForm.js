@@ -93,7 +93,7 @@ function ProjectInfoForm(props) {
 	const [isRowAddClicked, setIsRowAddClicked] = React.useState(false);	//추가 버튼을 클릭 했는지 여부 (프로젝트 정보 수정 시 사용)
 	const [pm_member_no, setPm_member_no] = React.useState("",[]);			//PM과 관리자만 투입인원 추가 삭제 수정이 가능함 + 수정은 자기 자신도
 	const [isAdmin, setIsAdmin] = React.useState("",[]);			//PM과 관리자만 투입인원 추가 삭제 수정이 가능함 + 수정은 자기 자신도
-	const [isTransShow, setIsTransShow] = React.useState([]);	//몇번째 사원의 주유비 테이블을 보여줄지 판단하는 배열 [false, false, true] 이런식으로 들어감
+	const [isTransShow, setIsTransShow] = React.useState([], [isTransShow]);	//몇번째 사원의 주유비 테이블을 보여줄지 판단하는 배열 [false, false, true] 이런식으로 들어감
 																// true 인 경우 보여줌
 	const [trafficList, setTrafficList] = React.useState([
 		[{
@@ -243,8 +243,10 @@ function ProjectInfoForm(props) {
 					//투입 인원 벨리데이션 체크 동적으로 생성
 					validateMemCheckDefault(response.data.proMemList.length);
 					
-					//주유비 보여줄 테이블도 동적으로 생성
-					transShowDefault(response.data.proMemList.length);
+					//주유비 보여줄 테이블도 동적으로 생성(최초 진입 시에만 초기화해준다.)
+					if(isTransShow.length == 0){
+						transShowDefault(response.data.proMemList.length);
+					}
 					var proMemList = response.data.proMemList;
 					for(var idx=0; idx < proMemList.length; idx++){
 						proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
@@ -263,8 +265,8 @@ function ProjectInfoForm(props) {
 					});
 				
 					for(var j=0; j < tmp.length; j++){
-						tmp[j]["TRAFFIC_INPT_BGNDE"] = Moment(info.INPT_BGNDE).format("YYYY-MM-DD");
-						tmp[j]["TRAFFIC_INPT_ENDDE"] = Moment(info.INPT_ENDDE).format("YYYY-MM-DD");
+						tmp[j]["TRAFFIC_INPT_BGNDE"] = Moment(tmp[j].INPT_BGNDE).format("YYYY-MM-DD");
+						tmp[j]["TRAFFIC_INPT_ENDDE"] = Moment(tmp[j].INPT_ENDDE).format("YYYY-MM-DD");
 					}
 					
 					trafficListTmp.push(tmp);
@@ -597,12 +599,17 @@ function ProjectInfoForm(props) {
 			alert("PM은 삭제가 불가능 합니다.");
 			return;
 		}
+		
+		//삭제하기로 선택된 유저의 사번을 가져온다.
 		var list = memOriginDataState.filter((info) => (info.MEMBER_NO != member_no));
+		
+		//차량운행 기간이 존재하는지 여부를 가져온다.
+		var hasTrafficList = typeof(trafficList[idx]) != "obejct" ? false : trafficList[idx].legnth > 0 ? true : false;
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/removeMember',
 			method: 'post',
-			data: {"PROJECT_NO": match.params.id, "MEMBER_NO" : member_no}
+			data: {"PROJECT_NO": match.params.id, "MEMBER_NO" : member_no, "hasTrafficList": hasTrafficList}
 		}).then(response => {
 			setShowLoadingBar(false);
 			if(response.data.isDBError){
@@ -635,10 +642,12 @@ function ProjectInfoForm(props) {
 			sendData["PM"] = selectMemberInfo.MEMBER_NO;
 		}
 		
+		//차량운행 기간이 존재하는지 여부를 가져온다.
+		var hasTrafficList = typeof(trafficList[idx]) != "obejct" ? false : trafficList[idx].legnth > 0 ? true : false;
 		axios({
 			url: '/intranet/updateMember',
 			method: 'post',
-			data: {"PROJECT_NO": match.params.id, "memDataState" : selectMemberInfo, "isPM" : idx == 0, "dataState":sendData, "beforePM": beforePM}
+			data: {"PROJECT_NO": match.params.id, "memDataState" : selectMemberInfo, "isPM" : idx == 0, "dataState":sendData, "beforePM": beforePM, "hasTrafficList" : hasTrafficList}
 		}).then(response => {
 			setShowLoadingBar(false);
 			if(response.data.isDBError){
@@ -751,7 +760,9 @@ function ProjectInfoForm(props) {
 		history.goBack();
 	};
 	
+	//차량 운행 기간 영역 보기
 	const handleRowClick = (index) => {
+		//영역 보여주기
 		var tmp = [].concat(isTransShow);
 		tmp[index] = !tmp[index];
 		setIsTransShow([...tmp]);
@@ -760,15 +771,29 @@ function ProjectInfoForm(props) {
 	const handleAddTraffic = (index) => {
 		var tmpList = [].concat(trafficList);
 		var selectList = tmpList[index];
-		selectList.push({"MEMBER_NO": memDataState[index]["MEMBER_NO"], "TRAFFIC_INPT_BGNDE": memDataState[index]["INPT_BGNDE"], "TRAFFIC_INPT_ENDDE": memDataState[index]["INPT_ENDDE"]});
+		selectList.push({"MEMBER_NO": memDataState[index]["MEMBER_NO"], "TRAFFIC_INPT_BGNDE": Moment(memDataState[index]["INPT_BGNDE"]).format("YYYY-MM-DD"), "TRAFFIC_INPT_ENDDE": Moment(memDataState[index]["INPT_ENDDE"]).format("YYYY-MM-DD")});
 		tmpList[index] = selectList;
 		setTrafficList([...tmpList]);
 	}
 	
 	const handleRemoveTraffic = (memberIdx, trafficIdx) => {
 		var tmpList = [].concat(trafficList);
-		tmpList[memberIdx].splice(trafficIdx, 1);
-		setTrafficList([...tmpList]);
+		var deleteInfo = tmpList[memberIdx][trafficIdx];
+		setShowLoadingBar(true);
+		axios({
+			url: '/intranet/removeTraffic',
+			method: 'post',
+			data: deleteInfo
+		}).then(response => {
+			setShowLoadingBar(false);
+			alert("삭제했습니다.");
+			tmpList[memberIdx].splice(trafficIdx, 1);
+			setTrafficList([...tmpList]);
+			setRenderWant(!renderWant);
+		}).catch(e => {
+			setShowLoadingBar(false);
+			processErrCode(e);
+		});
 	}
 	
 	const handleRegisteTraffic = (memberIdx, trafficIdx) => {
@@ -1336,7 +1361,7 @@ function ProjectInfoForm(props) {
 												</TableCell>
 											</TableRow>
 										}	
-										{	isTransShow[idx] &&
+										{	isTransShow[idx] && typeof(trafficList[idx]) == "object" && trafficList[idx].length > 0 &&
 											trafficList[idx].map((info, trafficIdx) => {
 												return(
 													<>
