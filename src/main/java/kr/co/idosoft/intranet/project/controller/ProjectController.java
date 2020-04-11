@@ -194,6 +194,7 @@ public class ProjectController {
 		List<Map<String, Object>> proMemList = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> code_list = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
+		List<HashMap<String, Object>> traffic_list = new ArrayList<HashMap<String, Object>>();
 		List<MemberVO> member_list = new ArrayList<MemberVO>();
 		
 		HttpSession session = request.getSession();
@@ -207,6 +208,10 @@ public class ProjectController {
 			code_list =  projectService.getLowCodeList("CD0008");
 			role_list =  projectService.getLowCodeList("CD0009");
 			member_list = projectService.selectMemberList();
+			
+			HashMap<String, Object> condition = new HashMap<String, Object>();
+			condition.put("PROJECT_NO", project_no);
+			traffic_list = projectService.getSelectTraffic(condition);
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());
@@ -219,6 +224,7 @@ public class ProjectController {
 		mv.addObject("code_list", code_list);
 		mv.addObject("role_list", role_list);
 		mv.addObject("member_list", member_list);
+		mv.addObject("traffic_list", traffic_list);
 		mv.addObject("isDBError", db_result);
 		return mv;
 	}
@@ -375,7 +381,34 @@ public class ProjectController {
 		return mv;
 	}
 	
-	
+	@RequestMapping(value="/registTraffic",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView registTraffic(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		HttpSession session = request.getSession();
+		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
+		String mno = sessionVo.getMEMBER_NO();									// 로그인 회원번호
+		params.put("REG_ID", mno);		//등록자 사번 추가
+		
+		// 현재 진행 중이 프로젝트 목록 호출
+		boolean db_result = false;
+		try {
+			projectService.traffic_insert((HashMap<String, Object>)params);
+		}catch(Exception e) {
+			LOG.debug("디비 에러남 DB ERROR");
+			LOG.debug(e.toString());
+			db_result = true;
+		}
+		
+		mv.addObject("isDBError", db_result);
+		return mv;
+	}
 	
 	@RequestMapping(value="/projectDashboard",method=RequestMethod.POST)
 	@ResponseBody

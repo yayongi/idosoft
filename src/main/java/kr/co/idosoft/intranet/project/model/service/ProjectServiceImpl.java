@@ -134,5 +134,29 @@ public class ProjectServiceImpl implements ProjectService {
 		return pro_dao.getGraphForInfo(condition);
 	}
 
+	@Override
+	public void traffic_insert(HashMap<String, Object> insert) {
+		// TODO Auto-generated method stub
+		pro_dao.traffic_insert(insert);
+	}
+
+	@Override
+	public void traffic_update(HashMap<String, Object> update) {
+		// TODO Auto-generated method stub
+		pro_dao.traffic_update(update);
+	}
+
+	@Override
+	public void traffic_delete(HashMap<String, Object> delete) {
+		// TODO Auto-generated method stub
+		pro_dao.traffic_delete(delete);
+	}
+
+	@Override
+	public List<HashMap<String, Object>> getSelectTraffic(HashMap<String, Object> condition) {
+		// TODO Auto-generated method stub
+		return pro_dao.getSelectTraffic(condition);
+	}
+	
 
 }

@@ -112,4 +112,28 @@ public class ProjectDaoImpl implements ProjectDao {
 		// TODO Auto-generated method stub
 		return sqlTemplate.selectList("project.getGraphForInfo", condition);
 	}
+
+	@Override
+	public void traffic_insert(HashMap<String, Object> insert) {
+		// TODO Auto-generated method stub
+		sqlTemplate.insert("project.traffic_insert", insert);
+	}
+
+	@Override
+	public void traffic_update(HashMap<String, Object> update) {
+		// TODO Auto-generated method stub
+		sqlTemplate.update("project.traffic_update", update);
+	}
+
+	@Override
+	public void traffic_delete(HashMap<String, Object> delete) {
+		// TODO Auto-generated method stub
+		sqlTemplate.delete("project.traffic_delete", delete);
+	}
+
+	@Override
+	public List<HashMap<String, Object>> getSelectTraffic(HashMap<String, Object> condition) {
+		// TODO Auto-generated method stub
+		return sqlTemplate.selectList("project.traffic_select", condition);
+	}
 }

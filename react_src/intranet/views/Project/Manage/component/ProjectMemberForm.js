@@ -24,8 +24,13 @@ import CreateIcon from '@material-ui/icons/Create';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ControlPointIcon from '@material-ui/icons/ControlPoint';
-import SaveAltIcon from '@material-ui/icons/SaveAlt';
+
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import Divider from '@material-ui/core/Divider';
+
 import { LoadingBar }  from '../../../../common/LoadingBar/LoadingBar';
 import { processErrCode }  from '../../../../js/util';
 import CommonDialog from '../../../../js/CommonDialog';
@@ -70,9 +75,7 @@ const useStyles = makeStyles(theme => ({
 		border: '1px solid black',
 		marginTop: theme.spacing(0),
 	},
-	trafficHead:{
-		backgroundColor: '#fafafa',
-	},
+
 }));
 
 function initCheck(match){
@@ -93,16 +96,6 @@ function ProjectInfoForm(props) {
 	const [isRowAddClicked, setIsRowAddClicked] = React.useState(false);	//추가 버튼을 클릭 했는지 여부 (프로젝트 정보 수정 시 사용)
 	const [pm_member_no, setPm_member_no] = React.useState("",[]);			//PM과 관리자만 투입인원 추가 삭제 수정이 가능함 + 수정은 자기 자신도
 	const [isAdmin, setIsAdmin] = React.useState("",[]);			//PM과 관리자만 투입인원 추가 삭제 수정이 가능함 + 수정은 자기 자신도
-	const [isTransShow, setIsTransShow] = React.useState([]);	//몇번째 사원의 주유비 테이블을 보여줄지 판단하는 배열 [false, false, true] 이런식으로 들어감
-																// true 인 경우 보여줌
-	const [trafficList, setTrafficList] = React.useState([
-		[{
-			TRAFFIC_NO: "",
-			MEMBER_NO: "",
-			TRAFFIC_INPT_BGNDE:"",
-			TRAFFIC_INPT_ENDDE:""
-		}]
-	]);		// 주유비 리스트  사원별 차량 운행 기간[[],[],[],[],[]]
 	const screenType = initCheck(match);									//신규 프로젝트 작성인지 프로젝트 수정인지 판단
 	const userInfo = JSON.parse(sessionStorage.getItem("loginSession"))["member_NO"];
 	
@@ -151,8 +144,6 @@ function ProjectInfoForm(props) {
 		USE_LANG:{error:false, helperText:""},
 	}]);
 	
-	
-	//사원별 오류 메시지 배열 (동적으로 생성하며, 사원 수와 동일하게 생성되어야한다.)
 	const validateMemCheckDefault = (list_leng) => {
 		var tmp = [];
 		for(var i=0; i < list_leng; i++){
@@ -169,16 +160,6 @@ function ProjectInfoForm(props) {
 		}
 		setValidateMemCheck(tmp);
 	}
-	
-	//사원별 주유비 테이블을 보여줄지 여부 배열
-	const transShowDefault = (list_length) => {
-		var tmp = [];
-		for(var i=0; i < list_length; i++){
-			tmp.push(false);
-		}
-		setIsTransShow(tmp);
-	}
-	
 	
 	//보여줄 레이블
 	const columnsUp = [
@@ -242,9 +223,6 @@ function ProjectInfoForm(props) {
 				if(response.data.proMemList.length > 0){
 					//투입 인원 벨리데이션 체크 동적으로 생성
 					validateMemCheckDefault(response.data.proMemList.length);
-					
-					//주유비 보여줄 테이블도 동적으로 생성
-					transShowDefault(response.data.proMemList.length);
 					var proMemList = response.data.proMemList;
 					for(var idx=0; idx < proMemList.length; idx++){
 						proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
@@ -253,21 +231,6 @@ function ProjectInfoForm(props) {
 					setMemDataState(proMemList);
 					setMemOriginDataState(JSON.parse(JSON.stringify(proMemList)));
 				}
-				
-				var trafficResultList = response.data.traffic_list;
-				var trafficListTmp = [];
-				for(var i=0; i < proMemList.length; i++){
-					var tmp = [];
-					tmp = trafficResultList.map((info) => {
-						if(info.MEMBER_NO == proMemList[i]["MEMBER_NO"]){
-							var tmpA = {};
-							tmpA = {"TRAFFIC_NO": info.TRAFFIC_NO, "MEMBER_NO": info.MEMBER_NO, "TRAFFIC_INPT_BGNDE": Moment(info.INPT_BGNDE).format("YYYY-MM-DD"), "TRAFFIC_INPT_ENDDE": Moment(info.INPT_ENDDE).format("YYYY-MM-DD")}
-							return tmpA;
-						}
-					});
-					trafficListTmp.push(tmp);
-				}
-				setTrafficList(trafficListTmp);
 				setShowLoadingBar(false);
 			}).catch(e => {
 				setShowLoadingBar(false);
@@ -749,43 +712,13 @@ function ProjectInfoForm(props) {
 		history.goBack();
 	};
 	
-	const handleRowClick = (index) => {
-		var tmp = [].concat(isTransShow);
-		tmp[index] = !tmp[index];
-		setIsTransShow([...tmp]);
-	}
-	
-	const handleAddTraffic = (index) => {
-		var tmpList = [].concat(trafficList);
-		var selectList = tmpList[index];
-		selectList.push({"MEMBER_NO": memDataState[index]["MEMBER_NO"], "TRAFFIC_INPT_BGNDE": memDataState[index]["INPT_BGNDE"], "TRAFFIC_INPT_ENDDE": memDataState[index]["INPT_ENDDE"]});
-		tmpList[index] = selectList;
-		setTrafficList([...tmpList]);
-	}
-	
-	const handleRemoveTraffic = (memberIdx, trafficIdx) => {
-		var tmpList = [].concat(trafficList);
-		tmpList[memberIdx].splice(trafficIdx, 1);
-		setTrafficList([...tmpList]);
-	}
-	
-	const handleRegisteTraffic = (memberIdx, trafficIdx) => {
-		var sendData = trafficList[memberIdx][trafficIdx];
-		sendData["INPT_BGNDE"] = sendData["TRAFFIC_INPT_BGNDE"].replace("-", "").replace("-", "");
-		sendData["INPT_ENDDE"] = sendData["TRAFFIC_INPT_ENDDE"].replace("-", "").replace("-", "");
-		sendData["PROJECT_NO"] = match.params.id; 
-		axios({
-			url: '/intranet/registTraffic',
-			method: 'post',
-			data: sendData
-		}).then(response => {
-			setShowLoadingBar(false);
-			alert("등록했습니다.");
-			setRenderWant(!renderWant);
-		}).catch(e => {
-			setShowLoadingBar(false);
-			processErrCode(e);
-		});
+	const handleRowClick = () => {
+		console.log("되냐?");
+		
+		return (
+			<>
+			</>
+		)
 	}
 	
 	
@@ -1131,7 +1064,7 @@ function ProjectInfoForm(props) {
 																/>
 															</Grid>
 														</MuiPickersUtilsProvider>
-														 ~ 
+														~
 														<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
 															<Grid container justify="space-around">
 																<DatePicker
@@ -1234,8 +1167,7 @@ function ProjectInfoForm(props) {
 	
 											<TableCell 
 												align="center"
-												key={"BTN" + idx}
-												rowSpan={isWidthUp('md', props.width) ? "1" : "2"}>
+												key={"BTN" + idx}>
 												{ 	((isAdmin || pm_member_no == userInfo) &&
 													(screenType == "new" || (screenType == "modify" && memOriginDataState.length <= idx))) &&
 													<IconButton aria-label="remove" color="secondary" className={classes.margin} onClick={() => handleRemoveRow(idx)}>
@@ -1260,134 +1192,18 @@ function ProjectInfoForm(props) {
 														<CreateIcon fontSize="small" />
 													</IconButton>
 												}
-												{ 	((true || userInfo == memDataState[idx]["MEMBER_NO"]) &&
+												{ 	(userInfo == memDataState[idx]["MEMBER_NO"] &&
 													screenType == "modify" && memOriginDataState.length > idx) && 
-													<IconButton aria-label="update" className={classes.margin} onClick={() => handleRowClick(idx)}>
+													<IconButton aria-label="update" className={classes.margin} onClick={() => handleRowClick()}>
 														<ArrowDropDownIcon fontSize="small" />
 													</IconButton>
 												}
 											</TableCell>
 										</TableRow>
-										{ !isWidthUp('md', props.width) &&
-											<TableRow>
-												<TableCell 
-													align="left"
-													key={"INPT" + idx}
-													colSpan="2">
-													투입 기간
-													<Toolbar>
-														<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-															<Grid container justify="space-around">
-																<DatePicker
-																	locale='ko'
-																	margin="dense"
-																	id="INPT_BGNDE"
-																	name="INPT_BGNDE"
-																	views={["year", "month", "date"]}
-																	format="yyyy-MM-dd"
-																	minDate={dataState.BGNDE}
-																	value={memDataState[idx]["INPT_BGNDE"]}
-																	error={validateMemCheck[idx]["INPT_BGNDE"].error}
-																	helperText={validateMemCheck[idx]["INPT_BGNDE"].helperText}
-																	onChange={(data) => {handleChangeDate(data, "INPT_BGNDE", idx)}}
-																	inputVariant="outlined"
-																	readOnly={false}
-																	fullWidth
-																/>
-															</Grid>
-														</MuiPickersUtilsProvider>
-														~
-														<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-															<Grid container justify="space-around">
-																<DatePicker
-																	locale='ko'
-																	margin="dense"
-																	id="INPT_ENDDE"
-																	name="INPT_ENDDE"
-																	views={["year", "month", "date"]}
-																	format="yyyy-MM-dd"
-																	maxDate={dataState.ENDDE}
-																	value={memDataState[idx]["INPT_ENDDE"]}
-																	error={validateMemCheck[idx]["INPT_ENDDE"].error}
-																	helperText={validateMemCheck[idx]["INPT_ENDDE"].helperText}
-																	onChange={(data) => {handleChangeDate(data, "INPT_ENDDE", idx)}}
-																	inputVariant="outlined"
-																	readOnly={false}
-																	fullWidth
-																/>
-															</Grid>
-														</MuiPickersUtilsProvider>
-													</Toolbar>
-												</TableCell>
-											</TableRow>
-										}
 										{
-											isTransShow[idx] &&
-											<TableRow key={"extendsHeader_"+idx} className={classes.trafficHead}>
-												<TableCell colSpan={isWidthUp('md', props.width) ? "5" : "2"}>
-													차량 운행 기간
-												</TableCell>
-												<TableCell align="center">
-													<IconButton aria-label="update" className={classes.margin} onClick={() => handleAddTraffic(idx)}>
-														<ControlPointIcon fontSize="small" />
-													</IconButton>
-												</TableCell>
-											</TableRow>
-										}	
-										{	isTransShow[idx] &&
-											trafficList[idx].map((info, trafficIdx) => {
-												return(
-													<>
-														<TableRow className={classes.trafficHead}>
-															<TableCell colSpan={isWidthUp('md', props.width) ? "5" : "2"}>
-																<Toolbar>
-																	<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-																		<Grid container justify="space-around">
-																			<DatePicker
-																				locale='ko'
-																				margin="dense"
-																				id="TRAFFIC_INPT_BGNDE"
-																				name="TRAFFIC_INPT_BGNDE"
-																				minDate={trafficList[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"]}
-																				value={trafficList[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"]}
-																				views={["year", "month", "date"]}
-																				format="yyyy-MM-dd"
-																				inputVariant="outlined"
-																				fullWidth
-																			/>
-																		</Grid>
-																	</MuiPickersUtilsProvider>
-																	~
-																	<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
-																		<Grid container justify="space-around">
-																			<DatePicker
-																				locale='ko'
-																				margin="dense"
-																				id="TRAFFIC_INPT_ENDDE"
-																				name="TRAFFIC_INPT_ENDDE"
-																				maxDate={trafficList[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"]}
-																				value={trafficList[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"]}
-																				views={["year", "month", "date"]}
-																				format="yyyy-MM-dd"
-																				inputVariant="outlined"
-																				fullWidth
-																			/>
-																		</Grid>
-																	</MuiPickersUtilsProvider>
-																</Toolbar>
-															</TableCell>
-															<TableCell>
-																<IconButton aria-label="update" className={classes.margin} onClick={() => handleRemoveTraffic(idx, trafficIdx)}>
-																	<CancelIcon fontSize="small" />
-																</IconButton>
-																<IconButton aria-label="amount_save" className={classes.margin} onClick={() => handleRegisteTraffic(idx, trafficIdx)}>
-																	<SaveAltIcon fontSize="small" />
-																</IconButton>
-															</TableCell>
-														</TableRow>
-													</>
-												)
-											})
+											false &&
+											<>
+											</>
 										}
 									</>
 								)

@@ -281,4 +281,45 @@
 			))
 		</if>
 	</select>
+	
+	
+	<!-- 차량 운행 기간 -->
+	<insert id="traffic_insert" parameterType="hashmap">
+		INSERT INTO TB_PROJECT_TRAFFIC 
+			(MEMBER_NO, PROJECT_NO, INPT_BGNDE, INPT_ENDDE, AMOUNT, REG_DATETIME, REG_ID
+			, NOTE, TEMP_COLUM)
+		VALUES 
+			(#{MEMBER_NO}, #{PROJECT_NO}, #{INPT_BGNDE}, #{INPT_ENDDE}, 0, DATE_FORMAT(NOW(),'%Y%m%d')
+				,#{REG_ID}, "", "")
+	</insert>
+	
+	<!-- 프로젝트 수정 -->
+	<update id="traffic_update" parameterType="hashmap">
+		UPDATE
+			TB_PROJECT_TRAFFIC
+		SET
+			INPT_BGNDE = #{INPT_BGNDE}
+			, INPT_ENDDE = #{INPT_ENDDE}
+			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
+			, UPD_ID = #{UPD_ID}
+		WHERE TRAFFIC_NO = #{TRAFFIC_NO} AND
+			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
+	</update>
+	
+	<!--  프로젝트 삭제 -->
+	<delete id="traffic_delete" parameterType="hashmap">
+		DELETE FROM
+			TB_PROJECT_TRAFFIC
+		WHERE TRAFFIC_NO = #{TRAFFIC_NO} AND
+			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
+	</delete>
+	
+	
+	
+	<select id="traffic_select" parameterType="hashmap" resultType="hashmap">
+		SELECT *
+		FROM TB_PROJECT_TRAFFIC
+		WHERE PROJECT_NO = #{PROJECT_NO}
+	</select>
+	
 </mapper>

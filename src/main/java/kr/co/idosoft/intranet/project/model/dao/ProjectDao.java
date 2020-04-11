@@ -29,8 +29,14 @@ public interface ProjectDao {
 	public List<HashMap<String, String>> getPresentProject();
 	//프로젝트 개인이력 
 	public List<HashMap<String,String>> getProjectMember();
-	
 	public List<HashMap<String,Object>> getGraphInfo(HashMap<String, Object> condition);
 	public List<HashMap<String,Object>> getGraphForInfo(HashMap<String, Object> condition);
+	
+	
+	//교통 운행비
+	void traffic_insert(HashMap<String, Object> insert);
+	void traffic_update(HashMap<String, Object> update);
+	void traffic_delete(HashMap<String, Object> delete);
+	public List<HashMap<String,Object>> getSelectTraffic(HashMap<String, Object> condition);
 }
 
