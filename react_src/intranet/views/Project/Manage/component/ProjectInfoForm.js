@@ -258,13 +258,15 @@ function ProjectInfoForm(props) {
 				var trafficListTmp = [];
 				for(var i=0; i < proMemList.length; i++){
 					var tmp = [];
-					tmp = trafficResultList.map((info) => {
-						if(info.MEMBER_NO == proMemList[i]["MEMBER_NO"]){
-							var tmpA = {};
-							tmpA = {"TRAFFIC_NO": info.TRAFFIC_NO, "MEMBER_NO": info.MEMBER_NO, "TRAFFIC_INPT_BGNDE": Moment(info.INPT_BGNDE).format("YYYY-MM-DD"), "TRAFFIC_INPT_ENDDE": Moment(info.INPT_ENDDE).format("YYYY-MM-DD")}
-							return tmpA;
-						}
+					tmp = trafficResultList.filter((info) => {
+						return info.MEMBER_NO == proMemList[i]["MEMBER_NO"]
 					});
+				
+					for(var j=0; j < tmp.length; j++){
+						tmp[j]["TRAFFIC_INPT_BGNDE"] = Moment(info.INPT_BGNDE).format("YYYY-MM-DD");
+						tmp[j]["TRAFFIC_INPT_ENDDE"] = Moment(info.INPT_ENDDE).format("YYYY-MM-DD");
+					}
+					
 					trafficListTmp.push(tmp);
 				}
 				setTrafficList(trafficListTmp);
