@@ -103,6 +103,10 @@ function ProjectInfoForm(props) {
 			TRAFFIC_INPT_ENDDE:""
 		}]
 	]);		// 주유비 리스트  사원별 차량 운행 기간[[],[],[],[],[]]
+	
+	
+	const [trafficOriginList, setTrafficOriginList] = React.useState([[]], []);
+	
 	const screenType = initCheck(match);									//신규 프로젝트 작성인지 프로젝트 수정인지 판단
 	const userInfo = JSON.parse(sessionStorage.getItem("loginSession"))["member_NO"];
 	
@@ -150,6 +154,14 @@ function ProjectInfoForm(props) {
 		ROLE_CODE:{error:false, helperText:""},
 		USE_LANG:{error:false, helperText:""},
 	}]);
+	
+	//차량 운행 기간 벨리데이션 정보
+	const [validateTraffic, setValidateTraffic] = React.useState([[]], [validateTraffic]);
+	
+	const validateTrafficDefault = (traffic_member_list) => {
+		console.log("traffic_member_list : ");
+		console.log(traffic_member_list);
+	}
 	
 	
 	//사원별 오류 메시지 배열 (동적으로 생성하며, 사원 수와 동일하게 생성되어야한다.)
@@ -271,7 +283,16 @@ function ProjectInfoForm(props) {
 					
 					trafficListTmp.push(tmp);
 				}
+				validateTrafficDefault(trafficListTmp);
 				setTrafficList(trafficListTmp);
+				
+				
+				//배열이라 값이 복사되서 for 문으로 다시 만들어서 넣어줌
+				var tmplist = [];
+				for(var i=0; i < trafficListTmp.length; i++){
+					tmplist[i] = [].concat(trafficListTmp[i]);
+				}
+				setTrafficOriginList(tmplist);
 				setShowLoadingBar(false);
 			}).catch(e => {
 				setShowLoadingBar(false);
@@ -335,9 +356,30 @@ function ProjectInfoForm(props) {
 		setMemDataState([...memDataState]);
 	}
 
-	const handleChangeDate = (date, target, idx) => {
+	const handleChangeDate = (date, target, idx, trafficIdx) => {
 		console.log("handleChangeDate : ");
-		if(!target.includes("INPT_")){
+		
+		//개인별 차량 운행 기간
+		if(target.includes("TRAFFIC_")){
+			console.log("target include traffic_");
+			trafficList[idx][trafficIdx][target] = Moment(date).format('YYYY-MM-DD'); 
+			setTrafficList([...trafficList]);
+		}
+		//개인별 투입 기간
+		else if(target.includes("INPT_")){
+			console.log("target include inpt_");
+			if(screenType == "modify" && updatedMemList.indexOf(idx) < 0){
+				updatedMemList.push(idx);
+				setUpdateMemList(updatedMemList);
+			}
+			memDataState[idx][target] = Moment(date).format('YYYY-MM-DD'); 
+			setMemDataState([...memDataState]);
+			
+			validateMemCheckDefault(memDataState.length);
+		}
+		
+		//프로젝트 기간
+		else{
 			console.log("target not include inpt_");
 			setDataState({
 				...dataState,
@@ -349,16 +391,6 @@ function ProjectInfoForm(props) {
 				...validateCheck,
 				[target]: {error:false, helperText:""}
 			});
-		}else{
-			console.log("target include inpt_");
-			if(screenType == "modify" && updatedMemList.indexOf(idx) < 0){
-				updatedMemList.push(idx);
-				setUpdateMemList(updatedMemList);
-			}
-			memDataState[idx][target] = Moment(date).format('YYYY-MM-DD'); 
-			setMemDataState([...memDataState]);
-			
-			validateMemCheckDefault(memDataState.length);
 		}
 	}
 	
@@ -775,6 +807,13 @@ function ProjectInfoForm(props) {
 		tmpList[index] = selectList;
 		setTrafficList([...tmpList]);
 	}
+	
+	const handleRemoveRowTraffic = (memberIdx, trafficIdx) => {
+		var tmpList = [].concat(trafficList);
+		tmpList[memberIdx].splice(trafficIdx, 1);
+		setTrafficList([...tmpList]);
+	}
+	
 	
 	const handleRemoveTraffic = (memberIdx, trafficIdx) => {
 		var tmpList = [].concat(trafficList);
@@ -1271,7 +1310,7 @@ function ProjectInfoForm(props) {
 												}
 												{ 	((isAdmin || pm_member_no == userInfo) &&
 													((screenType == "modify" && memOriginDataState.length <= idx))) &&
-													<IconButton aria-label="remove" color="secondary" className={classes.margin} onClick={() => handleAddMember(memDataState[idx], idx)}>
+													<IconButton aria-label="add" color="secondary" className={classes.margin} onClick={() => handleAddMember(memDataState[idx], idx)}>
 														<CheckCircleIcon fontSize="small" color="primary"/>
 													</IconButton>
 												}
@@ -1287,7 +1326,7 @@ function ProjectInfoForm(props) {
 														<CreateIcon fontSize="small" />
 													</IconButton>
 												}
-												{ 	((true || userInfo == memDataState[idx]["MEMBER_NO"]) &&
+												{ 	((isAdmin || userInfo == memDataState[idx]["MEMBER_NO"]) &&
 													screenType == "modify" && memOriginDataState.length > idx) && 
 													<IconButton aria-label="update" className={classes.margin} onClick={() => handleRowClick(idx)}>
 														<ArrowDropDownIcon fontSize="small" />
@@ -1378,6 +1417,7 @@ function ProjectInfoForm(props) {
 																				minDate={trafficList[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"]}
 																				value={trafficList[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"]}
 																				views={["year", "month", "date"]}
+																				onChange={(data) => handleChangeDate(data, "TRAFFIC_INPT_BGNDE", idx, trafficIdx)}
 																				format="yyyy-MM-dd"
 																				inputVariant="outlined"
 																				fullWidth
@@ -1395,6 +1435,7 @@ function ProjectInfoForm(props) {
 																				maxDate={trafficList[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"]}
 																				value={trafficList[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"]}
 																				views={["year", "month", "date"]}
+																				onChange={(data) => handleChangeDate(data, "TRAFFIC_INPT_ENDDE", idx, trafficIdx)}
 																				format="yyyy-MM-dd"
 																				inputVariant="outlined"
 																				fullWidth
@@ -1404,12 +1445,31 @@ function ProjectInfoForm(props) {
 																</Toolbar>
 															</TableCell>
 															<TableCell>
-																<IconButton aria-label="update" className={classes.margin} onClick={() => handleRemoveTraffic(idx, trafficIdx)}>
-																	<CancelIcon fontSize="small" />
-																</IconButton>
-																<IconButton aria-label="amount_save" className={classes.margin} onClick={() => handleRegisteTraffic(idx, trafficIdx)}>
-																	<SaveAltIcon fontSize="small" />
-																</IconButton>
+																
+																{	(isAdmin || pm_member_no == userInfo || userInfo == memDataState[idx]["MEMBER_NO"]) &&
+																	(typeof(trafficOriginList[idx][trafficIdx]) != "object") && 
+																	<IconButton aria-label="removeTraffic" className={classes.margin} onClick={() => handleRemoveRowTraffic(idx, trafficIdx)}>
+																		<CancelIcon fontSize="small"  color="secondary"/>
+																	</IconButton>
+																}
+																{	(isAdmin || pm_member_no == userInfo || userInfo == memDataState[idx]["MEMBER_NO"]) &&
+																	(typeof(trafficOriginList[idx][trafficIdx]) != "object") && 
+																	<IconButton aria-label="amount_save" className={classes.margin} onClick={() => handleRegisteTraffic(idx, trafficIdx)}>
+																		<SaveAltIcon fontSize="small"  color="primary"/>
+																	</IconButton>
+																}
+																{ 	(isAdmin || pm_member_no == userInfo || userInfo == memDataState[idx]["MEMBER_NO"]) &&
+																	(typeof(trafficOriginList[idx][trafficIdx]) == "object") && 
+																	<IconButton aria-label="delete" className={classes.margin} onClick={() => handleRemoveTraffic(idx, trafficIdx)}>
+																		<DeleteIcon fontSize="small" />
+																	</IconButton>
+																}
+																{ 	(isAdmin || pm_member_no == userInfo || userInfo == memDataState[idx]["MEMBER_NO"]) &&
+																	(typeof(trafficOriginList[idx][trafficIdx]) == "object") &&
+																	<IconButton aria-label="update" className={classes.margin}>
+																		<CreateIcon fontSize="small" />
+																	</IconButton>
+																}	
 															</TableCell>
 														</TableRow>
 													</>

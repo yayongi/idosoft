@@ -293,7 +293,7 @@
 				,#{REG_ID}, "", "")
 	</insert>
 	
-	<!-- 프로젝트 수정 -->
+	<!-- 차량운행 수정 -->
 	<update id="traffic_update" parameterType="hashmap">
 		UPDATE
 			TB_PROJECT_TRAFFIC
@@ -306,12 +306,19 @@
 			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
 	</update>
 	
-	<!--  프로젝트 삭제 -->
+	<!--  차량운행 삭제 -->
 	<delete id="traffic_delete" parameterType="hashmap">
 		DELETE FROM
 			TB_PROJECT_TRAFFIC
 		WHERE TRAFFIC_NO = #{TRAFFIC_NO} AND
-			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO} AND TRAFFIC_NO = #{TRAFFIC_NO}
+			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
+	</delete>
+	
+	<!--  차량운행 삭제 (프로젝트 삭제 시 해당 프로젝트 내 모든 차량운행 정보 삭제) -->
+	<delete id="traffic_delete_all" parameterType="hashmap">
+		DELETE FROM
+			TB_PROJECT_TRAFFIC
+		WHERE PROJECT_NO = #{PROJECT_NO}
 	</delete>
 	
 	

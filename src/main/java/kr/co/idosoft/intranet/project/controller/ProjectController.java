@@ -286,6 +286,7 @@ public class ProjectController {
 		try {
 			projectService.deleteInfo((String)params.get("PROJECT_NO"));
 			projectService.removeMemberForPro((String)params.get("PROJECT_NO"));
+			projectService.traffic_delete_all((HashMap<String, Object>) params);
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());

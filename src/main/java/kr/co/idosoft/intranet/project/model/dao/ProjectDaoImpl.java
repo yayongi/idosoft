@@ -130,6 +130,12 @@ public class ProjectDaoImpl implements ProjectDao {
 		// TODO Auto-generated method stub
 		sqlTemplate.delete("project.traffic_delete", delete);
 	}
+	
+	@Override
+	public void traffic_delete_all(HashMap<String, Object> delete) {
+		// TODO Auto-generated method stub
+		sqlTemplate.delete("project.traffic_delete_all", delete);
+	}
 
 	@Override
 	public List<HashMap<String, Object>> getSelectTraffic(HashMap<String, Object> condition) {

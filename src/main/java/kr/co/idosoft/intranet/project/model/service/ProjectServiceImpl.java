@@ -151,6 +151,12 @@ public class ProjectServiceImpl implements ProjectService {
 		// TODO Auto-generated method stub
 		pro_dao.traffic_delete(delete);
 	}
+	
+	@Override
+	public void traffic_delete_all(HashMap<String, Object> delete) {
+		// TODO Auto-generated method stub
+		pro_dao.traffic_delete_all(delete);
+	}
 
 	@Override
 	public List<HashMap<String, Object>> getSelectTraffic(HashMap<String, Object> condition) {

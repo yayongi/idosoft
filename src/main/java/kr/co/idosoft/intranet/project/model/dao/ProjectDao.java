@@ -37,6 +37,7 @@ public interface ProjectDao {
 	void traffic_insert(HashMap<String, Object> insert);
 	void traffic_update(HashMap<String, Object> update);
 	void traffic_delete(HashMap<String, Object> delete);
+	void traffic_delete_all(HashMap<String, Object> delete);
 	public List<HashMap<String,Object>> getSelectTraffic(HashMap<String, Object> condition);
 }
 
