@@ -296,8 +296,10 @@ public class fileController {
 			e.printStackTrace();
 		}
 	}
-	public void exportExceptionExcel(List<LinkedHashMap<String, Object>> list1, List<LinkedHashMap<String, Object>> list2,
-			String title, String searchword,HttpServletResponse response) {
+	public void exportExceptionExcel(List<LinkedHashMap<String, Object>> list1
+									, List<LinkedHashMap<String, Object>> list2
+									, List<LinkedHashMap<String, Object>> list3
+									, String title, String searchword,HttpServletResponse response) {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 
@@ -354,11 +356,13 @@ public class fileController {
 			// 데이터 부분 생성
 			LinkedHashMap<String, Object> data1 = new LinkedHashMap<String, Object>();
 			LinkedHashMap<String, Object> data2 = new LinkedHashMap<String, Object>();
-
+			LinkedHashMap<String, Object> data3 = new LinkedHashMap<String, Object>();
+			
 			for(int i=0; i<list1.size(); i++) {
 				data1 = list1.get(i);
 				data2 = list2.get(i);
-
+				data3 = list3.get(i);
+				
 				row = sheet.createRow(rowNo++);
 				for(int j=0; j<data1.size(); j++) {
 					cell = row.createCell(j);
@@ -415,12 +419,38 @@ public class fileController {
 						}
 					}
 				}
+				
+				row = sheet.createRow(rowNo++);
+				for(int j=0; j<data1.size(); j++) {
+					cell = row.createCell(j);
 
+					if(j == 3) {
+						cell.setCellValue("주유비");
+					} else {
+						Object tempData = data3.get(tempList.get(j));
+
+						logger.debug("#tempData [" + j +"] : " + tempData);
+
+						// 객체 타입에 따른 처리
+						if(tempData instanceof Boolean) {
+							cell.setCellValue((Boolean)tempData);
+						} else if(tempData instanceof String){
+							cell.setCellValue((String)tempData);
+						} else if(tempData instanceof Integer) {
+							cell.setCellValue((Integer)tempData);
+						} else if(tempData instanceof Double){
+							cell.setCellValue((Double)tempData);
+						}  else if(tempData instanceof Long){
+							cell.setCellValue((Long)tempData);
+						}
+					}
+				}
+				
 				//셀 병합
-				sheet.addMergedRegion(new CellRangeAddress(rowNo-2,rowNo-1,0,0)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
-				sheet.addMergedRegion(new CellRangeAddress(rowNo-2,rowNo-1,1,1)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
-				sheet.addMergedRegion(new CellRangeAddress(rowNo-2,rowNo-1,2,2)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
-				sheet.addMergedRegion(new CellRangeAddress(rowNo-2,rowNo-1,17,17)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
+				sheet.addMergedRegion(new CellRangeAddress(rowNo-3,rowNo-1,0,0)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
+				sheet.addMergedRegion(new CellRangeAddress(rowNo-3,rowNo-1,1,1)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
+				sheet.addMergedRegion(new CellRangeAddress(rowNo-3,rowNo-1,2,2)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
+				sheet.addMergedRegion(new CellRangeAddress(rowNo-3,rowNo-1,17,17)); //열시작, 열종료, 행시작, 행종료 (자바배열과 같이 0부터 시작)
 
 			}
 

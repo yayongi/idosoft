@@ -183,7 +183,7 @@ public class ExpenseStatementController {
 	}
 	
 	/**
-	 * 월별 경비 통계 리스트 
+	 * 통신비, 교통비, 주유비 연 통계
 	 * @param request
 	 * @param params
 	 * @return ModelAndView
@@ -231,12 +231,13 @@ public class ExpenseStatementController {
 		List<Map<String, Object>> commList = expenseStatementService.getCommExpenseList(data);
 		// 교통비 조회
 		List<Map<String, Object>> transList = null;
-		
+		// 주유비 조회
+		List<Map<String, Object>> gasList = null;
 		try {
 			transList = expenseStatementService.getTransExpenseList(data);
-			
+			gasList	  = expenseStatementService.getGasChargeList(data);
 			LOG.debug("#### transList : " + transList);
-			
+			LOG.debug("#### gasList : " + gasList);
 		} catch (Exception e) {
 			LOG.debug("Exception : " + e.getMessage());
 		}
@@ -250,8 +251,9 @@ public class ExpenseStatementController {
 		// 통신비 & 교통비 합계 
 		
 		for(int i = 0; i < commList.size(); i++) {
-			int commTotalAmount = 0;
-			int transTotalAmount = 0;
+			int commTotalAmount 	= 0;
+			int transTotalAmount 	= 0;
+			int gasTotalAmount		= 0;
 			for(int j = 0; j < monthArray.length; j++) {
 				commTotalAmount += Integer.parseInt((String) commList.get(i).get(monthArray[j]));
 				commList.get(i).put("totalAmount", commTotalAmount);
@@ -260,24 +262,32 @@ public class ExpenseStatementController {
 				transTotalAmount += (Long)transList.get(i).get(monthArray[j]);
 				transList.get(i).put("totalAmount", transTotalAmount);
 			}
+			for(int j = 0; j < monthArray.length; j++) {
+				gasTotalAmount += (Long)gasList.get(i).get(monthArray[j]);
+				gasList.get(i).put("totalAmount", gasTotalAmount);
+			}
 			
-			commList.get(i).put("commAndTransTotalAmount", transTotalAmount+commTotalAmount);
+			commList.get(i).put("commAndTransTotalAmount", transTotalAmount+commTotalAmount+gasTotalAmount);
 		}
 		
 		String jsonArraycommList 	= null;
 		String jsonArraytransList	= null;
+		String jsonArrayGasList		= null;
 		
-		jsonArraycommList = JsonUtils.getJsonStringFromList(commList); 	// JSONARRAY 변환
-		jsonArraytransList = JsonUtils.getJsonStringFromList(transList); 	// JSONARRAY 변환
+		jsonArraycommList 	= JsonUtils.getJsonStringFromList(commList); 	// JSONARRAY 변환
+		jsonArraytransList 	= JsonUtils.getJsonStringFromList(transList); 	// JSONARRAY 변환
+		jsonArrayGasList	= JsonUtils.getJsonStringFromList(gasList); 	// JSONARRAY 변환
 		LOG.debug("#################################################################################");
 		LOG.debug("# RETURN JSON ");
 		LOG.debug("# jsonArraycommList : " + jsonArraycommList);
 		LOG.debug("# jsonArraytransList : " + jsonArraytransList);
+		LOG.debug("# jsonArraytransList : " + jsonArrayGasList);
 		LOG.debug("#################################################################################");
 		
 		mv.addObject("commList", jsonArraycommList);
 		mv.addObject("transList", jsonArraytransList);
-		mv.addObject("totalRow", "");
+		mv.addObject("gasList", jsonArrayGasList);
+		
 		return mv;
 	}
 }

@@ -44,6 +44,7 @@ public interface ExpenseStatementService {
 	 * @throws Exception 
 	 */
 	List<Map<String, Object>> getTransExpenseList(Map<String, Object> data) throws ParseException, Exception;
+	List<Map<String, Object>> getGasChargeList(Map<String, Object> data) throws Exception;
 
 	
 }

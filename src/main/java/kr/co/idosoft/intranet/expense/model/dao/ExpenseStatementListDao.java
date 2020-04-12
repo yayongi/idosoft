@@ -42,11 +42,14 @@ public interface ExpenseStatementListDao {
 	 */
 	List<Map<String, Object>> getTransExpenseList(Map<String, Object> data);
 	/**
+	 * 주유비 월별 시작일, 종료일
+	 * @return List<Map<String, Object>>
+	 */
+	List<Map<String, Object>> getGasChargeList(Map<String, Object> data);
+	/**
 	 * 회원 목록
 	 * @return List<String>
 	 */
 	List<String> getMemberList(Map<String, Object> data);
-	
-	
 }
 
