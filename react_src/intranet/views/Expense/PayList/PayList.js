@@ -38,10 +38,12 @@ import Axios from 'axios';
 export default function PayList() {
 	const classes = useStyles();	// styles.js에 상수로 선언되어 있음. 
 
-	const [year , setYear] = React.useState(Moment(new Date()).format('YYYY'));					// 선택년도
-	const [commList, setCommList] = React.useState([]);				// 통신비 통계 내역
-	const [transList, setTransList] = React.useState([]);			// 교통비  통계 내역
+	const [year , setYear] = React.useState(Moment(new Date()).format('YYYY'));	// 선택년도
 	
+	const [commList, setCommList] 	= React.useState([]);				// 통신비 통계 내역
+	const [transList, setTransList] = React.useState([]);				// 교통비  통계 내역
+	const [gasList, setGasList]  	= React.useState([]);				// 주유비  통계 내역
+
 	const headerCells = [
 		"성명","구분 ", "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "합계", "총합계"
 	];
@@ -65,7 +67,8 @@ export default function PayList() {
 
 			setCommList(JSON.parse(response.data.commList));
 			setTransList(JSON.parse(response.data.transList));
-			
+			setGasList(JSON.parse(response.data.gasList));
+
 			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
@@ -153,7 +156,8 @@ export default function PayList() {
 
 			setCommList(JSON.parse(response.data.commList));
 			setTransList(JSON.parse(response.data.transList));
-			
+			setGasList(JSON.parse(response.data.gasList));
+
 			setShowLoadingBar(false);
 		}).catch(e => {
 			processErrCode(e);
@@ -222,7 +226,7 @@ export default function PayList() {
 							<Fragment key={`row${idx}`}>
 								<TableRow>
 									{/* 성명 */}
-									<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
+									<TableCell align={'right'} rowSpan={3} className={classes.tableBodyCell}>
 										{members.NAME} <br/>
 										{members.POSITION === "" ? "" : '('+ members.POSITION +')'}
 									</TableCell>
@@ -281,7 +285,7 @@ export default function PayList() {
 										}
 									</TableCell>
 									{/* 교통비/통신비 총합계*/}
-									<TableCell align={'right'} rowSpan={2} className={classes.tableBodyCell}>
+									<TableCell align={'right'} rowSpan={3} className={classes.tableBodyCell}>
 										
 										{
 											commList.map((member, idx1) => (
@@ -292,7 +296,6 @@ export default function PayList() {
 									</TableCell>
 								</TableRow>
 								<TableRow>
-									
 									<TableCell align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>교통비</TableCell>
 									{/* 1월~12월 교통비*/}
 									{
@@ -341,6 +344,62 @@ export default function PayList() {
 									<TableCell align={'right'} className={classes.tableBodyCell}>
 										{
 											transList.map((member, idx1) => (
+												members.MEMBER_NO == member.MEMBER_NO &&
+												//typeof member.totalAmount
+												parseInt(member.totalAmount).toLocaleString()
+											))
+										}
+									</TableCell>
+								</TableRow>	
+								<TableRow>
+									<TableCell align={'center'} className={classes.tableBodyCell} style={{minWidth:'80px'}}>주유비</TableCell>
+									{/* 1월~12월 주유비*/}
+									{
+										gasList.map((member, idx1) => (
+											members.MEMBER_NO == member.MEMBER_NO &&
+											<Fragment key={`row${idx1}`}>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.Jan === 'number' ? member.Jan.toLocaleString() : member.Jan}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.Fab === 'number' ? member.Fab.toLocaleString() : member.Fab}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.Mar === 'number' ? member.Mar.toLocaleString() : member.Mar}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.Apr === 'number' ? member.Apr.toLocaleString() : member.Apr}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.May === 'number' ? member.May.toLocaleString() : member.May}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.June === 'number' ? member.June.toLocaleString() : member.June}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.July === 'number' ? member.July.toLocaleString() : member.July}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.Aug === 'number' ? member.Aug.toLocaleString() : member.Aug}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.Sept === 'number' ? member.Sept.toLocaleString() : member.Sept}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.Oct === 'number' ? member.Oct.toLocaleString() : member.Oct}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.Nov === 'number' ? member.Nov.toLocaleString() : member.Nov}
+												</TableCell>
+												<TableCell  align={'right'} className={classes.tableBodyCell}>
+													{typeof member.Dec === 'number' ? member.Dec.toLocaleString() : member.Dec}
+												</TableCell>
+											</Fragment>
+										))}
+									{/* 교통비  합계*/}
+									<TableCell align={'right'} className={classes.tableBodyCell}>
+										{
+											gasList.map((member, idx1) => (
 												members.MEMBER_NO == member.MEMBER_NO &&
 												//typeof member.totalAmount
 												parseInt(member.totalAmount).toLocaleString()

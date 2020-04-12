@@ -450,6 +450,22 @@
 	</where>
 	ORDER BY NAME ASC
 	</select>
+	<!-- 주유비 년별 조회 -->
+	<select id="EXCEL0005_4" parameterType="hashmap" resultType="java.util.LinkedHashMap">
+	SELECT MEMBER_NO mno
+	, DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d') startDate
+	, DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d') endDate
+	, AMOUNT ct 
+	FROM TB_PROJECT_TRAFFIC
+	<where>
+		<if test="isAdmin != 1">
+			AND MEMBER_NO = #{MEMBER_NO}
+		</if>
+		AND MEMBER_NO != '99999999'
+		AND (DATE_FORMAT(INPT_BGNDE, '%Y') = #{YEAR}
+		OR DATE_FORMAT(INPT_ENDDE, '%Y') = #{YEAR})
+	</where>
+	</select>
 	<!-- 이력 조회 -->
 	<select id="EXCEL0006" parameterType="hashmap" resultType="java.util.LinkedHashMap">
 	SELECT

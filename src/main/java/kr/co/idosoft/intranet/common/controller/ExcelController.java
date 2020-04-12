@@ -206,17 +206,22 @@ public class ExcelController {
 		
 		List<LinkedHashMap<String,Object>> list1 = null;
 		List<LinkedHashMap<String,Object>> list2 = null;
+		List<LinkedHashMap<String,Object>> list3 = null;
 		
 		// 통신비, 교통비 통계
 		if("EXCEL0005".equals(fileCode)) {
 			//통신비
 			data.put("FILE_CODE","EXCEL0005_1");
 			list1 =  excelService.getCodetoList(data);
-			//교통비
-			data.put("FILE_CODE","EXCEL0005_2");
 			
 			try {
-				list2 =  excelService.getTransList(data);
+				// 교통비
+				data.put("FILE_CODE","EXCEL0005_2");
+				list2 =  excelService.getCommonList(data);
+				
+				// 주유비
+				data.put("FILE_CODE","EXCEL0005_4");
+				list3 = excelService.getCommonList(data);
 			} catch (Exception e) {
 				LOG.debug("# Exception : " + e.getMessage());
 			}
@@ -236,6 +241,7 @@ public class ExcelController {
 			for(int i = 0; i < list1.size(); i++) {
 				int commTotalAmount = 0;
 				int transTotalAmount = 0;
+				int gasTotalAmount = 0;
 				
 				for(int j = 0; j < monthArray.length; j++) {
 					commTotalAmount += Integer.parseInt((String) list1.get(i).get(monthArray[j]));
@@ -247,9 +253,14 @@ public class ExcelController {
 					// 직원의 교통비 총합계
 					list2.get(i).put("합계", transTotalAmount);
 				}
+				for(int j = 0; j < monthArray.length; j++) {
+					gasTotalAmount += ((Long)list3.get(i).get(monthArray[j])).intValue();
+					// 직원의 주유비 총합계
+					list3.get(i).put("합계", gasTotalAmount);
+				}
 				
 				// 직원의 총합계
-				list1.get(i).put("총합계", transTotalAmount+commTotalAmount);
+				list1.get(i).put("총합계", transTotalAmount+commTotalAmount+gasTotalAmount);
 			}
 		}
 		
@@ -257,7 +268,7 @@ public class ExcelController {
 		try {
 			//엑셀 파일 생성 및 다운로드
 			if("EXCEL0005".equals(fileCode)) {
-				fileController.exportExceptionExcel(list1, list2, fileName, searchStr,response);
+				fileController.exportExceptionExcel(list1, list2, list3, fileName, searchStr,response);
 			} else {
 				fileController.exportExcel(list1, fileName,"",searchStr, response);
 			}

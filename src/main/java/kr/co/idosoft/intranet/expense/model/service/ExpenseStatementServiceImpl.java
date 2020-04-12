@@ -65,16 +65,22 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 		
 		return batchProcessing(dataList, memberList, (String)data.get("YEAR"), (String)data.get("isAdmin"));
 	}
-
-	// 교통비 일괄 처리 프로세스
+	@Override
+	public List<Map<String, Object>> getGasChargeList(Map<String, Object> data) throws Exception {
+		List<Map<String, Object>> 	dataList 	= dao.getGasChargeList(data);
+		List<String>				memberList 	= dao.getMemberList(data);
+		
+		return batchProcessing(dataList, memberList, (String)data.get("YEAR"), (String)data.get("isAdmin"));
+	}
+	// 교통비, 주유비 일괄 처리 프로세스
 	static List<Map<String, Object>> batchProcessing(List<Map<String, Object>> dataList, List<String> membetList, String year, String isAdmin) throws Exception { // 월별 일괄 계산 처리
 		
-		LOG.debug("## 교통비 일괄 처리 프로세스 START #######################################################");
+		LOG.debug("## 교통비, 주유비 일괄 처리 프로세스 START #######################################################");
 		
 		String[] 	monthKeyArray 	= {"Jan", "Fab", "Mar", "Apr", "May", "June", "July","Aug", "Sept", "Oct", "Nov", "Dec"};
 		int[] 		monthArr 		= {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 		
-		List<Map<String, Object>> transList = new ArrayList<Map<String,Object>>();
+		List<Map<String, Object>> commonList = new ArrayList<Map<String,Object>>();
 		
 		SimpleDateFormat stringToDate 		= new SimpleDateFormat("yyyy-MM-dd");	// 문자열 -> date
 		SimpleDateFormat dateToMonth 		= new SimpleDateFormat("MM");			// date -> 달
@@ -143,23 +149,28 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 										// 시작일이 0부터  시작하기 때문에 -1
 										startDay 	= Integer.parseInt(dateToDay.format(startDate)) -1;
 									}
-
-									int endDay 		= Integer.parseInt(dateToDay.format(endDate));
+									// 종료 일에 -1 할 경우, 동일한 날짜가 들어올 경우 한번도 돌지않는 현상 발생
+									int endDay 		= Integer.parseInt(dateToDay.format(endDate)) -1;
 									
 									// 시작날짜와 종료날짜가 같은 달이기 때문에, 1일 부터 시작날짜 까지 0.0 대입
 									for(int l = 0; l < startDay; l++) {
 										monthExpenseArr[l] = 0.0;
-										LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
+										//LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
 									}
-									// 시작날짜부터 종료날짜 까지 일경비 대입
-									for(int l = startDay; l < endDay; l++) {
-										monthExpenseArr[l] = transExpense;
-										LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
-									}
+									
+									// 시작일과 종료일이 같은 경우, 한번이라도 값이 대입되야 하므로 do while문 사용
+									int whileL = startDay;
+									
+									do {
+										monthExpenseArr[whileL] = transExpense;
+										//LOG.debug("#WHILE monthExpenseArr["+whileL+"] : " + monthExpenseArr[whileL]);
+										whileL++;
+									}while(whileL < endDay);
+
 									// 종료일 부터 월의 마지막 날까지 0.0 대입
-									for(int l = endDay; l < lastDate; l++) {
+									for(int l = whileL; l < lastDate; l++) {
 										monthExpenseArr[l] = 0.0;
-										LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
+										//LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
 									}
 								} else {
 									/* 3. false : 시작날짜부터 달의 마지막 날짜까지 일 수 계산*/
@@ -179,13 +190,13 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 									// (시작날짜는 그달에 해당)시작날짜와 종료날짜가 같지 않기 때문에, 1일부터 시작날짜까지 0.0 대입
 									for(int l = 0; l < startDay; l++) {
 										monthExpenseArr[l] = 0.0;
-										LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
+										//LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
 									}
 									// 시작날짜부터 그달의 마지막 일까지 일경비 대입  
 									for(int l = startDay; l < lastDate; l++) {
 										// startMonth와 endMonth 현재 달에 포함되어있는지 추출
 										monthExpenseArr[l] = transExpense;
-										LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
+										//LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
 									}
 								}
 							} else { // 그달이 시작날짜가 아닌 경우,
@@ -194,17 +205,20 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 									/* 4. true : 그달의 첫 날부터 종료 일 수 까지 계산  */
 									LOG.debug("그달의 첫 날부터 종료 일 수 까지 계산");
 									
-									int endDay 	= Integer.parseInt(dateToDay.format(endDate));
-									//LOG.debug("# endDay : " + endDay);
+									int endDay 	= Integer.parseInt(dateToDay.format(endDate)) - 1;
 									
 									// 그달의 시작날짜가 아니고 그달에 종료날짜가 있기 때문에 1일부터 마지막 날짜까지 일경비 대입
 									for(int l = 0; l < endDay; l++) {
+										LOG.debug("## endDay ##");
+										LOG.debug("l : " + l);
 										monthExpenseArr[l] = transExpense;
 										//LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
 									}
 									
 									// 마지막날짜 기준으로 그달의 마지막 일까지 0.0 대입
 									for(int l = endDay; l < lastDate; l++) {
+										LOG.debug("## lastDate ##");
+										LOG.debug("l : " + l);
 										monthExpenseArr[l] = 0.0;
 										//LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
 									}
@@ -286,7 +300,7 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 			monthMap.put("MEMBER_NO", membetList.get(i));
 			
 			// Map을 List에 저장한다.
-			transList.add(monthMap);
+			commonList.add(monthMap);
 		}
 		
 		if("1".equals(isAdmin)) {
@@ -299,26 +313,24 @@ public class ExpenseStatementServiceImpl implements ExpenseStatementService {
 			for(int i = 0; i < monthKeyArray.length; i++) {
 				Integer totalValue = 0;
 				
-				for(int j = 0; j < transList.size(); j++) {
+				for(int j = 0; j < commonList.size(); j++) {
 					
-					totalValue += ((Long)transList.get(j).get(monthKeyArray[i])).intValue();
-					
-					//LOG.debug("# totalValue : ["+monthKeyArray[i]+"]" + transList.get(j).get("MEMBER_NO"));
-					//LOG.debug("# totalValue : ["+monthKeyArray[i]+"]" + totalValue);
+					totalValue += ((Long)commonList.get(j).get(monthKeyArray[i])).intValue();
 					
 				}
 				
 				totalMonthMap.put(monthKeyArray[i], totalValue.longValue());
 			}
 			
-			transList.add(totalMonthMap);
+			commonList.add(totalMonthMap);
 		}
 		
-		LOG.debug("교통비 일괄 처리 프로세스 - transList : " + transList);
+		LOG.debug("교통비, 주유비 일괄 처리 프로세스 - commonList : " + commonList);
 		
 		LOG.debug("## 교통비 일괄 처리 프로세스 END #########################################################");
 
-		return transList;
+		return commonList;
 			
 	}
+
 }
