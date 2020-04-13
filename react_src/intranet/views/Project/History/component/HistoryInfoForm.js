@@ -89,8 +89,8 @@ export default function ProjectInfoForm(props) {
 	const [dataState, setDataState] = React.useState(
 		{
 			member_no: userInfo["member_NO"] == "2019070801" ? "선택" : userInfo["member_NO"],
-			select_year:"선택",
-			project_no: "선택",
+			select_year:"직접입력",
+			project_no: "직접입력",
 			project_nm : "",
 			instt_code: "",
 			instt_nm : "",
@@ -180,7 +180,7 @@ export default function ProjectInfoForm(props) {
 				var tmp = {
 					member_no: response.data.detailInfo["MEMBER_NO"],
 					select_year:"",
-					project_no: !response.data.detailInfo["PROJECT_NO"] ? "선택" : response.data.detailInfo["PROJECT_NO"],
+					project_no: !response.data.detailInfo["PROJECT_NO"] ? "직접입력" : response.data.detailInfo["PROJECT_NO"],
 					project_nm : response.data.detailInfo["PROJECT_NM"],
 					instt_code: response.data.detailInfo["INSTT_CODE"],
 					instt_nm : response.data.detailInfo["INSTT_NM"],
@@ -210,8 +210,8 @@ export default function ProjectInfoForm(props) {
 		if(event.target.name == "project_nm" && screenType == "new"){
 			setDataState({
 				...dataState,
-				select_year:"선택",
-				project_no: "선택",
+				select_year:"직접입력",
+				project_no: "직접입력",
 				project_nm : event.target.value,
 				instt_code: "",
 				instt_nm : "",
@@ -227,7 +227,7 @@ export default function ProjectInfoForm(props) {
 			var project_nm = "";
 			var inpt_bgnde = Moment(new Date()).format('YYYY-MM-DD');
 			var inpt_endde = Moment(new Date()).format('YYYY-MM-DD');
-			if(event.target.value != "선택" && event.target.value != -2){
+			if(event.target.value != "직접입력" && event.target.value != -2){
 				var filterList = project_list.filter(info => info.PROJECT_NO == event.target.value);
 				project_nm = filterList[0]["PROJECT_NM"];
 				instt_nm = filterList[0]["INSTT_NAME"];
@@ -250,13 +250,13 @@ export default function ProjectInfoForm(props) {
 			setDataState({
 				...dataState,
 				[event.target.name]: event.target.value,
-				project_no: "선택",
+				project_no: event.target.value == "직접입력" ? "직접입력" : "선택",
 				project_nm: "",
 				instt_code: "",
 				instt_nm: "",
 			});
 			
-			if(event.target.value != "선택"){
+			if(event.target.value != "직접입력"){
 				var list = project_All_list.filter((info) => info["BGNDE"].slice(0,4) == event.target.value);
 				setProj_list(list);
 			}
@@ -311,18 +311,18 @@ export default function ProjectInfoForm(props) {
 			isReturn=true;
 		}
 		
-		//연도의 경우 연도를 선택에 놓고 프로젝트를 직접 입력하여 등록할 수 있기 때문에 따로 유효성체크를 진행하지 않는다.
+		//년도의 경우 년도를 선택에 놓고 프로젝트를 직접 입력하여 등록할 수 있기 때문에 따로 유효성체크를 진행하지 않는다.
 		/*if(dataState.select_year == "선택"){
 			setValidateCheck({
 				...validateCheck,
-				select_year: {error:true, helperText:"연도를 선택해주세요"} 
+				select_year: {error:true, helperText:"년도를 선택해주세요"} 
 			});
 			return;
 		}*/
 		
 		
 		//선택된 프로젝트가 있는지 체크한다.
-		if(dataState.project_no == "선택" && dataState.project_nm == ""){
+		if(dataState.project_no == "직접입력" && dataState.project_nm == ""){
 			prop_project_no = {error:true, helperText:"프로젝트를 선택해주세요"};
 			prop_project_nm = {error:true, helperText:"프로젝트를 입력해주세요"};
 			isReturn=true;
@@ -350,7 +350,7 @@ export default function ProjectInfoForm(props) {
 			isReturn=true;
 		}
 		
-		if(dataState.project_no != "선택" && dataState.project_no != -2){
+		if(dataState.project_no != "직접입력" && dataState.project_no != -2){
 			var selectedProjectInfo = project_list.filter((info) => info.PROJECT_NO == dataState.project_no)[0];
 			var selProjectBGNDE = selectedProjectInfo["BGNDE"].replace("-", "").replace("-", "");
 			var selProjectENDDE = selectedProjectInfo["ENDDE"].replace("-", "").replace("-", "");
@@ -412,7 +412,7 @@ export default function ProjectInfoForm(props) {
 		
 		sendData.inpt_bgnde = sendData.inpt_bgnde.replace("-", "").replace("-", "");
 		sendData.inpt_endde = sendData.inpt_endde.replace("-", "").replace("-", "");
-		sendData.project_no = sendData.project_no == "선택" ? null : sendData.project_no;
+		sendData.project_no = sendData.project_no == "직접입력" ? null : sendData.project_no;
 		axios({
 			url: '/intranet/historyInsert',
 			method: 'post',
@@ -580,55 +580,42 @@ export default function ProjectInfoForm(props) {
 								</TextField>
 							</TableCell>
 						</TableRow>
-						{ 
-							<TableRow>
-								<TableCell align="left" component="th" scope="row">프로젝트명(직접입력)</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="project_nm"
-										name="project_nm"
-										margin="dense"
-										variant="outlined"
-										autoComplete="off"
-										placeholder="회사 프로젝트는 연도와 프로젝트를 선택해주세요"
-										error={validateCheck.project_nm.error}
-										helperText={validateCheck.project_nm.helperText}
-										onChange={handleChange}
-										value={dataState.project_nm}
-										fullWidth>
-										{dataState.project_nm}
-									</TextField>
-								</TableCell>
-							</TableRow>
-						}
-						{screenType == "new" && <TableRow>
-								<TableCell align="left" component="th" scope="row" style={{ width: '120px' }}>연도</TableCell>
-								<TableCell align="left">
-									<TextField
-										id="select_year"
-										name="select_year"
-										margin="dense"
-										variant="outlined"
-										value={dataState.select_year}
-										onChange={handleChange}
-										autoComplete="off"
-										error={validateCheck.select_year.error}
-										helperText={validateCheck.select_year.helperText}
-										fullWidth
-										select = {year_list.length > 0 ? true : false}>
-										<MenuItem key={"선택"} value={"선택"}>
-											선택
-										</MenuItem>
-										{year_list.map(option => {
-											return(
-												<MenuItem key={option} value={option}>
-													{option}
-												</MenuItem>	
-											)
-										})}
-									</TextField>
-								</TableCell>
-							</TableRow>
+						{
+							screenType == "new" && 
+							<>
+								<TableRow>
+									<TableCell align="left" component="th" scope="row" style={{ width: '120px' }}>년도</TableCell>
+									<TableCell align="left">
+										<TextField
+											id="select_year"
+											name="select_year"
+											margin="dense"
+											variant="outlined"
+											value={dataState.select_year}
+											onChange={handleChange}
+											autoComplete="off"
+											error={validateCheck.select_year.error}
+											helperText={validateCheck.select_year.helperText}
+											fullWidth
+											select = {year_list.length > 0 ? true : false}>
+											<MenuItem key={"직접입력"} value={"직접입력"}>
+												직접입력
+											</MenuItem>
+											{year_list.map(option => {
+												return(
+													<MenuItem key={option} value={option}>
+														{option}
+													</MenuItem>	
+												)
+											})}
+										</TextField>
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell align="left" component="th" scope="row" colSpan="2" style={{color:"red", fontSize:"12px"}}>회사에서 진행한 프로젝트만 년도를 선택해주세요
+									(년도를 선택하면 해당 년도의 프로젝트 목록을 불러옵니다.)</TableCell>
+								</TableRow>
+							</>
 						}
 						<TableRow>
 							<TableCell align="left" component="th" scope="row">프로젝트명</TableCell>
@@ -648,11 +635,18 @@ export default function ProjectInfoForm(props) {
 									helperText={validateCheck.project_no.helperText}
 									fullWidth
 									select>
-									<MenuItem key={"선택"} value={"선택"}>
-										선택
-									</MenuItem>
+									{	(dataState.select_year == "직접입력") &&
+										<MenuItem key={"직접입력"} value={"직접입력"}>
+											직접입력
+										</MenuItem>
+									}
+									{	(dataState.select_year != "직접입력") &&
+										<MenuItem key={"선택"} value={"선택"}>
+											선택
+										</MenuItem>
+									}
 									{
-										(dataState.select_year != "선택") 
+										(dataState.select_year != "직접입력") 
 										&& project_list.length > 0 &&
 											project_list.map(option => {
 											return(
@@ -664,6 +658,29 @@ export default function ProjectInfoForm(props) {
 								</TextField>
 							</TableCell>
 						</TableRow>
+						{ 
+							(dataState.select_year == "직접입력" &&  dataState.project_no == "직접입력") && 
+							<TableRow>
+								<TableCell align="left" component="th" scope="row">프로젝트명(직접입력)</TableCell>
+								<TableCell align="left">
+									<TextField
+										id="project_nm"
+										name="project_nm"
+										margin="dense"
+										variant="outlined"
+										autoComplete="off"
+										placeholder="회사 프로젝트는 년도와 프로젝트를 선택해주세요"
+										error={validateCheck.project_nm.error}
+										helperText={validateCheck.project_nm.helperText}
+										onChange={handleChange}
+										value={dataState.project_nm}
+										fullWidth>
+										{dataState.project_nm}
+									</TextField>
+								</TableCell>
+							</TableRow>
+						}
+						
 						<TableRow>
 							<TableCell align="left" component="th" scope="row">기관</TableCell>
 							<TableCell align="left">
