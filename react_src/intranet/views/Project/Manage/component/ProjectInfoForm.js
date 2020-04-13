@@ -156,11 +156,27 @@ function ProjectInfoForm(props) {
 	}]);
 	
 	//차량 운행 기간 벨리데이션 정보
-	const [validateTraffic, setValidateTraffic] = React.useState([[]], [validateTraffic]);
+	const [validateTraffic, setValidateTraffic] = React.useState([[{
+		TRAFFIC_INPT_BGNDE:{error:false, helperText:""},
+		TRAFFIC_INPT_ENDDE:{error:false, helperText:""},
+	}]], [validateTraffic]);
+	
 	
 	const validateTrafficDefault = (traffic_member_list) => {
-		console.log("traffic_member_list : ");
-		console.log(traffic_member_list);
+		var tmp  = [];
+		for(var i=0; i < traffic_member_list.length; i++){
+			var list = [];
+			for(var j=0; j < traffic_member_list[i].length; j++){
+				var validateTraffic_defaultForm = {
+					TRAFFIC_INPT_BGNDE:{error:false, helperText:""},
+					TRAFFIC_INPT_ENDDE:{error:false, helperText:""},
+				}
+				list.push(validateTraffic_defaultForm);
+			}
+			tmp.push(list);
+		}
+		
+		setValidateTraffic(tmp);
 	}
 	
 	
@@ -283,8 +299,8 @@ function ProjectInfoForm(props) {
 					
 					trafficListTmp.push(tmp);
 				}
-				validateTrafficDefault(trafficListTmp);
 				setTrafficList(trafficListTmp);
+				validateTrafficDefault(trafficListTmp);
 				
 				
 				//배열이라 값이 복사되서 for 문으로 다시 만들어서 넣어줌
@@ -766,7 +782,7 @@ function ProjectInfoForm(props) {
 		
 		console.log(member_no);
 		var sendData = JSON.parse(JSON.stringify(member_no));
-		
+		setShowLoadingBar(true);
 		sendData["PROJECT_NO"] = match.params.id;
 		sendData["INPT_BGNDE"] = Moment(sendData["INPT_BGNDE"]).format("YYYYMMDD");
 		sendData["INPT_ENDDE"] = Moment(sendData["INPT_ENDDE"]).format("YYYYMMDD");
@@ -803,9 +819,21 @@ function ProjectInfoForm(props) {
 	const handleAddTraffic = (index) => {
 		var tmpList = [].concat(trafficList);
 		var selectList = tmpList[index];
-		selectList.push({"MEMBER_NO": memDataState[index]["MEMBER_NO"], "TRAFFIC_INPT_BGNDE": Moment(memDataState[index]["INPT_BGNDE"]).format("YYYY-MM-DD"), "TRAFFIC_INPT_ENDDE": Moment(memDataState[index]["INPT_ENDDE"]).format("YYYY-MM-DD")});
+		
+		if(typeof(selectList) == "object" && selectList.length > 0){
+			selectList.push({
+				"MEMBER_NO": memDataState[index]["MEMBER_NO"], 
+				"TRAFFIC_INPT_BGNDE": Moment(selectList[index]["TRAFFIC_INPT_ENDDE"]).format("YYYY-MM-DD"), 
+				"TRAFFIC_INPT_ENDDE": Moment(memDataState[index]["INPT_ENDDE"]).format("YYYY-MM-DD")
+			});
+		}else{
+			selectList.push({"MEMBER_NO": memDataState[index]["MEMBER_NO"], "TRAFFIC_INPT_BGNDE": Moment(memDataState[index]["INPT_BGNDE"]).format("YYYY-MM-DD"), "TRAFFIC_INPT_ENDDE": Moment(memDataState[index]["INPT_ENDDE"]).format("YYYY-MM-DD")});
+		}
+		
 		tmpList[index] = selectList;
+		validateTrafficDefault(tmpList);
 		setTrafficList([...tmpList]);
+		
 	}
 	
 	const handleRemoveRowTraffic = (memberIdx, trafficIdx) => {
@@ -840,6 +868,7 @@ function ProjectInfoForm(props) {
 		sendData["INPT_BGNDE"] = sendData["TRAFFIC_INPT_BGNDE"].replace("-", "").replace("-", "");
 		sendData["INPT_ENDDE"] = sendData["TRAFFIC_INPT_ENDDE"].replace("-", "").replace("-", "");
 		sendData["PROJECT_NO"] = match.params.id; 
+		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/registTraffic',
 			method: 'post',
@@ -1417,6 +1446,8 @@ function ProjectInfoForm(props) {
 																				minDate={trafficList[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"]}
 																				value={trafficList[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"]}
 																				views={["year", "month", "date"]}
+																				error={validateTraffic[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"].error}
+																				helperText={validateTraffic[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"].helperText}
 																				onChange={(data) => handleChangeDate(data, "TRAFFIC_INPT_BGNDE", idx, trafficIdx)}
 																				format="yyyy-MM-dd"
 																				inputVariant="outlined"
@@ -1435,6 +1466,8 @@ function ProjectInfoForm(props) {
 																				maxDate={trafficList[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"]}
 																				value={trafficList[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"]}
 																				views={["year", "month", "date"]}
+																				error={validateTraffic[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"].error}
+																				helperText={validateTraffic[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"].helperText}
 																				onChange={(data) => handleChangeDate(data, "TRAFFIC_INPT_ENDDE", idx, trafficIdx)}
 																				format="yyyy-MM-dd"
 																				inputVariant="outlined"
