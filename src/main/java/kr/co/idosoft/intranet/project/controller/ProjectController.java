@@ -284,9 +284,9 @@ public class ProjectController {
 		
 		boolean db_result = false;
 		try {
-			projectService.deleteInfo((String)params.get("PROJECT_NO"));
-			projectService.removeMemberForPro((String)params.get("PROJECT_NO"));
 			projectService.traffic_delete_all((HashMap<String, Object>) params);
+			projectService.removeMemberForPro((String)params.get("PROJECT_NO"));
+			projectService.deleteInfo((String)params.get("PROJECT_NO"));
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());

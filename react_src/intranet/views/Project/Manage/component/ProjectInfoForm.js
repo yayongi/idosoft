@@ -412,6 +412,13 @@ function ProjectInfoForm(props) {
 				[target]: Moment(date).format('YYYY-MM-DD')
 			});
 			
+			//프로젝트 기간이 변경되면 멤버들 프로젝트 기간도 동일하게 변경된다.
+			var tmp = [].concat(memDataState);
+			for(var i=0; i < memDataState.length; i++){
+				tmp[i]["INPT_"+target] = Moment(date).format('YYYY-MM-DD')
+			}
+				
+			setMemDataState(tmp);
 			//투입일 철수일이 수정되었을때 에러문구 초기화
 			setValidateCheck({
 				...validateCheck,
@@ -462,6 +469,11 @@ function ProjectInfoForm(props) {
 		//교통비
 		if(dataState.TRANSPORT_CT == ""){
 			prop_TRANSPORT_CT={error:true, helperText:"교통비을 입력해주세요"};
+			isError = true;
+		}
+		
+		if(dataState.TRANSPORT_CT > 1000000){
+			prop_TRANSPORT_CT={error:true, helperText:"교통비을 확인해주세요"};
 			isError = true;
 		}
 
