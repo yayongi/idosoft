@@ -73,6 +73,9 @@ const useStyles = makeStyles(theme => ({
 	trafficHead:{
 		backgroundColor: '#fafafa',
 	},
+	pm_table:{
+		backgroundColor: '#000000',
+	}
 }));
 
 function initCheck(match){
@@ -299,9 +302,16 @@ function ProjectInfoForm(props) {
 					
 					trafficListTmp.push(tmp);
 				}
+				
+				//DB에서 조회된 리스트 보다 화면에서 추가된 리스트가 있는 경우 default값으로 추가를 해줘야한다.
+				if(trafficListTmp.length < memDataState.length){
+					for(var j=0; j <  memDataState.length-trafficListTmp.length; j++){
+						trafficListTmp.push([]);
+					}
+				}
+				
 				setTrafficList(trafficListTmp);
 				validateTrafficDefault(trafficListTmp);
-				
 				
 				//배열이라 값이 복사되서 for 문으로 다시 만들어서 넣어줌
 				var tmplist = [];
@@ -1138,7 +1148,8 @@ function ProjectInfoForm(props) {
 								return (
 									<>
 										<TableRow
-											key={"row"+idx}>
+											key={"row"+idx}
+											style={{ backgroundColor: idx==0 ? '#ffd4fb' : ''}}>
 											<TableCell 
 												align="left"
 												key={"NAME" + idx}>
@@ -1364,7 +1375,8 @@ function ProjectInfoForm(props) {
 											</TableCell>
 										</TableRow>
 										{ !isWidthUp('md', props.width) &&
-											<TableRow>
+											<TableRow
+											style={{ backgroundColor: idx==0 ? '#ffd4fb' : ''}}>
 												<TableCell 
 													align="left"
 													key={"INPT" + idx}
