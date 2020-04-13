@@ -77,6 +77,14 @@ public class ExpenseStatementDaoImpl implements ExpenseStatementListDao {
 		return sqlTemplate.selectList("expense.getTransExpenseList", data);
 	}
 	/**
+	 * 주유비 시작일, 종료일 통계
+	 * @return List<Map<String, Object>>
+	 */
+	@Override
+	public List<Map<String, Object>> getGasChargeList(Map<String, Object> data) {
+		return sqlTemplate.selectList("expense.getGasChargeList", data);
+	}
+	/**
 	 * 직원 목록
 	 * @return List<String>
 	 */

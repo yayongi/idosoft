@@ -35,7 +35,7 @@ public class ExcelServiceImpl implements ExcelService {
 		return excelDao.getCodetoList(data);
 	}
 	@Override
-	public List<LinkedHashMap<String, Object>> getTransList(Map<String, Object> data) throws Exception {
+	public List<LinkedHashMap<String, Object>> getCommonList(Map<String, Object> data) throws Exception {
 		List<LinkedHashMap<String, Object>> dataList = excelDao.getCodetoList(data);
 		
 		data.put("FILE_CODE","EXCEL0005_3");
@@ -45,16 +45,16 @@ public class ExcelServiceImpl implements ExcelService {
 		
 		return batchProcessing( dataList, memberList, (String)searchData.get("YEAR"), (String)searchData.get("isAdmin"));
 	}
-
+	
 	// 교통비 일괄 처리 프로세스
 	static List<LinkedHashMap<String, Object>> batchProcessing(List<LinkedHashMap<String, Object>> dataList, List<String> membetList, String year, String isAdmin) throws Exception { // 월별 일괄 계산 처리
 		
-		LOG.debug("## 교통비 일괄 처리 프로세스 START #######################################################");
+		LOG.debug("## 교통비, 주유비 일괄 처리 프로세스 START #######################################################");
 		
 		String[] 	monthKeyArray 	= {"1월", "2월", "3월", "4월", "5월", "6월", "7월","8월", "9월", "10월", "11월", "12월"};
 		int[] 		monthArr 		= {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 		
-		List<LinkedHashMap<String, Object>> transList = new ArrayList<LinkedHashMap<String,Object>>();
+		List<LinkedHashMap<String, Object>> commonList = new ArrayList<LinkedHashMap<String,Object>>();
 		
 		SimpleDateFormat stringToDate 		= new SimpleDateFormat("yyyy-MM-dd");	// 문자열 -> date
 		SimpleDateFormat dateToMonth 		= new SimpleDateFormat("MM");			// date -> 달
@@ -127,22 +127,26 @@ public class ExcelServiceImpl implements ExcelService {
 										startDay 	= Integer.parseInt(dateToDay.format(startDate)) -1;
 									}
 									
-									int endDay 		= Integer.parseInt(dateToDay.format(endDate));
+									int endDay 		= Integer.parseInt(dateToDay.format(endDate)) -1;
 									
 									// 시작날짜와 종료날짜가 같은 달이기 때문에, 1일 부터 시작날짜 까지 0.0 대입
 									for(int l = 0; l < startDay; l++) {
 										monthExpenseArr[l] = 0.0;
-										LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
+										//LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
 									}
-									// 시작날짜부터 종료날짜 까지 일경비 대입
-									for(int l = startDay; l < endDay; l++) {
-										monthExpenseArr[l] = transExpense;
-										LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
-									}
+									// 시작일과 종료일이 같은 경우, 한번이라도 값이 대입되야 하므로 do while문 사용
+									int whileL = startDay;
+									
+									do {
+										monthExpenseArr[whileL] = transExpense;
+										//LOG.debug("#WHILE monthExpenseArr["+whileL+"] : " + monthExpenseArr[whileL]);
+										whileL++;
+									}while(whileL < endDay);
+
 									// 종료일 부터 월의 마지막 날까지 0.0 대입
-									for(int l = endDay; l < lastDate; l++) {
+									for(int l = whileL; l < lastDate; l++) {
 										monthExpenseArr[l] = 0.0;
-										LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
+										//LOG.debug("# monthExpenseArr["+l+"] : " + monthExpenseArr[l]);
 									}
 								} else {
 									/* 3. false : 시작날짜부터 달의 마지막 날짜까지 일 수 계산*/
@@ -176,7 +180,7 @@ public class ExcelServiceImpl implements ExcelService {
 									/* 4. true : 그달의 첫 날부터 종료 일 수 까지 계산  */
 									LOG.debug("그달의 첫 날부터 종료 일 수 까지 계산");
 									
-									int endDay 	= Integer.parseInt(dateToDay.format(endDate));
+									int endDay 	= Integer.parseInt(dateToDay.format(endDate)) -1;
 									LOG.debug("# endDay : " + endDay);
 									
 									// 그달의 시작날짜가 아니고 그달에 종료날짜가 있기 때문에 1일부터 마지막 날짜까지 일경비 대입
@@ -265,7 +269,7 @@ public class ExcelServiceImpl implements ExcelService {
 			}
 			
 			// Map을 List에 저장한다.
-			transList.add(monthMap);
+			commonList.add(monthMap);
 		}
 		
 		if("1".equals(isAdmin)) {
@@ -278,11 +282,11 @@ public class ExcelServiceImpl implements ExcelService {
 			for(int i = 0; i < monthKeyArray.length; i++) {
 				Integer totalValue = 0;
 				
-				for(int j = 0; j < transList.size(); j++) {
+				for(int j = 0; j < commonList.size(); j++) {
 					
-					totalValue += ((Long)transList.get(j).get(monthKeyArray[i])).intValue();
+					totalValue += ((Long)commonList.get(j).get(monthKeyArray[i])).intValue();
 					
-					LOG.debug("# totalValue : ["+monthKeyArray[i]+"]" + transList.get(j).get("MEMBER_NO"));
+					LOG.debug("# totalValue : ["+monthKeyArray[i]+"]" + commonList.get(j).get("MEMBER_NO"));
 					LOG.debug("# totalValue : ["+monthKeyArray[i]+"]" + totalValue);
 					
 				}
@@ -290,11 +294,11 @@ public class ExcelServiceImpl implements ExcelService {
 				totalMonthMap.put(monthKeyArray[i], totalValue.longValue());
 			}
 			
-			transList.add((LinkedHashMap<String, Object>) totalMonthMap);
+			commonList.add((LinkedHashMap<String, Object>) totalMonthMap);
 		}
-		LOG.debug("## 교통비 일괄 처리 프로세스 END #########################################################");
+		LOG.debug("## 교통비, 주유비 일괄 처리 프로세스 END #########################################################");
 
-		return transList;
+		return commonList;
 			
 	}
 }

@@ -1045,6 +1045,22 @@
 		OR DATE_FORMAT(A.INPT_ENDDE, '%Y') = #{YEAR})
 	</where>
 	</select>
+	<!-- 주유비 년별 조회 -->
+	<select id="getGasChargeList" parameterType="hashmap" resultType="hashmap">
+	SELECT MEMBER_NO mno
+	, DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d') startDate
+	, DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d') endDate
+	, AMOUNT ct 
+	FROM TB_PROJECT_TRAFFIC
+	<where>
+		<if test="isAdmin != 1">
+			AND MEMBER_NO = #{MEMBER_NO}
+		</if>
+		AND MEMBER_NO != '99999999'
+		AND (DATE_FORMAT(INPT_BGNDE, '%Y') = #{YEAR}
+		OR DATE_FORMAT(INPT_ENDDE, '%Y') = #{YEAR})
+	</where>
+	</select>
 	<!-- 사번 목록 -->
 	<select id="getMemberList" parameterType="hashmap" resultType="string">
 	SELECT MEMBER_NO 
