@@ -147,7 +147,7 @@ function ProjectInfoForm(props) {
 		BGNDE:{error:false, helperText:""},
 		ENDDE:{error:false, helperText:""},
 		TRANSPORT_CT:{error:false, helperText:""},
-	});
+	}, [validateCheck]);		// 마지막에 [validateCheck] 추가됨
 	//투입 인원 벨리데이션 정보 (배열로 되어 있으며, 투입 인원 수에 맞게 동적으로 생성해줘야함)
 	const [validateMemCheck, setValidateMemCheck] = React.useState([{
 		MEMBER_NO:{error:false, helperText:""},
@@ -156,13 +156,13 @@ function ProjectInfoForm(props) {
 		INPT_ENDDE:{error:false, helperText:""},
 		ROLE_CODE:{error:false, helperText:""},
 		USE_LANG:{error:false, helperText:""},
-	}]);
+	}], [validateMemCheck]);// 마지막에 [validateMemCheck] 추가됨
 	
 	//차량 운행 기간 벨리데이션 정보
 	const [validateTraffic, setValidateTraffic] = React.useState([[{
 		TRAFFIC_INPT_BGNDE:{error:false, helperText:""},
 		TRAFFIC_INPT_ENDDE:{error:false, helperText:""},
-	}]], [validateTraffic]);
+	}]], [validateTraffic]); // 마지막에 [validateTraffic] 추가됨
 	
 	
 	const validateTrafficDefault = (traffic_member_list) => {
@@ -254,6 +254,7 @@ function ProjectInfoForm(props) {
 		}
 		//프로젝트 수정으로 들어온 경우
 		else if(screenType == "modify"){
+			console.log("modify");
 			axios({
 				url: '/intranet/projectDetailInfo',
 				method: 'post',
@@ -270,15 +271,20 @@ function ProjectInfoForm(props) {
 				setDataState(projectInfo);
 				setPm_member_no(response.data.project_info.PM);
 				setCloneDataState(projectInfo);
+				
+				
+				var proMemList = response.data.proMemList;
 				if(response.data.proMemList.length > 0){
-					//투입 인원 벨리데이션 체크 동적으로 생성
-					validateMemCheckDefault(response.data.proMemList.length);
 					
+					//중간에 갱신 삭제 추가 등으로 들어온 경우 벨리데이션 배열을 다시 만들지 않는다.
+					if(validateMemCheck.length == 1){
+						//투입 인원 벨리데이션 체크 동적으로 생성
+						validateMemCheckDefault(response.data.proMemList.length);
+					}
 					//주유비 보여줄 테이블도 동적으로 생성(최초 진입 시에만 초기화해준다.)
 					if(isTransShow.length == 0){
 						transShowDefault(response.data.proMemList.length);
 					}
-					var proMemList = response.data.proMemList;
 					for(var idx=0; idx < proMemList.length; idx++){
 						proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
 						proMemList[idx]["INPT_ENDDE"] = proMemList[idx]["INPT_ENDDE"].slice(0,4) + "-" + proMemList[idx]["INPT_ENDDE"].slice(4,6) + "-" + proMemList[idx]["INPT_ENDDE"].slice(6,8);
@@ -1157,6 +1163,10 @@ function ProjectInfoForm(props) {
 								))}
 							</TableRow>
 							{memDataState.map((row, idx) => {
+								console.log(idx + " : ");
+								console.log(row);
+								console.log(validateMemCheck);
+								console.log(memDataState);
 								return (
 									<>
 										<TableRow
