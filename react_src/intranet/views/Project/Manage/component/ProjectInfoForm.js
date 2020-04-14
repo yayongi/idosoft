@@ -851,7 +851,7 @@ function ProjectInfoForm(props) {
 		if(typeof(selectList) == "object" && selectList.length > 0){
 			selectList.push({
 				"MEMBER_NO": memDataState[index]["MEMBER_NO"], 
-				"TRAFFIC_INPT_BGNDE": Moment(selectList[index]["TRAFFIC_INPT_ENDDE"]).format("YYYY-MM-DD"), 
+				"TRAFFIC_INPT_BGNDE": Moment(selectList[selectList.length-1]["TRAFFIC_INPT_ENDDE"]).format("YYYY-MM-DD"), 
 				"TRAFFIC_INPT_ENDDE": Moment(memDataState[index]["INPT_ENDDE"]).format("YYYY-MM-DD")
 			});
 		}else{
