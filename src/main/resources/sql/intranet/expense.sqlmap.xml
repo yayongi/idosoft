@@ -1050,7 +1050,11 @@
 	SELECT MEMBER_NO mno
 	, DATE_FORMAT(INPT_BGNDE, '%Y-%m-%d') startDate
 	, DATE_FORMAT(INPT_ENDDE, '%Y-%m-%d') endDate
-	, AMOUNT ct 
+	, (
+		SELECT NOTE 
+		FROM TB_CODE
+		WHERE CODE_ID='AM0000'
+	) ct 
 	FROM TB_PROJECT_TRAFFIC
 	<where>
 		<if test="isAdmin != 1">

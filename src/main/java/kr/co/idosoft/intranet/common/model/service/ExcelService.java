@@ -21,6 +21,6 @@ public interface ExcelService {
 	
 	List<LinkedHashMap<String, Object>> getCodetoList(Map<String, Object> data);
 
-	List<LinkedHashMap<String, Object>> getCommonList(Map<String, Object> data) throws Exception;
+	List<String> getCodetoListString(Map<String, Object> data);
 
 }
