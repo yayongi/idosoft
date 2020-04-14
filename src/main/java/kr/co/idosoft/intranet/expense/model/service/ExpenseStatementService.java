@@ -43,8 +43,7 @@ public interface ExpenseStatementService {
 	 * @throws ParseException 
 	 * @throws Exception 
 	 */
-	List<Map<String, Object>> getTransExpenseList(Map<String, Object> data) throws ParseException, Exception;
-	List<Map<String, Object>> getGasChargeList(Map<String, Object> data) throws Exception;
-
-	
+	List<Map<String, Object>> getTransExpenseList(Map<String, Object> data);
+	List<Map<String, Object>> getGasChargeList(Map<String, Object> data);
+	List<String> getMemberList(Map<String, Object> data);
 }
