@@ -162,7 +162,7 @@ function ProjectInfoForm(props) {
 	const [validateTraffic, setValidateTraffic] = React.useState([[{
 		TRAFFIC_INPT_BGNDE:{error:false, helperText:""},
 		TRAFFIC_INPT_ENDDE:{error:false, helperText:""},
-	}]], [validateTraffic]); // 마지막에 [validateTraffic] 추가됨
+	}]]); // 마지막에 [validateTraffic] 추가됨
 	
 	
 	const validateTrafficDefault = (traffic_member_list) => {
@@ -310,11 +310,11 @@ function ProjectInfoForm(props) {
 				}
 				
 				//DB에서 조회된 리스트 보다 화면에서 추가된 리스트가 있는 경우 default값으로 추가를 해줘야한다.
-				if(trafficListTmp.length < memDataState.length){
+				/*if(trafficListTmp.length < memDataState.length){
 					for(var j=0; j <  memDataState.length-trafficListTmp.length; j++){
 						trafficListTmp.push([]);
 					}
-				}
+				}*/
 				
 				setTrafficList(trafficListTmp);
 				validateTrafficDefault(trafficListTmp);
@@ -396,6 +396,8 @@ function ProjectInfoForm(props) {
 			console.log("target include traffic_");
 			trafficList[idx][trafficIdx][target] = Moment(date).format('YYYY-MM-DD'); 
 			setTrafficList([...trafficList]);
+			//초기화
+			validateTrafficDefault(memDataState.length);
 		}
 		//개인별 투입 기간
 		else if(target.includes("INPT_")){
@@ -418,13 +420,16 @@ function ProjectInfoForm(props) {
 				[target]: Moment(date).format('YYYY-MM-DD')
 			});
 			
-			//프로젝트 기간이 변경되면 멤버들 프로젝트 기간도 동일하게 변경된다.
-			var tmp = [].concat(memDataState);
-			for(var i=0; i < memDataState.length; i++){
-				tmp[i]["INPT_"+target] = Moment(date).format('YYYY-MM-DD')
+			//신규일때만
+			if(screenType == "new"){
+				//프로젝트 기간이 변경되면 멤버들 프로젝트 기간도 동일하게 변경된다.
+				var tmp = [].concat(memDataState);
+				for(var i=0; i < memDataState.length; i++){
+					tmp[i]["INPT_"+target] = Moment(date).format('YYYY-MM-DD')
+				}
+					
+				setMemDataState(tmp);
 			}
-				
-			setMemDataState(tmp);
 			//투입일 철수일이 수정되었을때 에러문구 초기화
 			setValidateCheck({
 				...validateCheck,
@@ -433,6 +438,8 @@ function ProjectInfoForm(props) {
 		}
 	}
 	
+	
+	//프로젝트 벨리데이션 체크
 	const isValidateCheck = () => {
 		var isError = false;
 		let prop_PROJECT_NM={error:false, helperText:""};
@@ -575,6 +582,69 @@ function ProjectInfoForm(props) {
 		return isError;
 	}
 	
+	const isTrafficValidateCheck = (trafficData, memberData, memberIdx, trafficIdx) => {
+		//초기화
+		validateTrafficDefault(memDataState.length);
+		// 사원의 투입 기간 정보 투입일 : memberData["INPT_BGNDE"] 철수일 : memberData["INPT_ENDDE"]
+		//차량운행기간 추가할때 고려해야되는 부분
+		//1. 프로젝트 기간 내의 기간인지 확인 필요(어차피 투입기간 넣을 때 체크할거라 프로젝트 내 투입 기간만 확인할것)
+		//2. 차량 운행기간 시작일이 투입일보다 미래인지 확인
+		//3. 이미 추가되어 있는 기간인지 확인 필요
+		var isError = false;
+		
+		
+		var validateTrafficTmp = [].concat(validateTraffic);
+		//프로젝트 투입일과 비교
+		if(Moment(memberData["INPT_BGNDE"]).format("YYYYMMDD") > trafficData["INPT_BGNDE"]){
+			isError = true;
+			validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_BGNDE"]["error"] = true;
+			validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_BGNDE"]["helperText"] = "프로젝트 투입일을 확인해주세요";
+		}
+		//프로젝트 철수일과 비교
+		if(Moment(memberData["INPT_ENDDE"]).format("YYYYMMDD") < trafficData["INPT_ENDDE"]){
+			isError = true;
+			validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_ENDDE"]["error"] = true;
+			validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_ENDDE"]["helperText"] = "프로젝트 철수일을 확인해주세요";
+		}
+		//차량운행 기간을 비교
+		if(trafficData["INPT_BGNDE"] > trafficData["INPT_ENDDE"]){
+			isError = true;
+			validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_BGNDE"]["error"] = true;
+			validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_BGNDE"]["helperText"] = "차량운행 시작일을 확인해주세요";
+			validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_ENDDE"]["error"] = true;
+			validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_ENDDE"]["helperText"] = "차량운행 종료일을 확인해주세요";
+		}
+		
+		//기존 등록된 운행기간이 있으면 기존 등록된 운행 기간과 비교
+		var members_traffic_data = trafficList[memberIdx];
+		if(members_traffic_data.length > 1){
+			for(var i=0; i < members_traffic_data.length; i++){
+				var traffic_bgnde = members_traffic_data[i]["TRAFFIC_INPT_BGNDE"];
+				var traffic_endde = members_traffic_data[i]["TRAFFIC_INPT_ENDDE"];
+				
+				var isbreak = false;
+				if(trafficData["INPT_BGNDE"] >= Moment(traffic_bgnde).format("YYYYMMDD") && trafficData["INPT_BGNDE"] <=  Moment(traffic_endde).format("YYYYMMDD")){
+					isbreak = true;
+					validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_BGNDE"]["error"] = true;
+					validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_BGNDE"]["helperText"] = "이미 등록된 기간에 해당합니다.";
+				}
+				
+				if(trafficData["INPT_ENDDE"] <= Moment(traffic_bgnde).format("YYYYMMDD") && trafficData["INPT_ENDDE"] >= Moment(traffic_endde).format("YYYYMMDD")){
+					isbreak = true;
+					validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_ENDDE"]["error"] = true;
+					validateTrafficTmp[memberIdx][trafficIdx]["TRAFFIC_INPT_ENDDE"]["helperText"] = "이미 등록된 기간에 해당합니다.";
+				}
+				
+				if(isbreak){
+					isError = true;
+					break;
+				}
+			}
+		}
+		
+		setValidateTraffic(validateTrafficTmp);
+		return isError;
+	}
 
 	const handleClickAddProject = () => {
 		if(isValidateCheck()){
@@ -608,8 +678,11 @@ function ProjectInfoForm(props) {
 
 	const handleClickModifyProject = () => {
 		console.log("updatedMemList : ");
-		console.log(updatedMemList);
-
+		
+		if(isMemberValidateCheck()){
+			return;
+		}
+		
 		var memUpdateList = [];
 		for(var i=0; i < updatedMemList.length; i++){
 			memUpdateList.push(memDataState[updatedMemList[i]]);
@@ -680,7 +753,7 @@ function ProjectInfoForm(props) {
 		var list = memOriginDataState.filter((info) => (info.MEMBER_NO != member_no));
 		
 		//차량운행 기간이 존재하는지 여부를 가져온다.
-		var hasTrafficList = typeof(trafficList[idx]) != "obejct" ? false : trafficList[idx].legnth > 0 ? true : false;
+		var hasTrafficList = typeof(trafficList[idx]) != "object" ? false : trafficList[idx].length > 0 ? true : false;
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/removeMember',
@@ -703,7 +776,21 @@ function ProjectInfoForm(props) {
 	}
 	
 	const handleUpdateMember = (selectMemberInfo, idx) => {
-		setShowLoadingBar(true);
+		//차량운행 기간을 넣고 있는 사원정보
+		var isError = false;
+		if(typeof(trafficList[idx]) == "object" && trafficList[idx].length > 0){
+			for(var i=0; i < trafficList[idx].length; i++){
+				if(isTrafficValidateCheck(trafficList[idx][i], selectMemberInfo, idx, i)){
+					isError = true;
+					break;
+				}
+			}
+			if(isError){
+				return;
+			}
+		}
+		
+		
 		selectMemberInfo["INPT_BGNDE"] = selectMemberInfo["INPT_BGNDE"].replace("-", "").replace("-", "");
 		selectMemberInfo["INPT_ENDDE"] = selectMemberInfo["INPT_ENDDE"].replace("-", "").replace("-", "");
 		
@@ -718,12 +805,11 @@ function ProjectInfoForm(props) {
 			sendData["PM"] = selectMemberInfo.MEMBER_NO;
 		}
 		
-		//차량운행 기간이 존재하는지 여부를 가져온다.
-		var hasTrafficList = typeof(trafficList[idx]) != "obejct" ? false : trafficList[idx].legnth > 0 ? true : false;
+		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/updateMember',
 			method: 'post',
-			data: {"PROJECT_NO": match.params.id, "memDataState" : selectMemberInfo, "isPM" : idx == 0, "dataState":sendData, "beforePM": beforePM, "hasTrafficList" : hasTrafficList}
+			data: {"PROJECT_NO": match.params.id, "memDataState" : selectMemberInfo, "isPM" : idx == 0, "dataState":sendData, "beforePM": beforePM}
 		}).then(response => {
 			setShowLoadingBar(false);
 			if(response.data.isDBError){
@@ -892,10 +978,19 @@ function ProjectInfoForm(props) {
 	}
 	
 	const handleRegisteTraffic = (memberIdx, trafficIdx) => {
+		
+		//차량 운행 기간에 넣은 데이터
 		var sendData = trafficList[memberIdx][trafficIdx];
 		sendData["INPT_BGNDE"] = sendData["TRAFFIC_INPT_BGNDE"].replace("-", "").replace("-", "");
 		sendData["INPT_ENDDE"] = sendData["TRAFFIC_INPT_ENDDE"].replace("-", "").replace("-", "");
-		sendData["PROJECT_NO"] = match.params.id; 
+		sendData["PROJECT_NO"] = match.params.id;
+		
+		//차량운행 기간을 넣고 있는 사원정보
+		var memberData = memDataState[memberIdx];
+		if(isTrafficValidateCheck(sendData, memberData, memberIdx, trafficIdx)){
+			return;
+		}
+		
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/registTraffic',
@@ -911,7 +1006,34 @@ function ProjectInfoForm(props) {
 		});
 	}
 	
-	
+	const handleUpdateTraffic = (memberIdx, trafficIdx) => {
+		//차량 운행 기간에 넣은 데이터
+		var sendData = trafficList[memberIdx][trafficIdx];
+		sendData["INPT_BGNDE"] = sendData["TRAFFIC_INPT_BGNDE"].replace("-", "").replace("-", "");
+		sendData["INPT_ENDDE"] = sendData["TRAFFIC_INPT_ENDDE"].replace("-", "").replace("-", "");
+		sendData["PROJECT_NO"] = match.params.id;
+		
+		//차량운행 기간을 넣고 있는 사원정보
+		var memberData = memDataState[memberIdx];
+		
+		if(isTrafficValidateCheck(sendData, memberData, memberIdx, trafficIdx)){
+			return;
+		}
+		
+		setShowLoadingBar(true);
+		axios({
+			url: '/intranet/updateTraffic',
+			method: 'post',
+			data: sendData
+		}).then(response => {
+			setShowLoadingBar(false);
+			alert("갱신했습니다.");
+			setRenderWant(!renderWant);
+		}).catch(e => {
+			setShowLoadingBar(false);
+			processErrCode(e);
+		});
+	}
 	
 	// confirm, alert 창 함수
   	// 초기값은 {}로 설정하고 온오프시  {title:'', content:'', onOff:'true of false'} 형식으로 setting됨.
@@ -1477,7 +1599,7 @@ function ProjectInfoForm(props) {
 																				margin="dense"
 																				id="TRAFFIC_INPT_BGNDE"
 																				name="TRAFFIC_INPT_BGNDE"
-																				minDate={trafficList[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"]}
+																				minDate={memDataState[idx]["INPT_BGNDE"]}
 																				value={trafficList[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"]}
 																				views={["year", "month", "date"]}
 																				error={validateTraffic[idx][trafficIdx]["TRAFFIC_INPT_BGNDE"].error}
@@ -1497,7 +1619,7 @@ function ProjectInfoForm(props) {
 																				margin="dense"
 																				id="TRAFFIC_INPT_ENDDE"
 																				name="TRAFFIC_INPT_ENDDE"
-																				maxDate={trafficList[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"]}
+																				maxDate={memDataState[idx]["INPT_ENDDE"]}
 																				value={trafficList[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"]}
 																				views={["year", "month", "date"]}
 																				error={validateTraffic[idx][trafficIdx]["TRAFFIC_INPT_ENDDE"].error}
@@ -1534,7 +1656,7 @@ function ProjectInfoForm(props) {
 																{ 	(isAdmin || pm_member_no == userInfo || userInfo == memDataState[idx]["MEMBER_NO"]) &&
 																	(typeof(trafficOriginList[idx][trafficIdx]) == "object") &&
 																	<IconButton aria-label="update" className={classes.margin}>
-																		<CreateIcon fontSize="small" />
+																		<CreateIcon fontSize="small" onClick={() => handleUpdateTraffic(idx, trafficIdx)}/>
 																	</IconButton>
 																}	
 															</TableCell>

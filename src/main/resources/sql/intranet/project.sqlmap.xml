@@ -310,8 +310,7 @@
 	<delete id="traffic_delete" parameterType="hashmap">
 		DELETE FROM
 			TB_PROJECT_TRAFFIC
-		WHERE TRAFFIC_NO = #{TRAFFIC_NO} AND
-			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
+		WHERE PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
 	</delete>
 	
 	<!--  차량운행 삭제 (프로젝트 삭제 시 해당 프로젝트 내 모든 차량운행 정보 삭제) -->

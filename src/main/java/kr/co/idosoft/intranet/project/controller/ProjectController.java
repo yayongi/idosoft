@@ -318,10 +318,6 @@ public class ProjectController {
 				removeData.put("PROJECT_NO", params.get("PROJECT_NO"));
 				removeData.put("MEMBER_NO", params.get("beforePM"));
 				projectService.removeMember(removeData);
-				//차량 운행비가 있으면 삭제해준다.
-				if((boolean) params.get("hasTrafficList")) {
-					projectService.traffic_delete(removeData);
-				}
 				
 				projectService.insertProjectMember((HashMap<String, Object>) params.get("memDataState"));
 				projectService.update((HashMap<String, Object>) params.get("dataState"));
@@ -435,6 +431,30 @@ public class ProjectController {
 		boolean db_result = false;
 		try {
 			projectService.traffic_delete((HashMap<String, Object>)params);
+		}catch(Exception e) {
+			LOG.debug("디비 에러남 DB ERROR");
+			LOG.debug(e.toString());
+			db_result = true;
+		}
+		
+		mv.addObject("isDBError", db_result);
+		return mv;
+	}
+	
+	@RequestMapping(value="/updateTraffic",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView updateTraffic(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+		ModelAndView mv = new ModelAndView();
+		
+		// ModelAndView 초기값 셋팅
+		mv.setViewName("jsonView");
+		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
+		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
+		
+		// 현재 진행 중이 프로젝트 목록 호출
+		boolean db_result = false;
+		try {
+			projectService.traffic_update((HashMap<String, Object>)params);
 		}catch(Exception e) {
 			LOG.debug("디비 에러남 DB ERROR");
 			LOG.debug(e.toString());
