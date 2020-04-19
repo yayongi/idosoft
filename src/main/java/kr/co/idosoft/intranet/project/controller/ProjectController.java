@@ -129,11 +129,13 @@ public class ProjectController {
 		
 		List<Map<String, Object>> code_list = projectService.getLowCodeList(inputCodeList.get(0));
 		List<Map<String, Object>> role_list = projectService.getLowCodeList(inputCodeList.get(1));
+		List<Map<String, Object>> member_type_list = projectService.getLowCodeList(inputCodeList.get(2));
 		List<MemberVO> member_list = projectService.selectMemberList();
 		
 		mv.addObject("code_list", code_list);
 		mv.addObject("role_list", role_list);
 		mv.addObject("member_list", member_list);
+		mv.addObject("member_type_list", member_type_list);
 		mv.addObject("isAdmin", isAdmin);
 		
 		return mv;
@@ -194,6 +196,7 @@ public class ProjectController {
 		List<Map<String, Object>> proMemList = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> code_list = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> member_type_list = new ArrayList<Map<String, Object>>();
 		List<HashMap<String, Object>> traffic_list = new ArrayList<HashMap<String, Object>>();
 		List<MemberVO> member_list = new ArrayList<MemberVO>();
 		
@@ -207,6 +210,7 @@ public class ProjectController {
 			proMemList = projectService.projectMemberList(project_no);
 			code_list =  projectService.getLowCodeList("CD0008");
 			role_list =  projectService.getLowCodeList("CD0009");
+			member_type_list =  projectService.getLowCodeList("CD0011");
 			member_list = projectService.selectMemberList();
 			
 			HashMap<String, Object> condition = new HashMap<String, Object>();
@@ -224,6 +228,7 @@ public class ProjectController {
 		mv.addObject("code_list", code_list);
 		mv.addObject("role_list", role_list);
 		mv.addObject("member_list", member_list);
+		mv.addObject("member_type_list", member_type_list);
 		mv.addObject("traffic_list", traffic_list);
 		mv.addObject("isDBError", db_result);
 		return mv;
@@ -317,10 +322,11 @@ public class ProjectController {
 				HashMap<String, Object> removeData = new HashMap<String, Object>();
 				removeData.put("PROJECT_NO", params.get("PROJECT_NO"));
 				removeData.put("MEMBER_NO", params.get("beforePM"));
+				removeData.put("PROJECT_MEMBER_NO", params.get("PROJECT_MEMBER_NO"));
 				projectService.removeMember(removeData);
 				
 				projectService.insertProjectMember((HashMap<String, Object>) params.get("memDataState"));
-				projectService.update((HashMap<String, Object>) params.get("dataState"));
+				projectService.update((HashMap<String, Object>) params.get("sendData"));
 			}
 		}catch(Exception e) {
 			LOG.debug(e.toString());

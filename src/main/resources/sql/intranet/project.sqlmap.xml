@@ -142,10 +142,10 @@
 	<!-- 프로젝트 멤버 등록 -->
 	<insert id="insert_member" parameterType="hashmap">
 		INSERT INTO TB_PROJECT_MEMBER 
-			(MEMBER_NO, PROJECT_NO, INPT_BGNDE, INPT_ENDDE, ROLE_CODE,
+			(MEMBER_NO, MEMBER_NAME, PROJECT_NO, EMPLOYEE_TYPE, INPT_BGNDE, INPT_ENDDE, ROLE_CODE,
 			CHRG_JOB, USE_LANG, REG_DATETIME, UPD_DATETIME, REG_ID, UPD_ID, NOTE, TEMP_COLUM)		
 		VALUES 
-			(#{MEMBER_NO}, #{PROJECT_NO}, #{INPT_BGNDE}, #{INPT_ENDDE}, #{ROLE_CODE},
+			(#{MEMBER_NO}, #{MEMBER_NAME}, #{PROJECT_NO}, #{MEMBER_TYPE}, #{INPT_BGNDE}, #{INPT_ENDDE}, #{ROLE_CODE},
 			 #{CHRG_JOB}, #{USE_LANG}, DATE_FORMAT(NOW(),'%Y%m%d'), NULL, #{REG_ID}, NULL, "", "")
 	</insert>
 	
@@ -154,6 +154,9 @@
 		SELECT
 			A.MEMBER_NO
 			, A.PROJECT_NO
+			, A.PROJECT_MEMBER_NO
+			, A.EMPLOYEE_TYPE AS MEMBER_TYPE
+			, A.MEMBER_NAME
 			, A.INPT_BGNDE
 			, A.INPT_ENDDE
 			, A.ROLE_CODE
@@ -179,7 +182,7 @@
 	<delete id="removeMember" parameterType="hashmap">
 		DELETE FROM
 			TB_PROJECT_MEMBER
-		WHERE
+		WHERE PROJECT_MEMBER_NO = #{PROJECT_MEMBER_NO} AND
 			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
 	</delete>
 	
@@ -187,7 +190,7 @@
 	<delete id="removeMemberForPro" parameterType="String">
 		DELETE FROM
 			TB_PROJECT_MEMBER
-		WHERE
+		WHERE 
 			PROJECT_NO = #{PROJECT_NO}
 	</delete>
 	
@@ -203,8 +206,15 @@
 			, USE_LANG = #{USE_LANG}
 			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
 			, UPD_ID = #{UPD_ID}
-		WHERE
+		<if test="MEMBER_TYPE != null and MEMBER_TYPE != ''">
+			, EMPLOYEE_TYPE = #{MEMBER_TYPE}
+		</if>
+		<if test="MEMBER_NAME != null and MEMBER_NAME != ''">
+			, MEMBER_NAME = #{MEMBER_NAME}
+		</if>
+		WHERE PROJECT_MEMBER_NO = #{PROJECT_MEMBER_NO} AND
 			PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
+			
 	</update>
 	
 	<!-- 대쉬보드용 프로젝트 조회 -->
@@ -310,7 +320,7 @@
 	<delete id="traffic_delete" parameterType="hashmap">
 		DELETE FROM
 			TB_PROJECT_TRAFFIC
-		WHERE PROJECT_NO = #{PROJECT_NO} AND MEMBER_NO = #{MEMBER_NO}
+		WHERE TRAFFIC_NO = #{TRAFFIC_NO}
 	</delete>
 	
 	<!--  차량운행 삭제 (프로젝트 삭제 시 해당 프로젝트 내 모든 차량운행 정보 삭제) -->

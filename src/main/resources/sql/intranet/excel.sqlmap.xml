@@ -434,6 +434,7 @@
 		<if test="isAdmin != 1">
 			AND A.MEMBER_NO = #{MEMBER_NO}
 		</if>
+		AND A.EMPLOYEE_TYPE = 'EM0000'
 		AND A.MEMBER_NO != '99999999'
 		AND (DATE_FORMAT(A.INPT_BGNDE, '%Y') = #{YEAR}
 		OR DATE_FORMAT(A.INPT_ENDDE, '%Y') = #{YEAR})

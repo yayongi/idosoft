@@ -89,10 +89,11 @@ function ProjectInfoForm(props) {
 	const { routeProps } = props.routeProps;
 	const [isShowLoadingBar, setShowLoadingBar] = React.useState(true, []);    //loading bar
 	const [instt_list, setInstt] = React.useState([], []);					//발주처 정보 처음 진입할때 받아오면 새로 갱신할 필요가없음
-	const [member_list, setMember] = React.useState([], [member_list]);		//사원정보
+	const [member_list, setMember] = React.useState([], [member_list]);		//정직원 리스트
 	const [role_list, setRole] = React.useState([], []);					//역할정보 처음 진입할때 받아오면 새로 갱신할 필요가없음
+	const [membertype_list, setMemberType] = React.useState([], []);		//정규직인지 프리랜서인지 외주인지 받아와야함
 	const [updatedMemList, setUpdateMemList] = React.useState([], []);		//투입 인원 리스트
-	const [renderWant, setRenderWant] = React.useState(true);				//다시 렌더링을 원할때 setRenderWant로 렌더링 제어
+	const [renderWant, setRenderWant] = React.useState(true, [renderWant]);				//다시 렌더링을 원할때 setRenderWant로 렌더링 제어
 	const [isRowAddClicked, setIsRowAddClicked] = React.useState(false);	//추가 버튼을 클릭 했는지 여부 (프로젝트 정보 수정 시 사용)
 	const [pm_member_no, setPm_member_no] = React.useState("",[]);			//PM과 관리자만 투입인원 추가 삭제 수정이 가능함 + 수정은 자기 자신도
 	const [isAdmin, setIsAdmin] = React.useState("",[]);			//PM과 관리자만 투입인원 추가 삭제 수정이 가능함 + 수정은 자기 자신도
@@ -133,6 +134,9 @@ function ProjectInfoForm(props) {
 	//프로젝트 투입 인원 정보
 	const [memDataState, setMemDataState] = React.useState([{
 		MEMBER_NO : "",
+		PROJECT_MEMBER_NO : "",
+		MEMBER_NAME : "",
+		MEMBER_TYPE : "EM0000",
 		CHRG_JOB : "",
 		INPT_BGNDE : dataState.BGNDE,
 		INPT_ENDDE : dataState.ENDDE,
@@ -151,6 +155,7 @@ function ProjectInfoForm(props) {
 	//투입 인원 벨리데이션 정보 (배열로 되어 있으며, 투입 인원 수에 맞게 동적으로 생성해줘야함)
 	const [validateMemCheck, setValidateMemCheck] = React.useState([{
 		MEMBER_NO:{error:false, helperText:""},
+		MEMBER_TYPE:{error:false, helperText:""},
 		CHRG_JOB:{error:false, helperText:""},
 		INPT_BGNDE:{error:false, helperText:""},
 		INPT_ENDDE:{error:false, helperText:""},
@@ -189,6 +194,8 @@ function ProjectInfoForm(props) {
 		for(var i=0; i < list_leng; i++){
 			var validateMemCheck_defaultForm = {
 				MEMBER_NO:{error:false, helperText:""},
+				MEMBER_TYPE:{error:false, helperText:""},
+				MEMBER_NAME:{error:false, helperText:""},
 				CHRG_JOB:{error:false, helperText:""},
 				INPT_BGNDE:{error:false, helperText:""},
 				INPT_ENDDE:{error:false, helperText:""},
@@ -213,6 +220,7 @@ function ProjectInfoForm(props) {
 	
 	//보여줄 레이블
 	const columnsUp = [
+		{ id: 'MEMBER_TYPE', label: '직원종류', minWidth: 100, align: 'center' },
 		{ id: 'MEMBER_NO', label: '이름', minWidth: 100, align: 'center' },
 		{ id: 'CHRG_JOB', label: '담당업무', minWidth: 100, align: 'center' },
 		{ id: 'TERM', label: '프로젝트 기간', minWidth: 100, align: 'center' },
@@ -221,6 +229,7 @@ function ProjectInfoForm(props) {
 		{ id: 'BTN', label: screenType == "new" ? "행삭제" : '수정/삭제/주유비', minWidth: 100, align: 'center' },
 	];
 	const columnsDown = [
+		{ id: 'MEMBER_TYPE', label: '직원종류', minWidth: 100, align: 'center' },
 		{ id: 'MEMBER_NO', label: '이름', minWidth: 100, align: 'center' },
 		{ id: 'CHRG_JOB', label: '담당업무', minWidth: 100, align: 'center' },
 		{ id: 'BTN', label: screenType == "new" ? "행삭제" : '수정/삭제/주유비', minWidth: 100, align: 'center' },
@@ -240,12 +249,13 @@ function ProjectInfoForm(props) {
 			axios({
 				url: '/intranet/projectInfo',
 				method: 'post',
-				data: {"CODE_ID": ["CD0008", "CD0009"]}
+				data: {"CODE_ID": ["CD0008", "CD0009", "CD0011"]}
 			}).then(response => {
 				setInstt(response.data.code_list);
 				setMember(response.data.member_list);
 				setRole(response.data.role_list);
 				setIsAdmin(response.data.isAdmin);
+				setMemberType(response.data.member_type_list);
 				setShowLoadingBar(false);
 			}).catch(e => {
 				setShowLoadingBar(false);
@@ -264,6 +274,7 @@ function ProjectInfoForm(props) {
 				setMember(response.data.member_list);
 				setRole(response.data.role_list);
 				setIsAdmin(response.data.isAdmin);
+				setMemberType(response.data.member_type_list);
 				
 				var projectInfo = response.data.project_info;
 				projectInfo["BGNDE"] = projectInfo["BGNDE"].slice(0,4) + "-" + projectInfo["BGNDE"].slice(4,6) + "-" + projectInfo["BGNDE"].slice(6,8);  
@@ -286,6 +297,7 @@ function ProjectInfoForm(props) {
 						transShowDefault(response.data.proMemList.length);
 					}
 					for(var idx=0; idx < proMemList.length; idx++){
+						
 						proMemList[idx]["INPT_BGNDE"] = proMemList[idx]["INPT_BGNDE"].slice(0,4) + "-" + proMemList[idx]["INPT_BGNDE"].slice(4,6) + "-" + proMemList[idx]["INPT_BGNDE"].slice(6,8);
 						proMemList[idx]["INPT_ENDDE"] = proMemList[idx]["INPT_ENDDE"].slice(0,4) + "-" + proMemList[idx]["INPT_ENDDE"].slice(4,6) + "-" + proMemList[idx]["INPT_ENDDE"].slice(6,8);
 					}
@@ -336,6 +348,9 @@ function ProjectInfoForm(props) {
 	const handleAddRow = () => {
 		var member_defaultForm = {
 			MEMBER_NO : "",
+			PROJECT_MEMBER_NO : "",
+			MEMBER_TYPE : "",
+			MEMBER_NAME : "",
 			CHRG_JOB : "",
 			INPT_BGNDE : dataState.BGNDE,
 			INPT_ENDDE : dataState.ENDDE,
@@ -349,6 +364,8 @@ function ProjectInfoForm(props) {
 		
 		var validateMemCheck_defaultForm = {
 			MEMBER_NO:{error:false, helperText:""},
+			MEMBER_TYPE:{error:false, helperText:""},
+			MEMBER_NAME:{error:false, helperText:""},
 			CHRG_JOB:{error:false, helperText:""},
 			INPT_BGNDE:{error:false, helperText:""},
 			INPT_ENDDE:{error:false, helperText:""},
@@ -382,14 +399,26 @@ function ProjectInfoForm(props) {
 			updatedMemList.push(idx);
 			setUpdateMemList(updatedMemList);
 		}
-		
-		validateMemCheckDefault(memDataState.length);
 		memDataState[idx][event.target.name] = event.target.value;
 		setMemDataState([...memDataState]);
+		
+		//에러메시지 초기화
+		validateMemCheckDefault(memDataState.length);
+	}
+	
+	const handleMemTypeChange = (event, idx) => {
+		if(screenType == "modify" && updatedMemList.indexOf(idx) < 0){
+			updatedMemList.push(idx);
+			setUpdateMemList(updatedMemList);
+		}
+		memDataState[idx][event.target.name] = event.target.value;
+		setMemDataState([...memDataState]);
+		
+		//에러메시지 초기화
+		validateMemCheckDefault(memDataState.length);
 	}
 
 	const handleChangeDate = (date, target, idx, trafficIdx) => {
-		console.log("handleChangeDate : ");
 		
 		//개인별 차량 운행 기간
 		if(target.includes("TRAFFIC_")){
@@ -397,7 +426,7 @@ function ProjectInfoForm(props) {
 			trafficList[idx][trafficIdx][target] = Moment(date).format('YYYY-MM-DD'); 
 			setTrafficList([...trafficList]);
 			//초기화
-			validateTrafficDefault(memDataState.length);
+			validateTrafficDefault(trafficList);
 		}
 		//개인별 투입 기간
 		else if(target.includes("INPT_")){
@@ -514,19 +543,32 @@ function ProjectInfoForm(props) {
 		for (var i = 0; i < memDataState.length; i++){
 			var validateMemCheck_defaultForm = {
 				MEMBER_NO:{error:false, helperText:""},
+				MEMBER_TYPE:{error:false, helperText:""},
+				MEMBER_NAME:{error:false, helperText:""},
 				CHRG_JOB:{error:false, helperText:""},
 				INPT_BGNDE:{error:false, helperText:""},
 				INPT_ENDDE:{error:false, helperText:""},
 				ROLE_CODE:{error:false, helperText:""},
 				USE_LANG:{error:false, helperText:""},
 			}
-			
+			//정규직인지, 프리랜서인지, 외주인지 구분
+			if(memDataState[i]["MEMBER_TYPE"] == ""){
+				validateMemCheck_defaultForm.MEMBER_TYPE = {error:true, helperText:"직원 구분을 선택해주세요"};
+				isError = true;
+			}
 			
 			//이름
-			if(memDataState[i]["MEMBER_NO"] == ""){
+			if(memDataState[i]["MEMBER_TYPE"] == "EM0000" && memDataState[i]["MEMBER_NO"] == ""){
 				validateMemCheck_defaultForm.MEMBER_NO = {error:true, helperText:"사원을 선택해주세요"};
 				isError = true;
 			}
+			
+			//외주 프리랜서의 경우 이름을 입력 받아야한다.
+			if(memDataState[i]["MEMBER_TYPE"] != "EM0000" && (memDataState[i]["MEMBER_NAME"] == "")){
+				validateMemCheck_defaultForm.MEMBER_NAME = {error:true, helperText:"이름을 입력 해주세요"};
+				isError = true;
+			}
+			
 			//담당업무	
 			if(memDataState[i]["CHRG_JOB"] == ""){
 				validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"역할을 입력해주세요"};
@@ -619,6 +661,10 @@ function ProjectInfoForm(props) {
 		var members_traffic_data = trafficList[memberIdx];
 		if(members_traffic_data.length > 1){
 			for(var i=0; i < members_traffic_data.length; i++){
+				if(trafficIdx == i){
+					continue;
+				}
+			
 				var traffic_bgnde = members_traffic_data[i]["TRAFFIC_INPT_BGNDE"];
 				var traffic_endde = members_traffic_data[i]["TRAFFIC_INPT_ENDDE"];
 				
@@ -658,6 +704,7 @@ function ProjectInfoForm(props) {
 		setShowLoadingBar(true);
 		var instt = instt_list.filter((info) => (info.instt_code == dataState.instt_code))[0];
 		console.log("dataState : ");
+		//PM의 경우 경비 관련 로직이 깊숙하게 연관되어 있어 정직원에서만 뽑아야한다.
 		dataState["PM"] = memDataState[0]["MEMBER_NO"];
 		axios({
 			url: '/intranet/insertProject',
@@ -733,12 +780,12 @@ function ProjectInfoForm(props) {
 				alert("삭제했습니다.");
 				memDataState.splice(idx, 1);
 				setMemDataState([...memDataState]);
-				console.log(memDataState);
 				setRenderWant(!renderWant);
 			}else{
 				alert("삭제했습니다.");
 				memDataState.splice(idx, 1);
 				setMemDataState([...memDataState]);
+				setRenderWant(!renderWant);
 			}
 		}
 	}
@@ -749,24 +796,22 @@ function ProjectInfoForm(props) {
 			return;
 		}
 		
-		//삭제하기로 선택된 유저의 사번을 가져온다.
-		var list = memOriginDataState.filter((info) => (info.MEMBER_NO != member_no));
-		
 		//차량운행 기간이 존재하는지 여부를 가져온다.
 		var hasTrafficList = typeof(trafficList[idx]) != "object" ? false : trafficList[idx].length > 0 ? true : false;
+		var PROJECT_MEMBER_NO = memDataState[idx]["PROJECT_MEMBER_NO"];
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/removeMember',
 			method: 'post',
-			data: {"PROJECT_NO": match.params.id, "MEMBER_NO" : member_no, "hasTrafficList": hasTrafficList}
+			data: {"PROJECT_NO": match.params.id, "MEMBER_NO" : member_no, "PROJECT_MEMBER_NO" : PROJECT_MEMBER_NO,"hasTrafficList": hasTrafficList}
 		}).then(response => {
 			setShowLoadingBar(false);
 			if(response.data.isDBError){
 				alert("삭제 실패 했습니다.")
 			}else{
 				alert("삭제했습니다.");
-				setMemDataState([...list]);
-				setMemOriginDataState([...list]);
+				//setMemDataState([...list]);
+				//setMemOriginDataState([...list]);
 				setRenderWant(!renderWant);
 			}
 		}).catch(e => {
@@ -805,11 +850,14 @@ function ProjectInfoForm(props) {
 			sendData["PM"] = selectMemberInfo.MEMBER_NO;
 		}
 		
+		
+		var PROJECT_MEMBER_NO = selectMemberInfo["PROJECT_MEMBER_NO"];
+		
 		setShowLoadingBar(true);
 		axios({
 			url: '/intranet/updateMember',
 			method: 'post',
-			data: {"PROJECT_NO": match.params.id, "memDataState" : selectMemberInfo, "isPM" : idx == 0, "dataState":sendData, "beforePM": beforePM}
+			data: {"PROJECT_NO": match.params.id, "memDataState" : selectMemberInfo, "isPM" : idx == 0, "sendData":sendData, "beforePM": beforePM, "PROJECT_MEMBER_NO" : PROJECT_MEMBER_NO}
 		}).then(response => {
 			setShowLoadingBar(false);
 			if(response.data.isDBError){
@@ -830,17 +878,33 @@ function ProjectInfoForm(props) {
 		var errorList = [];
 		var validateMemCheck_defaultForm = {
 			MEMBER_NO:{error:false, helperText:""},
+			MEMBER_TYPE:{error:false, helperText:""},
+			MEMBER_NAME:{error:false, helperText:""},
 			CHRG_JOB:{error:false, helperText:""},
 			INPT_BGNDE:{error:false, helperText:""},
 			INPT_ENDDE:{error:false, helperText:""},
 			ROLE_CODE:{error:false, helperText:""},
 			USE_LANG:{error:false, helperText:""},
 		}
+		//정직원인지, 프리랜서인지, 외주인지
+		if(member_no["MEMBER_TYPE"] == ""){
+			validateMemCheck_defaultForm.MEMBER_NO = {error:true, helperText:"직원 구분을 선택해주세요"};
+			isError = true;
+		}
+		
 		//이름
-		if(member_no["MEMBER_NO"] == ""){
+		if(member_no["MEMBER_TYPE"] == "EM0000" && member_no["MEMBER_NO"] == ""){
 			validateMemCheck_defaultForm.MEMBER_NO = {error:true, helperText:"사원을 선택해주세요"};
 			isError = true;
 		}
+		
+		
+		//정직원인지, 프리랜서인지, 외주인지
+		if(member_no["MEMBER_TYPE"] != "EM0000" && member_no["MEMBER_NAME"] == ""){
+			validateMemCheck_defaultForm.MEMBER_NO = {error:true, helperText:"직원 구분을 선택해주세요"};
+			isError = true;
+		}
+		
 		//담당업무	
 		if(member_no["CHRG_JOB"] == ""){
 			validateMemCheck_defaultForm.CHRG_JOB = {error:true, helperText:"역할을 입력해주세요"};
@@ -937,7 +1001,7 @@ function ProjectInfoForm(props) {
 		if(typeof(selectList) == "object" && selectList.length > 0){
 			selectList.push({
 				"MEMBER_NO": memDataState[index]["MEMBER_NO"], 
-				"TRAFFIC_INPT_BGNDE": Moment(selectList[selectList.length-1]["TRAFFIC_INPT_ENDDE"]).format("YYYY-MM-DD"), 
+				"TRAFFIC_INPT_BGNDE": Moment(Moment(selectList[selectList.length-1]["TRAFFIC_INPT_ENDDE"]).add(1, 'days')).format("YYYY-MM-DD"), 
 				"TRAFFIC_INPT_ENDDE": Moment(memDataState[index]["INPT_ENDDE"]).format("YYYY-MM-DD")
 			});
 		}else{
@@ -1255,7 +1319,7 @@ function ProjectInfoForm(props) {
 					<Table stickyHeader aria-label="sticky table">
 						<TableHead>
 							<TableRow>
-								<TableCell align="left" colSpan="6">
+								<TableCell align="left" colSpan="7">
 									<Toolbar>
 										<Typography className={classes.title} color="inherit" variant="h6">
 											투입인원
@@ -1285,10 +1349,6 @@ function ProjectInfoForm(props) {
 								))}
 							</TableRow>
 							{memDataState.map((row, idx) => {
-								console.log(idx + " : ");
-								console.log(row);
-								console.log(validateMemCheck);
-								console.log(memDataState);
 								return (
 									<>
 										<TableRow
@@ -1296,49 +1356,136 @@ function ProjectInfoForm(props) {
 											style={{ backgroundColor: idx==0 ? '#ffd4fb' : ''}}>
 											<TableCell 
 												align="left"
-												key={"NAME" + idx}>
+												key={"MEMBER_TYPE" + idx}>
 												<TextField
-													id="MEMBER_NO"
-													name="MEMBER_NO"
+													id="MEMBER_TYPE"
+													name="MEMBER_TYPE"
 													margin="dense"
 													variant="outlined"
-													value={memDataState[idx]["MEMBER_NO"]}
-													error={validateMemCheck[idx]["MEMBER_NO"].error}
-													helperText={validateMemCheck[idx]["MEMBER_NO"].helperText}
-													onChange={(event) => {handleMemChange(event, idx)}}
+													value={memDataState[idx]["MEMBER_TYPE"]}
+													onChange={(event) => {handleMemTypeChange(event, idx)}}
+													error={validateMemCheck[idx]["MEMBER_TYPE"].error}
+													helperText={validateMemCheck[idx]["MEMBER_TYPE"].helperText}
 													fullWidth
 													select
 												>
-												{member_list.map(info => {
-													//PM 인 경우 수정 가능하도록 변경
-													if (idx == 0){
-														return (
-															<MenuItem key={info.member_no} value={info.member_no}>
-																{info.name}
-															</MenuItem>
-														)
-													}
-													//기존의 투입된 인원은 투입된 인원을 보여줘야하고 새롭게 투입인원을 추가할때는 기존에 없는 사람으로 보여줘야함
-													else if(memOriginDataState.length > idx){
-														if(memDataState[idx]["MEMBER_NO"] == info.member_no || !memDataState[idx]["MEMBER_NO"]){
-															return (
-																<MenuItem key={info.member_no} value={info.member_no}>
-																	{info.name}
-																</MenuItem>
-															)
+												{
+													membertype_list.map(info => {
+														if(idx == 0){
+															if(info.CODE_ID == "EM0000"){
+																return (
+																	<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
+																		{info.CODE_NAME}
+																	</MenuItem>
+																)
+															}
+														}else{
+															if(screenType == "modify"){
+																if(idx < memOriginDataState.length){
+																	if(memDataState[idx]["MEMBER_TYPE"] == "EM0000"){
+																		if(info.CODE_ID == "EM0000"){
+																			return (
+																				<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
+																					{info.CODE_NAME}
+																				</MenuItem>
+																			)
+																		}
+																	}else{
+																		if(info.CODE_ID != "EM0000"){
+																			return (
+																				<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
+																					{info.CODE_NAME}
+																				</MenuItem>
+																			)
+																		}
+																	}
+																}else{
+																	return (
+																		<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
+																			{info.CODE_NAME}
+																		</MenuItem>
+																	)
+																}
+															}else{
+																return (
+																	<MenuItem key={info.CODE_ID} value={info.CODE_ID}>
+																		{info.CODE_NAME}
+																	</MenuItem>
+																)
+															}
 														}
-													}else{
-														if(memOriginDataState.findIndex((item) => item["MEMBER_NO"] == info.member_no) == -1){
-															return (
-																<MenuItem key={info.member_no} value={info.member_no}>
-																	{info.name}
-																</MenuItem>
-															)
-														}
-													}
-												})}
+													})
+												}
 												</TextField>
 											</TableCell>
+											{
+												memDataState[idx]["MEMBER_TYPE"] == "EM0000" && 
+												<TableCell 
+													align="left"
+													key={"NAME" + idx}>
+													<TextField
+														id="MEMBER_NO"
+														name="MEMBER_NO"
+														margin="dense"
+														variant="outlined"
+														value={memDataState[idx]["MEMBER_NO"]}
+														error={validateMemCheck[idx]["MEMBER_NO"].error}
+														helperText={validateMemCheck[idx]["MEMBER_NO"].helperText}
+														onChange={(event) => {handleMemChange(event, idx)}}
+														fullWidth
+														select
+													>
+													{member_list.map(info => {
+														//PM 인 경우 수정 가능하도록 변경
+														if (idx == 0){
+															return (
+																<MenuItem key={info.member_no} value={info.member_no}>
+																	{info.name}
+																</MenuItem>
+															)
+														}
+														//기존의 투입된 인원은 투입된 인원을 보여줘야하고 새롭게 투입인원을 추가할때는 기존에 없는 사람으로 보여줘야함
+														else if(memOriginDataState.length > idx){
+															if(memDataState[idx]["MEMBER_NO"] == info.member_no || !memDataState[idx]["MEMBER_NO"]){
+																return (
+																	<MenuItem key={info.member_no} value={info.member_no}>
+																		{info.name}
+																	</MenuItem>
+																)
+															}
+														}else{
+															if(memOriginDataState.findIndex((item) => item["MEMBER_NO"] == info.member_no) == -1){
+																return (
+																	<MenuItem key={info.member_no} value={info.member_no}>
+																		{info.name}
+																	</MenuItem>
+																)
+															}
+														}
+													})}
+													</TextField>
+												</TableCell>
+											}
+											{
+												memDataState[idx]["MEMBER_TYPE"] != "EM0000" && 
+												<TableCell 
+													align="left"
+													key={"MEMBER_NAME" + idx}>
+													<TextField
+														id="MEMBER_NAME"
+														name="MEMBER_NAME"
+														margin="dense"
+														variant="outlined"
+														autoComplete="off"
+														error={validateMemCheck[idx]["MEMBER_NAME"].error}
+														helperText={validateMemCheck[idx]["MEMBER_NAME"].helperText}
+														value={memDataState[idx]["MEMBER_NAME"]}
+														onChange={(event) => {handleMemChange(event, idx)}}
+														fullWidth
+													>
+													</TextField>
+												</TableCell>
+											}
 											<TableCell 
 												align="left"
 												key={"CHRG_JOB" + idx}>
@@ -1510,7 +1657,9 @@ function ProjectInfoForm(props) {
 														<CreateIcon fontSize="small" />
 													</IconButton>
 												}
-												{ 	((isAdmin || userInfo == memDataState[idx]["MEMBER_NO"]) &&
+												{ 	
+													memDataState[idx]["MEMBER_TYPE"] == "EM0000" && 
+													((isAdmin || userInfo == memDataState[idx]["MEMBER_NO"]) &&
 													screenType == "modify" && memOriginDataState.length > idx) && 
 													<IconButton aria-label="update" className={classes.margin} onClick={() => handleRowClick(idx)}>
 														<ArrowDropDownIcon fontSize="small" />
@@ -1523,8 +1672,8 @@ function ProjectInfoForm(props) {
 											style={{ backgroundColor: idx==0 ? '#ffd4fb' : ''}}>
 												<TableCell 
 													align="left"
-													key={"INPT" + idx}
-													colSpan="2">
+													key={"INPT_DATE" + idx}
+													colSpan="3">
 													투입 기간
 													<Toolbar>
 														<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
@@ -1574,11 +1723,11 @@ function ProjectInfoForm(props) {
 										}
 										{
 											isTransShow[idx] &&
-											<TableRow key={"extendsHeader_"+idx} className={classes.trafficHead}>
-												<TableCell colSpan={isWidthUp('md', props.width) ? "5" : "2"}>
+											<TableRow className={classes.trafficHead}>
+												<TableCell  key={"extendsHeader_title"+idx} colSpan={isWidthUp('md', props.width) ? "6" : "3"}>
 													차량 운행 기간
 												</TableCell>
-												<TableCell align="center">
+												<TableCell key={"extendsHeader_"+idx} align="center">
 													<IconButton aria-label="update" className={classes.margin} onClick={() => handleAddTraffic(idx)}>
 														<ControlPointIcon fontSize="small" />
 													</IconButton>
@@ -1590,7 +1739,7 @@ function ProjectInfoForm(props) {
 												return(
 													<>
 														<TableRow className={classes.trafficHead}>
-															<TableCell colSpan={isWidthUp('md', props.width) ? "5" : "2"}>
+															<TableCell  key={"TRAFFIC_INPT"+idx} colSpan={isWidthUp('md', props.width) ? "6" : "3"}>
 																<Toolbar>
 																	<MuiPickersUtilsProvider utils={DateFnsUtils} locale={ko}>
 																		<Grid container justify="space-around">
@@ -1633,7 +1782,7 @@ function ProjectInfoForm(props) {
 																	</MuiPickersUtilsProvider>
 																</Toolbar>
 															</TableCell>
-															<TableCell>
+															<TableCell key={"TRAFFIC_BTN"+idx}>
 																
 																{	(isAdmin || pm_member_no == userInfo || userInfo == memDataState[idx]["MEMBER_NO"]) &&
 																	(typeof(trafficOriginList[idx][trafficIdx]) != "object") && 
