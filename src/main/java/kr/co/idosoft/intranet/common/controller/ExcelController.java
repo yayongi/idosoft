@@ -89,7 +89,7 @@ public class ExcelController {
 		
 		if(searchData != null) {
 			// EXCEL0001 월별 경비 통계 - 개인
-			// EXCEL0002 월병 경비 통계 - 전체
+			// EXCEL0002 월별 경비 통계 - 전체
 			// EXCEL0003 결재 관리
 			
 			if("EXCEL0001".equals(fileCode) || "EXCEL0002".equals(fileCode)) {  
@@ -177,12 +177,14 @@ public class ExcelController {
 				HttpSession session = request.getSession();
 				
 				SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-				String mno = (String)searchData.get("member_no");									// 로그인 회원번호
+				String mno = sessionVo.getMEMBER_NO();						// 로그인 회원번호
 				
 				// 세션 VO에 세션 값 저장
 				String isAdmin = (String) session.getAttribute("IS_ADMIN");				//관리자 여부
 				//이력관리 엑셀 다운로드
 				searchStr = "사원명 : " + (String)searchData.get("name");
+				
+				searchData.put("isAdmin", isAdmin);
 				searchData.put("MEMBER_NO", mno);
 			}
 			
