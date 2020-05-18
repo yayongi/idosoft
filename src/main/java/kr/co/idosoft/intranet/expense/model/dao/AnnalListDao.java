@@ -34,7 +34,7 @@ public interface AnnalListDao {
 	 * 소속 프로젝트 PM 번호 추출
 	 * @return String
 	 */
-	public String getProjectPMNo();
+	public String getProjectPMNo(Map<String, Object> data);
 	/**
 	 * 1차결재자 번호 추출
 	 * @return String

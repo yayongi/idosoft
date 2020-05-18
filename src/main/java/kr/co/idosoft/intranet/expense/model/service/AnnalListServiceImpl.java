@@ -23,17 +23,18 @@ public class AnnalListServiceImpl implements AnnalListService {
 	AnnalListDaoImpl dao;
 	/**
 	 * 1차결재자 조건에 맞는 사원번호 추출
+	 * @param data 
 	 * @return String
 	 */
 	@Override
-	public String getFirSanCternerMno() {
+	public String getFirSanCternerMno(Map<String, Object> data) {
 		
 		/*
 		 * 1순위 : 소속 프로젝트의 PM 
 		 * 2순위 : 직원정보테이블에 등록된 1차 결재자
 		 */ 
 		
-		String projectPMNo = dao.getProjectPMNo();
+		String projectPMNo = dao.getProjectPMNo(data);
 		
 		if(projectPMNo == null) {
 			

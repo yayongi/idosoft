@@ -35,7 +35,7 @@ public interface AnnalListService {
 	 * 1차결재자 조건에 맞는 사원번호 추출
 	 * @return String
 	 */
-	public String getFirSanCternerMno();
+	public String getFirSanCternerMno(Map<String, Object> data);
 	/**
 	 * 직급인 대표인 사원 번호 추출
 	 * @return String

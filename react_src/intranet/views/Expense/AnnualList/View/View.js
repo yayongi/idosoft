@@ -166,11 +166,16 @@ export default function  View(props) {
 				
 				if(inputValue.length >= 9) {
 					event.target.value = inputValue.slice(0, 9).replace(/[^0-9]/g, '');
-					return;
 				} else {
 					event.target.value = inputValue.replace(/[^0-9]/g, '');
-					return;
 				}
+
+				setDataState({
+					...dataState,
+					[event.target.name]: event.target.value
+				});	
+
+				return;
 
 			} else if(event.target.name == 'memo') {
 				let inputValue = event.target.value;

@@ -355,7 +355,7 @@ public class AnnualListController {
 		 * 1순위 : 소속 프로젝트의 PM 
 		 * 2순위 : 소속 프로젝트가 없다면, 직원정보테이블에 등록된 1차 결재자
 		 */ 
-		String FIR_SANCTENER_MEMBER_NO = annalListService.getFirSanCternerMno();
+		String FIR_SANCTENER_MEMBER_NO = annalListService.getFirSanCternerMno(data);
 		data.put("FIR_SANCTENER_MEMBER_NO", FIR_SANCTENER_MEMBER_NO);
 		LOG.debug("FIR_SANCTENER_MEMBER_NO : " + FIR_SANCTENER_MEMBER_NO);
 		

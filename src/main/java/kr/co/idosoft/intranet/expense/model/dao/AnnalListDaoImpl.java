@@ -84,11 +84,12 @@ public class AnnalListDaoImpl implements AnnalListDao {
 	}
 	/**
 	 * 소속 프로젝트 PM 번호 추출
+	 * @param data 
 	 * 
 	 * @return String
 	 */
 	@Override
-	public String getProjectPMNo() {
+	public String getProjectPMNo(Map<String, Object> data) {
 		return (String) sqlTemplate.selectOne("expense.getProjectPMNo");
 	}
 	/**

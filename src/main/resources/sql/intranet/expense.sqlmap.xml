@@ -4,7 +4,7 @@
 <mapper namespace="expense">
 	<!-- datetime 형식을 가져올 때는 date_format으로 변환 후, alias를 잡아줘야 된다. -->
 	<!-- 소속 프로젝트 PM 번호 추출 -->
-	<select id="getProjectPMNo" resultType="String">
+	<select id="getProjectPMNo" resultType="String" parameterType="hashmap">
 		SELECT PM 
 		FROM(
 			SELECT  
