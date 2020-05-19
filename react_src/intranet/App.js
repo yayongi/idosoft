@@ -27,6 +27,7 @@ import {
 	NoticeRegist as NoticeRegist,
   
 	History as History,
+	RegistHistory as RegistHistory,
 	ModifyHistory as ModifyHistory,
 	Manage as Manage,
 	ModifyProject as ModifyProject,
@@ -158,7 +159,7 @@ export default function App() {
 					{/* 이력 등록 */}
 					<Route exact path='/project/history_new/' render={(props) =>
 						<MainLayout routeProps={props} globalState={globalState} setGlobalState={setGlobalState}>
-							<ModifyHistory routeProps={props} />
+							<RegistHistory routeProps={props} />
 						</MainLayout>
 					} />
 					{/* 이력 수정 */}

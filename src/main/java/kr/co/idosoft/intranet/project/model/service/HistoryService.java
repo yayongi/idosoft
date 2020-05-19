@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.project.model.service;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,8 @@ public interface HistoryService {
 	//코드 정보 조회
 	List<Map<String, Object>> getLowCodeList(String code_id);
 	
-	Map<String, Object> selectDetailHistory(String mem_hist_no);
+	//이력 상세 화면
+	LinkedHashMap<String, Object> getinfo(LinkedHashMap<String,Object> data);
 	
 	void removeHistory(String mem_hist_no);
 }

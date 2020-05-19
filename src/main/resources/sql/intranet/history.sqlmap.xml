@@ -65,30 +65,15 @@
 	</select>
 	
 	<!-- 이력 상세 조회 -->
-	<select id="selectDetailHistory" parameterType="String"  resultType="hashMap">
-		SELECT
-			HIST.MEM_HIST_NO
-        , HIST.MEMBER_NO
-        , HIST.PROJECT_NO
-        , HIST.PROJECT_NM
-        , HIST.INSTT_CODE
-        , HIST.INSTT_NM
-        , HIST.INPT_BGNDE
-        , HIST.INPT_ENDDE
-        , CONCAT(date_format(HIST.INPT_BGNDE,'%Y-%m-%d'), "~" , date_format(HIST.INPT_ENDDE,'%Y-%m-%d')) AS TERM
-        , HIST.ROLE_CODE
-        , HIST.CHRG_JOB
-        , HIST.USE_LANG
-        , HIST.REG_DATETIME
-        , HIST.UPD_DATETIME
-        , HIST.REG_ID
-        , HIST.UPD_ID
-        , HIST.NOTE
-        , HIST.TEMP_COLUM
-        , MEM.NAME AS MEMBER_NAME
-		FROM TB_MEM_HIST AS HIST
-		LEFT JOIN TB_MEMBER AS MEM ON MEM.MEMBER_NO = HIST.MEMBER_NO 
-		WHERE HIST.MEM_HIST_NO like #{MEM_HIST_NO}
+	<select id="getinfo" parameterType="java.util.LinkedHashMap"  resultType="java.util.LinkedHashMap">
+		SELECT 
+			A.* ,
+			B.NAME AS MEMBER_NAME
+		FROM 
+			TB_MEM_HIST A
+		LEFT JOIN TB_MEMBER B
+		ON A.MEMBER_NO = B.MEMBER_NO
+		WHERE MEM_HIST_NO = #{MEM_HIST_NO}
 	</select>
 	
 	<!-- 이력 삭제 -->

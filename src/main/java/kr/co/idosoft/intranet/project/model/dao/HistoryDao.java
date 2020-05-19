@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.project.model.dao;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,9 @@ public interface HistoryDao {
 	void update(HashMap<String, Object> update);
 	
 	List<Map<String, Object>> selectHistory(String member_no);
-	Map<String, Object> selectDetailHistory(String mem_hist_no);
+	
+	//이력 상세 화면
+LinkedHashMap<String, Object> getinfo(LinkedHashMap<String,Object> data);
 	
 	void removeHistory(String mem_hist_no);
 }

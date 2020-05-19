@@ -2,6 +2,7 @@ package kr.co.idosoft.intranet.project.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -174,39 +176,17 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		return mv;
 	}
 	
-	@RequestMapping(value="/detailInfo",method=RequestMethod.POST)
+	// 이력 상세 정보가져오기
+	@RequestMapping(value="/history/getinfo", method=RequestMethod.POST)
 	@ResponseBody
-	public ModelAndView detailInfo(HttpServletRequest request, @RequestBody Map<String, Object> params ){
-		ModelAndView mv = new ModelAndView();
-		
-		// ModelAndView 초기값 셋팅
-		mv.setViewName("jsonView");
-		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
-		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
-		
-		HttpSession session = request.getSession();
-		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-		boolean isAdmin = commonUtil.isAdmin(session);
-		
-		String mem_hist_no = (String)params.get("MEM_HIST_NO");
-		List<Map<String, Object>> proj_list = new ArrayList<Map<String, Object>>();
-		Map<String, Object> detailInfo = new HashMap<String, Object>();
-		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
-		Map<String, Object> tmp = new HashMap<String, Object>();
-		boolean db_result = false;
+	public LinkedHashMap<String, Object> getinfo(Model model, @RequestBody LinkedHashMap<String, Object> data, HttpServletRequest request,HttpSession session){
 		try {
-			detailInfo = (Map<String, Object>) historyService.selectDetailHistory(mem_hist_no);
-			role_list = historyService.getLowCodeList((String) params.get("CODE_ID"));
-			proj_list = historyService.selectAllList((HashMap<String, Object>) tmp);
+			LOG.debug("data : " + data.toString());
+			return historyService.getinfo(data);
 		}catch(Exception e) {
-			db_result = true;
+			e.printStackTrace();
+			return null;
 		}
-		mv.addObject("isDBError", db_result);
-		mv.addObject("proj_list", proj_list);
-		mv.addObject("role_list", role_list);
-		mv.addObject("detailInfo", detailInfo);
-		mv.addObject("isAdmin", isAdmin);
-		return mv;
 	}
 
 	@RequestMapping(value="/removeHistory",method=RequestMethod.POST)

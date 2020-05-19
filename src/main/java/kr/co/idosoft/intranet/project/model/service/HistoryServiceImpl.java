@@ -1,6 +1,7 @@
 package kr.co.idosoft.intranet.project.model.service;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,9 +60,9 @@ public class HistoryServiceImpl implements HistoryService {
 	}
 
 	@Override
-	public Map<String, Object> selectDetailHistory(String mem_hist_no) {
+	public LinkedHashMap<String, Object> getinfo(LinkedHashMap<String, Object> data) {
 		// TODO Auto-generated method stub
-		return hist_dao.selectDetailHistory(mem_hist_no);
+		return hist_dao.getinfo(data);
 	}
 
 	@Override
