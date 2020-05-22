@@ -83,4 +83,12 @@
 		WHERE
 			MEM_HIST_NO = #{MEM_HIST_NO}
 	</select>
+
+	<!-- 특정 연도 프로젝트 가져오기 -->
+	<select id="getProjectList" parameterType="String"  resultType="hashmap">
+		SELECT 
+			* 
+		FROM TB_PROJECT 
+		WHERE BGNDE LIKE CONCAT(#{year},'%')
+	</select>
 </mapper>

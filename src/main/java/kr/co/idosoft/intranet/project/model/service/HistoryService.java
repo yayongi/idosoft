@@ -2,6 +2,7 @@ package kr.co.idosoft.intranet.project.model.service;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,9 @@ public interface HistoryService {
 	
 	//이력 상세 화면
 	LinkedHashMap<String, Object> getinfo(LinkedHashMap<String,Object> data);
+
+	//특정 연도 프로젝트 가져오기
+	List<Map<String,Object>> getProjectList(Map<String, Object> data);
 	
 	void removeHistory(String mem_hist_no);
 }

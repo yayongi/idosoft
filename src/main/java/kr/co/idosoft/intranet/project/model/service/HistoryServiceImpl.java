@@ -2,6 +2,7 @@ package kr.co.idosoft.intranet.project.model.service;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,19 +28,16 @@ public class HistoryServiceImpl implements HistoryService {
 	
 	@Override
 	public void insert(HashMap<String, Object> insert) {
-		// TODO Auto-generated method stub
 		hist_dao.insert(insert);
 	}
 
 	@Override
 	public void update(HashMap<String, Object> update) {
-		// TODO Auto-generated method stub
 		hist_dao.update(update);
 	}
 
 	@Override
 	public List<Map<String, Object>> selectHistory(String member_no) {
-		// TODO Auto-generated method stub
 		return hist_dao.selectHistory(member_no);
 	}
 
@@ -55,20 +53,22 @@ public class HistoryServiceImpl implements HistoryService {
 
 	@Override
 	public List<Map<String, Object>> getLowCodeList(String code_id) {
-		// TODO Auto-generated method stub
 		return code_dao.getLowCodeList(code_id);
 	}
 
 	@Override
 	public LinkedHashMap<String, Object> getinfo(LinkedHashMap<String, Object> data) {
-		// TODO Auto-generated method stub
 		return hist_dao.getinfo(data);
 	}
 
 	@Override
 	public void removeHistory(String mem_hist_no) {
-		// TODO Auto-generated method stub
 		hist_dao.removeHistory(mem_hist_no);
+	}
+
+	@Override
+	public List<Map<String, Object>> getProjectList(Map<String, Object> data) {
+		return hist_dao.getProjectList(data);
 	}
 
 }

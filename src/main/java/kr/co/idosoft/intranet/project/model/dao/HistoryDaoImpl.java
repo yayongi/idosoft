@@ -3,6 +3,7 @@ package kr.co.idosoft.intranet.project.model.dao;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,25 +22,21 @@ public class HistoryDaoImpl implements HistoryDao {
 
 	@Override
 	public void insert(HashMap<String, Object> insert) {
-		// TODO Auto-generated method stub
 		sqlTemplate.insert("history.insert", insert);
 	}
 
 	@Override
 	public void update(HashMap<String, Object> update) {
-		// TODO Auto-generated method stub
 		sqlTemplate.update("history.update", update);
 	}
 
 	@Override
 	public List<Map<String, Object>> selectHistory(String member_no) {
-		// TODO Auto-generated method stub
 		return (ArrayList)sqlTemplate.selectList("history.selectHistory", member_no);
 	}
 
 	@Override
 	public LinkedHashMap<String, Object> getinfo(LinkedHashMap<String, Object> data) {
-		// TODO Auto-generated method stub
 		return sqlTemplate.selectOne("history.getinfo", data);
 	}
 
@@ -47,6 +44,11 @@ public class HistoryDaoImpl implements HistoryDao {
 	public void removeHistory(String mem_hist_no) {
 		sqlTemplate.update("history.removeHistory", mem_hist_no);
 		
+	}
+
+	@Override
+	public List<Map<String, Object>> getProjectList(Map<String, Object> data) {
+		return sqlTemplate.selectList("history.getProjectList", data);
 	}
 
 }

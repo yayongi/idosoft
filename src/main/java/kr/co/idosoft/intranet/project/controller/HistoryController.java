@@ -253,4 +253,12 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		mv.addObject("isAdmin", isAdmin);
 		return mv;
 	}
+	
+	@RequestMapping(value="/history/getprojectlist",method=RequestMethod.POST)
+	@ResponseBody
+	public List<Map<String,Object>> getProjectList(HttpServletRequest request, @RequestBody Map<String, Object> data ){
+		
+		return historyService.getProjectList(data);
+	}
+	
 }

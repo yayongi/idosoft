@@ -69,6 +69,8 @@ const useStyles = makeStyles(theme => ({
 const HistoryInfoDetail = (props) => {
 	const classes = useStyles();
 	const [infoState, serInfoState] = useState();
+	const [projectList, setProjectList] = useState([]);
+	const [dateState, setDateState] = useState();
 
 	const { match, location, history } = props.routeProps.routeProps;
 
@@ -81,6 +83,9 @@ const HistoryInfoDetail = (props) => {
 			method: 'post',
 			data: {"MEM_HIST_NO": match.params.id}
 		}).then(response => {
+			// 특정연도의 프로젝트 가져오기
+			getProjectList(response.data.INPT_BGNDE.substring(0,4));
+			setDateState(response.data.INPT_BGNDE.substring(0,4));
 			serInfoState(response.data);
 			setShowLoadingBar(false);
 		}).catch(e => {
@@ -88,6 +93,25 @@ const HistoryInfoDetail = (props) => {
 			processErrCode(e);
 		});
 	},[])
+
+	//특정 연도 프로젝트 가져오기
+	const getProjectList = (date) => {
+		axios({
+			url: '/intranet/history/getprojectlist',
+			method: 'post',
+			data: {year: date}
+		}).then(response => {
+			setProjectList(response.data);
+		}).catch(e => {
+			setShowLoadingBar(false);
+			processErrCode(e);
+		});
+	}
+
+	const changeYear = (date) => {
+		setDateState(Moment(date).format('YYYY'));
+		getProjectList(Moment(date).format('YYYY'));
+	}
 	return (
 		<>
 			"여기는 새로운 수정화면이오"
@@ -134,6 +158,8 @@ const HistoryInfoDetail = (props) => {
 											views={["year"]}
 											format="yyyy"
 											inputVariant="outlined"
+											value={dateState != null ? dateState : ""}
+											onChange={changeYear}
 										/>
 									</Grid>
 								</MuiPickersUtilsProvider>
@@ -151,9 +177,18 @@ const HistoryInfoDetail = (props) => {
 									margin="dense"
 									variant="outlined"
 									label = "프로젝트명"
-									value = {infoState != null && infoState.PROJECT_NO != "" ? infoState.PROJECT_NM : "직접입력"}
+									value = {infoState != null && infoState.PROJECT_NO != undefined ? infoState.PROJECT_NO : "0"}
 									autoComplete="off"
-									fullWidth>
+									fullWidth
+									select>
+									<MenuItem key="0" value="0">
+										직접입력
+									</MenuItem>
+									{projectList != null && projectList.map(option => (
+										<MenuItem key={option.PROJECT_NO} value={option.PROJECT_NO}>
+										{option.PROJECT_NM}
+										</MenuItem>
+									))}
 								</TextField>
 							</TableCell>
 							<TableCell align="left">
@@ -164,7 +199,7 @@ const HistoryInfoDetail = (props) => {
 									variant="outlined"
 									autoComplete="off"
 									label = "프로젝트명(직접입력)"
-									value = {infoState != null && infoState.PROJECT_NO == "" ? infoState.PROJECT_NM : ""}
+									value = {infoState != null && infoState.PROJECT_NO == undefined ? infoState.PROJECT_NM : ""}
 									placeholder="회사 프로젝트는 년도와 프로젝트를 선택해주세요"
 									fullWidth>
 								</TextField>
