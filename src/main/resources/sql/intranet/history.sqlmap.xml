@@ -76,6 +76,12 @@
 		WHERE MEM_HIST_NO = #{MEM_HIST_NO}
 	</select>
 	
+	<!-- 직무가져오기 -->	
+	<select id="getrolelist" resultType="java.util.LinkedHashMap">
+		SELECT * FROM TB_CODE
+		WHERE UPPER_CODE = "CD0009"
+	</select>
+	
 	<!-- 이력 삭제 -->
 	<select id="removeHistory" parameterType="String">
 		DELETE FROM

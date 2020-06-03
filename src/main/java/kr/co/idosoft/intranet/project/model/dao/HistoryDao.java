@@ -24,6 +24,9 @@ public interface HistoryDao {
 	//특정 연도 프로젝트 가져오기
 	List<Map<String,Object>> getProjectList(Map<String, Object> data);
 	
+	//직무 가져오기
+	List<LinkedHashMap<String, Object>> getrolelist();
+	
 	void removeHistory(String mem_hist_no);
 }
 

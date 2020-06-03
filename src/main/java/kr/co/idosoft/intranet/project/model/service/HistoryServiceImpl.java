@@ -71,4 +71,9 @@ public class HistoryServiceImpl implements HistoryService {
 		return hist_dao.getProjectList(data);
 	}
 
+	@Override
+	public List<LinkedHashMap<String, Object>> getrolelist() {
+		return hist_dao.getrolelist();
+	}
+
 }

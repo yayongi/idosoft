@@ -51,4 +51,9 @@ public class HistoryDaoImpl implements HistoryDao {
 		return sqlTemplate.selectList("history.getProjectList", data);
 	}
 
+	@Override
+	public List<LinkedHashMap<String, Object>> getrolelist() {
+		return sqlTemplate.selectList("history.getrolelist");
+	}
+
 }

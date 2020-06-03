@@ -68,9 +68,10 @@ const useStyles = makeStyles(theme => ({
 
 const HistoryInfoDetail = (props) => {
 	const classes = useStyles();
-	const [infoState, serInfoState] = useState();
+	const [infoState, setInfoState] = useState();
 	const [projectList, setProjectList] = useState([]);
 	const [dateState, setDateState] = useState();
+	const [roleList, setRoleList] = useState();
 
 	const { match, location, history } = props.routeProps.routeProps;
 
@@ -84,12 +85,13 @@ const HistoryInfoDetail = (props) => {
 			data: {"MEM_HIST_NO": match.params.id}
 		}).then(response => {
 			// 특정연도의 프로젝트 가져오기
+			getRoleList();
 			getProjectList(response.data.INPT_BGNDE.substring(0,4));
 			setDateState(response.data.INPT_BGNDE.substring(0,4));
-			serInfoState(response.data);
-			setShowLoadingBar(false);
+			setInfoState(response.data);
+			//setShowLoadingBar(false);
 		}).catch(e => {
-			setShowLoadingBar(false);
+			//setShowLoadingBar(false);
 			processErrCode(e);
 		});
 	},[])
@@ -103,7 +105,20 @@ const HistoryInfoDetail = (props) => {
 		}).then(response => {
 			setProjectList(response.data);
 		}).catch(e => {
-			setShowLoadingBar(false);
+			//setShowLoadingBar(false);
+			processErrCode(e);
+		});
+	}
+
+	//직무 가져오기
+	const getRoleList = () => {
+		axios({
+			url: '/intranet/history/getrolelist',
+			method: 'post'
+		}).then(response => {
+			setRoleList(response.data);
+		}).catch(e => {
+			//setShowLoadingBar(false);
 			processErrCode(e);
 		});
 	}
@@ -112,11 +127,32 @@ const HistoryInfoDetail = (props) => {
 		setDateState(Moment(date).format('YYYY'));
 		getProjectList(Moment(date).format('YYYY'));
 	}
+
+	const handleChange = (event) => {
+		setInfoState({
+			...infoState,
+			[event.target.name]: event.target.value,
+		});
+	}
+
+	const handleChangeInpt_bgnde = (date) => {
+		setDataState({
+			...dataState,
+			inpt_bgnde: Moment(date).format('YYYY-MM-DD')
+		});
+	}
+
+	const handleChangeInpt_endde = (date) => {
+		setDataState({
+			...dataState,
+			inpt_endde: Moment(date).format('YYYY-MM-DD')
+		});
+	}
 	return (
 		<>
-			"여기는 새로운 수정화면이오"
-			{/* <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
-			<LoadingBar openLoading={isShowLoadingBar}/> */}
+		{((infoState != null) && (roleList != null)) && (
+			<>
+			{/* <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/> */}
 			<TableContainer component={Paper}>
 				<Table aria-label="simple table">
 					<TableHead>
@@ -134,12 +170,12 @@ const HistoryInfoDetail = (props) => {
 						<TableRow>
 							<TableCell align="left">
 								<TextField
-									id="member_no"
-									name="member_no"
+									id="MEMBER_NO"
+									name="MEMBER_NO"
 									margin="dense"
 									variant="outlined"
 									label = "이름"
-									value = {infoState != null? infoState.MEMBER_NAME : ""}
+									value = {infoState.MEMBER_NAME}
 									InputProps={{
 									 	 readOnly: true,
 									}}
@@ -158,7 +194,7 @@ const HistoryInfoDetail = (props) => {
 											views={["year"]}
 											format="yyyy"
 											inputVariant="outlined"
-											value={dateState != null ? dateState : ""}
+											value={dateState}
 											onChange={changeYear}
 										/>
 									</Grid>
@@ -172,14 +208,15 @@ const HistoryInfoDetail = (props) => {
 						<TableRow>
 							<TableCell align="left">
 								<TextField
-									id="project_no"
-									name="project_no"
+									id="PROJECT_NO"
+									name="PROJECT_NO"
 									margin="dense"
 									variant="outlined"
 									label = "프로젝트명"
-									value = {infoState != null && infoState.PROJECT_NO != undefined ? infoState.PROJECT_NO : "0"}
+									defaultValue = {infoState.INSTT_CODE != "" ? infoState.PROJECT_NO : 0}
 									autoComplete="off"
 									fullWidth
+									onChange={handleChange}
 									select>
 									<MenuItem key="0" value="0">
 										직접입력
@@ -193,13 +230,14 @@ const HistoryInfoDetail = (props) => {
 							</TableCell>
 							<TableCell align="left">
 								<TextField
-									id="project_nm"
-									name="project_nm"
+									id="PROJECT_NM"
+									name="PROJECT_NM"
 									margin="dense"
 									variant="outlined"
 									autoComplete="off"
 									label = "프로젝트명(직접입력)"
-									value = {infoState != null && infoState.PROJECT_NO == undefined ? infoState.PROJECT_NM : ""}
+									onChange={handleChange}
+									defaultValue = {infoState.INSTT_CODE == "" ? infoState.PROJECT_NM : ""}
 									placeholder="회사 프로젝트는 년도와 프로젝트를 선택해주세요"
 									fullWidth>
 								</TextField>
@@ -208,13 +246,15 @@ const HistoryInfoDetail = (props) => {
 						<TableRow>
 							<TableCell align="left">
 								<TextField
-									id="instt_nm"
-									name="instt_nm"
+									id="INSTT_NM"
+									name="INSTT_NM"
 									margin="dense"
 									variant="outlined"
 									placeholder="직접입력"
 									label = "기관"
+									onChange={handleChange}
 									autoComplete="off"
+									defaultValue = {infoState.INSTT_NM}
 									fullWidth>
 								</TextField>
 							</TableCell>
@@ -226,10 +266,12 @@ const HistoryInfoDetail = (props) => {
 										<DatePicker
 											locale='ko'
 											margin="dense"
-											id="inpt_bgnde"
-											name="inpt_bgnde"
+											id="INPT_BGNDE"
+											name="INPT_BGNDE"
 											label = "투입일"
 											views={["year", "month", "date"]}
+											value={Moment(infoState.INPT_BGNDE).format('YYYY-MM-DD')}
+											onChange={handleChangeInpt_bgnde}
 											format="yyyy-MM-dd"
 											inputVariant="outlined"
 											fullWidth
@@ -243,10 +285,12 @@ const HistoryInfoDetail = (props) => {
 										<DatePicker
 											locale='ko'
 											margin="dense"
-											id="inpt_endde"
-											name="inpt_endde"
+											id="INPT_ENDDE"
+											name="INPT_ENDDE"
 											label = "철수일"
 											views={["year", "month", "date"]}
+											value={Moment(infoState.INPT_ENDDE).format('YYYY-MM-DD')}
+											onChange={handleChangeInpt_endde}
 											format="yyyy-MM-dd"
 											inputVariant="outlined"
 											readOnly={false}
@@ -259,20 +303,30 @@ const HistoryInfoDetail = (props) => {
 						<TableRow>
 							<TableCell align="left">
 								<TextField
-									id="role_code"
-									name="role_code"
+									id="ROLE_CODE"
+									name="ROLE_CODE"
 									variant="outlined"
 									label="역할"
+									defaultValue={infoState.ROLE_CODE}
+									onChange={handleChange}
 									autoComplete="off"
-									fullWidth>
+									fullWidth
+									select>
+									{roleList.map(tmp => (
+									<MenuItem key={tmp.CODE_ID} value={tmp.CODE_ID} name={tmp.CODE_NAME}>
+										{tmp.CODE_NAME}
+									</MenuItem>
+									))}
 								</TextField>
 							</TableCell>
 							<TableCell align="left">
 								<TextField
-									id="chrg_job"
-									name="chrg_job"
+									id="CHRG_JOB"
+									name="CHRG_JOB"
 									variant="outlined"
 									autoComplete="off"
+									defaultValue={infoState.CHRG_JOB}
+									onChange={handleChange}
 									label = "담당업무"
 									fullWidth>
 								</TextField>
@@ -281,10 +335,12 @@ const HistoryInfoDetail = (props) => {
 						<TableRow>
 							<TableCell align="left">
 								<TextField
-									id="use_lang"
-									name="use_lang"
+									id="USE_LANG"
+									name="USE_LANG"
 									variant="outlined"
 									autoComplete="off"
+									defaultValue={infoState.USE_LANG}
+									onChange={handleChange}
 									label = "비고(사용언어)"
 									fullWidth>
 								</TextField>
@@ -311,6 +367,8 @@ const HistoryInfoDetail = (props) => {
 					</Button>
 				</div>
 			</Toolbar>
+		</>
+		)}
 		</>
 	);
 }

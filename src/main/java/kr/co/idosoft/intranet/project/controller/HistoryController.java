@@ -188,6 +188,18 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 			return null;
 		}
 	}
+	
+	// 직무 가져오기
+	@RequestMapping(value="/history/getrolelist", method=RequestMethod.POST)
+	@ResponseBody
+	public List<LinkedHashMap<String, Object>> getrolelist(Model model, HttpServletRequest request,HttpSession session){
+		try {
+			return historyService.getrolelist();
+		}catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	@RequestMapping(value="/removeHistory",method=RequestMethod.POST)
 	@ResponseBody
