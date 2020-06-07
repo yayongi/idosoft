@@ -201,6 +201,18 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		}
 	}
 
+	// 프로젝트 업체 가져오기
+	@RequestMapping(value="/history/getcompany", method=RequestMethod.POST)
+	@ResponseBody
+	public LinkedHashMap<String, Object> getcompany(Model model, @RequestBody LinkedHashMap<String, Object> data, HttpServletRequest request,HttpSession session){
+		try {
+			return historyService.getcompany(data);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	@RequestMapping(value="/removeHistory",method=RequestMethod.POST)
 	@ResponseBody
 	public ModelAndView removeHistory(HttpServletRequest request, @RequestBody Map<String, Object> params ){
@@ -222,29 +234,10 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		return mv;
 	}
 	
-	@RequestMapping(value="/updateHistory",method=RequestMethod.POST)
+	@RequestMapping(value="/history/update",method=RequestMethod.POST)
 	@ResponseBody
-	public ModelAndView updateHistory(HttpServletRequest request, @RequestBody Map<String, Object> params ){
-		ModelAndView mv = new ModelAndView();
-		
-		// ModelAndView 초기값 셋팅
-		mv.setViewName("jsonView");
-		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
-		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
-		
-		HttpSession session = request.getSession();
-		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-		String member_no = sessionVo.getMEMBER_NO();
-		params.put("upd_id", member_no);
-		
-		boolean db_result = false;
-		try {
-			historyService.update((HashMap<String, Object>)params);
-		}catch(Exception e) {
-			db_result = true;
-		}
-		mv.addObject("isDBError", db_result);
-		return mv;
+	public void update(HttpServletRequest request, @RequestBody LinkedHashMap<String, Object> data ){
+		historyService.update(data);
 	}
 	
 	
@@ -266,6 +259,7 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		return mv;
 	}
 	
+	//프로젝트 리스트 가져오기
 	@RequestMapping(value="/history/getprojectlist",method=RequestMethod.POST)
 	@ResponseBody
 	public List<Map<String,Object>> getProjectList(HttpServletRequest request, @RequestBody Map<String, Object> data ){

@@ -32,8 +32,8 @@ public class HistoryServiceImpl implements HistoryService {
 	}
 
 	@Override
-	public void update(HashMap<String, Object> update) {
-		hist_dao.update(update);
+	public void update(LinkedHashMap<String,Object> data) {
+		hist_dao.update(data);
 	}
 
 	@Override
@@ -74,6 +74,11 @@ public class HistoryServiceImpl implements HistoryService {
 	@Override
 	public List<LinkedHashMap<String, Object>> getrolelist() {
 		return hist_dao.getrolelist();
+	}
+
+	@Override
+	public LinkedHashMap<String, Object> getcompany(LinkedHashMap<String, Object> data) {
+		return hist_dao.getcompany(data);
 	}
 
 }

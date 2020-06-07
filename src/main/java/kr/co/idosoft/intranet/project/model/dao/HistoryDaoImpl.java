@@ -26,8 +26,8 @@ public class HistoryDaoImpl implements HistoryDao {
 	}
 
 	@Override
-	public void update(HashMap<String, Object> update) {
-		sqlTemplate.update("history.update", update);
+	public void update(LinkedHashMap<String,Object> data) {
+		sqlTemplate.update("history.update", data);
 	}
 
 	@Override
@@ -54,6 +54,17 @@ public class HistoryDaoImpl implements HistoryDao {
 	@Override
 	public List<LinkedHashMap<String, Object>> getrolelist() {
 		return sqlTemplate.selectList("history.getrolelist");
+	}
+
+	@Override
+	public LinkedHashMap<String, Object> getcompany(LinkedHashMap<String, Object> data) {
+		return sqlTemplate.selectOne("history.getcompany",data);
+	}
+
+	@Override
+	public void update(HashMap<String, Object> update) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

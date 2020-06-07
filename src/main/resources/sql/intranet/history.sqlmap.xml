@@ -14,22 +14,23 @@
 	</insert>
 	
 	<!-- 이력 수정 -->
-	<update id="update" parameterType="hashmap">
+	<update id="update" parameterType="java.util.LinkedHashMap">
 		UPDATE
 			TB_MEM_HIST
 		SET
-			PROJECT_NM = #{project_nm}
-			, INSTT_CODE = #{instt_code}
-			, INSTT_NM = #{instt_nm}
-			, INPT_BGNDE = #{inpt_bgnde}
-			, INPT_ENDDE = #{inpt_endde}
-			, ROLE_CODE = #{role_code}
-			, CHRG_JOB = #{chrg_job}
-			, USE_LANG = #{use_lang}
+			PROJECT_NM = #{PROJECT_NM}
+			, PROJECT_NO = #{PROJECT_NO}
+			, INSTT_CODE = #{INSTT_CODE}
+			, INSTT_NM = #{INSTT_NM}
+			, INPT_BGNDE = #{INPT_BGNDE}
+			, INPT_ENDDE = #{INPT_ENDDE}
+			, ROLE_CODE = #{ROLE_CODE}
+			, CHRG_JOB = #{CHRG_JOB}
+			, USE_LANG = #{USE_LANG}
 			, UPD_DATETIME = DATE_FORMAT(NOW(),'%Y%m%d')
-			, UPD_ID = #{upd_id}
+			, UPD_ID = #{UPD_ID}
 		WHERE
-			MEM_HIST_NO = #{mem_hist_no}
+			MEM_HIST_NO = #{MEM_HIST_NO}
 	</update>
 	
 	
@@ -96,5 +97,17 @@
 			* 
 		FROM TB_PROJECT 
 		WHERE BGNDE LIKE CONCAT(#{year},'%')
+	</select>
+	
+	<!-- 프로젝트 업체 불러오기 -->
+	<select id="getcompany" parameterType="java.util.LinkedHashMap"  resultType="java.util.LinkedHashMap">
+		SELECT 
+			* 
+		FROM TB_CODE
+		WHERE 
+			CODE_ID = 
+			(
+				SELECT INSTT_CODE FROM TB_PROJECT WHERE PROJECT_NO = #{project_no}
+			)
 	</select>
 </mapper>

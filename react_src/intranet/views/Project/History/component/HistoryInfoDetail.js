@@ -72,6 +72,8 @@ const HistoryInfoDetail = (props) => {
 	const [projectList, setProjectList] = useState([]);
 	const [dateState, setDateState] = useState();
 	const [roleList, setRoleList] = useState();
+	const [company, setCompany] = useState();
+	const [dialog, setDialog] = useState({});
 
 	const { match, location, history } = props.routeProps.routeProps;
 
@@ -89,6 +91,7 @@ const HistoryInfoDetail = (props) => {
 			getProjectList(response.data.INPT_BGNDE.substring(0,4));
 			setDateState(response.data.INPT_BGNDE.substring(0,4));
 			setInfoState(response.data);
+			setCompany(response.data.INSTT_NM);
 			//setShowLoadingBar(false);
 		}).catch(e => {
 			//setShowLoadingBar(false);
@@ -97,11 +100,11 @@ const HistoryInfoDetail = (props) => {
 	},[])
 
 	//특정 연도 프로젝트 가져오기
-	const getProjectList = (date) => {
+	const getProjectList = (data) => {
 		axios({
 			url: '/intranet/history/getprojectlist',
 			method: 'post',
-			data: {year: date}
+			data: {year: data}
 		}).then(response => {
 			setProjectList(response.data);
 		}).catch(e => {
@@ -123,12 +126,48 @@ const HistoryInfoDetail = (props) => {
 		});
 	}
 
+	//프로젝트에 따른 기관 가져오기
+	const getCompany = (data) => {
+		axios({
+			url: '/intranet/history/getcompany',
+			method: 'post',
+			data: {project_no: data}
+		}).then(response => {
+			setCompany(response.data.CODE_NAME);
+			// setInfoState({
+			// 	...infoState,
+			// 	INSTT_NM: response.data.CODE_NAME,
+			// });
+			
+		}).catch(e => {
+			//setShowLoadingBar(false);
+			processErrCode(e);
+		});
+	}
+
+	//개인이력 수정 저장
+	const saveData = () => {
+		axios({
+			url: '/intranet/history/update',
+			method: 'post',
+			data: infoState,
+		}).then(response => {
+
+		}).catch(e => {
+			//setShowLoadingBar(false);
+			processErrCode(e);
+		});
+	}
+
 	const changeYear = (date) => {
 		setDateState(Moment(date).format('YYYY'));
 		getProjectList(Moment(date).format('YYYY'));
 	}
 
 	const handleChange = (event) => {
+		if(event.target.name == "PROJECT_NO"){
+			getCompany(event.target.value);
+		}
 		setInfoState({
 			...infoState,
 			[event.target.name]: event.target.value,
@@ -148,11 +187,31 @@ const HistoryInfoDetail = (props) => {
 			inpt_endde: Moment(date).format('YYYY-MM-DD')
 		});
 	}
+
+	const handleClickUpdateHistory = () => {
+		handleOpenDialog("이력수정", "이력을 수정하시겠습니까?", true);
+	}
+	
+	//Dialog open handler
+	const handleOpenDialog = (title, content, isConfirm) => {
+		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
+	}
+
+	//Dialog close handler
+	//확인:true 취소:false 리턴
+	const handleCloseDialog = (title, result) => {
+		setDialog({title:'', content:'', onOff:false, isConfirm:false});
+		if(result){
+			saveData();
+		}else{
+			return;
+		}
+	}
 	return (
 		<>
+		<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
 		{((infoState != null) && (roleList != null)) && (
 			<>
-			{/* <CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/> */}
 			<TableContainer component={Paper}>
 				<Table aria-label="simple table">
 					<TableHead>
@@ -218,7 +277,7 @@ const HistoryInfoDetail = (props) => {
 									fullWidth
 									onChange={handleChange}
 									select>
-									<MenuItem key="0" value="0">
+									<MenuItem key="0" value={0}>
 										직접입력
 									</MenuItem>
 									{projectList != null && projectList.map(option => (
@@ -254,7 +313,7 @@ const HistoryInfoDetail = (props) => {
 									label = "기관"
 									onChange={handleChange}
 									autoComplete="off"
-									defaultValue = {infoState.INSTT_NM}
+									value = {company}
 									fullWidth>
 								</TextField>
 							</TableCell>
@@ -359,7 +418,7 @@ const HistoryInfoDetail = (props) => {
 					<Button variant="contained" color="primary" size="small" className={classes.button}>
 						등록
 					</Button>
-					<Button variant="contained" color="primary" size="small" className={classes.button}>
+					<Button variant="contained" color="primary" size="small" className={classes.button} onClick={() => handleClickUpdateHistory()}>
 						수정
 					</Button>
 					<Button variant="contained" color="secondary" size="small" className={classes.button}>

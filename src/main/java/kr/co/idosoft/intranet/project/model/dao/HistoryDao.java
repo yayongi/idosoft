@@ -27,6 +27,12 @@ public interface HistoryDao {
 	//직무 가져오기
 	List<LinkedHashMap<String, Object>> getrolelist();
 	
+	//프로젝트 업체 가져오기
+	LinkedHashMap<String, Object> getcompany(LinkedHashMap<String,Object> data);
+	
+	//개인 이력 수정하기
+	void update(LinkedHashMap<String,Object> data);
+	
 	void removeHistory(String mem_hist_no);
 }
 

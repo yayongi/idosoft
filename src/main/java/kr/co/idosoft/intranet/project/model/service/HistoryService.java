@@ -10,7 +10,6 @@ import kr.co.idosoft.intranet.member.vo.MemberVO;
 
 public interface HistoryService {
 	void insert(HashMap<String, Object> insert);
-	void update(HashMap<String, Object> update);
 	List<Map<String, Object>> selectHistory(String member_no);
 	
 	
@@ -31,6 +30,12 @@ public interface HistoryService {
 
 	//특정 연도 프로젝트 가져오기
 	List<Map<String,Object>> getProjectList(Map<String, Object> data);
+	
+	//프로젝트 업체 가져오기
+	LinkedHashMap<String, Object> getcompany(LinkedHashMap<String,Object> data);
+	
+	//개인 이력 수정하기
+	void update(LinkedHashMap<String,Object> data);
 	
 	void removeHistory(String mem_hist_no);
 }
