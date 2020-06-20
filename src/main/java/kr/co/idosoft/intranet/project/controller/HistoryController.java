@@ -236,7 +236,7 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 	
 	@RequestMapping(value="/history/update",method=RequestMethod.POST)
 	@ResponseBody
-	public void update(HttpServletRequest request, @RequestBody LinkedHashMap<String, Object> data ){
+	public void update(HttpServletRequest request, @RequestBody LinkedHashMap<String, Object> data){
 		historyService.update(data);
 	}
 	

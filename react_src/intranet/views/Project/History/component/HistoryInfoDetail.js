@@ -99,6 +99,13 @@ const HistoryInfoDetail = (props) => {
 		});
 	},[])
 
+	useEffect(() => {
+		setInfoState({
+			...infoState,
+			INSTT_NM : company
+		});
+	},[company])
+
 	//특정 연도 프로젝트 가져오기
 	const getProjectList = (data) => {
 		axios({
@@ -134,11 +141,6 @@ const HistoryInfoDetail = (props) => {
 			data: {project_no: data}
 		}).then(response => {
 			setCompany(response.data.CODE_NAME);
-			// setInfoState({
-			// 	...infoState,
-			// 	INSTT_NM: response.data.CODE_NAME,
-			// });
-			
 		}).catch(e => {
 			//setShowLoadingBar(false);
 			processErrCode(e);
@@ -152,7 +154,7 @@ const HistoryInfoDetail = (props) => {
 			method: 'post',
 			data: infoState,
 		}).then(response => {
-
+			history.goBack();
 		}).catch(e => {
 			//setShowLoadingBar(false);
 			processErrCode(e);
@@ -168,10 +170,19 @@ const HistoryInfoDetail = (props) => {
 		if(event.target.name == "PROJECT_NO"){
 			getCompany(event.target.value);
 		}
-		setInfoState({
-			...infoState,
-			[event.target.name]: event.target.value,
-		});
+
+		if(event.target.name == "PROJECT_NO"){
+			setInfoState({
+				...infoState,
+				[event.target.name]: event.target.value,
+				PROJECT_NM : event.target.value != 0 ? projectList.filter((list) => list.PROJECT_NO === event.target.value)[0].PROJECT_NM : event.target.value
+			});
+		}else{
+			setInfoState({
+				...infoState,
+				[event.target.name]: event.target.value,
+			});
+		}
 	}
 
 	const handleChangeInpt_bgnde = (date) => {
