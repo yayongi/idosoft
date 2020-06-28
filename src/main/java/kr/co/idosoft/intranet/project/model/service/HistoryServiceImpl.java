@@ -42,11 +42,6 @@ public class HistoryServiceImpl implements HistoryService {
 	}
 
 	@Override
-	public List<MemberVO> selectMemberList() {
-		return mem_dao.selectMemberList() ;
-	}
-
-	@Override
 	public List<Map<String, Object>> selectAllList(HashMap<String, Object> condition) {
 		return pro_dao.selectAllList(condition);
 	}
@@ -62,8 +57,8 @@ public class HistoryServiceImpl implements HistoryService {
 	}
 
 	@Override
-	public void removeHistory(String mem_hist_no) {
-		hist_dao.removeHistory(mem_hist_no);
+	public void remove(LinkedHashMap<String, Object> data) {
+		hist_dao.remove(data);
 	}
 
 	@Override
@@ -79,6 +74,11 @@ public class HistoryServiceImpl implements HistoryService {
 	@Override
 	public LinkedHashMap<String, Object> getcompany(LinkedHashMap<String, Object> data) {
 		return hist_dao.getcompany(data);
+	}
+
+	@Override
+	public List<LinkedHashMap<String, Object>> memberList() {
+		return hist_dao.memberList();
 	}
 
 }

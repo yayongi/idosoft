@@ -9,8 +9,8 @@
 			ROLE_CODE, CHRG_JOB, USE_LANG, REG_DATETIME, UPD_DATETIME, REG_ID,
 			UPD_ID, NOTE, TEMP_COLUM)		
 		VALUES 
-			(#{member_no}, #{project_no}, #{project_nm}, #{instt_code}, #{instt_nm}, #{inpt_bgnde}, #{inpt_endde}, #{role_code}, #{chrg_job}, #{use_lang}
-			, DATE_FORMAT(NOW(),'%Y%m%d'), null, #{reg_id}, null, "", "")
+			(#{MEMBER_NO}, #{PROJECT_NO}, #{PROJECT_NM}, #{INSTT_CODE}, #{INSTT_NM}, #{INPT_BGNDE}, #{INPT_ENDDE}, #{ROLE_CODE}, #{CHRG_JOB}, #{USE_LANG}
+			, DATE_FORMAT(NOW(),'%Y%m%d'), null, #{REG_ID}, null, "", "")
 	</insert>
 	
 	<!-- 이력 수정 -->
@@ -84,12 +84,12 @@
 	</select>
 	
 	<!-- 이력 삭제 -->
-	<select id="removeHistory" parameterType="String">
+	<delete id="remove" parameterType="java.util.LinkedHashMap">
 		DELETE FROM
 			TB_MEM_HIST
 		WHERE
 			MEM_HIST_NO = #{MEM_HIST_NO}
-	</select>
+	</delete>
 
 	<!-- 특정 연도 프로젝트 가져오기 -->
 	<select id="getProjectList" parameterType="String"  resultType="hashmap">
@@ -109,5 +109,13 @@
 			(
 				SELECT INSTT_CODE FROM TB_PROJECT WHERE PROJECT_NO = #{project_no}
 			)
+	</select>
+	
+	<select id="memberList" resultType="java.util.LinkedHashMap">
+		SELECT 
+			*
+		FROM TB_MEMBER
+		WHERE 
+			RET_DATE IS NULL
 	</select>
 </mapper>

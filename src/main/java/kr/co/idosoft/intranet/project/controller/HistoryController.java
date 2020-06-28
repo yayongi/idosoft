@@ -3,6 +3,7 @@ package kr.co.idosoft.intranet.project.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +88,7 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 				member_no = select_member;
 			}
 			me_history_list = historyService.selectHistory(member_no);
-			member_get_list = historyService.selectMemberList();
+			//member_get_list = historyService.selectMemberList();
 			
 			//멤버 리스트에서 퇴사자를 삭제하고 화면에 내려준다 (경리의 경우 스크립트로 한번 더 삭제한다)
 			//퇴사자의 경우 
@@ -109,46 +110,11 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		return mv;
 	}
 	
-	@RequestMapping(value="/historyinfoForm",method=RequestMethod.POST)
+	@RequestMapping(value="/history/memberList",method=RequestMethod.POST)
 	@ResponseBody
-	public ModelAndView historyinfoForm(HttpServletRequest request, @RequestBody Map<String, Object> params ){
+	public List<LinkedHashMap<String,Object>> memberList(HttpServletRequest request){
 		
-		HttpSession session = request.getSession();
-		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-		boolean isAdmin = commonUtil.isAdmin(session);
-		String member_no = sessionVo.getMEMBER_NO();
-		
-		ModelAndView mv = new ModelAndView();
-		
-		// ModelAndView 초기값 셋팅
-		mv.setViewName("jsonView");
-		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
-		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
-		
-		
-		List<MemberVO> member_list = new ArrayList<MemberVO>();
-		List<Map<String, Object>> proj_list = new ArrayList<Map<String, Object>>();
-		List<String> inputCodeList = (List<String>)params.get("CODE_ID");
-		List<Map<String, Object>> code_list = new ArrayList<Map<String, Object>>();
-		List<Map<String, Object>> role_list = new ArrayList<Map<String, Object>>();
-		Map<String, Object> tmp = new HashMap<String, Object>();
-		try {
-			if(isAdmin) {
-				member_list = historyService.selectMemberList();
-			}
-			proj_list = historyService.selectAllList((HashMap<String, Object>) tmp);
-			code_list = historyService.getLowCodeList(inputCodeList.get(0));
-			role_list = historyService.getLowCodeList(inputCodeList.get(1));
-		} catch (Exception e) {
-			LOG.debug("JSON OBJECT 변환 실패 : " + e.getMessage());
-		}
-		
-		mv.addObject("isAdmin", isAdmin);
-		mv.addObject("member_list", member_list);
-		mv.addObject("proj_list", proj_list);
-		mv.addObject("code_list", code_list);
-		mv.addObject("role_list", role_list);
-		return mv;
+		return historyService.memberList();
 	}
 	
 	
@@ -181,7 +147,6 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 	@ResponseBody
 	public LinkedHashMap<String, Object> getinfo(Model model, @RequestBody LinkedHashMap<String, Object> data, HttpServletRequest request,HttpSession session){
 		try {
-			LOG.debug("data : " + data.toString());
 			return historyService.getinfo(data);
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -213,31 +178,22 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		}
 	}
 	
-	@RequestMapping(value="/removeHistory",method=RequestMethod.POST)
+	@RequestMapping(value="/history/remove",method=RequestMethod.POST)
 	@ResponseBody
-	public ModelAndView removeHistory(HttpServletRequest request, @RequestBody Map<String, Object> params ){
-		ModelAndView mv = new ModelAndView();
-		
-		// ModelAndView 초기값 셋팅
-		mv.setViewName("jsonView");
-		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
-		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
-		
-		String mem_hist_no = (String)params.get("MEM_HIST_NO").toString();
-		boolean db_result = false;
-		try {
-			historyService.removeHistory(mem_hist_no);
-		}catch(Exception e) {
-			db_result = true;
-		}
-		mv.addObject("isDBError", db_result);
-		return mv;
+	public void removeHistory(HttpServletRequest request, @RequestBody LinkedHashMap<String, Object> data ){
+		historyService.remove(data);
 	}
 	
 	@RequestMapping(value="/history/update",method=RequestMethod.POST)
 	@ResponseBody
 	public void update(HttpServletRequest request, @RequestBody LinkedHashMap<String, Object> data){
 		historyService.update(data);
+	}
+	
+	@RequestMapping(value="/history/insert",method=RequestMethod.POST)
+	@ResponseBody
+	public void insert(HttpServletRequest request, @RequestBody LinkedHashMap<String, Object> data){
+		historyService.insert(data);
 	}
 	
 	

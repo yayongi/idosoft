@@ -14,7 +14,6 @@ import java.util.Map;
  */
 public interface HistoryDao {
 	void insert(HashMap<String, Object> insert);
-	void update(HashMap<String, Object> update);
 	
 	List<Map<String, Object>> selectHistory(String member_no);
 	
@@ -33,6 +32,10 @@ public interface HistoryDao {
 	//개인 이력 수정하기
 	void update(LinkedHashMap<String,Object> data);
 	
-	void removeHistory(String mem_hist_no);
+	//개인 이력 삭제하기
+	void remove(LinkedHashMap<String,Object> data);
+	
+	//직원명단 호출
+	List<LinkedHashMap<String,Object>> memberList();
 }
 

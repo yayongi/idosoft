@@ -160,6 +160,21 @@ const HistoryInfoDetail = (props) => {
 			processErrCode(e);
 		});
 	}
+	
+	//개인 이력 삭제
+	const removeHistory = () => {
+		axios({
+			url: '/intranet/history/remove',
+			method: 'post',
+			data: infoState,
+		}).then(response => {
+			history.goBack();
+		}).catch(e => {
+			setShowLoadingBar(false);
+			processErrCode(e);
+		});
+		//history.goBack();
+	}
 
 	const changeYear = (date) => {
 		setDateState(Moment(date).format('YYYY'));
@@ -186,16 +201,16 @@ const HistoryInfoDetail = (props) => {
 	}
 
 	const handleChangeInpt_bgnde = (date) => {
-		setDataState({
-			...dataState,
-			inpt_bgnde: Moment(date).format('YYYY-MM-DD')
+		setInfoState({
+			...infoState,
+			INPT_BGNDE: Moment(date).format('YYYYMMDD')
 		});
 	}
 
 	const handleChangeInpt_endde = (date) => {
-		setDataState({
-			...dataState,
-			inpt_endde: Moment(date).format('YYYY-MM-DD')
+		setInfoState({
+			...infoState,
+			INPT_ENDDE: Moment(date).format('YYYYMMDD')
 		});
 	}
 
@@ -203,6 +218,10 @@ const HistoryInfoDetail = (props) => {
 		handleOpenDialog("이력수정", "이력을 수정하시겠습니까?", true);
 	}
 	
+	const handleClickRemoveHistory = () => {
+		handleOpenDialog("이력삭제", "이력을 삭제하시겠습니까?", true);
+	}
+
 	//Dialog open handler
 	const handleOpenDialog = (title, content, isConfirm) => {
 		return setDialog({title:title, content:content, onOff:true, isConfirm:isConfirm});
@@ -212,12 +231,15 @@ const HistoryInfoDetail = (props) => {
 	//확인:true 취소:false 리턴
 	const handleCloseDialog = (title, result) => {
 		setDialog({title:'', content:'', onOff:false, isConfirm:false});
-		if(result){
+		if(result && title == "이력수정"){
 			saveData();
+		}else if(result && title == "이력삭제"){
+			removeHistory();
 		}else{
 			return;
 		}
 	}
+
 	return (
 		<>
 		<CommonDialog props={dialog} closeCommonDialog={handleCloseDialog}/>
@@ -423,16 +445,13 @@ const HistoryInfoDetail = (props) => {
 				<Typography className={classes.title} color="secondary" variant="subtitle2">
 				</Typography>
 				<div>
-					<Button variant="contained" color="primary" size="small" className={classes.button}>
+					<Button variant="contained" color="primary" size="small" className={classes.button} onClick={() => history.goBack()}>
 						취소
-					</Button>
-					<Button variant="contained" color="primary" size="small" className={classes.button}>
-						등록
 					</Button>
 					<Button variant="contained" color="primary" size="small" className={classes.button} onClick={() => handleClickUpdateHistory()}>
 						수정
 					</Button>
-					<Button variant="contained" color="secondary" size="small" className={classes.button}>
+					<Button variant="contained" color="secondary" size="small" className={classes.button} onClick={() => handleClickRemoveHistory()}>
 						삭제
 					</Button>
 				</div>

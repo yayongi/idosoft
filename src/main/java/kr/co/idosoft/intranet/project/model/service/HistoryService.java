@@ -12,9 +12,8 @@ public interface HistoryService {
 	void insert(HashMap<String, Object> insert);
 	List<Map<String, Object>> selectHistory(String member_no);
 	
-	
 	// 사원 리스트 호출
-	List<MemberVO> selectMemberList();
+	List<LinkedHashMap<String,Object>> memberList();
 	
 	// 프로젝트 - 프로젝트 리스트 불러오기
 	List<Map<String, Object>> selectAllList(HashMap<String, Object> condition);
@@ -37,5 +36,8 @@ public interface HistoryService {
 	//개인 이력 수정하기
 	void update(LinkedHashMap<String,Object> data);
 	
-	void removeHistory(String mem_hist_no);
+	//개인 이력 삭제하기
+	void remove(LinkedHashMap<String,Object> data);
+	
+	
 }

@@ -41,8 +41,8 @@ public class HistoryDaoImpl implements HistoryDao {
 	}
 
 	@Override
-	public void removeHistory(String mem_hist_no) {
-		sqlTemplate.update("history.removeHistory", mem_hist_no);
+	public void remove(LinkedHashMap<String, Object> data) {
+		sqlTemplate.delete("history.remove", data);
 		
 	}
 
@@ -62,9 +62,9 @@ public class HistoryDaoImpl implements HistoryDao {
 	}
 
 	@Override
-	public void update(HashMap<String, Object> update) {
-		// TODO Auto-generated method stub
-		
+	public List<LinkedHashMap<String, Object>> memberList() {
+		return sqlTemplate.selectList("history.memberList");
 	}
+		
 
 }
