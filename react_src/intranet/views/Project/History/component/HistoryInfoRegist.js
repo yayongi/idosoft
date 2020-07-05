@@ -85,6 +85,16 @@ const HistoryInfoRegist = (props) => {
 	});
 	const [dialog, setDialog] = useState({});
 
+	const [validateCheck, setValidateCheck] = useState({
+		PROJECT_NO:{error:false, helperText:""},
+		INSTT_NM:{error:false, helperText:""},
+		INPT_BGNDE:{error:false, helperText:""},
+		INPT_ENDDE:{error:false, helperText:""},
+		ROLE_CODE:{error:false, helperText:""},
+		CHRG_JOB:{error:false, helperText:""},
+		USE_LANG:{error:false, helperText:""}
+	});
+
 	const { match, location, history } = props.routeProps.routeProps;
 
 	//사원 정보 가져오기
@@ -199,7 +209,11 @@ const HistoryInfoRegist = (props) => {
 			});
 		}
 
-		
+		//validate 체크 초기화
+		setValidateCheck({
+			...validateCheck,
+			[event.target.name]: {error:false, helperText:""} 
+		});
 	}
 
 	const handleChangeInpt_bgnde = (date) => {
@@ -217,6 +231,79 @@ const HistoryInfoRegist = (props) => {
 	}
 
 	const handleClickRegistHistory = () => {
+
+		//선택된 프로젝트가 있는지 체크한다.
+		if(infoState.PROJECT_NO == "" || infoState.PROJECT_NO == undefined){
+			setValidateCheck({
+				...validateCheck,
+				PROJECT_NO : {error:true, helperText:"프로젝트를 선택해주세요"}
+			})
+			return;
+		}
+
+		//담당업무
+		if(infoState.CHRG_JOB == "" || infoState.CHRG_JOB == undefined){
+			setValidateCheck({
+				...validateCheck,
+				CHRG_JOB : {error:true, helperText:"담당 업무를 입력해주세요"}
+			})
+			return;
+		}
+		
+		if(infoState.USE_LANG == "" || infoState.USE_LANG == undefined){
+			setValidateCheck({
+				...validateCheck,
+				USE_LANG : {error:true, helperText:"사용 기술을 입력해주세요"}
+			})
+			return;
+		}
+
+		if(infoState.ROLE_CODE == "" || infoState.ROLE_CODE == undefined){
+			setValidateCheck({
+				...validateCheck,
+				ROLE_CODE : {error:true, helperText:"역할을 입력해주세요"}
+			})
+			return;
+		}
+
+		if(infoState.INPT_BGNDE == undefined || infoState.INPT_ENDDE == undefined){
+			setValidateCheck({
+				...validateCheck,
+				INPT_BGNDE : {error:true, helperText:"투입일과 철수일을 확인해주세요"},
+				INPT_ENDDE : {error:true, helperText:"투입일과 철수일을 확인해주세요"}
+			})
+			return;
+		}else{
+			if(infoState["INPT_BGNDE"] > infoState["INPT_ENDDE"]){
+				setValidateCheck({
+					...validateCheck,
+					INPT_BGNDE : {error:true, helperText:"투입일과 철수일을 확인해주세요"},
+					INPT_ENDDE : {error:true, helperText:"투입일과 철수일을 확인해주세요"}
+				})
+				return;
+			}
+
+			if(infoState.PROJECT_NO != undefined && infoState.PROJECT_NO != -2){
+				var selectedProjectInfo = projectList.filter((info) => info.PROJECT_NO == infoState.PROJECT_NO)[0];
+				var selProjectBGNDE = selectedProjectInfo["BGNDE"].replace("-", "").replace("-", "");
+				var selProjectENDDE = selectedProjectInfo["ENDDE"].replace("-", "").replace("-", "");
+				if(infoState["INPT_BGNDE"] < selProjectBGNDE){
+					setValidateCheck({
+						...validateCheck,
+						INPT_BGNDE : {error:true, helperText:"프로젝트 최초 투입일은 "+Moment(selectedProjectInfo["BGNDE"]).format("YYYY-MM-DD")+"입니다."},
+					})
+					return;
+				}
+				
+				if(infoState["INPT_ENDDE"] > selProjectENDDE){
+					setValidateCheck({
+						...validateCheck,
+						INPT_ENDDE : {error:true, helperText:"프로젝트 최종 철수일은 "+Moment(selectedProjectInfo["ENDDE"]).format("YYYY-MM-DD")+"입니다."}
+					})
+					return;
+				}
+			}
+		}
 		handleOpenDialog("이력등록", "이력을 등록하시겠습니까?", true);
 	}
 	
@@ -309,6 +396,8 @@ const HistoryInfoRegist = (props) => {
 									autoComplete="off"
 									fullWidth
 									onChange={handleChange}
+									error={validateCheck.PROJECT_NO.error}
+									helperText={validateCheck.PROJECT_NO.helperText}
 									select>
 									<MenuItem key="0" value={0}>
 										직접입력
@@ -345,7 +434,10 @@ const HistoryInfoRegist = (props) => {
 									label = "기관"
 									onChange={handleChange}
 									autoComplete="off"
-									value = {company.INSTT_NM != "" ? company.INSTT_NM : ""}
+									defaultValue = {company.INSTT_NM}
+									InputProps={{
+										readOnly: false,
+								  	}}
 									fullWidth>
 								</TextField>
 							</TableCell>
@@ -363,6 +455,8 @@ const HistoryInfoRegist = (props) => {
 											views={["year", "month", "date"]}
 											value={infoState.INPT_BGNDE != null ? Moment(infoState.INPT_BGNDE).format('YYYY-MM-DD') : null}
 											onChange={handleChangeInpt_bgnde}
+											error={validateCheck.INPT_BGNDE.error}
+											helperText={validateCheck.INPT_BGNDE.helperText}
 											format="yyyy-MM-dd"
 											inputVariant="outlined"
 											fullWidth
@@ -382,6 +476,8 @@ const HistoryInfoRegist = (props) => {
 											views={["year", "month", "date"]}
 											value={infoState.INPT_ENDDE != null ? Moment(infoState.INPT_ENDDE).format('YYYY-MM-DD') : null}
 											onChange={handleChangeInpt_endde}
+											error={validateCheck.INPT_ENDDE.error}
+											helperText={validateCheck.INPT_ENDDE.helperText}
 											format="yyyy-MM-dd"
 											inputVariant="outlined"
 											readOnly={false}
@@ -401,6 +497,8 @@ const HistoryInfoRegist = (props) => {
 									onChange={handleChange}
 									autoComplete="off"
 									fullWidth
+									error={validateCheck.ROLE_CODE.error}
+									helperText={validateCheck.ROLE_CODE.helperText}
 									select>
 									{(roleList != null) && roleList.map(tmp => (
 									<MenuItem key={tmp.CODE_ID} value={tmp.CODE_ID} name={tmp.CODE_NAME}>
@@ -416,6 +514,8 @@ const HistoryInfoRegist = (props) => {
 									variant="outlined"
 									autoComplete="off"
 									onChange={handleChange}
+									error={validateCheck.CHRG_JOB.error}
+									helperText={validateCheck.CHRG_JOB.helperText}
 									label = "담당업무"
 									fullWidth>
 								</TextField>
@@ -428,6 +528,8 @@ const HistoryInfoRegist = (props) => {
 									name="USE_LANG"
 									variant="outlined"
 									autoComplete="off"
+									error={validateCheck.USE_LANG.error}
+									helperText={validateCheck.USE_LANG.helperText}
 									onChange={handleChange}
 									label = "비고(사용언어)"
 									fullWidth>
