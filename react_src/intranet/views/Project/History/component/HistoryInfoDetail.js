@@ -72,7 +72,10 @@ const HistoryInfoDetail = (props) => {
 	const [projectList, setProjectList] = useState([]);
 	const [dateState, setDateState] = useState();
 	const [roleList, setRoleList] = useState();
-	const [company, setCompany] = useState();
+	const [company, setCompany] = useState({
+		INSTT_NM : "",
+		INSTT_CODE : "",
+	});
 	const [dialog, setDialog] = useState({});
 
 	const [validateCheck, setValidateCheck] = useState({
@@ -101,7 +104,9 @@ const HistoryInfoDetail = (props) => {
 			getProjectList(response.data.INPT_BGNDE.substring(0,4));
 			setDateState(response.data.INPT_BGNDE.substring(0,4));
 			setInfoState(response.data);
-			setCompany(response.data.INSTT_NM);
+			setCompany({
+				INSTT_NM : response.data.INSTT_NM,
+			});
 			//setShowLoadingBar(false);
 		}).catch(e => {
 			//setShowLoadingBar(false);
@@ -112,7 +117,7 @@ const HistoryInfoDetail = (props) => {
 	useEffect(() => {
 		setInfoState({
 			...infoState,
-			INSTT_NM : company
+			INSTT_NM : company.INSTT_NM
 		});
 	},[company])
 
@@ -150,7 +155,10 @@ const HistoryInfoDetail = (props) => {
 			method: 'post',
 			data: {project_no: data}
 		}).then(response => {
-			setCompany(response.data.CODE_NAME);
+			setCompany({
+				INSTT_NM : response.data.CODE_NAME,
+				INSTT_CODE : response.data.CODE_ID,
+			});
 		}).catch(e => {
 			//setShowLoadingBar(false);
 			processErrCode(e);
@@ -194,6 +202,13 @@ const HistoryInfoDetail = (props) => {
 	const handleChange = (event) => {
 		if(event.target.name == "PROJECT_NO"){
 			getCompany(event.target.value);
+		}
+
+		if(event.target.name == "INSTT_NM"){
+			setCompany({
+				...company,
+				INSTT_NM : event.target.value
+			})
 		}
 
 		if(event.target.name == "PROJECT_NO"){
@@ -287,7 +302,7 @@ const HistoryInfoDetail = (props) => {
 				var selectedProjectInfo = projectList.filter((info) => info.PROJECT_NO == infoState.PROJECT_NO)[0];
 				var selProjectBGNDE = selectedProjectInfo["BGNDE"].replace("-", "").replace("-", "");
 				var selProjectENDDE = selectedProjectInfo["ENDDE"].replace("-", "").replace("-", "");
-				if(inpt_bgnde < selProjectBGNDE){
+				if(infoState["INPT_BGNDE"] < selProjectBGNDE){
 					setValidateCheck({
 						...validateCheck,
 						INPT_BGNDE : {error:true, helperText:"프로젝트 최초 투입일은 "+Moment(selectedProjectInfo["BGNDE"]).format("YYYY-MM-DD")+"입니다."},
@@ -295,7 +310,7 @@ const HistoryInfoDetail = (props) => {
 					return;
 				}
 				
-				if(inpt_endde > selProjectENDDE){
+				if(infoState["INPT_ENDDE"] > selProjectENDDE){
 					setValidateCheck({
 						...validateCheck,
 						INPT_ENDDE : {error:true, helperText:"프로젝트 최종 철수일은 "+Moment(selectedProjectInfo["ENDDE"]).format("YYYY-MM-DD")+"입니다."}
@@ -438,7 +453,7 @@ const HistoryInfoDetail = (props) => {
 									label = "기관"
 									onChange={handleChange}
 									autoComplete="off"
-									value = {company}
+									value = {company.INSTT_NM}
 									fullWidth>
 								</TextField>
 							</TableCell>

@@ -76,7 +76,6 @@ const HistoryInfoRegist = (props) => {
 	const [memberList, setMemberList] = useState([]);
 	const [dateState, setDateState] = useState({
 		selectedYear : String(new Date().getFullYear()),
-		
 	});
 	const [roleList, setRoleList] = useState();
 	const [company, setCompany] = useState({
@@ -194,6 +193,13 @@ const HistoryInfoRegist = (props) => {
 	const handleChange = (event) => {
 		if(event.target.name == "PROJECT_NO"){
 			getCompany(event.target.value);
+		}
+
+		if(event.target.name == "INSTT_NM"){
+			setCompany({
+				...company,
+				INSTT_NM : event.target.value
+			})
 		}
 
 		if(event.target.name == "PROJECT_NO"){
@@ -434,7 +440,7 @@ const HistoryInfoRegist = (props) => {
 									label = "기관"
 									onChange={handleChange}
 									autoComplete="off"
-									defaultValue = {company.INSTT_NM}
+									value = {company.INSTT_NM}
 									InputProps={{
 										readOnly: false,
 								  	}}
