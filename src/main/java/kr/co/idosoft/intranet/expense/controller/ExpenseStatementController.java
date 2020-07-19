@@ -1,5 +1,6 @@
 package kr.co.idosoft.intranet.expense.controller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -245,8 +246,8 @@ public class ExpenseStatementController {
 		
 		resMap = batchProcessing(transList, gasList, memberList, (String)data.get("YEAR"), (String)data.get("isAdmin"));
 		
-		LOG.debug("#### gasList 	: " + (List<Map<String, Object>>)resMap.get("GAS"));
-		LOG.debug("#### transList 	: " + (List<Map<String, Object>>)resMap.get("TRANS"));
+		//LOG.debug("#### gasList 	: " + (List<Map<String, Object>>)resMap.get("GAS"));
+		//LOG.debug("#### transList 	: " + (List<Map<String, Object>>)resMap.get("TRANS"));
 		
 		data.remove("isAdmin");			// 관리자 여부 제거
 		data.remove("MEMBER_NO");		// 사원번호
@@ -291,9 +292,9 @@ public class ExpenseStatementController {
 		jsonArrayGasList	= JsonUtils.getJsonStringFromList(gasList); 	// JSONARRAY 변환
 		LOG.debug("#################################################################################");
 		LOG.debug("# RETURN JSON ");
-		LOG.debug("# jsonArraycommList : " + jsonArraycommList);
-		LOG.debug("# jsonArraytransList : " + jsonArraytransList);
-		LOG.debug("# jsonArraytransList : " + jsonArrayGasList);
+		//LOG.debug("# jsonArraycommList : " + jsonArraycommList);
+		//LOG.debug("# jsonArraytransList : " + jsonArraytransList);
+		//LOG.debug("# jsonArraytransList : " + jsonArrayGasList);
 		LOG.debug("#################################################################################");
 		
 		mv.addObject("commList", jsonArraycommList);
@@ -316,6 +317,7 @@ public class ExpenseStatementController {
 		List<Map<String, Object>> yearGasList 	= new ArrayList<Map<String,Object>>();
 		
 		SimpleDateFormat stringToDate 		= new SimpleDateFormat("yyyy-MM-dd");	// 문자열 -> date
+		SimpleDateFormat dateToYear 		= new SimpleDateFormat("yyyy");			// date -> 년
 		SimpleDateFormat dateToMonth 		= new SimpleDateFormat("MM");			// date -> 달
 		SimpleDateFormat dateToDay 			= new SimpleDateFormat("dd");			// date -> 일
 		
@@ -356,10 +358,38 @@ public class ExpenseStatementController {
 						int startMonth 	= Integer.parseInt(dateToMonth.format(startDate)); 					// 시작달
 						int endMonth 	= Integer.parseInt(dateToMonth.format(endDate)); 					// 종료달
 						
+						int startYear 	= Integer.parseInt(dateToYear.format(startDate)); 					// 시작달
+						int endYear 	= Integer.parseInt(dateToYear.format(endDate)); 					// 종료달
+						
 						double amount 	= (double)((int) transList.get(k).get("ct")); 						// 월 총 경비
 						
-						LOG.debug("# trans amount : " + amount);
+						//LOG.debug("# trans amount : " + amount);
 						
+						// 2020-07-19 결함 로직 부분  수정 처리 (프로젝트 투입 년도가 다른 경우 발생)
+						// 시작년도와 종료년도 가 다를 경우,
+						if(startYear != endYear) {
+							// 선택날짜보다 시작년도가 작을 경우, 
+							if(Integer.parseInt(year) > startYear) {
+								try {
+									// 시작날짜는 종료년 1월 1일 
+									startDate  = stringToDate.parse(endYear + "-01-01");
+									// 시작월은 1월
+									startMonth = 1;
+								} catch (ParseException e) {
+									LOG.debug("# e : " + e.getMessage());
+								}								
+							} else {
+								try {
+									// 시작날짜는 종료년 1월 1일 
+									endDate  = stringToDate.parse(startYear + "-12-31");
+									// 시작월은 1월
+									endMonth = 12;
+								} catch (ParseException e) {
+									LOG.debug("# e : " + e.getMessage());
+								}
+							}
+						}
+
 						/*1. 종료날짜가  해당 월보다 크거나 같은지 시작날짜가 해당월보다 작거나 같은지 체크 */
 						if(startMonth <= monthArr[j] && monthArr[j] <= endMonth) {
 							
@@ -378,9 +408,9 @@ public class ExpenseStatementController {
 							if(monthArr[j] == startMonth) {
 								/* 2. true : 3. 시작날짜와 종료날짜가 같은 달 인지 여부 - 시작일과 종료일이 같은 달인 경우 */ 
 								if(startMonth == endMonth) {
-									LOG.debug("# startMonth : " + startMonth);
+									//LOG.debug("# startMonth : " + startMonth);
 									//LOG.debug("# endMonth : " + endMonth);
-									LOG.debug("startMonth와 endMonth 현재 달에 포함되어있는지 추출");
+									//LOG.debug("startMonth와 endMonth 현재 달에 포함되어있는지 추출");
 									
 									// SimpleDateFormat 이용하여 해당 날짜의 일수 추출
 									int startDay = 0;
@@ -435,7 +465,7 @@ public class ExpenseStatementController {
 											startDay 	= Integer.parseInt(dateToDay.format(startDate)) -1;
 										}
 									} catch (Exception e) {
-										LOG.debug("Exception : " + e.getMessage());
+										//LOG.debug("Exception : " + e.getMessage());
 									}
 									
 									// (시작날짜는 그달에 해당)시작날짜와 종료날짜가 같지 않기 때문에, 1일부터 시작날짜까지 0.0 대입
@@ -454,7 +484,7 @@ public class ExpenseStatementController {
 								/* 2. false :  4. 해당 월에 종료되는 날짜인지 체크 */
 								if(monthArr[j] == endMonth) {
 									/* 4. true : 그달의 첫 날부터 종료 일 수 까지 계산  */
-									LOG.debug("그달의 첫 날부터 종료 일 수 까지 계산");
+									//LOG.debug("그달의 첫 날부터 종료 일 수 까지 계산");
 									
 									int endDay 	= Integer.parseInt(dateToDay.format(endDate)) - 1;
 									
@@ -471,7 +501,7 @@ public class ExpenseStatementController {
 									}
 								} else { // 시작날짜와 종료날짜가 그달에 없는 경우, (그달을 포함하고 있는 경우)
 									/* 4. false : 그달의 첫 날부터 마지막 일 수 까지 계산  */
-									LOG.debug("그달의 첫 날부터 마지막 일 수 까지 계산");
+									//LOG.debug("그달의 첫 날부터 마지막 일 수 까지 계산");
 									
 									for(int l = 0; l < lastDate; l++) {
 										// startMonth와 endMonth 현재 달에 포함되어있는지 추출
@@ -489,7 +519,7 @@ public class ExpenseStatementController {
 							/* 4. true : 그달의 첫 날부터 종료 일 수 까지 계산  */
 							/* 4. false : 그달의 첫 날부터 마지막 일 수 까지 계산  */
 							monthTransList.add(monthExpenseArr);
-						}
+						} 
 						
 					}
 				}
@@ -514,7 +544,7 @@ public class ExpenseStatementController {
 						
 						double amount 	= (double)Integer.parseInt((String) gasList.get(k).get("ct")); 						// 월 총 경비
 						
-						LOG.debug("# amount : " + amount);
+						//LOG.debug("# amount : " + amount);
 						
 						/*1. 종료날짜가  해당 월보다 크거나 같은지 시작날짜가 해당월보다 작거나 같은지 체크 */
 						if(startMonth <= monthArr[j] && monthArr[j] <= endMonth) {
@@ -535,7 +565,7 @@ public class ExpenseStatementController {
 								if(startMonth == endMonth) {
 									//LOG.debug("# startMonth : " + startMonth);
 									//LOG.debug("# endMonth : " + endMonth);
-									LOG.debug("startMonth와 endMonth 현재 달에 포함되어있는지 추출");
+									//LOG.debug("startMonth와 endMonth 현재 달에 포함되어있는지 추출");
 									
 									// SimpleDateFormat 이용하여 해당 날짜의 일수 추출
 									int startDay = 0;
@@ -609,7 +639,7 @@ public class ExpenseStatementController {
 								/* 2. false :  4. 해당 월에 종료되는 날짜인지 체크 */
 								if(monthArr[j] == endMonth) {
 									/* 4. true : 그달의 첫 날부터 종료 일 수 까지 계산  */
-									LOG.debug("그달의 첫 날부터 종료 일 수 까지 계산");
+									//LOG.debug("그달의 첫 날부터 종료 일 수 까지 계산");
 									
 									int endDay 	= Integer.parseInt(dateToDay.format(endDate)) - 1;
 									
@@ -628,7 +658,7 @@ public class ExpenseStatementController {
 									}
 								} else { // 시작날짜와 종료날짜가 그달에 없는 경우, (그달을 포함하고 있는 경우)
 									/* 4. false : 그달의 첫 날부터 마지막 일 수 까지 계산  */
-									LOG.debug("그달의 첫 날부터 마지막 일 수 까지 계산");
+									//LOG.debug("그달의 첫 날부터 마지막 일 수 까지 계산");
 									
 									for(int l = 0; l < lastDate; l++) {
 										// startMonth와 endMonth 현재 달에 포함되어있는지 추출
@@ -667,7 +697,7 @@ public class ExpenseStatementController {
 				// 차량운행비
 				if(monthGasList.size() > 1) {
 					
-					LOG.debug("# 중복된 ROW를 가지고 있는 경우, 중복 ROW 개수 : " + monthGasList.size());
+					//LOG.debug("# 중복된 ROW를 가지고 있는 경우, 중복 ROW 개수 : " + monthGasList.size());
 					
 					// 리스트에 가지고 있는 첫번째 배열 길이를 기준으로 tempTransArr 배열 생성
 					
@@ -692,7 +722,7 @@ public class ExpenseStatementController {
 					
 				} else if(monthGasList.size() == 1){ // 중복된 ROW를 가지고 있지 않은 경우,
 					
-					LOG.debug("# 중복된 ROW를 가지고 있지 않은 경우, ");
+					//LOG.debug("# 중복된 ROW를 가지고 있지 않은 경우, ");
 					
 					// 월 경비 합계 계산
 					
@@ -712,16 +742,16 @@ public class ExpenseStatementController {
 				
 				// 그달의 키를 기준으로 올림처리해서 Map으로 저장
 				monthGasMap.put(monthKeyArray[j], Math.round(monthGasTotal));
-				if(memberList.get(i).equals("2019070101")) {
-					for(int z = 0; z < tempGasArr.length; z++) {
-						LOG.debug("# "+z+" : " + tempGasArr[z]);
-					}
-				}
+//				if(memberList.get(i).equals("2019070101")) {
+//					for(int z = 0; z < tempGasArr.length; z++) {
+//						LOG.debug("# "+z+" : " + tempGasArr[z]);
+//					}
+//				}
 				
 				//교통비
 				if(monthTransList.size() > 1) {
 					
-					LOG.debug("# 중복된 ROW를 가지고 있는 경우, 중복 ROW 개수 : " + monthTransList.size());
+					//LOG.debug("# 중복된 ROW를 가지고 있는 경우, 중복 ROW 개수 : " + monthTransList.size());
 					
 					// 리스트에 가지고 있는 첫번째 배열 길이를 기준으로 tempTransArr 배열 생성
 					
@@ -747,7 +777,7 @@ public class ExpenseStatementController {
 					
 				} else if(monthTransList.size() == 1){ // 중복된 ROW를 가지고 있지 않은 경우,
 					
-					LOG.debug("# 중복된 ROW를 가지고 있지 않은 경우, ");
+					//LOG.debug("# 중복된 ROW를 가지고 있지 않은 경우, ");
 					// 월 경비 합계 계산
 					
 					for(int l = 0; l < tempTransArr.length; l++) {
