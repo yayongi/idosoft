@@ -86,6 +86,7 @@ const HistoryInfoRegist = (props) => {
 
 	const [validateCheck, setValidateCheck] = useState({
 		PROJECT_NO:{error:false, helperText:""},
+		PROJECT_NM:{error:false, helperText:""},
 		INSTT_NM:{error:false, helperText:""},
 		INPT_BGNDE:{error:false, helperText:""},
 		INPT_ENDDE:{error:false, helperText:""},
@@ -203,11 +204,23 @@ const HistoryInfoRegist = (props) => {
 		}
 
 		if(event.target.name == "PROJECT_NO"){
-			setInfoState({
-				...infoState,
-				[event.target.name]: event.target.value,
-				PROJECT_NM : event.target.value != 0 ? projectList.filter((list) => list.PROJECT_NO === event.target.value)[0].PROJECT_NM : event.target.value
-			});
+			if(event.target.value != 0){
+				setInfoState({
+					...infoState,
+					[event.target.name]: event.target.value,
+					PROJECT_NM : event.target.value != 0 ? projectList.filter((list) => list.PROJECT_NO === event.target.value)[0].PROJECT_NM : event.target.value
+				});
+			}else{
+				setInfoState({
+					...infoState,
+					[event.target.name]: event.target.value,
+					PROJECT_NM : ""
+				});
+				setCompany({
+					...company,
+					INSTT_NM : ""
+				});
+			}
 		}else{
 			setInfoState({
 				...infoState,
@@ -239,10 +252,19 @@ const HistoryInfoRegist = (props) => {
 	const handleClickRegistHistory = () => {
 
 		//선택된 프로젝트가 있는지 체크한다.
-		if(infoState.PROJECT_NO == "" || infoState.PROJECT_NO == undefined){
+		if(infoState.PROJECT_NO == 0 && infoState.PROJECT_NM == ""){
 			setValidateCheck({
 				...validateCheck,
-				PROJECT_NO : {error:true, helperText:"프로젝트를 선택해주세요"}
+				PROJECT_NM : {error:true, helperText:"프로젝트명을 직접 입력해주세요."}
+			})
+			return;
+		}
+
+		//선택된 프로젝트가 있는지 체크한다.
+		if(infoState.PROJECT_NO == 0 && (infoState.INSTT_NM == "" || infoState.INSTT_NM == undefined)){
+			setValidateCheck({
+				...validateCheck,
+				INSTT_NM : {error:true, helperText:"프로젝트 업체를 직접 입력하세요."}
 			})
 			return;
 		}
@@ -289,7 +311,7 @@ const HistoryInfoRegist = (props) => {
 				return;
 			}
 
-			if(infoState.PROJECT_NO != undefined && infoState.PROJECT_NO != -2){
+			if(infoState.PROJECT_NO != undefined && infoState.PROJECT_NO != 0){
 				var selectedProjectInfo = projectList.filter((info) => info.PROJECT_NO == infoState.PROJECT_NO)[0];
 				var selProjectBGNDE = selectedProjectInfo["BGNDE"].replace("-", "").replace("-", "");
 				var selProjectENDDE = selectedProjectInfo["ENDDE"].replace("-", "").replace("-", "");
@@ -425,6 +447,8 @@ const HistoryInfoRegist = (props) => {
 									label = "프로젝트명(직접입력)"
 									onChange={handleChange}
 									placeholder="회사 프로젝트는 년도와 프로젝트를 선택해주세요"
+									error={validateCheck.PROJECT_NM.error}
+									helperText={validateCheck.PROJECT_NM.helperText}
 									fullWidth>
 								</TextField>
 							</TableCell>
@@ -443,7 +467,9 @@ const HistoryInfoRegist = (props) => {
 									value = {company.INSTT_NM}
 									InputProps={{
 										readOnly: false,
-								  	}}
+									  }}
+									error={validateCheck.INSTT_NM.error}
+									helperText={validateCheck.INSTT_NM.helperText}
 									fullWidth>
 								</TextField>
 							</TableCell>
