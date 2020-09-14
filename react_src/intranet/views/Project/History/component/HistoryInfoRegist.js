@@ -187,7 +187,10 @@ const HistoryInfoRegist = (props) => {
 	}
 	
 	const changeYear = (date) => {
-		setDateState(Moment(date).format('YYYY'));
+		setDateState({
+			...dateState,
+			selectedYear : String(Moment(date).format('YYYY'))
+		});
 		getProjectList(Moment(date).format('YYYY'));
 	}
 

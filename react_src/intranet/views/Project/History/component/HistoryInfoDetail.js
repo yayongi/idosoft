@@ -103,7 +103,9 @@ const HistoryInfoDetail = (props) => {
 			// 특정연도의 프로젝트 가져오기
 			getRoleList();
 			getProjectList(response.data.INPT_BGNDE.substring(0,4));
-			setDateState(response.data.INPT_BGNDE.substring(0,4));
+			setDateState({
+				selectedYear : response.data.INPT_BGNDE.substring(0,4)
+			});
 			setInfoState(response.data);
 			setCompany({
 				INSTT_NM : response.data.INSTT_NM,
@@ -196,7 +198,10 @@ const HistoryInfoDetail = (props) => {
 	}
 
 	const changeYear = (date) => {
-		setDateState(Moment(date).format('YYYY'));
+		setDateState({
+			...dateState,
+			selectedYear : String(Moment(date).format('YYYY'))
+		});
 		getProjectList(Moment(date).format('YYYY'));
 	}
 
@@ -413,7 +418,7 @@ const HistoryInfoDetail = (props) => {
 											views={["year"]}
 											format="yyyy"
 											inputVariant="outlined"
-											value={dateState}
+											value={dateState.selectedYear}
 											onChange={changeYear}
 										/>
 									</Grid>
@@ -458,7 +463,7 @@ const HistoryInfoDetail = (props) => {
 									autoComplete="off"
 									label = "프로젝트명(직접입력)"
 									onChange={handleChange}
-									defaultValue = {infoState.INSTT_CODE == "" ? infoState.PROJECT_NM : ""}
+									defaultValue = {(infoState.INSTT_CODE == "" || infoState.INSTT_CODE == undefined) ? infoState.PROJECT_NM : ""}
 									placeholder="회사 프로젝트는 년도와 프로젝트를 선택해주세요"
 									error={validateCheck.PROJECT_NM.error}
 									helperText={validateCheck.PROJECT_NM.helperText}
