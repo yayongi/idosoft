@@ -30,8 +30,6 @@ import {
   DatePicker,
 } from '@material-ui/pickers';
 
-import { Link as RouterLink } from 'react-router-dom';
-
 const useStyles = makeStyles(theme => ({
 	table: {
 		minWidth: 650,

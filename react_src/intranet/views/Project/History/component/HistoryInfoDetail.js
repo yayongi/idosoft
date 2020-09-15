@@ -91,8 +91,6 @@ const HistoryInfoDetail = (props) => {
 
 	const { match, location, history } = props.routeProps.routeProps;
 
-	console.log("mathch : " + JSON.stringify(match));
-
 	//상세 정보 가져오기
 	useEffect(() => {
 		axios({
