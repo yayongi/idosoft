@@ -110,36 +110,20 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		return mv;
 	}
 	
+	//관리자 여부 확인
+	@RequestMapping(value="/history/isAdmin",method=RequestMethod.POST)
+	@ResponseBody
+	public LinkedHashMap<String,Object> isAdmin(HttpServletRequest request,HttpSession session){
+		LinkedHashMap<String, Object> tempMap = new LinkedHashMap<String, Object>();
+		tempMap.put("isAdmin", commonUtil.isAdmin(session));
+		return tempMap;
+	}
+	
+	//직원 명단 가져오기
 	@RequestMapping(value="/history/memberList",method=RequestMethod.POST)
 	@ResponseBody
 	public List<LinkedHashMap<String,Object>> memberList(HttpServletRequest request){
-		
 		return historyService.memberList();
-	}
-	
-	
-	@RequestMapping(value="/historyInsert",method=RequestMethod.POST)
-	@ResponseBody
-	public ModelAndView historyInsert(HttpServletRequest request, @RequestBody Map<String, Object> params ){
-		ModelAndView mv = new ModelAndView();
-		
-		// ModelAndView 초기값 셋팅
-		mv.setViewName("jsonView");
-		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
-		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
-		
-		HttpSession session = request.getSession();
-		SessionVO sessionVo = (SessionVO) session.getAttribute("SESSION_DATA");	// 세션 정보
-		String member_no = sessionVo.getMEMBER_NO();
-		params.put("reg_id", member_no);
-		boolean db_result = false;
-		try {
-			historyService.insert((HashMap<String, Object>) params);
-		}catch(Exception e) {
-			db_result = true;
-		}
-		mv.addObject("isDBError", db_result);
-		return mv;
 	}
 	
 	// 이력 상세 정보가져오기
@@ -178,17 +162,20 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 		}
 	}
 	
+	// 이력 삭제하기
 	@RequestMapping(value="/history/remove",method=RequestMethod.POST)
 	@ResponseBody
 	public void removeHistory(HttpServletRequest request, @RequestBody LinkedHashMap<String, Object> data ){
 		historyService.remove(data);
 	}
 	
+	// 이력 수정하기
 	@RequestMapping(value="/history/update",method=RequestMethod.POST)
 	@ResponseBody
 	public void update(HttpServletRequest request, @RequestBody LinkedHashMap<String, Object> data){
 		historyService.update(data);
 	}
+	
 	
 	@RequestMapping(value="/history/insert",method=RequestMethod.POST)
 	@ResponseBody
@@ -197,29 +184,12 @@ private static final Logger LOG = LoggerFactory.getLogger(HistoryController.clas
 	}
 	
 	
-	@RequestMapping(value="/getIsCheckAdmin",method=RequestMethod.POST)
-	@ResponseBody
-	public ModelAndView getIsCheckAdmin(HttpServletRequest request, @RequestBody Map<String, Object> params ){
-		ModelAndView mv = new ModelAndView();
-		
-		// ModelAndView 초기값 셋팅
-		mv.setViewName("jsonView");
-		mv.addObject("isError", "false");				// 에러를 발생시켜야할 경우,
-		mv.addObject("isNoN", "false");					// 목록이 비어있는 경우,
-		
-		HttpSession session = request.getSession();
-		// 세션 VO에 세션 값 저장
-		String isAdmin = (String) session.getAttribute("IS_ADMIN");
-		
-		mv.addObject("isAdmin", isAdmin);
-		return mv;
-	}
+	
 	
 	//프로젝트 리스트 가져오기
 	@RequestMapping(value="/history/getprojectlist",method=RequestMethod.POST)
 	@ResponseBody
 	public List<Map<String,Object>> getProjectList(HttpServletRequest request, @RequestBody Map<String, Object> data ){
-		
 		return historyService.getProjectList(data);
 	}
 	

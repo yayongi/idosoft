@@ -19,7 +19,7 @@ const useStyles = makeStyles({
   },
 });
 
-function getTable(idx, beforeMember, historyInfo, props, historyOriginalInfo){
+function getTable(idx, beforeMember, historyInfo, props, historyOriginalInfo, isAdmin){
 	const { routeProps } = props;
 	
 	const personTatalCount = historyOriginalInfo.filter((info) => info["MEMBER_NO"] == historyInfo[0]["MEMBER_NO"]).length;
@@ -83,7 +83,7 @@ function getTable(idx, beforeMember, historyInfo, props, historyOriginalInfo){
 				    ))}
 				</TableRow>
 				<TableRow
-					onClick={() => handleClickDetailView(historyInfo[0]["MEM_HIST_NO"])}>
+					onClick={() => handleClickDetailView(historyInfo[0]["MEM_HIST_NO"])} isAdmin={isAdmin}>
 					<TableCell
 				        align="center"
 				        style={{ minWidth: 100 }}
@@ -129,7 +129,7 @@ function getTable(idx, beforeMember, historyInfo, props, historyOriginalInfo){
 
 function HistoryInfoTable(props) {
   const classes = useStyles();
-  const { historyOriginalInfo, memberlist, selectedUserName } = props;
+  const { historyOriginalInfo, memberlist, selectedUserName,isAdmin } = props;
   const historyInfo = [].concat(historyOriginalInfo);
   
   return (
@@ -149,7 +149,7 @@ function HistoryInfoTable(props) {
 		  		</>
 		  	}
 		  	{	historyInfo.length > 0 &&
-		  		getTable(0, "", historyInfo, props, historyOriginalInfo)
+		  		getTable(0, "", historyInfo, props, historyOriginalInfo,isAdmin)
 		  	}
 		  </TableBody>
         </Table>

@@ -45,6 +45,7 @@ export default function HistoryView(props) {
 	const [searchData, setSearchData] = useState(initCheck(match));
 	const [isShowLoadingBar, setShowLoadingBar] = useState(true, []);    //loading bar
 	const [memberList, setMemberList] = useState([]);
+	const [isAdmin, SetIsAdmin] = useState(false);
 	const userInfo = JSON.parse(sessionStorage.getItem("loginSession"));
 	
 	const selectedUserName = getSelectedUserName(searchData, memberList);
@@ -56,7 +57,6 @@ export default function HistoryView(props) {
 			method: 'post',
 			data: sendData
 		}).then(response => {
-			setMemberList(response.data.member_list);
 			setHistoryInfo(response.data.history_list);
 			setShowLoadingBar(false);
 		}).catch(e => {
@@ -64,6 +64,35 @@ export default function HistoryView(props) {
 			processErrCode(e);
 		});
 	},[searchData]);
+
+	//직원명단 가져오기
+	useEffect(() => {
+		axios({
+			url: '/intranet/history/memberList',
+			method: 'post'
+		}).then(response => {
+			setMemberList(response.data);
+		}).catch(e => {
+			processErrCode(e);
+		});
+	},[]);
+
+	//관리자 여부
+	useEffect(() => {
+		axios({
+			url: '/intranet/history/isAdmin',
+			method: 'post',
+			data : {},
+		}).then(response => {
+			if(response.data.isAdmin == "1"){
+				SetIsAdmin(true);
+			}else{
+				SetIsAdmin(false);
+			}
+		}).catch(e => {
+			processErrCode(e);
+		});
+	}, []);
 	
 	
 	const excelDownLoad = () => {
@@ -97,17 +126,15 @@ export default function HistoryView(props) {
 			console.log(e);
 		});
 	}
-	
-
 
 	return (
 		<>
 			<LoadingBar openLoading={isShowLoadingBar}/>
-			<HistorySearchDiv username={userInfo["name"]} excelDownLoad={excelDownLoad} searchData={searchData} setSearchData={setSearchData} memberList={memberList}/>
+			<HistorySearchDiv username={userInfo["name"]} excelDownLoad={excelDownLoad} searchData={searchData} setSearchData={setSearchData} memberList={memberList} isAdmin={isAdmin}/>
 			<Grid container spacing={2}>
 				<Grid item xs={12}>
 					<Paper className={classes.paper}>
-						<HistoryInfoTable historyOriginalInfo={ historyInfo } selectedUserName={selectedUserName} routeProps={props.routeProps}/>
+						<HistoryInfoTable historyOriginalInfo={ historyInfo } selectedUserName={selectedUserName} routeProps={props.routeProps} isAdmin={isAdmin}/>
 					</Paper>
 				</Grid>
 			</Grid>

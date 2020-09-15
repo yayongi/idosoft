@@ -58,26 +58,9 @@ const useToolbarStyles = makeStyles(theme => ({
 export default function HistorySearchDiv(props) {
 	
 	const classes = useToolbarStyles();
-	const {username, excelDownLoad, setSearchData, memberList, searchData} = props;
+	const {username, excelDownLoad, setSearchData, memberList, searchData, isAdmin} = props;
 	const [open, setOpen] = useState(false);
-	const [isAdmin, SetIsAdmin] = useState(false);
 	const [searchMember, setSearchMemer] = useState(searchData);
-	
-	useEffect(() => {
-		axios({
-			url: '/intranet/getIsCheckAdmin',
-			method: 'post',
-			data : {},
-		}).then(response => {
-			if(response.data.isAdmin == "1"){
-				SetIsAdmin(true);
-			}else{
-				SetIsAdmin(false);
-			}
-		}).catch(e => {
-			processErrCode(e);
-		});
-	}, []);
 	
 	const handleClickExcelBtn = () => {
 		excelDownLoad();
@@ -197,16 +180,15 @@ export default function HistorySearchDiv(props) {
 							onChange={handleChange}
 							fullWidth
 							select>
+							<MenuItem key={0} value={0}>
+								선택해주세요
+							</MenuItem>
 							{memberList.map((info) => {
-								if(info.member_no == "2019070801"){
-									
-								}else{
-									return (
-										<MenuItem key={info.member_no} value={info.member_no}>
-											{info.name}
-										</MenuItem>
-									)
-								}
+								return (
+									<MenuItem key={info.MEMBER_NO} value={info.MEMBER_NO}>
+										{info.NAME}
+									</MenuItem>
+								)
 							})}
 						</TextField>
 					</Grid>
@@ -220,8 +202,6 @@ export default function HistorySearchDiv(props) {
 					</Button>
 				</DialogActions>
 			</Dialog> }
-			
-			
 		</Fragment>
 	);
 }

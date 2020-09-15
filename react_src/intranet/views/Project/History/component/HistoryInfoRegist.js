@@ -92,8 +92,27 @@ const HistoryInfoRegist = (props) => {
 		CHRG_JOB:{error:false, helperText:""},
 		USE_LANG:{error:false, helperText:""}
 	});
+	
+	const [isAdmin, setIsAdmin] = useState({});
 
-	const { match, location, history } = props.routeProps.routeProps;
+	const { match, location, history} = props.routeProps.routeProps;
+
+	//관리자 여부
+	useEffect(() => {
+		axios({
+			url: '/intranet/history/isAdmin',
+			method: 'post',
+			data : {},
+		}).then(response => {
+			if(response.data.isAdmin == "1"){
+				setIsAdmin(true);
+			}else{
+				setIsAdmin(false);
+			}
+		}).catch(e => {
+			processErrCode(e);
+		});
+	}, []);
 
 	//사원 정보 가져오기
 	useEffect(() => {
@@ -372,8 +391,8 @@ const HistoryInfoRegist = (props) => {
 						<TableRow>
 							<TableCell align="left">
 								<TextField
-									id="MEMBER_NO"
-									name="MEMBER_NO"
+									id="MEMBER_NAME"
+									name="MEMBER_NAME"
 									margin="dense"
 									variant="outlined"
 									label = "이름"
@@ -381,7 +400,7 @@ const HistoryInfoRegist = (props) => {
 									fullWidth
 									value = {infoState.MEMBER_NAME != undefined && infoState.MEMBER_NAME}
 									InputProps={{
-									 	 readOnly: true,
+									 	 readOnly: !isAdmin,
 									}}
 									onChange={handleChange}
 									select>
