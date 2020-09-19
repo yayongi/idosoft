@@ -300,7 +300,6 @@ public class LoginController {
 			mv.addObject("errMessage", "비밀번호 재설정 오류가 발생했습니다. 관리자에게 문의해주세요.");
 		}
 		
-		session.invalidate();
 		
 		return mv;
 	}
