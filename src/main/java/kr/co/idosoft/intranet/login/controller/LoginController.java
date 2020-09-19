@@ -91,7 +91,7 @@ public class LoginController {
 			// 비밀번호 초기 비밀번호 여부 체크
 			if(shaPasswordEncoder.matches(INITPASSWORD, prevPassword)) {
 				LOG.debug("# 초기비밀번호 입니다. 비밀번호 재설정화면으로 이동합니다. ");
-				data.put("resPassSign", "true"); 
+				data.put("resPassSign", "true");
 			}
 			
 				
@@ -299,6 +299,8 @@ public class LoginController {
 			mv.addObject("isError", "true");
 			mv.addObject("errMessage", "비밀번호 재설정 오류가 발생했습니다. 관리자에게 문의해주세요.");
 		}
+		
+		session.invalidate();
 		
 		return mv;
 	}
