@@ -455,7 +455,7 @@ const MemberMod_user = (props) => {
                     </div>
                     <div style={{textAlign:'center'}}>
                       <Typography>
-                        {row.name} {row.code_name} {row.career_date != null && "("+dataCalculator(row.career_date)+")"}
+                        {row.name} {row.code_name} {(row.career_date != null && row.career_date != "") && "("+dataCalculator(row.career_date)+")"}
                       </Typography>
                     </div>
                     <div style={{textAlign:'center'}}>
